@@ -1,0 +1,28 @@
+/* =====================================================================
+   brand.css — UNICO punto di override white-label (proiezione CSS di brand.json).
+   Può contenere SOLO: regole @font-face e un blocco :root con proprietà --brand-* della allowlist.
+   Qualsiasi altro selettore o proprietà viene rifiutato dal validatore (tools/validate-brand).
+   Un file vuoto produce il tema di default completo.
+   ===================================================================== */
+@layer brand {
+  :root {
+    /* --- Colore (UN input obbligatorio; il sistema deriva hover/active/subtle/text) --- */
+    /* --brand-accent: #2B2823; */
+    /* --brand-on-accent: #FFFFFF;            opzionale, verificato ≥ 4.5:1 su --brand-accent */
+    /* --brand-accent-dark: #F1EFEA;          opzionale, tema scuro; se assente: derivato (L ≥ 0.68) */
+
+    /* --- Neutri: CHIUSI in v1 (tinta 80°, croma 0.008). Un override clampato è candidato per la v1.1. --- */
+
+    /* --- Tipografia (i file font via @font-face qui sotto, font-display: swap, size-adjust sul fallback) --- */
+    /* --brand-font-sans: "Nome Font", system-ui, sans-serif;   richiede pesi 400/500/600 */
+    /* --brand-font-numeric: "Nome Font";     opzionale; usato da Money/DataTable se il sans non ha tnum */
+    /* --brand-font-mono: "Nome Mono", ui-monospace, monospace; opzionale */
+
+    /* --- Forma --- */
+    /* --brand-radius-scale: 1;               0–1.25; 0 = spigoli vivi; chip e AgentMark restano ≤ 4px */
+  }
+}
+
+/* CHIUSO (il validatore rifiuta): colori di stato e feedback, danger/stop, focus, rampa dei neutri (tinta e gradini),
+   scala tipografica, spazi, misure, target minimi, elevazione, z-index, moto, breakpoint,
+   forma persona/agente/rombo, set di icone, testo dei chip. */

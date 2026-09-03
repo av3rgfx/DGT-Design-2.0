@@ -1,0 +1,430 @@
+/* =====================================================================
+   DGT Design System — tokens.css (v1)
+   Quattro livelli: --ref- (primitivi) → --sys- (semantici) → --cmp- (componente).
+   --brand-* sono INPUT letti solo dal livello sys, sempre con fallback.
+   I componenti leggono SOLO --sys-* e --cmp-*.
+   Tema scuro e densità ridefiniscono SOLO token --sys-*.
+   Ogni coppia colore citata in DESIGN.md è verificata (WCAG 2.x) da tools/wcag.py.
+   ===================================================================== */
+
+@layer brand, tokens, tokens.status;
+
+/* ---------- 1. PRIMITIVI (privati) ---------- */
+@layer tokens {
+:root {
+  /* Neutri "carta" (hue 80, chroma 0.008). Chiusi al marchio in v1: né tinta né gradini sono sovrascrivibili. */
+  --ref-color-neutral-0:   #FFFFFF;
+  --ref-color-neutral-50:  #F8F7F4;
+  --ref-color-neutral-100: #F1EFEA;
+  --ref-color-neutral-200: #E6E3DC;
+  --ref-color-neutral-300: #D3CFC6;
+  --ref-color-neutral-400: #A8A39A;
+  --ref-color-neutral-450: #8A857C;
+  --ref-color-neutral-500: #6F6A61;
+  --ref-color-neutral-600: #5C574F;
+  --ref-color-neutral-700: #3F3B35;
+  --ref-color-neutral-750: #3A362F;
+  --ref-color-neutral-800: #29261F;
+  --ref-color-neutral-850: #221F1A;
+  --ref-color-neutral-900: #1A1814;
+
+  /* Inchiostro (accento di default, acromatico) */
+  --ref-color-ink-700: #2B2823;
+  --ref-color-ink-800: #1A1814;
+  --ref-color-ink-900: #111008;
+
+  /* Rampe di stato: 100 bg · 300 fg-dark · 500 solid · 700 fg-light */
+  --ref-color-blue-100:  #E6F0FB; --ref-color-blue-200:  #B7D0F0; --ref-color-blue-300:  #8DB4F0; --ref-color-blue-500:  #2B6CD4; --ref-color-blue-700:  #1D4F9C;
+  --ref-color-amber-100: #FBF1DC; --ref-color-amber-200: #EFD59A; --ref-color-amber-300: #EFD59A; --ref-color-amber-500: #A96A08; --ref-color-amber-700: #7A4E00;
+  --ref-color-green-100: #E4F3E9; --ref-color-green-200: #ABD8BA; --ref-color-green-300: #ABD8BA; --ref-color-green-500: #2E8B57; --ref-color-green-700: #1B6B3A;
+  --ref-color-red-100:   #FBE7E5; --ref-color-red-200:   #F0B7B1; --ref-color-red-300:   #F0B7B1; --ref-color-red-500:   #C93A2C; --ref-color-red-600:   #B0301F; --ref-color-red-700:   #9B2A1F;
+  /* Variante alternativa di running (petrolio), attivata dal validatore se l'accento di brand è blu */
+  --ref-color-teal-100: #E1F3F4; --ref-color-teal-300: #7FCBD1; --ref-color-teal-500: #0E7C86; --ref-color-teal-700: #0B5960;
+
+  /* Tinte di dipartimento (chiuse, desaturate; usate solo dal bordo dell'AgentMark) */
+  --ref-color-dept-1: #6B7A99; --ref-color-dept-2: #7A8C6B; --ref-color-dept-3: #997A6B;
+  --ref-color-dept-4: #8A6B99; --ref-color-dept-5: #6B9599; --ref-color-dept-6: #99916B;
+
+  /* Spazio (base 4) */
+  --ref-space-0: 0; --ref-space-050: 2px; --ref-space-1: 4px; --ref-space-2: 8px; --ref-space-3: 12px;
+  --ref-space-4: 16px; --ref-space-5: 20px; --ref-space-6: 24px; --ref-space-8: 32px; --ref-space-10: 40px;
+  --ref-space-12: 48px; --ref-space-16: 64px;
+
+  /* Raggi */
+  --ref-radius-1: 4px; --ref-radius-2: 6px; --ref-radius-3: 8px; --ref-radius-4: 12px;
+
+  /* Tipografia (px; in produzione rem) */
+  --ref-font-size-12: 12px; --ref-font-size-13: 13px; --ref-font-size-14: 14px; --ref-font-size-16: 16px;
+  --ref-font-size-18: 18px; --ref-font-size-20: 20px; --ref-font-size-22: 22px; --ref-font-size-24: 24px;
+  --ref-font-size-28: 28px; --ref-font-size-32: 32px; --ref-font-size-40: 40px;
+}
+
+/* ---------- 2. SEMANTICI — tema chiaro (default) ---------- */
+:root {
+  color-scheme: light dark;
+
+  /* Superfici */
+  --sys-color-canvas:          var(--ref-color-neutral-50);
+  --sys-color-surface:         var(--ref-color-neutral-0);
+  --sys-color-surface-raised:  var(--ref-color-neutral-0);
+  --sys-color-surface-sunken:  var(--ref-color-neutral-100);
+  --sys-color-surface-overlay: var(--ref-color-neutral-0);
+  --sys-color-surface-hover:   var(--ref-color-neutral-100);
+  --sys-color-scrim:           rgb(26 24 20 / .40);
+
+  /* Testo e icone */
+  --sys-color-text:             var(--ref-color-neutral-900);
+  --sys-color-text-secondary:   var(--ref-color-neutral-500);
+  --sys-color-text-placeholder: var(--ref-color-neutral-450);
+  --sys-color-text-disabled:    var(--ref-color-neutral-400);
+  --sys-color-text-inverse:     var(--ref-color-neutral-0);
+  --sys-color-icon:             var(--ref-color-neutral-600);
+  --sys-color-icon-secondary:   var(--ref-color-neutral-500);
+  --sys-color-icon-disabled:    var(--ref-color-neutral-400);
+
+  /* Bordi */
+  --sys-color-border:            var(--ref-color-neutral-200);
+  --sys-color-border-strong:     var(--ref-color-neutral-300);
+  --sys-color-border-subtle:     var(--ref-color-neutral-100);
+  --sys-color-border-input:      var(--ref-color-neutral-450);  /* ≥3:1 su bianco, canvas, n100 */
+  --sys-color-border-input-hover:var(--ref-color-neutral-600);
+
+  /* Accento (white-label: UN input) */
+  --sys-color-accent:              var(--brand-accent, var(--ref-color-ink-700));
+  --sys-color-accent-hover:        var(--brand-accent-hover, var(--ref-color-ink-800));
+  --sys-color-accent-active:       var(--brand-accent-active, var(--ref-color-ink-900));
+  --sys-color-accent-subtle:       var(--brand-accent-subtle, var(--ref-color-neutral-100));
+  --sys-color-accent-subtle-hover: var(--brand-accent-subtle-hover, var(--ref-color-neutral-200));
+  --sys-color-accent-text:         var(--brand-accent-text, var(--ref-color-ink-700));
+  --sys-color-on-accent:           var(--brand-on-accent, #FFFFFF);
+  --sys-color-text-link:           var(--sys-color-accent-text);
+  --sys-color-surface-selected:    var(--sys-color-accent-subtle);
+  --sys-color-border-selected:     var(--sys-color-accent);
+
+  /* Focus: NON deriva dal brand */
+  --sys-color-focus-ring: var(--ref-color-neutral-900);
+  --sys-color-focus-halo: var(--sys-color-surface);
+
+  /* Azioni pericolose e stop */
+  --sys-color-danger:         var(--ref-color-red-500);
+  --sys-color-danger-hover:   var(--ref-color-red-600);
+  --sys-color-danger-active:  var(--ref-color-red-700);
+  --sys-color-on-danger:      #FFFFFF;
+  --sys-color-stop-glyph:     var(--ref-color-red-500);   /* ■ nel pulsante "Ferma" di riga */
+  --sys-color-stop-all:       var(--ref-color-red-700);   /* contorno "Ferma tutto"; pieno quando armato */
+
+  /* Denaro */
+  --sys-color-money:          var(--sys-color-text);
+  --sys-color-money-muted:    var(--sys-color-text-secondary);
+  --sys-color-money-warn:     var(--ref-color-amber-700);
+  --sys-color-money-over:     var(--ref-color-red-700);
+  --sys-color-money-positive: var(--ref-color-green-700);
+  --sys-color-budget-used:    var(--ref-color-neutral-700);
+  --sys-color-fresh-live:     var(--ref-color-green-500);
+
+  /* Dipartimenti (bordo AgentMark) */
+  --sys-color-dept-1: var(--ref-color-dept-1); --sys-color-dept-2: var(--ref-color-dept-2); --sys-color-dept-3: var(--ref-color-dept-3);
+  --sys-color-dept-4: var(--ref-color-dept-4); --sys-color-dept-5: var(--ref-color-dept-5); --sys-color-dept-6: var(--ref-color-dept-6);
+
+  /* Ombra */
+  --sys-color-shadow: 26 24 20;
+  --sys-elevation-0: none;
+  --sys-elevation-1: 0 1px 2px rgb(var(--sys-color-shadow) / .06);
+  --sys-elevation-2: 0 4px 12px rgb(var(--sys-color-shadow) / .10), 0 1px 2px rgb(var(--sys-color-shadow) / .06);
+  --sys-elevation-3: 0 16px 40px rgb(var(--sys-color-shadow) / .16);
+  --sys-z-base: 0; --sys-z-sticky: 10; --sys-z-overlay: 20; --sys-z-modal: 30; --sys-z-toast: 40;
+
+  /* Tipografia */
+  --sys-font-family-sans:    var(--brand-font-sans, "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif);
+  --sys-font-family-numeric: var(--brand-font-numeric, var(--sys-font-family-sans));
+  --sys-font-family-mono:    var(--brand-font-mono, "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace);
+  --sys-font-weight-regular: 400; --sys-font-weight-medium: 500; --sys-font-weight-semibold: 600;
+  --sys-font-feature-numeric: "tnum" 1, "lnum" 1;
+  --sys-measure-max: 70ch;
+
+  --sys-type-display-lg-size: var(--ref-font-size-40); --sys-type-display-lg-lh: 44px; --sys-type-display-lg-tracking: -0.015em;
+  --sys-type-display-size:    var(--ref-font-size-28); --sys-type-display-lh: 32px;
+  --sys-type-headline-size:   var(--ref-font-size-24); --sys-type-headline-lh: 32px;
+  --sys-type-title-size:      var(--ref-font-size-20); --sys-type-title-lh: 28px;
+  --sys-type-title-sm-size:   var(--ref-font-size-18); --sys-type-title-sm-lh: 24px;
+  --sys-type-body-lg-size:    var(--ref-font-size-16); --sys-type-body-lg-lh: 24px;
+  --sys-type-body-size:       var(--ref-font-size-14); --sys-type-body-lh: 20px;      /* density-aware */
+  --sys-type-label-size:      var(--ref-font-size-13); --sys-type-label-lh: 16px;
+  --sys-type-label-sm-size:   var(--ref-font-size-12); --sys-type-label-sm-lh: 16px;
+  --sys-type-caption-size:    var(--ref-font-size-12); --sys-type-caption-lh: 16px;
+  --sys-type-mono-size:       var(--ref-font-size-13); --sys-type-mono-lh: 20px;
+  --sys-type-mono-sm-size:    var(--ref-font-size-12); --sys-type-mono-sm-lh: 18px;
+  --sys-type-input-size:      var(--sys-type-body-size);
+  --sys-type-money-min-size:  var(--ref-font-size-13);
+
+  /* Spazio: alias statici */
+  --sys-space-0: var(--ref-space-0); --sys-space-050: var(--ref-space-050); --sys-space-1: var(--ref-space-1);
+  --sys-space-2: var(--ref-space-2); --sys-space-3: var(--ref-space-3); --sys-space-4: var(--ref-space-4);
+  --sys-space-5: var(--ref-space-5); --sys-space-6: var(--ref-space-6); --sys-space-8: var(--ref-space-8);
+  --sys-space-10: var(--ref-space-10); --sys-space-12: var(--ref-space-12); --sys-space-16: var(--ref-space-16);
+
+  /* Invarianti tattili (Fitts) — NON seguono la densità */
+  --sys-size-control-lg: 48px;
+  --sys-size-target-min: 24px;            /* coarse: 44px */
+  --sys-space-target-gap: 8px;
+  --sys-space-target-gap-opposing: 12px;
+  --sys-size-stop-min: 32px;              /* coarse: 44px */
+  --sys-size-icon-sm: 16px; --sys-size-icon-md: 20px; --sys-size-icon-lg: 24px; --sys-size-icon-stroke: 1.5px;
+  --sys-size-icon-status-min: 12px; --sys-size-status-dot: 8px;
+  --sys-size-mark-xs: 20px; --sys-size-mark-sm: 24px; --sys-size-mark-md: 32px; --sys-size-mark-lg: 40px;
+  --sys-size-selected-indicator: 2px;
+  --sys-size-logo-height: 24px; --sys-size-logo-max-width: 160px;
+  --sys-size-sidebar: 264px; --sys-size-sidebar-collapsed: 56px;
+  --sys-size-sheet-max: 480px; --sys-size-dialog-max: 560px; --sys-size-content-max: 1120px;
+  --sys-size-sticky-top: var(--cmp-strip-height);
+  --sys-size-sticky-bottom: 0px;
+
+  /* Raggi semantici (scala brand clampata 0–1.25; badge mai oltre 4; round non scala) */
+  --sys-radius-scale:     clamp(0, var(--brand-radius-scale, 1), 1.25);
+  --sys-radius-badge:     min(calc(var(--ref-radius-1) * var(--sys-radius-scale)), 4px);
+  --sys-radius-control:   calc(var(--ref-radius-2) * var(--sys-radius-scale));
+  --sys-radius-container: calc(var(--ref-radius-3) * var(--sys-radius-scale));
+  --sys-radius-overlay:   calc(var(--ref-radius-4) * var(--sys-radius-scale));
+  --sys-radius-round:     9999px;
+
+  --sys-border-width-hairline: 1px; --sys-border-width-strong: 2px; --sys-border-width-focus: 2px;
+
+  /* Moto */
+  --sys-motion-duration-fast: 120ms; --sys-motion-duration-base: 200ms; --sys-motion-duration-slow: 300ms;
+  --sys-motion-easing-standard: cubic-bezier(.2, 0, 0, 1);
+  --sys-motion-pulse-duration: 1800ms; --sys-motion-pulse-opacity-min: .4;
+  --sys-motion-spin-duration: 1000ms;
+
+  /* Comportamento (esportato anche in tokens.ts) */
+  --sys-behavior-feedback-max: 400ms;
+  --sys-behavior-undo-approval: 10s;
+  --sys-behavior-undo-stop-all: 30s;
+  --sys-behavior-stop-arm-timeout: 5s;
+  --sys-behavior-stop-grace: 10s;
+  --sys-behavior-stale-after: 120s;
+  --sys-behavior-stale-critical: 600s;
+  --sys-behavior-fresh-live: 10s;
+  --sys-behavior-fresh-recent: 60s;
+
+  /* Densità comfortable (default) */
+  --sys-size-control: 40px;
+  --sys-size-row-list: 48px;
+  --sys-size-row-table: 44px;
+  --sys-space-card-padding: var(--sys-space-4);
+  --sys-space-section-gap: var(--sys-space-6);
+  --sys-space-page-gutter: var(--sys-space-6);
+  --sys-space-stack-gap: var(--sys-space-3);
+  --sys-space-inline-gap: var(--sys-space-2);
+  --sys-space-control-padding-x: var(--sys-space-4);
+  --sys-size-col-money: 112px;
+}
+
+/* Densità compact (stessa specificità, vince per ordine) */
+[data-density="compact"] {
+  --sys-size-control: 32px;
+  --sys-size-row-list: 36px;
+  --sys-size-row-table: 32px;
+  --sys-space-card-padding: var(--sys-space-3);
+  --sys-space-section-gap: var(--sys-space-4);
+  --sys-space-page-gutter: var(--sys-space-4);
+  --sys-space-stack-gap: var(--sys-space-2);
+  --sys-space-inline-gap: 6px;
+  --sys-space-control-padding-x: var(--sys-space-3);
+  --sys-type-body-size: var(--ref-font-size-13); --sys-type-body-lh: 18px;
+  --sys-size-col-money: 96px;
+}
+
+/* Clamp tattile: indipendente dalla densità */
+@media (pointer: coarse) {
+  :root { --sys-size-target-min: 44px; --sys-size-stop-min: 44px; --sys-type-input-size: max(16px, var(--sys-type-body-size)); }
+}
+
+/* Mobile: base 16 */
+@media (max-width: 599px) {
+  :root {
+    --sys-type-body-size: var(--ref-font-size-16); --sys-type-body-lh: 24px;
+    --sys-type-label-size: var(--ref-font-size-14); --sys-type-label-lh: 20px;
+    --sys-type-display-lg-size: var(--ref-font-size-32); --sys-type-display-lg-lh: 36px;
+    --sys-type-display-size: var(--ref-font-size-24); --sys-type-display-lh: 28px;
+    --sys-type-headline-size: var(--ref-font-size-22); --sys-type-headline-lh: 28px;
+    --sys-type-money-min-size: var(--ref-font-size-14);
+    --sys-space-page-gutter: var(--sys-space-4);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  :root { --sys-motion-pulse-duration: 0ms; --sys-motion-spin-duration: 0ms;
+          --sys-motion-duration-fast: 0ms; --sys-motion-duration-base: 0ms; --sys-motion-duration-slow: 0ms; }
+}
+
+/* ---------- 3. TEMA SCURO (solo --sys-*, stessi neutri caldi) ---------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --sys-color-canvas: var(--ref-color-neutral-900);
+    --sys-color-surface: var(--ref-color-neutral-850);
+    --sys-color-surface-raised: var(--ref-color-neutral-800);
+    --sys-color-surface-sunken: var(--ref-color-neutral-900);
+    --sys-color-surface-overlay: var(--ref-color-neutral-750);
+    --sys-color-surface-hover: var(--ref-color-neutral-800);
+    --sys-color-scrim: rgb(26 24 20 / .60);
+    --sys-color-text: var(--ref-color-neutral-100);
+    --sys-color-text-secondary: #B5AFA5;
+    --sys-color-text-placeholder: var(--ref-color-neutral-500);
+    --sys-color-text-disabled: var(--ref-color-neutral-600);
+    --sys-color-text-inverse: var(--ref-color-neutral-900);
+    --sys-color-icon: #B5AFA5; --sys-color-icon-secondary: var(--ref-color-neutral-400); --sys-color-icon-disabled: var(--ref-color-neutral-600);
+    --sys-color-border: var(--ref-color-neutral-750);
+    --sys-color-border-strong: var(--ref-color-neutral-700);
+    --sys-color-border-subtle: var(--ref-color-neutral-800);
+    --sys-color-border-input: var(--ref-color-neutral-400);
+    --sys-color-border-input-hover: var(--ref-color-neutral-300);
+    --sys-color-accent: var(--brand-accent-dark, var(--ref-color-neutral-100));
+    --sys-color-accent-hover: var(--brand-accent-dark-hover, #FFFFFF);
+    --sys-color-accent-active: var(--brand-accent-dark-active, var(--ref-color-neutral-300));
+    --sys-color-accent-subtle: var(--brand-accent-dark-subtle, var(--ref-color-neutral-800));
+    --sys-color-accent-subtle-hover: var(--brand-accent-dark-subtle-hover, var(--ref-color-neutral-750));
+    --sys-color-accent-text: var(--brand-accent-dark-text, var(--ref-color-neutral-100));
+    --sys-color-on-accent: var(--brand-on-accent-dark, var(--ref-color-neutral-900));
+    --sys-color-focus-ring: var(--ref-color-neutral-100);
+    --sys-color-money-warn: var(--ref-color-amber-300);
+    --sys-color-money-over: var(--ref-color-red-300);
+    --sys-color-money-positive: var(--ref-color-green-300);
+    --sys-color-budget-used: var(--ref-color-neutral-300);
+    --sys-elevation-1: 0 1px 2px rgb(var(--sys-color-shadow) / .15);
+    --sys-elevation-2: 0 4px 12px rgb(var(--sys-color-shadow) / .25), 0 1px 2px rgb(var(--sys-color-shadow) / .15);
+    --sys-elevation-3: 0 16px 40px rgb(var(--sys-color-shadow) / .40);
+  }
+}
+:root[data-theme="dark"] {
+  --sys-color-canvas: var(--ref-color-neutral-900);
+  --sys-color-surface: var(--ref-color-neutral-850);
+  --sys-color-surface-raised: var(--ref-color-neutral-800);
+  --sys-color-surface-sunken: var(--ref-color-neutral-900);
+  --sys-color-surface-overlay: var(--ref-color-neutral-750);
+  --sys-color-surface-hover: var(--ref-color-neutral-800);
+  --sys-color-scrim: rgb(26 24 20 / .60);
+  --sys-color-text: var(--ref-color-neutral-100);
+  --sys-color-text-secondary: #B5AFA5;
+  --sys-color-text-placeholder: var(--ref-color-neutral-500);
+  --sys-color-text-disabled: var(--ref-color-neutral-600);
+  --sys-color-text-inverse: var(--ref-color-neutral-900);
+  --sys-color-icon: #B5AFA5; --sys-color-icon-secondary: var(--ref-color-neutral-400); --sys-color-icon-disabled: var(--ref-color-neutral-600);
+  --sys-color-border: var(--ref-color-neutral-750);
+  --sys-color-border-strong: var(--ref-color-neutral-700);
+  --sys-color-border-subtle: var(--ref-color-neutral-800);
+  --sys-color-border-input: var(--ref-color-neutral-400);
+  --sys-color-border-input-hover: var(--ref-color-neutral-300);
+  --sys-color-accent: var(--brand-accent-dark, var(--ref-color-neutral-100));
+  --sys-color-accent-hover: var(--brand-accent-dark-hover, #FFFFFF);
+  --sys-color-accent-active: var(--brand-accent-dark-active, var(--ref-color-neutral-300));
+  --sys-color-accent-subtle: var(--brand-accent-dark-subtle, var(--ref-color-neutral-800));
+  --sys-color-accent-subtle-hover: var(--brand-accent-dark-subtle-hover, var(--ref-color-neutral-750));
+  --sys-color-accent-text: var(--brand-accent-dark-text, var(--ref-color-neutral-100));
+  --sys-color-on-accent: var(--brand-on-accent-dark, var(--ref-color-neutral-900));
+  --sys-color-focus-ring: var(--ref-color-neutral-100);
+  --sys-color-money-warn: var(--ref-color-amber-300);
+  --sys-color-money-over: var(--ref-color-red-300);
+  --sys-color-money-positive: var(--ref-color-green-300);
+  --sys-color-budget-used: var(--ref-color-neutral-300);
+  --sys-elevation-1: 0 1px 2px rgb(var(--sys-color-shadow) / .15);
+  --sys-elevation-2: 0 4px 12px rgb(var(--sys-color-shadow) / .25), 0 1px 2px rgb(var(--sys-color-shadow) / .15);
+  --sys-elevation-3: 0 16px 40px rgb(var(--sys-color-shadow) / .40);
+}
+} /* @layer tokens */
+
+/* ---------- 4. STATI (layer separato, caricato DOPO brand: un override in brand.css perde la cascata) ---------- */
+@layer tokens.status {
+:root {
+  /* running */
+  --sys-color-status-running-bg: var(--ref-color-blue-100); --sys-color-status-running-border: var(--ref-color-blue-200);
+  --sys-color-status-running-fg: var(--ref-color-blue-700); --sys-color-status-running-solid: var(--ref-color-blue-500); --sys-color-status-running-on-solid: #FFFFFF;
+  /* approval */
+  --sys-color-status-approval-bg: var(--ref-color-amber-100); --sys-color-status-approval-border: var(--ref-color-amber-200);
+  --sys-color-status-approval-fg: var(--ref-color-amber-700); --sys-color-status-approval-solid: var(--ref-color-amber-500); --sys-color-status-approval-on-solid: #FFFFFF;
+  /* stopped (e stopping, che lo riusa) */
+  --sys-color-status-stopped-bg: var(--ref-color-neutral-200); --sys-color-status-stopped-border: var(--ref-color-neutral-300);
+  --sys-color-status-stopped-fg: var(--ref-color-neutral-700); --sys-color-status-stopped-solid: var(--ref-color-neutral-600); --sys-color-status-stopped-on-solid: #FFFFFF;
+  /* completed */
+  --sys-color-status-completed-bg: var(--ref-color-green-100); --sys-color-status-completed-border: var(--ref-color-green-200);
+  --sys-color-status-completed-fg: var(--ref-color-green-700); --sys-color-status-completed-solid: var(--ref-color-green-500); --sys-color-status-completed-on-solid: #FFFFFF;
+  /* failed */
+  --sys-color-status-failed-bg: var(--ref-color-red-100); --sys-color-status-failed-border: var(--ref-color-red-200);
+  --sys-color-status-failed-fg: var(--ref-color-red-700); --sys-color-status-failed-solid: var(--ref-color-red-500); --sys-color-status-failed-on-solid: #FFFFFF;
+  /* queued: chip a contorno tratteggiato, sfondo trasparente */
+  --sys-color-status-queued-bg: transparent; --sys-color-status-queued-border: var(--ref-color-neutral-300);
+  --sys-color-status-queued-fg: var(--ref-color-neutral-500); --sys-color-status-queued-solid: var(--ref-color-neutral-500); --sys-color-status-queued-on-solid: #FFFFFF;
+
+  /* Feedback: alias con nome proprio (possono divaricarsi senza toccare i componenti) */
+  --sys-color-feedback-info-bg: var(--sys-color-status-running-bg); --sys-color-feedback-info-fg: var(--sys-color-status-running-fg); --sys-color-feedback-info-solid: var(--sys-color-status-running-solid);
+  --sys-color-feedback-success-bg: var(--sys-color-status-completed-bg); --sys-color-feedback-success-fg: var(--sys-color-status-completed-fg); --sys-color-feedback-success-solid: var(--sys-color-status-completed-solid);
+  --sys-color-feedback-warning-bg: var(--sys-color-status-approval-bg); --sys-color-feedback-warning-fg: var(--sys-color-status-approval-fg); --sys-color-feedback-warning-solid: var(--sys-color-status-approval-solid);
+  --sys-color-feedback-danger-bg: var(--sys-color-status-failed-bg); --sys-color-feedback-danger-fg: var(--sys-color-status-failed-fg); --sys-color-feedback-danger-solid: var(--sys-color-status-failed-solid);
+
+  /* Glifi di stato (token, così il set si riallinea all'immagine di riferimento) */
+  --sys-icon-status-running: "circle-dot"; --sys-icon-status-approval: "diamond"; --sys-icon-status-stopping: "square-spin";
+  --sys-icon-status-stopped: "square"; --sys-icon-status-completed: "check"; --sys-icon-status-failed: "circle-x";
+  --sys-icon-status-queued: "circle"; --sys-icon-warning: "triangle-alert";
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --sys-color-status-running-bg: color-mix(in srgb, var(--ref-color-blue-500) 18%, var(--sys-color-surface));   --sys-color-status-running-fg: var(--ref-color-blue-300);
+    --sys-color-status-approval-bg: color-mix(in srgb, var(--ref-color-amber-500) 18%, var(--sys-color-surface)); --sys-color-status-approval-fg: var(--ref-color-amber-300);
+    --sys-color-status-stopped-bg: color-mix(in srgb, var(--ref-color-neutral-400) 18%, var(--sys-color-surface)); --sys-color-status-stopped-fg: var(--ref-color-neutral-300); --sys-color-status-stopped-solid: var(--ref-color-neutral-400);
+    --sys-color-status-completed-bg: color-mix(in srgb, var(--ref-color-green-500) 18%, var(--sys-color-surface)); --sys-color-status-completed-fg: var(--ref-color-green-300);
+    --sys-color-status-failed-bg: color-mix(in srgb, var(--ref-color-red-500) 18%, var(--sys-color-surface));     --sys-color-status-failed-fg: var(--ref-color-red-300);
+    --sys-color-status-queued-fg: #B5AFA5; --sys-color-status-queued-solid: var(--ref-color-neutral-400); --sys-color-status-queued-border: var(--ref-color-neutral-600);
+    --sys-color-status-running-border: color-mix(in srgb, var(--ref-color-blue-500) 40%, var(--sys-color-surface));
+    --sys-color-status-approval-border: color-mix(in srgb, var(--ref-color-amber-500) 40%, var(--sys-color-surface));
+    --sys-color-status-stopped-border: var(--ref-color-neutral-600);
+    --sys-color-status-completed-border: color-mix(in srgb, var(--ref-color-green-500) 40%, var(--sys-color-surface));
+    --sys-color-status-failed-border: color-mix(in srgb, var(--ref-color-red-500) 40%, var(--sys-color-surface));
+  }
+}
+:root[data-theme="dark"] {
+  --sys-color-status-running-bg: color-mix(in srgb, var(--ref-color-blue-500) 18%, var(--sys-color-surface));   --sys-color-status-running-fg: var(--ref-color-blue-300);
+  --sys-color-status-approval-bg: color-mix(in srgb, var(--ref-color-amber-500) 18%, var(--sys-color-surface)); --sys-color-status-approval-fg: var(--ref-color-amber-300);
+  --sys-color-status-stopped-bg: color-mix(in srgb, var(--ref-color-neutral-400) 18%, var(--sys-color-surface)); --sys-color-status-stopped-fg: var(--ref-color-neutral-300); --sys-color-status-stopped-solid: var(--ref-color-neutral-400);
+  --sys-color-status-completed-bg: color-mix(in srgb, var(--ref-color-green-500) 18%, var(--sys-color-surface)); --sys-color-status-completed-fg: var(--ref-color-green-300);
+  --sys-color-status-failed-bg: color-mix(in srgb, var(--ref-color-red-500) 18%, var(--sys-color-surface));     --sys-color-status-failed-fg: var(--ref-color-red-300);
+  --sys-color-status-queued-fg: #B5AFA5; --sys-color-status-queued-solid: var(--ref-color-neutral-400); --sys-color-status-queued-border: var(--ref-color-neutral-600);
+  --sys-color-status-running-border: color-mix(in srgb, var(--ref-color-blue-500) 40%, var(--sys-color-surface));
+  --sys-color-status-approval-border: color-mix(in srgb, var(--ref-color-amber-500) 40%, var(--sys-color-surface));
+  --sys-color-status-stopped-border: var(--ref-color-neutral-600);
+  --sys-color-status-completed-border: color-mix(in srgb, var(--ref-color-green-500) 40%, var(--sys-color-surface));
+  --sys-color-status-failed-border: color-mix(in srgb, var(--ref-color-red-500) 40%, var(--sys-color-surface));
+}
+} /* @layer tokens.status */
+
+/* ---------- 5. TOKEN DI COMPONENTE (esempi normativi; leggono SOLO --sys-*) ---------- */
+@layer tokens {
+:root {
+  /* Button */
+  --cmp-button-height: var(--sys-size-control); --cmp-button-height-lg: var(--sys-size-control-lg);
+  --cmp-button-radius: var(--sys-radius-control); --cmp-button-padding-x: var(--sys-space-control-padding-x); --cmp-button-min-width: 88px;
+  --cmp-button-primary-bg: var(--sys-color-accent); --cmp-button-primary-bg-hover: var(--sys-color-accent-hover); --cmp-button-primary-bg-active: var(--sys-color-accent-active); --cmp-button-primary-fg: var(--sys-color-on-accent);
+  --cmp-button-secondary-border: var(--sys-color-border-input); --cmp-button-secondary-fg: var(--sys-color-text); --cmp-button-secondary-bg-hover: var(--sys-color-surface-hover);
+  --cmp-button-stop-border: var(--sys-color-border-input); --cmp-button-stop-fg: var(--sys-color-text); --cmp-button-stop-glyph: var(--sys-color-stop-glyph); --cmp-button-stop-border-hover: var(--sys-color-stop-all);
+  --cmp-button-stop-all-border: var(--sys-color-stop-all); --cmp-button-stop-all-fg: var(--sys-color-stop-all); --cmp-button-stop-all-armed-bg: var(--sys-color-stop-all); --cmp-button-stop-all-armed-fg: #FFFFFF;
+  --cmp-button-danger-bg: var(--sys-color-danger); --cmp-button-danger-bg-hover: var(--sys-color-danger-hover); --cmp-button-danger-fg: var(--sys-color-on-danger);
+  /* StatusChip */
+  --cmp-chip-height: 24px; --cmp-chip-radius: var(--sys-radius-badge); --cmp-chip-padding-x: var(--sys-space-2); --cmp-chip-gap: 6px;
+  --cmp-chip-font-size: var(--sys-type-label-size); --cmp-chip-min-width-table: 128px;
+  /* AgentMark / PersonMark */
+  --cmp-mark-radius-agent: var(--sys-radius-badge); --cmp-mark-radius-person: var(--sys-radius-round);
+  --cmp-mark-bg: var(--sys-color-surface-sunken); --cmp-mark-fg: var(--ref-color-neutral-700); --cmp-mark-weight: var(--sys-font-weight-semibold); --cmp-mark-dept-border: 2px;
+  /* Field */
+  --cmp-field-height: var(--sys-size-control); --cmp-field-font-size: var(--sys-type-input-size); --cmp-field-border: var(--sys-color-border-input);
+  --cmp-field-border-error: var(--sys-color-feedback-danger-solid); --cmp-field-label-gap: 6px; --cmp-field-help-gap: 4px;
+  /* Row / Table */
+  --cmp-row-height: var(--sys-size-row-list); --cmp-row-padding-x: var(--sys-space-card-padding); --cmp-row-bg-hover: var(--sys-color-surface-hover); --cmp-row-selected-indicator: var(--sys-color-border-selected);
+  /* ControlStrip */
+  --cmp-strip-height: 40px; --cmp-strip-bg: var(--sys-color-surface); --cmp-strip-border: var(--sys-color-border); --cmp-strip-z: var(--sys-z-sticky);
+  /* BudgetBar */
+  --cmp-budget-height: 6px; --cmp-budget-track: var(--sys-color-border); --cmp-budget-used: var(--sys-color-budget-used); --cmp-budget-over: var(--sys-color-money-over);
+  /* Approval footer */
+  --cmp-approval-footer-bg: var(--sys-color-surface); --cmp-approval-footer-border: var(--sys-color-border); --cmp-approval-footer-padding: 12px 16px;
+}
+[data-density="compact"] { --cmp-chip-height: 20px; --cmp-chip-font-size: var(--sys-type-label-sm-size); --cmp-strip-height: 36px; --cmp-budget-height: 4px; }
+@media (max-width: 599px) { :root { --cmp-strip-height: 44px; } }
+} /* @layer tokens */

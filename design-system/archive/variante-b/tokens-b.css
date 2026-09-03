@@ -1,0 +1,309 @@
+/* =====================================================================
+   DGT Design System — Variante B "Console nera e lime" — tokens-b.css
+   Stessi nomi di token della variante A (ref/sys/cmp/brand): i componenti non cambiano,
+   cambia il mondo visivo. Tema SCURO di default (scena: operatore di sera, titolare in
+   ufficio); tema chiaro derivato per la luce del giorno.
+   Riferimenti: design-system/reference/riferimento-01-case-study.jpg, riferimento-02-ui.jpg
+   Ogni coppia colore è verificata (WCAG 2.x) da tools/wcag.py + variants/b-dark-lime/pairs-b.json.
+   ===================================================================== */
+
+@layer brand, tokens, tokens.status;
+
+@layer tokens {
+:root {
+  /* ---------- PRIMITIVI ---------- */
+  /* Neri tonali (leggerissima tinta fredda, come il riferimento) */
+  --ref-color-black-0:   #0B0B0C;   /* canvas */
+  --ref-color-black-50:  #101012;
+  --ref-color-black-100: #141416;   /* tessera */
+  --ref-color-black-200: #1C1C1F;   /* tessera rialzata / input */
+  --ref-color-black-300: #242428;   /* overlay, hover */
+  --ref-color-black-400: #2E2E33;   /* bordo forte */
+  --ref-color-gray-500:  #4A4A52;   /* bordo decorativo */
+  --ref-color-gray-600:  #73737B;   /* bordo campo (≥3:1 su tessera e canvas) */
+  --ref-color-gray-700:  #8E8E96;   /* glifo neutro */
+  --ref-color-gray-800:  #9C9CA3;   /* testo secondario (6,2:1 su tessera) */
+  --ref-color-gray-900:  #D9D9DE;   /* testo forte secondario */
+  --ref-color-white:     #F2F2F2;   /* testo */
+
+  /* Chiari (tema chiaro derivato, Apple-like) */
+  --ref-color-light-canvas: #F5F5F7; --ref-color-light-surface: #FFFFFF; --ref-color-light-sunken: #EDEDF0;
+  --ref-color-light-border: #E2E2E6; --ref-color-light-border-strong: #D0D0D6; --ref-color-light-border-input: #8A8A92;
+  --ref-color-light-text: #111114; --ref-color-light-text-2: #6B6B73; --ref-color-light-icon: #55555D;
+
+  /* Lime: il colore di "acceso". Campionato dal riferimento (#B8F860). */
+  --ref-color-lime-500: #B8F860;   /* pieno: primario, glifo running (scuro) */
+  --ref-color-lime-300: #CFFB8A;   /* testo running su tinta scura */
+  --ref-color-lime-700: #4F7A00;   /* testo e glifo running nel tema chiaro (5,1:1 su bianco) */
+  --ref-color-lime-tint-dark:  #2A3521;  /* lime 14% su tessera */
+  --ref-color-lime-tint-light: #EEF9DA;
+
+  /* Ambra (attesa), corallo (fallito), rosso (pericolo) */
+  --ref-color-amber-500: #F2B544; --ref-color-amber-300: #F7C96B; --ref-color-amber-700: #7A4E00; --ref-color-amber-tint-dark: #3A2F19; --ref-color-amber-tint-light: #FBF1DC;
+  --ref-color-coral-500: #FF6B5C; --ref-color-coral-300: #FFA79C; --ref-color-coral-700: #A8261B; --ref-color-coral-tint-dark: #3C221F; --ref-color-coral-tint-light: #FBE7E5;
+  --ref-color-red-600:   #C93A2C;   /* pulsante pericolo: bianco 5,1:1 */
+  --ref-color-red-700:   #9B2A1F;
+
+  /* Spazio, raggi, font (come A dove non indicato) */
+  --ref-space-0: 0; --ref-space-050: 2px; --ref-space-1: 4px; --ref-space-2: 8px; --ref-space-3: 12px; --ref-space-4: 16px;
+  --ref-space-5: 20px; --ref-space-6: 24px; --ref-space-8: 32px; --ref-space-10: 40px; --ref-space-12: 48px; --ref-space-16: 64px;
+  --ref-radius-1: 6px; --ref-radius-2: 10px; --ref-radius-3: 14px; --ref-radius-4: 20px;
+
+  /* ---------- SEMANTICI — tema SCURO (default) ---------- */
+  color-scheme: dark light;
+
+  --sys-color-canvas:          var(--ref-color-black-0);
+  --sys-color-surface:         var(--ref-color-black-100);
+  --sys-color-surface-raised:  var(--ref-color-black-200);
+  --sys-color-surface-sunken:  var(--ref-color-black-50);
+  --sys-color-surface-overlay: var(--ref-color-black-300);
+  --sys-color-surface-hover:   var(--ref-color-black-200);
+  --sys-color-scrim:           rgb(0 0 0 / .64);
+
+  --sys-color-text:             var(--ref-color-white);
+  --sys-color-text-secondary:   var(--ref-color-gray-800);
+  --sys-color-text-placeholder: var(--ref-color-gray-700);
+  --sys-color-text-disabled:    var(--ref-color-gray-500);
+  --sys-color-text-inverse:     var(--ref-color-black-0);
+  --sys-color-icon:             var(--ref-color-gray-900);
+  --sys-color-icon-secondary:   var(--ref-color-gray-800);
+  --sys-color-icon-disabled:    var(--ref-color-gray-500);
+
+  --sys-color-border:            rgb(255 255 255 / .08);   /* bordo tessera */
+  --sys-color-border-strong:     rgb(255 255 255 / .14);
+  --sys-color-border-subtle:     rgb(255 255 255 / .05);
+  --sys-color-border-input:      var(--ref-color-gray-600);  /* 3,1:1 su tessera, 3,6:1 su canvas */
+  --sys-color-border-input-hover:var(--ref-color-gray-700);
+
+  /* Accento = lime: l'unico colore vivo. White-label: un input. */
+  --sys-color-accent:              var(--brand-accent, var(--ref-color-lime-500));
+  --sys-color-accent-hover:        var(--brand-accent-hover, #C7FF75);
+  --sys-color-accent-active:       var(--brand-accent-active, #A6E64F);
+  --sys-color-accent-subtle:       var(--brand-accent-subtle, var(--ref-color-lime-tint-dark));
+  --sys-color-accent-subtle-hover: var(--brand-accent-subtle-hover, #33412A);
+  --sys-color-accent-text:         var(--brand-accent-text, var(--ref-color-lime-300));
+  --sys-color-on-accent:           var(--brand-on-accent, var(--ref-color-black-0));
+  --sys-color-text-link:           var(--sys-color-text);           /* link = testo sottolineato, non lime: il lime significa "acceso" */
+  --sys-color-surface-selected:    var(--sys-color-accent-subtle);
+  --sys-color-border-selected:     var(--sys-color-accent);
+
+  /* Focus: anello chiaro + alone del canvas (regge anche sul pulsante lime) */
+  --sys-color-focus-ring: var(--ref-color-white);
+  --sys-color-focus-halo: var(--sys-color-canvas);
+
+  /* Pericolo e stop */
+  --sys-color-danger:        var(--ref-color-red-600);
+  --sys-color-danger-hover:  #B0301F;
+  --sys-color-danger-active: var(--ref-color-red-700);
+  --sys-color-on-danger:     #FFFFFF;
+  --sys-color-stop-glyph:    var(--ref-color-coral-500);
+  --sys-color-stop-all:      #FF8A7A;   /* contorno "Ferma tutto" (7,4:1); pieno quando armato con testo nero (8,6:1) */
+  --sys-color-on-stop-all:   var(--ref-color-black-0);
+
+  /* Denaro */
+  --sys-color-money:          var(--sys-color-text);
+  --sys-color-money-muted:    var(--sys-color-text-secondary);
+  --sys-color-money-warn:     var(--ref-color-amber-300);
+  --sys-color-money-over:     var(--ref-color-coral-300);
+  --sys-color-money-positive: var(--ref-color-lime-300);
+  --sys-color-budget-used:    var(--ref-color-gray-900);
+  --sys-color-fresh-live:     var(--ref-color-lime-500);
+
+  /* Alone: l'unica luce ammessa, e solo sull'indicatore "in esecuzione" */
+  --sys-color-live-halo: rgb(184 248 96 / .22);
+
+  /* Ombra (solo overlay) */
+  --sys-elevation-0: none;
+  --sys-elevation-1: none;                                   /* tessere: bordo e tono, nessuna ombra */
+  --sys-elevation-2: 0 8px 24px rgb(0 0 0 / .45), 0 0 0 1px rgb(255 255 255 / .06);
+  --sys-elevation-3: 0 24px 64px rgb(0 0 0 / .6), 0 0 0 1px rgb(255 255 255 / .08);
+  --sys-z-base: 0; --sys-z-sticky: 10; --sys-z-overlay: 20; --sys-z-modal: 30; --sys-z-toast: 40;
+
+  /* Tipografia: Manrope (tnum verificato) con SF/system in fallback */
+  --sys-font-family-sans:    var(--brand-font-sans, "Manrope", -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif);
+  --sys-font-family-numeric: var(--brand-font-numeric, var(--sys-font-family-sans));
+  --sys-font-family-mono:    var(--brand-font-mono, ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace);
+  --sys-font-weight-regular: 400; --sys-font-weight-medium: 500; --sys-font-weight-semibold: 600;
+  --sys-font-feature-numeric: "tnum" 1;
+  --sys-measure-max: 70ch;
+
+  /* Scala: leggermente più ariosa di A (registro Apple), stessi ruoli */
+  --sys-type-display-lg-size: 44px; --sys-type-display-lg-lh: 56px; --sys-type-display-lg-tracking: -0.02em;
+  --sys-type-display-size: 30px;    --sys-type-display-lh: 40px;    --sys-type-display-tracking: -0.01em;
+  --sys-type-headline-size: 26px;   --sys-type-headline-lh: 34px;   --sys-type-headline-weight: 500;   /* titolo pagina: peso medio, come il riferimento */
+  --sys-type-title-size: 20px;      --sys-type-title-lh: 28px;
+  --sys-type-title-sm-size: 17px;   --sys-type-title-sm-lh: 24px;
+  --sys-type-body-lg-size: 16px;    --sys-type-body-lg-lh: 24px;
+  --sys-type-body-size: 14px;       --sys-type-body-lh: 20px;
+  --sys-type-label-size: 13px;      --sys-type-label-lh: 18px;
+  --sys-type-label-sm-size: 12px;   --sys-type-label-sm-lh: 16px;
+  --sys-type-caption-size: 12px;    --sys-type-caption-lh: 16px;
+  --sys-type-mono-size: 12px;       --sys-type-mono-lh: 16px;      /* ID nel dock, come il riferimento */
+  --sys-type-input-size: var(--sys-type-body-size);
+  --sys-type-money-min-size: 13px;
+
+  /* Spazio: alias + densità comfortable (come A, tessere più imbottite) */
+  --sys-space-0: 0; --sys-space-050: 2px; --sys-space-1: 4px; --sys-space-2: 8px; --sys-space-3: 12px; --sys-space-4: 16px;
+  --sys-space-5: 20px; --sys-space-6: 24px; --sys-space-8: 32px; --sys-space-10: 40px; --sys-space-12: 48px; --sys-space-16: 64px;
+  --sys-size-control: 40px; --sys-size-row-list: 52px; --sys-size-row-table: 44px;
+  --sys-space-card-padding: var(--sys-space-5); --sys-space-section-gap: var(--sys-space-8); --sys-space-page-gutter: var(--sys-space-6);
+  --sys-space-stack-gap: var(--sys-space-3); --sys-space-inline-gap: var(--sys-space-2); --sys-space-control-padding-x: var(--sys-space-5);
+  --sys-size-col-money: 120px;
+
+  /* Invarianti tattili (Fitts) — identici ad A */
+  --sys-size-control-lg: 50px;   /* primario mobile: 50 (Apple) */
+  --sys-size-target-min: 24px; --sys-space-target-gap: 8px; --sys-space-target-gap-opposing: 12px; --sys-size-stop-min: 32px;
+  --sys-size-icon-sm: 16px; --sys-size-icon-md: 20px; --sys-size-icon-lg: 24px; --sys-size-icon-stroke: 1.5px;
+  --sys-size-icon-status-min: 12px; --sys-size-status-dot: 8px;
+  --sys-size-mark-xs: 20px; --sys-size-mark-sm: 24px; --sys-size-mark-md: 32px; --sys-size-mark-lg: 40px;
+  --sys-size-rail: 64px; --sys-size-rail-tile: 40px;
+  --sys-size-dock-height: 56px;
+  --sys-size-selected-indicator: 2px;
+  --sys-size-content-max: 1120px; --sys-size-sheet-max: 480px; --sys-size-dialog-max: 520px;
+
+  /* Raggi: capsule per i pulsanti, tessere 14, fogli 20; badge 6 (AgentMark = "icona app"), round non scala */
+  --sys-radius-scale:     clamp(0, var(--brand-radius-scale, 1), 1.25);
+  --sys-radius-badge:     min(calc(var(--ref-radius-1) * var(--sys-radius-scale)), 8px);
+  --sys-radius-control:   9999px;                                   /* capsula: come Apple e Revolut */
+  --sys-radius-field:     calc(var(--ref-radius-2) * var(--sys-radius-scale));
+  --sys-radius-container: calc(var(--ref-radius-3) * var(--sys-radius-scale));
+  --sys-radius-overlay:   calc(var(--ref-radius-4) * var(--sys-radius-scale));
+  --sys-radius-round:     9999px;
+  --sys-border-width-hairline: 1px; --sys-border-width-strong: 1.5px; --sys-border-width-focus: 2px;
+
+  /* Moto: molle brevi (Apple), un solo elemento vivo */
+  --sys-motion-duration-fast: 120ms; --sys-motion-duration-base: 200ms; --sys-motion-duration-slow: 320ms;
+  --sys-motion-easing-standard: cubic-bezier(.32, .72, 0, 1);
+  --sys-motion-pulse-duration: 2000ms; --sys-motion-pulse-opacity-min: .45; --sys-motion-spin-duration: 1000ms;
+
+  /* Comportamento (identico ad A) */
+  --sys-behavior-feedback-max: 400ms; --sys-behavior-undo-approval: 10s; --sys-behavior-undo-stop-all: 30s;
+  --sys-behavior-stop-arm-timeout: 5s; --sys-behavior-stop-grace: 10s; --sys-behavior-stale-after: 120s; --sys-behavior-stale-critical: 600s;
+}
+
+[data-density="compact"] {
+  --sys-size-control: 32px; --sys-size-row-list: 40px; --sys-size-row-table: 32px;
+  --sys-space-card-padding: var(--sys-space-4); --sys-space-section-gap: var(--sys-space-5); --sys-space-page-gutter: var(--sys-space-4);
+  --sys-space-stack-gap: var(--sys-space-2); --sys-space-inline-gap: 6px; --sys-space-control-padding-x: var(--sys-space-4);
+  --sys-type-body-size: 13px; --sys-type-body-lh: 18px; --sys-size-col-money: 100px; --sys-size-rail-tile: 36px;
+}
+@media (pointer: coarse) { :root { --sys-size-target-min: 44px; --sys-size-stop-min: 44px; --sys-type-input-size: max(16px, var(--sys-type-body-size)); } }
+@media (max-width: 599px) {
+  :root { --sys-type-body-size: 16px; --sys-type-body-lh: 24px; --sys-type-label-size: 14px; --sys-type-label-lh: 20px;
+          --sys-type-display-lg-size: 36px; --sys-type-display-lg-lh: 48px; --sys-type-display-size: 26px; --sys-type-display-lh: 36px;
+          --sys-type-headline-size: 24px; --sys-type-headline-lh: 32px; --sys-type-money-min-size: 14px; --sys-space-page-gutter: var(--sys-space-4); }
+}
+@media (prefers-reduced-motion: reduce) { :root { --sys-motion-pulse-duration: 0ms; --sys-motion-spin-duration: 0ms; --sys-motion-duration-fast: 0ms; --sys-motion-duration-base: 0ms; --sys-motion-duration-slow: 0ms; } }
+
+/* ---------- TEMA CHIARO derivato (solo --sys-*) ---------- */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --sys-color-canvas: var(--ref-color-light-canvas); --sys-color-surface: var(--ref-color-light-surface); --sys-color-surface-raised: var(--ref-color-light-surface);
+    --sys-color-surface-sunken: var(--ref-color-light-sunken); --sys-color-surface-overlay: var(--ref-color-light-surface); --sys-color-surface-hover: var(--ref-color-light-sunken);
+    --sys-color-scrim: rgb(17 17 20 / .40);
+    --sys-color-text: var(--ref-color-light-text); --sys-color-text-secondary: var(--ref-color-light-text-2); --sys-color-text-placeholder: var(--ref-color-light-border-input);
+    --sys-color-text-disabled: #A9A9B0; --sys-color-text-inverse: #FFFFFF; --sys-color-icon: var(--ref-color-light-icon); --sys-color-icon-secondary: var(--ref-color-light-text-2); --sys-color-icon-disabled: #A9A9B0;
+    --sys-color-border: var(--ref-color-light-border); --sys-color-border-strong: var(--ref-color-light-border-strong); --sys-color-border-subtle: #EDEDF0;
+    --sys-color-border-input: var(--ref-color-light-border-input); --sys-color-border-input-hover: var(--ref-color-light-icon);
+    --sys-color-accent-subtle: var(--brand-accent-subtle-light, var(--ref-color-lime-tint-light)); --sys-color-accent-subtle-hover: #E3F5C4;
+    --sys-color-accent-text: var(--brand-accent-text-light, var(--ref-color-lime-700));
+    --sys-color-on-accent: var(--brand-on-accent, var(--ref-color-light-text));
+    --sys-color-focus-ring: var(--ref-color-light-text); --sys-color-focus-halo: var(--sys-color-surface);
+    --sys-color-stop-glyph: var(--ref-color-red-600); --sys-color-stop-all: var(--ref-color-red-700); --sys-color-on-stop-all: #FFFFFF;
+    --sys-color-money-warn: var(--ref-color-amber-700); --sys-color-money-over: var(--ref-color-coral-700); --sys-color-money-positive: var(--ref-color-lime-700);
+    --sys-color-budget-used: #3A3A40; --sys-color-fresh-live: var(--ref-color-lime-700); --sys-color-live-halo: rgb(79 122 0 / .18);
+    --sys-elevation-2: 0 8px 24px rgb(17 17 20 / .10), 0 0 0 1px rgb(17 17 20 / .04);
+    --sys-elevation-3: 0 24px 64px rgb(17 17 20 / .18), 0 0 0 1px rgb(17 17 20 / .05);
+  }
+}
+:root[data-theme="light"] {
+  --sys-color-canvas: var(--ref-color-light-canvas); --sys-color-surface: var(--ref-color-light-surface); --sys-color-surface-raised: var(--ref-color-light-surface);
+  --sys-color-surface-sunken: var(--ref-color-light-sunken); --sys-color-surface-overlay: var(--ref-color-light-surface); --sys-color-surface-hover: var(--ref-color-light-sunken);
+  --sys-color-scrim: rgb(17 17 20 / .40);
+  --sys-color-text: var(--ref-color-light-text); --sys-color-text-secondary: var(--ref-color-light-text-2); --sys-color-text-placeholder: var(--ref-color-light-border-input);
+  --sys-color-text-disabled: #A9A9B0; --sys-color-text-inverse: #FFFFFF; --sys-color-icon: var(--ref-color-light-icon); --sys-color-icon-secondary: var(--ref-color-light-text-2); --sys-color-icon-disabled: #A9A9B0;
+  --sys-color-border: var(--ref-color-light-border); --sys-color-border-strong: var(--ref-color-light-border-strong); --sys-color-border-subtle: #EDEDF0;
+  --sys-color-border-input: var(--ref-color-light-border-input); --sys-color-border-input-hover: var(--ref-color-light-icon);
+  --sys-color-accent-subtle: var(--brand-accent-subtle-light, var(--ref-color-lime-tint-light)); --sys-color-accent-subtle-hover: #E3F5C4;
+  --sys-color-accent-text: var(--brand-accent-text-light, var(--ref-color-lime-700));
+  --sys-color-on-accent: var(--brand-on-accent, var(--ref-color-light-text));
+  --sys-color-focus-ring: var(--ref-color-light-text); --sys-color-focus-halo: var(--sys-color-surface);
+  --sys-color-stop-glyph: var(--ref-color-red-600); --sys-color-stop-all: var(--ref-color-red-700); --sys-color-on-stop-all: #FFFFFF;
+  --sys-color-money-warn: var(--ref-color-amber-700); --sys-color-money-over: var(--ref-color-coral-700); --sys-color-money-positive: var(--ref-color-lime-700);
+  --sys-color-budget-used: #3A3A40; --sys-color-fresh-live: var(--ref-color-lime-700); --sys-color-live-halo: rgb(79 122 0 / .18);
+  --sys-elevation-2: 0 8px 24px rgb(17 17 20 / .10), 0 0 0 1px rgb(17 17 20 / .04);
+  --sys-elevation-3: 0 24px 64px rgb(17 17 20 / .18), 0 0 0 1px rgb(17 17 20 / .05);
+}
+} /* @layer tokens */
+
+/* ---------- STATI (layer separato, chiusi al marchio) ---------- */
+@layer tokens.status {
+:root {
+  /* running = lime: "acceso". Unico stato con alone. */
+  --sys-color-status-running-bg: var(--ref-color-lime-tint-dark); --sys-color-status-running-border: rgb(184 248 96 / .35);
+  --sys-color-status-running-fg: var(--ref-color-lime-300); --sys-color-status-running-solid: var(--ref-color-lime-500); --sys-color-status-running-on-solid: var(--ref-color-black-0);
+  /* approval = ambra */
+  --sys-color-status-approval-bg: var(--ref-color-amber-tint-dark); --sys-color-status-approval-border: rgb(242 181 68 / .35);
+  --sys-color-status-approval-fg: var(--ref-color-amber-300); --sys-color-status-approval-solid: var(--ref-color-amber-500); --sys-color-status-approval-on-solid: var(--ref-color-black-0);
+  /* stopped / stopping = grigio neutro */
+  --sys-color-status-stopped-bg: #26262B; --sys-color-status-stopped-border: rgb(255 255 255 / .12);
+  --sys-color-status-stopped-fg: #B4B4BC; --sys-color-status-stopped-solid: var(--ref-color-gray-700); --sys-color-status-stopped-on-solid: var(--ref-color-black-0);
+  /* completed = neutro chiaro (spunta bianca): il lime resta di "acceso" */
+  --sys-color-status-completed-bg: var(--ref-color-black-300); --sys-color-status-completed-border: rgb(255 255 255 / .14);
+  --sys-color-status-completed-fg: var(--ref-color-gray-900); --sys-color-status-completed-solid: var(--ref-color-gray-900); --sys-color-status-completed-on-solid: var(--ref-color-black-0);
+  /* failed = corallo */
+  --sys-color-status-failed-bg: var(--ref-color-coral-tint-dark); --sys-color-status-failed-border: rgb(255 107 92 / .35);
+  --sys-color-status-failed-fg: var(--ref-color-coral-300); --sys-color-status-failed-solid: var(--ref-color-coral-500); --sys-color-status-failed-on-solid: var(--ref-color-black-0);
+  /* queued = contorno tratteggiato */
+  --sys-color-status-queued-bg: transparent; --sys-color-status-queued-border: var(--ref-color-gray-500);
+  --sys-color-status-queued-fg: var(--ref-color-gray-800); --sys-color-status-queued-solid: var(--ref-color-gray-800); --sys-color-status-queued-on-solid: var(--ref-color-black-0);
+
+  --sys-color-feedback-info-bg: var(--sys-color-status-running-bg); --sys-color-feedback-info-fg: var(--sys-color-status-running-fg); --sys-color-feedback-info-solid: var(--sys-color-status-running-solid);
+  --sys-color-feedback-success-bg: var(--sys-color-status-completed-bg); --sys-color-feedback-success-fg: var(--sys-color-status-completed-fg); --sys-color-feedback-success-solid: var(--sys-color-status-completed-solid);
+  --sys-color-feedback-warning-bg: var(--sys-color-status-approval-bg); --sys-color-feedback-warning-fg: var(--sys-color-status-approval-fg); --sys-color-feedback-warning-solid: var(--sys-color-status-approval-solid);
+  --sys-color-feedback-danger-bg: var(--sys-color-status-failed-bg); --sys-color-feedback-danger-fg: var(--sys-color-status-failed-fg); --sys-color-feedback-danger-solid: var(--sys-color-status-failed-solid);
+  --sys-icon-status-running: "circle-dot"; --sys-icon-status-approval: "diamond"; --sys-icon-status-stopping: "square-spin"; --sys-icon-status-stopped: "square";
+  --sys-icon-status-completed: "check"; --sys-icon-status-failed: "circle-x"; --sys-icon-status-queued: "circle"; --sys-icon-warning: "triangle-alert";
+}
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
+  --sys-color-status-running-bg: var(--ref-color-lime-tint-light); --sys-color-status-running-border: #C8E89A; --sys-color-status-running-fg: var(--ref-color-lime-700); --sys-color-status-running-solid: var(--ref-color-lime-700); --sys-color-status-running-on-solid: #FFFFFF;
+  --sys-color-status-approval-bg: var(--ref-color-amber-tint-light); --sys-color-status-approval-border: #EFD59A; --sys-color-status-approval-fg: var(--ref-color-amber-700); --sys-color-status-approval-solid: #A96A08; --sys-color-status-approval-on-solid: #FFFFFF;
+  --sys-color-status-stopped-bg: #E6E6EA; --sys-color-status-stopped-border: #D0D0D6; --sys-color-status-stopped-fg: #3A3A40; --sys-color-status-stopped-solid: #55555D; --sys-color-status-stopped-on-solid: #FFFFFF;
+  --sys-color-status-completed-bg: #EDEDF0; --sys-color-status-completed-border: #D0D0D6; --sys-color-status-completed-fg: #111114; --sys-color-status-completed-solid: #3A3A40; --sys-color-status-completed-on-solid: #FFFFFF;
+  --sys-color-status-failed-bg: var(--ref-color-coral-tint-light); --sys-color-status-failed-border: #F0B7B1; --sys-color-status-failed-fg: var(--ref-color-coral-700); --sys-color-status-failed-solid: var(--ref-color-red-600); --sys-color-status-failed-on-solid: #FFFFFF;
+  --sys-color-status-queued-bg: transparent; --sys-color-status-queued-border: #D0D0D6; --sys-color-status-queued-fg: var(--ref-color-light-text-2); --sys-color-status-queued-solid: var(--ref-color-light-text-2);
+} }
+:root[data-theme="light"] {
+  --sys-color-status-running-bg: var(--ref-color-lime-tint-light); --sys-color-status-running-border: #C8E89A; --sys-color-status-running-fg: var(--ref-color-lime-700); --sys-color-status-running-solid: var(--ref-color-lime-700); --sys-color-status-running-on-solid: #FFFFFF;
+  --sys-color-status-approval-bg: var(--ref-color-amber-tint-light); --sys-color-status-approval-border: #EFD59A; --sys-color-status-approval-fg: var(--ref-color-amber-700); --sys-color-status-approval-solid: #A96A08; --sys-color-status-approval-on-solid: #FFFFFF;
+  --sys-color-status-stopped-bg: #E6E6EA; --sys-color-status-stopped-border: #D0D0D6; --sys-color-status-stopped-fg: #3A3A40; --sys-color-status-stopped-solid: #55555D; --sys-color-status-stopped-on-solid: #FFFFFF;
+  --sys-color-status-completed-bg: #EDEDF0; --sys-color-status-completed-border: #D0D0D6; --sys-color-status-completed-fg: #111114; --sys-color-status-completed-solid: #3A3A40; --sys-color-status-completed-on-solid: #FFFFFF;
+  --sys-color-status-failed-bg: var(--ref-color-coral-tint-light); --sys-color-status-failed-border: #F0B7B1; --sys-color-status-failed-fg: var(--ref-color-coral-700); --sys-color-status-failed-solid: var(--ref-color-red-600); --sys-color-status-failed-on-solid: #FFFFFF;
+  --sys-color-status-queued-bg: transparent; --sys-color-status-queued-border: #D0D0D6; --sys-color-status-queued-fg: var(--ref-color-light-text-2); --sys-color-status-queued-solid: var(--ref-color-light-text-2);
+}
+} /* @layer tokens.status */
+
+/* ---------- TOKEN DI COMPONENTE (leggono solo --sys-*) ---------- */
+@layer tokens {
+:root {
+  --cmp-button-height: var(--sys-size-control); --cmp-button-height-lg: var(--sys-size-control-lg); --cmp-button-radius: var(--sys-radius-control);
+  --cmp-button-padding-x: var(--sys-space-control-padding-x); --cmp-button-min-width: 96px;
+  --cmp-button-primary-bg: var(--sys-color-accent); --cmp-button-primary-bg-hover: var(--sys-color-accent-hover); --cmp-button-primary-bg-active: var(--sys-color-accent-active); --cmp-button-primary-fg: var(--sys-color-on-accent);
+  --cmp-button-secondary-bg: var(--sys-color-surface-raised); --cmp-button-secondary-border: var(--sys-color-border-strong); --cmp-button-secondary-fg: var(--sys-color-text); --cmp-button-secondary-bg-hover: var(--sys-color-surface-overlay);
+  --cmp-button-stop-bg: var(--sys-color-surface-raised); --cmp-button-stop-border: var(--sys-color-border-strong); --cmp-button-stop-fg: var(--sys-color-text); --cmp-button-stop-glyph: var(--sys-color-stop-glyph); --cmp-button-stop-border-hover: var(--sys-color-stop-all);
+  --cmp-button-stop-all-border: var(--sys-color-stop-all); --cmp-button-stop-all-fg: var(--sys-color-stop-all); --cmp-button-stop-all-armed-bg: var(--sys-color-stop-all); --cmp-button-stop-all-armed-fg: var(--sys-color-on-stop-all);
+  --cmp-button-danger-bg: var(--sys-color-danger); --cmp-button-danger-bg-hover: var(--sys-color-danger-hover); --cmp-button-danger-fg: var(--sys-color-on-danger);
+  --cmp-chip-height: 26px; --cmp-chip-radius: var(--sys-radius-round); --cmp-chip-padding-x: 10px; --cmp-chip-gap: 6px; --cmp-chip-font-size: var(--sys-type-label-size); --cmp-chip-min-width-table: 128px;
+  --cmp-tile-bg: var(--sys-color-surface); --cmp-tile-border: var(--sys-color-border); --cmp-tile-radius: var(--sys-radius-container); --cmp-tile-padding: var(--sys-space-card-padding);
+  --cmp-tile-selected-bg: var(--sys-color-accent-subtle); --cmp-tile-selected-border: var(--sys-color-accent);
+  --cmp-mark-radius-agent: var(--sys-radius-badge); --cmp-mark-radius-person: var(--sys-radius-round); --cmp-mark-bg: var(--sys-color-surface-raised); --cmp-mark-fg: var(--sys-color-text); --cmp-mark-border: var(--sys-color-border-strong); --cmp-mark-weight: var(--sys-font-weight-semibold);
+  --cmp-field-height: var(--sys-size-control); --cmp-field-radius: var(--sys-radius-field); --cmp-field-bg: var(--sys-color-surface-raised); --cmp-field-border: var(--sys-color-border-input); --cmp-field-border-error: var(--sys-color-feedback-danger-solid); --cmp-field-label-gap: 6px; --cmp-field-help-gap: 4px;
+  --cmp-rail-width: var(--sys-size-rail); --cmp-rail-tile: var(--sys-size-rail-tile); --cmp-rail-tile-bg: var(--sys-color-surface-raised); --cmp-rail-tile-active-bg: var(--sys-color-accent); --cmp-rail-tile-active-fg: var(--sys-color-on-accent);
+  --cmp-tabs-bg: var(--sys-color-surface-raised); --cmp-tabs-active-bg: var(--sys-color-surface-overlay); --cmp-tabs-radius: var(--sys-radius-round);
+  --cmp-dock-height: var(--sys-size-dock-height); --cmp-dock-bg: var(--sys-color-surface); --cmp-dock-border: var(--sys-color-border-strong); --cmp-dock-radius: var(--sys-radius-container);
+  --cmp-strip-height: 44px;
+  --cmp-budget-height: 6px; --cmp-budget-track: rgb(255 255 255 / .10); --cmp-budget-used: var(--sys-color-budget-used); --cmp-budget-over: var(--sys-color-money-over);
+  --cmp-approval-footer-bg: var(--sys-color-surface); --cmp-approval-footer-border: var(--sys-color-border-strong); --cmp-approval-footer-padding: 12px 16px;
+}
+[data-density="compact"] { --cmp-chip-height: 22px; --cmp-chip-font-size: var(--sys-type-label-sm-size); --cmp-budget-height: 4px; --cmp-dock-height: 48px; }
+} /* @layer tokens */

@@ -1,0 +1,27 @@
+{
+  "$schema": "./brand.schema.json",
+  "schemaVersion": 1,
+  "name": "Studio Rossi",
+  "shortName": "Rossi",
+  "logo": {
+    "wordmark": "assets/wordmark.svg",
+    "wordmarkDark": "assets/wordmark-dark.svg",
+    "mark": "assets/mark.svg",
+    "markDark": null,
+    "alt": { "it": "Logo Studio Rossi", "en": "Studio Rossi logo" }
+  },
+  "accent": "#2B2823",
+  "onAccent": "#FFFFFF",
+  "accentDark": null,
+  "fontSans": "IBM Plex Sans",
+  "fontNumeric": null,
+  "fontMono": "IBM Plex Mono",
+  "radiusScale": 1,
+  "themes": ["light", "dark"],
+  "defaults": { "density": "comfortable", "detail": "business" },
+  "allowDetailToggle": true,
+  "supportEmail": "supporto@studiorossi.example",
+  "legalUrls": { "privacy": { "it": "https://…/privacy", "en": "https://…/en/privacy" }, "terms": { "it": "https://…/termini", "en": "https://…/en/terms" } },
+  "senderName": "Studio Rossi",
+  "_note": "Valuta e locale NON sono brand: vivono in tenant.json (currency, locale). Il nome prodotto non è mai una stringa nel codice: i18n usa {{brandName}}."
+}

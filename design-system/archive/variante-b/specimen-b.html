@@ -1,0 +1,592 @@
+<title>DGT Console Nera</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap">
+<style>
+/* ===== Token variante B (copia di tokens-b.css, valori verificati) — scuro di default ===== */
+:root{
+  color-scheme:dark light;
+  --k0:#0B0B0C;--k50:#101012;--k100:#141416;--k200:#1C1C1F;--k300:#242428;--k400:#2E2E33;--g500:#4A4A52;--g600:#73737B;--g700:#8E8E96;--g800:#9C9CA3;--g900:#D9D9DE;--w:#F2F2F2;
+  --canvas:var(--k0);--surface:var(--k100);--raised:var(--k200);--sunken:var(--k50);--overlay:var(--k300);--hover:var(--k200);
+  --text:var(--w);--text2:var(--g800);--placeholder:var(--g700);--disabled:var(--g500);--icon:var(--g900);
+  --border:rgb(255 255 255/.08);--border-strong:rgb(255 255 255/.14);--border-input:var(--g600);
+  --lime:#B8F860;--lime-300:#CFFB8A;--lime-tint:#2A3521;
+  --accent:var(--brand-accent,var(--lime));--accent-hover:var(--brand-accent-hover,#C7FF75);--accent-subtle:var(--brand-accent-subtle,var(--lime-tint));--accent-text:var(--brand-accent-text,var(--lime-300));--on-accent:var(--brand-on-accent,var(--k0));
+  --focus:var(--w);--halo:var(--canvas);
+  --danger:#C93A2C;--danger-hover:#B0301F;--stop-glyph:#FF6B5C;--stop-all:#FF8A7A;--on-stop-all:var(--k0);
+  --money-warn:#F7C96B;--money-over:#FFA79C;--money-pos:var(--lime-300);--budget-used:var(--g900);--fresh:var(--lime);--live-halo:rgb(184 248 96/.22);
+  --run-bg:var(--lime-tint);--run-bd:rgb(184 248 96/.35);--run-fg:var(--lime-300);--run-solid:var(--lime);
+  --apr-bg:#3A2F19;--apr-bd:rgb(242 181 68/.35);--apr-fg:#F7C96B;--apr-solid:#F2B544;
+  --stp-bg:#26262B;--stp-bd:rgb(255 255 255/.12);--stp-fg:#B4B4BC;--stp-solid:var(--g700);
+  --cmp-bg:var(--k300);--cmp-bd:rgb(255 255 255/.14);--cmp-fg:var(--g900);--cmp-solid:var(--g900);
+  --fail-bg:#3C221F;--fail-bd:rgb(255 107 92/.35);--fail-fg:#FFA79C;--fail-solid:#FF6B5C;
+  --que-bg:transparent;--que-bd:var(--g500);--que-fg:var(--g800);--que-solid:var(--g800);
+  --el2:0 8px 24px rgb(0 0 0/.45),0 0 0 1px rgb(255 255 255/.06);--el3:0 24px 64px rgb(0 0 0/.6),0 0 0 1px rgb(255 255 255/.08);
+  --sans:"Manrope",-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,"Segoe UI",Roboto,sans-serif;--mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+  --rs:clamp(0,var(--brand-radius-scale,1),1.25);--r-badge:min(calc(6px*var(--rs)),8px);--r-field:calc(10px*var(--rs));--r-tile:calc(14px*var(--rs));--r-overlay:calc(20px*var(--rs));--r-pill:9999px;
+  --control:40px;--row:52px;--pad:20px;--chip-h:26px;--chip-fs:13px;--body:14px;--body-lh:20px;--col-money:120px;--gap:32px;--rail-tile:40px;--dock-h:56px;
+  --pulse:2000ms;--spin:1000ms;--ease:cubic-bezier(.32,.72,0,1);
+}
+:root[data-density="compact"]{--control:32px;--row:40px;--pad:16px;--chip-h:22px;--chip-fs:12px;--body:13px;--body-lh:18px;--col-money:100px;--gap:20px;--rail-tile:36px;--dock-h:48px}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
+  --canvas:#F5F5F7;--surface:#FFFFFF;--raised:#FFFFFF;--sunken:#EDEDF0;--overlay:#FFFFFF;--hover:#EDEDF0;
+  --text:#111114;--text2:#6B6B73;--placeholder:#8A8A92;--disabled:#A9A9B0;--icon:#55555D;
+  --border:#E2E2E6;--border-strong:#D0D0D6;--border-input:#8A8A92;
+  --accent-subtle:var(--brand-accent-subtle-light,#EEF9DA);--accent-text:var(--brand-accent-text-light,#4F7A00);--on-accent:var(--brand-on-accent,#111114);
+  --focus:#111114;--halo:var(--surface);--danger:#C93A2C;--stop-glyph:#C93A2C;--stop-all:#9B2A1F;--on-stop-all:#FFFFFF;
+  --money-warn:#7A4E00;--money-over:#A8261B;--money-pos:#4F7A00;--budget-used:#3A3A40;--fresh:#4F7A00;--live-halo:rgb(79 122 0/.18);
+  --run-bg:#EEF9DA;--run-bd:#C8E89A;--run-fg:#4F7A00;--run-solid:#4F7A00;
+  --apr-bg:#FBF1DC;--apr-bd:#EFD59A;--apr-fg:#7A4E00;--apr-solid:#A96A08;
+  --stp-bg:#E6E6EA;--stp-bd:#D0D0D6;--stp-fg:#3A3A40;--stp-solid:#55555D;
+  --cmp-bg:#EDEDF0;--cmp-bd:#D0D0D6;--cmp-fg:#111114;--cmp-solid:#3A3A40;
+  --fail-bg:#FBE7E5;--fail-bd:#F0B7B1;--fail-fg:#A8261B;--fail-solid:#C93A2C;
+  --que-bd:#D0D0D6;--que-fg:#6B6B73;--que-solid:#6B6B73;
+  --el2:0 8px 24px rgb(17 17 20/.10),0 0 0 1px rgb(17 17 20/.04);--el3:0 24px 64px rgb(17 17 20/.18),0 0 0 1px rgb(17 17 20/.05);
+}}
+:root[data-theme="light"]{
+  --canvas:#F5F5F7;--surface:#FFFFFF;--raised:#FFFFFF;--sunken:#EDEDF0;--overlay:#FFFFFF;--hover:#EDEDF0;
+  --text:#111114;--text2:#6B6B73;--placeholder:#8A8A92;--disabled:#A9A9B0;--icon:#55555D;
+  --border:#E2E2E6;--border-strong:#D0D0D6;--border-input:#8A8A92;
+  --accent-subtle:var(--brand-accent-subtle-light,#EEF9DA);--accent-text:var(--brand-accent-text-light,#4F7A00);--on-accent:var(--brand-on-accent,#111114);
+  --focus:#111114;--halo:var(--surface);--danger:#C93A2C;--stop-glyph:#C93A2C;--stop-all:#9B2A1F;--on-stop-all:#FFFFFF;
+  --money-warn:#7A4E00;--money-over:#A8261B;--money-pos:#4F7A00;--budget-used:#3A3A40;--fresh:#4F7A00;--live-halo:rgb(79 122 0/.18);
+  --run-bg:#EEF9DA;--run-bd:#C8E89A;--run-fg:#4F7A00;--run-solid:#4F7A00;
+  --apr-bg:#FBF1DC;--apr-bd:#EFD59A;--apr-fg:#7A4E00;--apr-solid:#A96A08;
+  --stp-bg:#E6E6EA;--stp-bd:#D0D0D6;--stp-fg:#3A3A40;--stp-solid:#55555D;
+  --cmp-bg:#EDEDF0;--cmp-bd:#D0D0D6;--cmp-fg:#111114;--cmp-solid:#3A3A40;
+  --fail-bg:#FBE7E5;--fail-bd:#F0B7B1;--fail-fg:#A8261B;--fail-solid:#C93A2C;
+  --que-bd:#D0D0D6;--que-fg:#6B6B73;--que-solid:#6B6B73;
+  --el2:0 8px 24px rgb(17 17 20/.10),0 0 0 1px rgb(17 17 20/.04);--el3:0 24px 64px rgb(17 17 20/.18),0 0 0 1px rgb(17 17 20/.05);
+}
+@media (prefers-reduced-motion:reduce){:root{--pulse:0ms;--spin:0ms}}
+
+/* ===== Base ===== */
+*{box-sizing:border-box}
+body{margin:0;background:var(--canvas);color:var(--text);font-family:var(--sans);font-size:var(--body);line-height:var(--body-lh);-webkit-font-smoothing:antialiased;caret-color:var(--accent)}
+::selection{background:var(--accent);color:var(--on-accent)}
+a{color:var(--text);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--text2)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;box-shadow:0 0 0 2px var(--halo)}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+code,.mono{font-family:var(--mono);font-size:12px;line-height:16px}
+h1,h2,h3{margin:0;text-wrap:balance}
+h1{font-size:26px;line-height:34px;font-weight:500;letter-spacing:-.01em}
+h2{font-size:20px;line-height:28px;font-weight:600;letter-spacing:-.01em}
+h3{font-size:17px;line-height:24px;font-weight:600}
+p{margin:0;max-width:68ch}
+.muted{color:var(--text2)}.cap{font-size:12px;line-height:16px}.lab{font-size:13px;line-height:18px;font-weight:600}
+.path{color:var(--text2);font-weight:400}
+.shell{max-width:1120px;margin:0 auto;padding:0 24px 120px}
+.frame+.why{margin-top:14px}.why+.note{margin-top:20px}
+@media (max-width:599px){.shell{padding:0 16px 120px}}
+
+/* Toolbar */
+.bar{position:sticky;top:0;z-index:10;background:var(--surface);border-bottom:1px solid var(--border-strong)}
+.bar-in{max-width:1120px;margin:0 auto;padding:10px 24px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center}
+@media (max-width:599px){.bar-in{padding:8px 16px;gap:6px 10px}.seg-lab{display:none}.seg button{padding:4px 10px;min-height:26px}}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto}
+.brand .mark{width:26px;height:26px;border-radius:var(--r-badge);background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font-size:12px;font-weight:700}
+.seg{display:inline-flex;background:var(--raised);border:1px solid var(--border-strong);border-radius:var(--r-pill);padding:3px}
+.seg button{appearance:none;border:0;background:transparent;color:var(--text2);font:inherit;font-size:13px;line-height:18px;font-weight:600;padding:5px 12px;min-height:28px;border-radius:var(--r-pill);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--overlay);color:var(--text)}
+.seg-lab{font-size:12px;color:var(--text2);margin-right:8px}
+.ctl{display:flex;align-items:center}
+
+/* Layout */
+.hero{padding:44px 0 20px;display:grid;gap:14px}
+.tag{display:inline-flex;align-items:center;min-height:22px;padding:3px 9px;line-height:16px;border-radius:var(--r-pill);border:1px solid var(--border-strong);font-size:12px;font-weight:600;color:var(--text2);vertical-align:middle;margin-left:10px}
+.tag.coral{border-color:rgb(255 107 92/.5);color:var(--fail-fg)}
+.note{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-tile);padding:16px 20px;display:grid;gap:8px}
+.note p{max-width:none}
+section{padding:36px 0 8px;border-top:1px solid var(--border);display:grid;gap:16px}
+section>*,.two>*,.grid>*,.frame>*,.stage,.dock,.tile{min-width:0}
+section>header{display:grid;gap:6px}
+.why{border-left:1px solid var(--border-strong);padding:2px 0 2px 14px;color:var(--text2);font-size:13px;line-height:18px;max-width:78ch}
+.grid{display:grid;gap:12px}.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-tile);padding:var(--pad)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;line-height:18px}
+.tbl th{text-align:left;font-weight:600;color:var(--text2);padding:8px 8px 8px 0;border-bottom:1px solid var(--border-strong)}
+.tbl td{padding:8px 8px 8px 0;border-bottom:1px solid var(--border);vertical-align:top}
+.tbl td.r,.tbl th.r{text-align:right}
+.scroll{overflow-x:auto}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media (max-width:899px){.two{grid-template-columns:1fr}}
+.dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:13px;line-height:18px}.dl dt{color:var(--text2);margin:0}.dl dd{margin:0}
+
+/* ===== Cornice applicativa (specimen composito) ===== */
+.frame{background:var(--canvas);border:1px solid var(--border-strong);border-radius:var(--r-overlay);overflow:hidden;display:grid;grid-template-columns:64px 1fr;grid-template-rows:1fr auto;min-height:560px}
+.rail{grid-row:1/3;border-right:1px solid var(--border);padding:12px;display:flex;flex-direction:column;gap:10px;align-items:center}
+.rail .t{width:var(--rail-tile);height:var(--rail-tile);border-radius:var(--r-field);background:var(--raised);border:1px solid var(--border);display:grid;place-items:center;color:var(--icon);cursor:pointer}
+.rail .t svg{width:18px;height:18px}
+.rail .t.active{background:var(--accent);color:var(--on-accent);border-color:transparent}
+.rail .t.plus{background:transparent;border-style:dashed;border-color:var(--border-strong)}
+.rail .spacer{flex:1}
+.stage{padding:22px 24px 16px;display:grid;gap:18px;align-content:start}
+.stage-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.stage-head h3{font-size:22px;line-height:30px;font-weight:500;letter-spacing:-.01em}
+.tabs{display:inline-flex;max-width:100%;overflow-x:auto;scrollbar-width:none;background:var(--raised);border:1px solid var(--border);border-radius:var(--r-pill);padding:3px;gap:2px}.tabs::-webkit-scrollbar{display:none}
+.tabs span{flex:none;padding:6px 14px;min-height:30px;line-height:18px;display:inline-flex;align-items:center;border-radius:var(--r-pill);font-size:13px;font-weight:600;color:var(--text2)}
+.tabs span[aria-current]{background:var(--overlay);color:var(--text)}
+.agents{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.agent{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-tile);padding:14px;display:grid;gap:12px;min-height:126px}
+.agent .top{display:flex;justify-content:space-between;align-items:flex-start}
+.agent .top .st{width:20px;height:20px;display:grid;place-items:center}
+.agent .top .st svg{width:14px;height:14px}
+.agent .nm{font-size:14px;font-weight:600;line-height:18px}
+.agent .nm span{display:block;font-weight:400;color:var(--text2);font-size:12px;line-height:16px;margin-top:2px}
+.agent.selected{background:var(--accent-subtle);border-color:var(--accent);grid-column:span 2}
+.agent.selected .rows{display:grid;gap:6px}
+.agent.selected .row{display:flex;justify-content:space-between;align-items:center;background:var(--raised);border:1px solid var(--border);border-radius:var(--r-field);padding:8px 10px;font-size:12px;color:var(--text2)}
+.agent.selected .row b{color:var(--text);font-weight:500}
+.agent.disabled{border-style:dashed}
+.agent.disabled .nm{color:var(--text2)}
+@media (max-width:599px){.agent.selected{grid-column:span 1}}
+.dock{grid-column:2;display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid var(--border);background:var(--surface);min-height:var(--dock-h);flex-wrap:wrap}
+.composer{display:flex;align-items:center;gap:10px;flex:1 1 220px;min-width:0;background:var(--raised);border:1px solid var(--border);border-radius:var(--r-pill);padding:4px 4px 4px 14px;min-height:40px}
+.composer .ph{color:var(--placeholder);font-size:13px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.composer .id{color:var(--text2)}
+.composer .send{width:32px;height:32px;border-radius:var(--r-pill);background:var(--overlay);border:1px solid var(--border-strong);display:grid;place-items:center;color:var(--text)}
+.composer .send svg{width:14px;height:14px}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+.pill{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:8px 14px;border-radius:var(--r-pill);background:var(--raised);border:1px solid var(--border-strong);font-size:13px;line-height:18px;font-weight:600;white-space:nowrap}
+.pill.money{background:var(--accent);color:var(--on-accent);border-color:transparent}
+.pill svg{width:12px;height:12px}
+@media (max-width:899px){.frame{grid-template-columns:1fr}.rail{display:none}.dock{grid-column:1}}
+
+/* Live indicator: l'unico alone */
+.live{position:relative;display:inline-block;width:8px;height:8px;border-radius:9999px;background:var(--run-solid);box-shadow:0 0 0 3px var(--live-halo);vertical-align:middle;margin-right:6px}
+.live::after{content:"";position:absolute;inset:-3px;border-radius:9999px;box-shadow:0 0 0 1px var(--run-solid);animation:pulse var(--pulse) ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.live::after{animation:none}}
+.pill.money .live{background:var(--on-accent);box-shadow:0 0 0 3px rgb(11 11 12/.18)}.pill.money .live::after{box-shadow:0 0 0 1px var(--on-accent)}
+
+/* Type specimen */
+.type-row{display:grid;grid-template-columns:130px 1fr;gap:16px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--border)}
+.type-row .meta{font-size:12px;line-height:16px;color:var(--text2)}
+@media (max-width:599px){.type-row{grid-template-columns:1fr;gap:4px}}
+.t-display-lg{font-size:44px;line-height:56px;font-weight:600;letter-spacing:-.02em}
+.t-display{font-size:30px;line-height:40px;font-weight:600;letter-spacing:-.01em}
+.t-headline{font-size:26px;line-height:34px;font-weight:500;letter-spacing:-.01em}
+.t-title{font-size:20px;line-height:28px;font-weight:600}
+.t-title-sm{font-size:17px;line-height:24px;font-weight:600}
+.t-body-lg{font-size:16px;line-height:24px}.t-body{font-size:14px;line-height:20px}.t-label{font-size:13px;line-height:18px;font-weight:600}.t-caption{font-size:12px;line-height:16px}
+@media (max-width:599px){.t-display-lg{font-size:36px;line-height:48px}.t-display{font-size:26px;line-height:36px}.t-headline{font-size:24px;line-height:32px}}
+
+/* Swatches */
+.ramp{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:8px}
+.sw{display:grid;gap:5px}.sw i{display:block;height:48px;border-radius:var(--r-field);border:1px solid var(--border-strong)}
+.sw span{font-size:12px;line-height:16px;color:var(--text2)}.sw span b{display:block;color:var(--text);font-weight:600}
+
+/* Chip */
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:var(--chip-h);padding:4px 10px;border-radius:var(--r-pill);border:1px solid;font-size:var(--chip-fs);line-height:18px;font-weight:600;white-space:nowrap;vertical-align:middle}
+.chip svg{width:12px;height:12px;flex:none}
+.chip.running{background:var(--run-bg);border-color:var(--run-bd);color:var(--run-fg)}.chip.running svg{color:var(--run-solid)}
+.chip.approval{background:var(--apr-bg);border-color:var(--apr-bd);color:var(--apr-fg)}.chip.approval svg{color:var(--apr-solid)}
+.chip.stopping,.chip.stopped{background:var(--stp-bg);border-color:var(--stp-bd);color:var(--stp-fg)}.chip.stopping svg,.chip.stopped svg{color:var(--stp-solid)}
+.chip.completed{background:var(--cmp-bg);border-color:var(--cmp-bd);color:var(--cmp-fg)}.chip.completed svg{color:var(--cmp-solid)}
+.chip.failed{background:var(--fail-bg);border-color:var(--fail-bd);color:var(--fail-fg)}.chip.failed svg{color:var(--fail-solid)}
+.chip.queued{background:var(--que-bg);border-style:dashed;border-color:var(--que-bd);color:var(--que-fg)}.chip.queued svg{color:var(--que-solid)}
+.spin{animation:spin var(--spin) linear infinite;transform-origin:center}@keyframes spin{to{transform:rotate(360deg)}}
+.state-row{display:grid;grid-template-columns:180px 1fr;gap:8px 16px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border)}
+.state-row .long{font-size:12px;line-height:16px;color:var(--text2)}
+@media (max-width:599px){.state-row{grid-template-columns:1fr}}
+
+/* Buttons */
+.btn{appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--control);min-width:96px;padding:6px 20px;border-radius:var(--r-pill);border:1px solid transparent;font:inherit;font-size:13px;line-height:18px;font-weight:600;cursor:pointer;color:var(--text);background:transparent;text-align:center;transition:background var(--ease) 120ms,border-color var(--ease) 120ms}
+.btn.primary{background:var(--accent);color:var(--on-accent)}.btn.primary:hover{background:var(--accent-hover)}
+.btn.secondary{background:var(--raised);border-color:var(--border-strong)}.btn.secondary:hover{background:var(--overlay)}
+.btn.tertiary{padding-inline:10px}.btn.tertiary:hover{background:var(--hover)}
+.btn.stop{background:var(--raised);border-color:var(--border-strong)}.btn.stop svg{color:var(--stop-glyph)}.btn.stop:hover{border-color:var(--stop-all)}
+.btn.stop-all{border-color:var(--stop-all);border-width:1.5px;color:var(--stop-all)}.btn.stop-all svg{color:var(--stop-all)}
+.btn.armed{background:var(--stop-all);color:var(--on-stop-all);border-color:var(--stop-all)}.btn.armed svg{color:var(--on-stop-all)}
+.btn.danger{background:var(--danger);color:#fff}.btn.danger:hover{background:var(--danger-hover)}
+.btn.lg{min-height:50px;font-size:16px;line-height:20px;padding:12px 20px}
+.btn svg{width:14px;height:14px;flex:none}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}.btn-row .btn{height:auto}
+
+/* Field */
+.field{display:grid;gap:6px;width:100%;max-width:360px}
+.field label{font-size:13px;line-height:18px;font-weight:600}
+.field input{font:inherit;font-size:max(14px,var(--body));min-height:var(--control);padding:0 14px;border:1px solid var(--border-input);border-radius:var(--r-field);background:var(--raised);color:var(--text);width:100%}
+.field input::placeholder{color:var(--placeholder)}
+.field.error input{border:2px solid var(--fail-solid)}
+.field .help{font-size:12px;line-height:16px;color:var(--text2)}
+.field .err{font-size:13px;line-height:18px;color:var(--fail-fg);display:flex;gap:6px;align-items:flex-start}.field .err svg{width:16px;height:16px;flex:none;color:var(--fail-solid)}
+
+/* Marks */
+.mark{display:inline-grid;place-items:center;width:32px;height:32px;background:var(--raised);border:1px solid var(--border-strong);color:var(--text);font-weight:700;font-size:12px;border-radius:var(--r-badge);vertical-align:middle}
+.mark.person{border-radius:9999px}.mark.disabled{border-style:dashed;color:var(--disabled)}
+.mark.icon svg{width:16px;height:16px;color:var(--icon)}
+.who{display:inline-flex;align-items:center;gap:10px;margin-right:24px;margin-bottom:10px}
+.who .nm{font-size:13px;line-height:18px;font-weight:600}.who .nm span{display:block;color:var(--text2);font-size:12px;font-weight:400}
+
+/* Money */
+.kpi{display:grid;gap:4px}.kpi .l{font-size:13px;line-height:18px;font-weight:600;color:var(--text2)}
+.kpi .n{font-size:44px;line-height:56px;font-weight:600;letter-spacing:-.02em}
+@media (max-width:599px){.kpi .n{font-size:36px;line-height:48px}}
+.money{display:inline-flex;align-items:baseline;gap:6px;flex-wrap:wrap}.money .v{font-size:20px;line-height:28px;font-weight:600}.money.est .v{color:var(--text2)}.money .m{font-size:12px;line-height:16px;color:var(--text2)}
+.fresh{display:inline-flex;align-items:center;gap:6px;font-size:12px;line-height:16px;color:var(--text2)}
+.fresh i{width:6px;height:6px;border-radius:9999px;background:var(--fresh);display:inline-block}
+.fresh.stale{background:var(--raised);border:1px solid var(--border-strong);border-radius:var(--r-pill);padding:3px 8px;min-height:22px}
+.budget{display:grid;gap:8px;max-width:440px}
+.budget .track{position:relative;height:6px;border-radius:9999px;background:rgb(255 255 255/.10)}
+:root[data-theme="light"] .budget .track{background:#E2E2E6}@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .budget .track{background:#E2E2E6}}
+.budget .used{position:absolute;left:0;top:0;bottom:0;border-radius:9999px;background:var(--budget-used)}
+.budget .est{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(90deg,var(--budget-used) 0 3px,transparent 3px 6px);opacity:.6}
+.budget .tick{position:absolute;left:80%;top:-4px;bottom:-4px;width:1px;background:var(--icon)}
+.budget .lbl{font-size:12px;line-height:16px;color:var(--text2);display:flex;justify-content:space-between;gap:8px}
+.budget.over .used{background:var(--money-over)}
+
+/* Space / radius / elevation */
+.space-row{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap}.space-row div{display:grid;gap:4px;justify-items:center;font-size:12px;color:var(--text2)}
+.space-row i{display:block;background:var(--accent-subtle);border:1px solid var(--border-strong);width:var(--s);height:var(--s)}
+.radii{display:flex;gap:18px;flex-wrap:wrap}.radii div{display:grid;gap:6px;justify-items:center;font-size:12px;color:var(--text2)}
+.radii i{display:block;width:60px;height:60px;background:var(--raised);border:1px solid var(--border-strong)}
+.elev{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px}
+.elev div{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-tile);padding:16px;font-size:12px;color:var(--text2);min-height:84px}
+.elev div b{display:block;color:var(--text);font-size:13px;margin-bottom:4px}
+.icons{display:flex;gap:20px;flex-wrap:wrap}.icons div{display:grid;gap:6px;justify-items:center;font-size:12px;color:var(--text2)}.icons svg{width:24px;height:24px;color:var(--text)}
+
+/* Composites */
+.strip{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--r-tile);padding:8px 10px}
+.strip .end{margin-left:auto}
+.strip.mobile{max-width:360px}
+.run{display:grid;grid-template-columns:auto 1fr auto var(--col-money) auto;align-items:center;gap:12px;min-height:var(--row);padding:8px var(--pad);background:var(--surface);border:1px solid var(--border);border-radius:var(--r-tile)}
+.run:hover{background:var(--raised)}
+.run .task{display:grid;gap:2px;min-width:0}.run .task b{font-weight:600;font-size:var(--body);line-height:var(--body-lh);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.run .task span{font-size:12px;line-height:16px;color:var(--text2)}.run .dur{font-size:13px;color:var(--text2)}
+.run .money-cell{text-align:right;border-left:1px solid var(--border-strong);padding-left:12px;font-size:13px}.run .money-cell b{display:block;color:var(--text2);font-weight:600}
+@media (max-width:599px){.run{grid-template-columns:1fr auto;grid-template-areas:"a a" "b c"}.run>*:nth-child(1){grid-area:a}.run .task{grid-area:a}.run .dur{grid-area:b}.run .money-cell{grid-area:b;justify-self:end;border:0}.run .stopc{grid-area:c}}
+.phone{width:360px;max-width:100%;border:1px solid var(--border-strong);border-radius:var(--r-overlay);background:var(--canvas);overflow:hidden}
+.phone .body{padding:16px;display:grid;gap:12px}
+.commit{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-tile);padding:14px;display:grid;gap:8px;font-size:13px}
+.commit .row{display:flex;justify-content:space-between;gap:12px}
+.irrev{display:inline-flex;align-items:center;gap:6px;font-size:13px;line-height:18px;font-weight:600;color:var(--apr-fg);background:var(--apr-bg);border:1px solid var(--apr-bd);border-radius:var(--r-pill);padding:5px 10px}
+.irrev svg{width:14px;height:14px;color:var(--apr-solid)}
+.foot{background:var(--surface);border-top:1px solid var(--border-strong);padding:12px 16px;display:grid;gap:8px}
+.foot .top{display:grid;grid-template-columns:1fr auto;gap:12px}.foot .btn{height:auto}
+.resolved{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:0 4px}.resolved .btn{padding-inline:8px;text-align:right}
+.toast{display:inline-flex;align-items:center;gap:16px;min-height:56px;padding:8px 8px 8px 18px;background:var(--overlay);border-radius:var(--r-overlay);box-shadow:var(--el2);font-size:14px}
+.toast .btn{min-height:44px;min-width:96px}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-run" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="currentColor"/><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.2"/></symbol>
+    <symbol id="i-apr" viewBox="0 0 16 16"><path d="M8 1.5 14.5 8 8 14.5 1.5 8Z" fill="currentColor"/></symbol>
+    <symbol id="i-stp" viewBox="0 0 16 16"><rect x="3" y="3" width="10" height="10" rx="1.5" fill="currentColor"/></symbol>
+    <symbol id="i-stopping" viewBox="0 0 16 16"><rect x="5" y="5" width="6" height="6" rx="1" fill="currentColor"/><path d="M8 1.5a6.5 6.5 0 0 1 6.5 6.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="spin"/></symbol>
+    <symbol id="i-cmp" viewBox="0 0 16 16"><path d="M2.5 8.5 6.5 12.5 13.5 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-fail" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-que" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+    <symbol id="i-warn" viewBox="0 0 16 16"><path d="M8 2 14.5 13.5h-13Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 6.5v3.2M8 12h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-square" viewBox="0 0 16 16"><rect x="2.5" y="2.5" width="11" height="11" rx="2" fill="currentColor"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 16 16"><path d="M6 4 2.5 7.5 6 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 7.5h6.5a3.5 3.5 0 0 1 0 7H8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M4 4l8 8" stroke="currentColor" stroke-width="1.5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-org" viewBox="0 0 16 16"><rect x="5.5" y="1.5" width="5" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="1.5" y="10.5" width="5" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.4"/><rect x="9.5" y="10.5" width="5" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 5.5v2.5M4 10.5V8h8v2.5" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="i-euro" viewBox="0 0 16 16"><path d="M12 4.2A4.3 4.3 0 0 0 4.4 8a4.3 4.3 0 0 0 7.6 3.8M2.5 6.8h6M2.5 9.2h6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-inbox" viewBox="0 0 16 16"><path d="M2 9.5V12a1.5 1.5 0 0 0 1.5 1.5h9A1.5 1.5 0 0 0 14 12V9.5M2 9.5l2-6h8l2 6M2 9.5h3.5l1 1.5h3l1-1.5H14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+    <symbol id="i-trace" viewBox="0 0 16 16"><path d="M3 3h10M3 8h7M3 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-send" viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-pen" viewBox="0 0 16 16"><path d="M3 13h3l7-7-3-3-7 7v3Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+    <symbol id="i-code" viewBox="0 0 16 16"><path d="M6 4 2 8l4 4M10 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-search" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 16 16"><path d="M13 8a5 5 0 1 1-1.5-3.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M13 2.5v3h-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-image" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="m3 12 3.5-4 2.5 3 2-2 2 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="10.5" cy="6" r="1" fill="currentColor"/></symbol>
+  </defs>
+</svg>
+
+<div class="bar" role="region" aria-label="Controlli dello specimen">
+  <div class="bar-in">
+    <div class="brand"><span class="mark" aria-hidden="true">B</span><span class="lab" data-it="DGT · Variante B" data-en="DGT · Variant B">DGT · Variante B</span></div>
+    <div class="ctl"><span class="seg-lab" data-it="Tema" data-en="Theme">Tema</span><div class="seg" role="group" aria-label="Tema"><button data-theme-set="dark" aria-pressed="true" data-it="Scuro" data-en="Dark">Scuro</button><button data-theme-set="light" aria-pressed="false" data-it="Chiaro" data-en="Light">Chiaro</button><button data-theme-set="" aria-pressed="false" data-it="Sistema" data-en="System">Sistema</button></div></div>
+    <div class="ctl"><span class="seg-lab" data-it="Densità" data-en="Density">Densità</span><div class="seg" role="group" aria-label="Densità"><button data-density-set="comfortable" aria-pressed="true" data-it="Comoda" data-en="Comfortable">Comoda</button><button data-density-set="compact" aria-pressed="false" data-it="Compatta" data-en="Compact">Compatta</button></div></div>
+    <div class="ctl"><span class="seg-lab" data-it="Lingua" data-en="Language">Lingua</span><div class="seg" role="group" aria-label="Lingua"><button data-lang-set="it" aria-pressed="true">IT</button><button data-lang-set="en" aria-pressed="false">EN</button></div></div>
+    <div class="ctl"><span class="seg-lab" data-it="Marchio" data-en="Brand">Marchio</span><div class="seg" role="group" aria-label="Marchio"><button data-brand-set="default" aria-pressed="true">Lime</button><button data-brand-set="blue" aria-pressed="false" data-it="Rivenditore blu" data-en="Blue reseller">Rivenditore blu</button></div></div>
+  </div>
+</div>
+
+<main class="shell">
+  <div class="hero">
+    <h1><span data-it="Console nera e lime" data-en="Black and lime console">Console nera e lime</span> <span class="path">/<span data-it="variante B" data-en="variant B">variante B</span></span><span class="tag" data-it="Proposta" data-en="Proposal">Proposta</span></h1>
+    <p class="muted" style="max-width:76ch" data-it="Lo stesso sistema della variante A (sette stati, quattro domande, stop reversibile, denaro come tipo di dato) vestito con il mondo dei tuoi riferimenti: fondo quasi nero, tessere con bordo sottile, un solo colore vivo che significa «acceso», capsule, rail di icone e dock di stato. Finitura da prodotto Apple o Revolut: piatta, precisa, senza vetro né gradienti." data-en="The same system as variant A (seven states, four questions, reversible stop, money as a data type) dressed in the world of your references: near-black ground, thin-bordered tiles, one live colour meaning “on”, capsules, an icon rail and a status dock. Apple/Revolut finish: flat, precise, no glass and no gradients.">Lo stesso sistema della variante A (sette stati, quattro domande, stop reversibile, denaro come tipo di dato) vestito con il mondo dei tuoi riferimenti: fondo quasi nero, tessere con bordo sottile, un solo colore vivo che significa «acceso», capsule, rail di icone e dock di stato. Finitura da prodotto Apple o Revolut: piatta, precisa, senza vetro né gradienti.</p>
+  </div>
+
+  <div class="frame" role="figure" aria-label="Cornice applicativa: specimen composito con contenuto sintetico">
+    <div class="rail" aria-label="Rail">
+      <span class="t plus" title="Nuovo"><svg aria-hidden="true"><use href="#i-plus"/></svg></span>
+      <span class="t" title="Approvazioni"><svg aria-hidden="true"><use href="#i-inbox"/></svg></span>
+      <span class="t active" title="Organizzazione"><svg aria-hidden="true"><use href="#i-org"/></svg></span>
+      <span class="t" title="Costi"><svg aria-hidden="true"><use href="#i-euro"/></svg></span>
+      <span class="t" title="Tracce"><svg aria-hidden="true"><use href="#i-trace"/></svg></span>
+      <span class="spacer"></span>
+      <span class="mark person" title="Marco Rossi">MR</span>
+    </div>
+    <div class="stage">
+      <div class="stage-head">
+        <h3>Marketing <span class="path">/Rossi Srl</span><span class="tag" data-it="Cliente" data-en="Client">Cliente</span></h3>
+        <div class="tabs" role="tablist" aria-label="Sezioni"><span role="tab" aria-current="true" data-it="Risultati" data-en="Results">Risultati</span><span role="tab" data-it="Costi" data-en="Costs">Costi</span><span role="tab" data-it="Tracce" data-en="Traces">Tracce</span><span role="tab" data-it="Configurazione" data-en="Settings">Configurazione</span></div>
+      </div>
+      <div class="agents">
+        <div class="agent selected">
+          <div class="top"><span class="mark icon"><svg aria-hidden="true"><use href="#i-pen"/></svg></span><span class="st" style="color:var(--run-solid)"><span class="live" aria-hidden="true" style="margin:0"></span></span></div>
+          <div class="nm">Copywriter<span data-it="In esecuzione da 12 min · passo 4/7 · Ricerca web" data-en="Running for 12 min · step 4/7 · Web search">In esecuzione da 12 min · passo 4/7 · Ricerca web</span></div>
+          <div class="rows"><div class="row"><span data-it="Costo · questo task" data-en="Cost · this task">Costo · questo task</span><b class="num" data-it="≈ 0,42 € · live" data-en="≈ €0.42 · live">≈ 0,42 € · live</b></div><div class="row"><span data-it="Budget · oggi" data-en="Budget · today">Budget · oggi</span><b class="num" data-it="4,82 € di 50,00 €" data-en="€4.82 of €50.00">4,82 € di 50,00 €</b></div></div>
+        </div>
+        <div class="agent">
+          <div class="top"><span class="mark icon"><svg aria-hidden="true"><use href="#i-code"/></svg></span><span class="st" style="color:var(--apr-solid)"><svg aria-hidden="true"><use href="#i-apr"/></svg></span></div>
+          <div class="nm">Developer<span data-it="Da approvare · deploy su staging" data-en="Needs approval · deploy to staging">Da approvare · deploy su staging</span></div>
+        </div>
+        <div class="agent">
+          <div class="top"><span class="mark icon"><svg aria-hidden="true"><use href="#i-image"/></svg></span><span class="st" style="color:var(--cmp-solid)"><svg aria-hidden="true"><use href="#i-cmp"/></svg></span></div>
+          <div class="nm">Designer<span data-it="Completato alle 15:04 · 3 modifiche" data-en="Completed at 15:04 · 3 changes">Completato alle 15:04 · 3 modifiche</span></div>
+        </div>
+        <div class="agent disabled">
+          <div class="top"><span class="mark icon disabled"><svg aria-hidden="true"><use href="#i-search"/></svg></span><span class="st" style="color:var(--stp-solid)"><svg aria-hidden="true"><use href="#i-stp"/></svg></span></div>
+          <div class="nm">Researcher<span data-it="(Disattivato)" data-en="(Disabled)">(Disattivato)</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="dock" role="region" aria-label="Dock di stato">
+      <div class="composer"><span class="ph" data-it="Scrivi a Copywriter…" data-en="Message Copywriter…">Scrivi a Copywriter…</span><span class="mono id">run_7f3a·b2c9</span><span class="send" aria-hidden="true"><svg><use href="#i-send"/></svg></span></div>
+      <div class="pills">
+        <span class="pill"><span class="live" aria-hidden="true"></span><span class="num">3</span> <span data-it="in esecuzione" data-en="running">in esecuzione</span></span>
+        <span class="pill num" data-it="Pubblicato · 14:32" data-en="Published · 14:32">Pubblicato · 14:32</span>
+        <span class="pill money num" data-it="4,82 € oggi" data-en="€4.82 today">4,82 € oggi</span>
+        <button class="btn stop-all" style="min-height:36px"><svg aria-hidden="true"><use href="#i-square"/></svg><span data-it="Ferma tutto (3)" data-en="Stop all (3)">Ferma tutto (3)</span></button>
+      </div>
+    </div>
+  </div>
+  <p class="why" data-it="Specimen composito con dati sintetici, non una schermata. Dal riferimento riusa: rail di icone con tessera attiva lime, titolo con percorso «/cliente» e tag, tab a pillola, tessere con icona in alto a sinistra e stato in alto a destra, stato scritto nell'etichetta («(Disattivato)»), tessera selezionata con righe interne, dock in basso con composer, ID in mono e pillole di stato. Non riusa il canvas a nodi, la griglia puntinata, i connettori luminosi." data-en="Composite specimen with synthetic data, not a screen. From the reference it reuses: icon rail with a lime active tile, title with “/client” path and tag, pill tabs, tiles with icon top-left and state top-right, state written in the label (“(Disabled)”), selected tile with inner rows, bottom dock with composer, mono ID and status pills. It does not reuse the node canvas, the dotted grid or the glowing connectors.">Specimen composito con dati sintetici, non una schermata. Dal riferimento riusa: rail di icone con tessera attiva lime, titolo con percorso «/cliente» e tag, tab a pillola, tessere con icona in alto a sinistra e stato in alto a destra, stato scritto nell'etichetta («(Disattivato)»), tessera selezionata con righe interne, dock in basso con composer, ID in mono e pillole di stato. Non riusa il canvas a nodi, la griglia puntinata, i connettori luminosi.</p>
+
+  <div class="note" role="note">
+    <b class="lab" data-it="Cosa cambia rispetto alla variante A, e cosa no" data-en="What changes versus variant A, and what does not">Cosa cambia rispetto alla variante A, e cosa no</b>
+    <p class="muted" data-it="Cambiano il mondo visivo e la cornice: scuro di default, lime come «acceso», capsule, tessere, rail e dock. Non cambiano la grammatica degli stati (forma + icona + etichetta), le quattro domande come cromo persistente, lo stop reversibile con «Ferma tutto» armato, il denaro con periodo e freschezza, i due assi densità e dettaglio, il contratto white-label e la verifica del contrasto." data-en="The visual world and the frame change: dark by default, lime as “on”, capsules, tiles, rail and dock. The state grammar (shape + icon + label), the four questions as persistent chrome, the reversible stop with an armed “Stop all”, money with period and freshness, the density and detail axes, the white-label contract and the contrast verification do not change.">Cambiano il mondo visivo e la cornice: scuro di default, lime come «acceso», capsule, tessere, rail e dock. Non cambiano la grammatica degli stati (forma + icona + etichetta), le quattro domande come cromo persistente, lo stop reversibile con «Ferma tutto» armato, il denaro con periodo e freschezza, i due assi densità e dettaglio, il contratto white-label e la verifica del contrasto.</p>
+    <p class="muted" data-it="Tensione dichiarata: il riferimento è un editor a nodi con bagliori, che il brief esclude. La variante B prende la sua finitura e le sue soluzioni di interfaccia; l'unica luce ammessa è l'alone dell'indicatore «in esecuzione»." data-en="Declared tension: the reference is a node editor with glows, which the brief rules out. Variant B takes its finish and interface solutions; the only light allowed is the halo of the “running” indicator.">Tensione dichiarata: il riferimento è un editor a nodi con bagliori, che il brief esclude. La variante B prende la sua finitura e le sue soluzioni di interfaccia; l'unica luce ammessa è l'alone dell'indicatore «in esecuzione».</p>
+  </div>
+
+  <!-- TIPOGRAFIA -->
+  <section id="tipografia">
+    <header><h2 data-it="Tipografia" data-en="Typography">Tipografia</h2><p class="muted" data-it="Manrope (cifre tabulari verificate) con SF Pro in fallback su Apple. Titoli di pagina in peso medio come nel riferimento; il numero grande è l'unico elemento a −0,02em." data-en="Manrope (tabular figures verified) with SF Pro as the fallback on Apple. Page titles in medium weight as in the reference; the big number is the only element at −0.02em.">Manrope (cifre tabulari verificate) con SF Pro in fallback su Apple. Titoli di pagina in peso medio come nel riferimento; il numero grande è l'unico elemento a −0,02em.</p></header>
+    <div class="tile">
+      <div class="type-row"><div class="meta">display-lg · 44/48 · 600 · −0,02em<br><span data-it="una per schermata" data-en="one per screen">una per schermata</span></div><div class="t-display-lg num">12.480,00 €</div></div>
+      <div class="type-row"><div class="meta">display · 30/36 · 600</div><div class="t-display num">312,00 €</div></div>
+      <div class="type-row"><div class="meta">headline · 26/32 · 500</div><div class="t-headline">Marketing <span class="path">/Rossi Srl</span></div></div>
+      <div class="type-row"><div class="meta">title · 20/28 · 600</div><div class="t-title" data-it="Attività in corso" data-en="Current activity">Attività in corso</div></div>
+      <div class="type-row"><div class="meta">title-sm · 17/24 · 600</div><div class="t-title-sm" data-it="Post LinkedIn: lancio del nuovo e-commerce" data-en="LinkedIn post: new e-commerce launch">Post LinkedIn: lancio del nuovo e-commerce</div></div>
+      <div class="type-row"><div class="meta">body-lg · 16/24</div><div class="t-body-lg" data-it="L'agente è fermo e non consuma in attesa della tua decisione." data-en="The agent is idle and not spending while it waits for your decision.">L'agente è fermo e non consuma in attesa della tua decisione.</div></div>
+      <div class="type-row"><div class="meta">body · 14/20 <span data-it="(compatta 13/18)" data-en="(compact 13/18)">(compatta 13/18)</span></div><div class="t-body" data-it="Copywriter · Ricerca sui concorrenti · Passo 4 di 7" data-en="Copywriter · Competitor research · Step 4 of 7">Copywriter · Ricerca sui concorrenti · Passo 4 di 7</div></div>
+      <div class="type-row"><div class="meta">label · 13/16 · 600</div><div class="t-label" data-it="Approva e pubblica · Chiedi modifiche · Ferma tutto (3)" data-en="Approve &amp; publish · Request changes · Stop all (3)">Approva e pubblica · Chiedi modifiche · Ferma tutto (3)</div></div>
+      <div class="type-row"><div class="meta">caption · 12/16</div><div class="t-caption muted" data-it="aggiornato 45 s fa · questo mese · Orari in Europe/Rome" data-en="updated 45 s ago · this month · Times in Europe/Rome">aggiornato 45 s fa · questo mese · Orari in Europe/Rome</div></div>
+      <div class="type-row"><div class="meta">mono · 12/16 <span data-it="solo ID e tracce" data-en="IDs and traces only">solo ID e tracce</span></div><div class="mono">run_7f3a·b2c9 · tool:web_search · 1.204 tok</div></div>
+    </div>
+    <p class="why" data-it="Perché Manrope: geometrica e morbida come il riferimento e come le interfacce di Revolut, con «tnum» verificato sul file del font (Hanken Grotesk, per confronto, non lo ha). Resta un token di marca. Le lunghezze italiane guidano i budget di caratteri, identici alla variante A." data-en="Why Manrope: geometric and soft like the reference and Revolut's interfaces, with “tnum” verified on the font file (Hanken Grotesk, by comparison, lacks it). It remains a brand token. Italian lengths drive the character budgets, identical to variant A.">Perché Manrope: geometrica e morbida come il riferimento e come le interfacce di Revolut, con «tnum» verificato sul file del font (Hanken Grotesk, per confronto, non lo ha). Resta un token di marca. Le lunghezze italiane guidano i budget di caratteri, identici alla variante A.</p>
+  </section>
+
+  <!-- COLORE -->
+  <section id="colore">
+    <header><h2 data-it="Colore" data-en="Colour">Colore</h2><p class="muted" data-it="Neri tonali, una sola tinta viva. Il lime significa «acceso»: primario, indicatore live, stato «in esecuzione». Tutto il resto è grigio, ambra o corallo. Ogni coppia è verificata: testo ≥ 4,5:1, glifi ≥ 3:1, scuro e chiaro." data-en="Tonal blacks, one live hue. Lime means “on”: primary, live indicator, “running” state. Everything else is gray, amber or coral. Every pair is verified: text ≥ 4.5:1, glyphs ≥ 3:1, dark and light.">Neri tonali, una sola tinta viva. Il lime significa «acceso»: primario, indicatore live, stato «in esecuzione». Tutto il resto è grigio, ambra o corallo. Ogni coppia è verificata: testo ≥ 4,5:1, glifi ≥ 3:1, scuro e chiaro.</p></header>
+    <div class="tile">
+      <b class="lab" data-it="Neri tonali (tinta fredda impercettibile, come il riferimento)" data-en="Tonal blacks (imperceptibly cool, like the reference)">Neri tonali (tinta fredda impercettibile, come il riferimento)</b>
+      <div class="ramp" style="margin-top:12px">
+        <div class="sw"><i style="background:#0B0B0C"></i><span><b>0</b>#0B0B0C<br>canvas</span></div>
+        <div class="sw"><i style="background:#101012"></i><span><b>50</b>#101012<br>sunken</span></div>
+        <div class="sw"><i style="background:#141416"></i><span><b>100</b>#141416<br>tessera</span></div>
+        <div class="sw"><i style="background:#1C1C1F"></i><span><b>200</b>#1C1C1F<br>rialzo, input</span></div>
+        <div class="sw"><i style="background:#242428"></i><span><b>300</b>#242428<br>overlay, hover</span></div>
+        <div class="sw"><i style="background:#2E2E33"></i><span><b>400</b>#2E2E33<br>bordo forte</span></div>
+        <div class="sw"><i style="background:#73737B"></i><span><b>600</b>#73737B<br>border-input 3,6:1</span></div>
+        <div class="sw"><i style="background:#8E8E96"></i><span><b>700</b>#8E8E96<br>glifo neutro</span></div>
+        <div class="sw"><i style="background:#9C9CA3"></i><span><b>800</b>#9C9CA3<br>text-2 6,2:1</span></div>
+        <div class="sw"><i style="background:#D9D9DE"></i><span><b>900</b>#D9D9DE<br>icone, spunta</span></div>
+        <div class="sw"><i style="background:#F2F2F2"></i><span><b>white</b>#F2F2F2<br>testo 15:1</span></div>
+      </div>
+    </div>
+    <div class="two">
+      <div class="tile">
+        <b class="lab" data-it="Lime = «acceso». Un solo input di marca." data-en="Lime = “on”. One brand input.">Lime = «acceso». Un solo input di marca.</b>
+        <div class="ramp" style="margin-top:12px">
+          <div class="sw"><i style="background:var(--accent)"></i><span><b>accent</b><span data-it="primario, tessera rail attiva" data-en="primary, active rail tile">primario, tessera rail attiva</span></span></div>
+          <div class="sw"><i style="background:var(--run-solid)"></i><span><b>running</b><span data-it="indicatore live" data-en="live indicator">indicatore live</span></span></div>
+          <div class="sw"><i style="background:var(--accent-subtle)"></i><span><b>subtle</b><span data-it="tessera selezionata" data-en="selected tile">tessera selezionata</span></span></div>
+          <div class="sw"><i style="background:var(--focus)"></i><span><b>focus</b><span data-it="non deriva dal brand" data-en="not brand-derived">non deriva dal brand</span></span></div>
+        </div>
+        <p class="why" style="margin-top:12px" data-it="Perché lime e running coincidono: nel riferimento il verde significa «attivo, collegato». Qui vale la stessa regola, una sola: se è lime, sta consumando o sta per farlo. I link non sono lime ma testo sottolineato. Prova «Rivenditore blu»: i chip di stato e il rosso non cambiano." data-en="Why lime and running coincide: in the reference, green means “active, connected”. The same single rule applies here: if it is lime, it is spending or about to. Links are not lime but underlined text. Try “Blue reseller”: status chips and the red do not change.">Perché lime e running coincidono: nel riferimento il verde significa «attivo, collegato». Qui vale la stessa regola, una sola: se è lime, sta consumando o sta per farlo. I link non sono lime ma testo sottolineato. Prova «Rivenditore blu»: i chip di stato e il rosso non cambiano.</p>
+      </div>
+      <div class="tile">
+        <b class="lab" data-it="Denaro e azioni" data-en="Money and actions">Denaro e azioni</b>
+        <div class="ramp" style="margin-top:12px">
+          <div class="sw"><i style="background:var(--money-warn)"></i><span><b>money-warn</b><span data-it="solo testo + ◔" data-en="text + ◔ only">solo testo + ◔</span></span></div>
+          <div class="sw"><i style="background:var(--money-over)"></i><span><b>money-over</b><span data-it="cifre + ▲" data-en="digits + ▲">cifre + ▲</span></span></div>
+          <div class="sw"><i style="background:var(--money-pos)"></i><span><b>money-positive</b><span data-it="solo margine" data-en="margin only">solo margine</span></span></div>
+          <div class="sw"><i style="background:var(--danger)"></i><span><b>danger</b><span data-it="pieno = impegna" data-en="filled = commits">pieno = impegna</span></span></div>
+          <div class="sw"><i style="background:var(--stop-all)"></i><span><b>stop-all</b><span data-it="contorno = reversibile" data-en="outline = reversible">contorno = reversibile</span></span></div>
+        </div>
+        <p class="why" style="margin-top:12px" data-it="Sul nero i rossi saturi sono i primi a diventare «neon»: il corallo #FF8A7A per lo stop e il rosso #C93A2C pieno per l'irreversibile restano leggibili (7,4:1 e 5,1:1) senza brillare." data-en="On black, saturated reds are the first to turn “neon”: coral #FF8A7A for stop and solid #C93A2C for the irreversible stay legible (7.4:1 and 5.1:1) without glowing.">Sul nero i rossi saturi sono i primi a diventare «neon»: il corallo #FF8A7A per lo stop e il rosso #C93A2C pieno per l'irreversibile restano leggibili (7,4:1 e 5,1:1) senza brillare.</p>
+      </div>
+    </div>
+    <div class="tile">
+      <b class="lab" data-it="Stati dell'esecuzione: sei stabili, uno transitorio. Sul nero solo «in esecuzione» ha colore vivo." data-en="Run states: six stable, one transitional. On black only “running” carries a live colour.">Stati dell'esecuzione: sei stabili, uno transitorio. Sul nero solo «in esecuzione» ha colore vivo.</b>
+      <div style="margin-top:8px">
+        <div class="state-row"><span class="chip running"><svg aria-hidden="true"><use href="#i-run"/></svg><span data-it="In esecuzione" data-en="Running">In esecuzione</span></span><span class="long"><span data-it="In esecuzione da 12 min · passo 4/7" data-en="Running for 12 min · step 4/7">In esecuzione da 12 min · passo 4/7</span> · fg 10,9:1 · solid 13,5:1</span></div>
+        <div class="state-row"><span class="chip approval"><svg aria-hidden="true"><use href="#i-apr"/></svg><span data-it="Da approvare" data-en="Needs approval">Da approvare</span></span><span class="long"><span data-it="In attesa della tua approvazione da 18 min" data-en="Awaiting your approval for 18 min">In attesa della tua approvazione da 18 min</span> · fg 8,5:1 · solid 9,3:1</span></div>
+        <div class="state-row"><span class="chip stopping"><svg aria-hidden="true"><use href="#i-stopping"/></svg><span data-it="Arresto…" data-en="Stopping…">Arresto…</span></span><span class="long"><span data-it="Arresto in corso da 4 s · transitorio, riusa la palette di Fermato" data-en="Stopping for 4 s · transitional, reuses the Stopped palette">Arresto in corso da 4 s · transitorio, riusa la palette di Fermato</span></span></div>
+        <div class="state-row"><span class="chip stopped"><svg aria-hidden="true"><use href="#i-stp"/></svg><span data-it="Fermato" data-en="Stopped">Fermato</span></span><span class="long"><span data-it="Fermato: budget raggiunto (50,00 € / 50,00 €) · 14:32" data-en="Stopped: budget reached (€50.00 / €50.00) · 14:32">Fermato: budget raggiunto (50,00 € / 50,00 €) · 14:32</span> · fg 7,3:1</span></div>
+        <div class="state-row"><span class="chip completed"><svg aria-hidden="true"><use href="#i-cmp"/></svg><span data-it="Completato" data-en="Completed">Completato</span></span><span class="long"><span data-it="Completato alle 15:04 · 3 modifiche · spunta neutra: il lime resta di «acceso»" data-en="Completed at 15:04 · 3 changes · neutral check: lime stays “on”">Completato alle 15:04 · 3 modifiche · spunta neutra: il lime resta di «acceso»</span> · fg 11:1</span></div>
+        <div class="state-row"><span class="chip failed"><svg aria-hidden="true"><use href="#i-fail"/></svg><span data-it="Fallito" data-en="Failed">Fallito</span></span><span class="long"><span data-it="Fallito: credito API esaurito — Ricarica" data-en="Failed: API credit exhausted — Top up">Fallito: credito API esaurito — Ricarica</span> · fg 7,8:1 · solid 6,1:1</span></div>
+        <div class="state-row"><span class="chip queued"><svg aria-hidden="true"><use href="#i-que"/></svg><span data-it="In coda" data-en="Queued">In coda</span></span><span class="long"><span data-it="In coda, parte alle 09:00 · contorno tratteggiato: non ancora reale" data-en="Queued, starts at 09:00 · dashed outline: not yet real">In coda, parte alle 09:00 · contorno tratteggiato: non ancora reale</span> · fg 6,2:1</span></div>
+      </div>
+      <p class="why" style="margin-top:12px" data-it="Le forme sono le stesse della variante A: sette glifi distinti in monocromia, ▲ riservato agli avvisi. Cambia solo la mappa dei colori: completato è neutro perché sul nero due verdi (acceso e finito) si confonderebbero." data-en="Shapes are the same as variant A: seven glyphs distinct in monochrome, ▲ reserved for warnings. Only the colour map changes: completed is neutral because on black two greens (on and done) would blur.">Le forme sono le stesse della variante A: sette glifi distinti in monocromia, ▲ riservato agli avvisi. Cambia solo la mappa dei colori: completato è neutro perché sul nero due verdi (acceso e finito) si confonderebbero.</p>
+    </div>
+  </section>
+
+  <!-- DENARO -->
+  <section id="denaro">
+    <header><h2 data-it="Denaro" data-en="Money">Denaro</h2><p class="muted" data-it="Il numero grande alla Revolut: una sola cifra in display-lg per schermata, periodo sopra, freschezza sotto. Stima e consuntivo restano distinti." data-en="The big number, Revolut-style: one display-lg figure per screen, period above, freshness below. Estimate and actual stay distinct.">Il numero grande alla Revolut: una sola cifra in display-lg per schermata, periodo sopra, freschezza sotto. Stima e consuntivo restano distinti.</p></header>
+    <div class="grid g3">
+      <div class="tile"><div class="kpi"><span class="l" data-it="Costo · oggi" data-en="Cost · today">Costo · oggi</span><span class="n num" data-it="4,82 €" data-en="€4.82">4,82 €</span><span class="fresh"><i aria-hidden="true"></i><span data-it="live · ≈ 0,11 €/min · 3 agenti" data-en="live · ≈ €0.11/min · 3 agents">live · ≈ 0,11 €/min · 3 agenti</span></span></div></div>
+      <div class="tile"><div class="money est"><span class="v num" data-it="≈ 0,42 €" data-en="≈ €0.42">≈ 0,42 €</span><span class="m" data-it="questo task · live" data-en="this task · live">questo task · live</span></div><br><div class="money" style="margin-top:8px"><span class="v num" data-it="3,14 €" data-en="€3.14">3,14 €</span><span class="m" data-it="chiuso alle 15:04" data-en="closed at 15:04">chiuso alle 15:04</span></div><p class="why" style="margin-top:12px" data-it="Stima (≈, attenuata) mentre gira; consuntivo (pieno, con ora) alla chiusura." data-en="Estimate (≈, muted) while running; actual (solid, with time) on close.">Stima (≈, attenuata) mentre gira; consuntivo (pieno, con ora) alla chiusura.</p></div>
+      <div class="tile"><div class="money"><span class="v num" data-it="312,00 €" data-en="€312.00">312,00 €</span><span class="m num" data-it="26 % · questo mese" data-en="26% · this month">26 % · questo mese</span></div><br><div class="money" style="margin-top:8px;color:var(--money-over)"><svg style="width:14px;height:14px;align-self:center" aria-hidden="true"><use href="#i-warn"/></svg><span class="v num" data-it="−38,00 €" data-en="−€38.00">−38,00 €</span><span class="m" style="color:inherit" data-it="in perdita · Cliente Bianchi" data-en="negative margin · Client Bianchi">in perdita · Cliente Bianchi</span></div><p class="why" style="margin-top:12px" data-it="Margine: assoluto + percentuale. Il negativo porta segno, glifo ed etichetta." data-en="Margin: absolute + percentage. Negative carries sign, glyph and label.">Margine: assoluto + percentuale. Il negativo porta segno, glifo ed etichetta.</p></div>
+    </div>
+    <div class="two">
+      <div class="tile">
+        <b class="lab" data-it="BudgetBar: tacca fissa all'80%, cifre obbligatorie accanto" data-en="BudgetBar: fixed 80% tick, mandatory adjacent figures">BudgetBar: tacca fissa all'80%, cifre obbligatorie accanto</b>
+        <div class="budget" style="margin-top:14px" role="progressbar" aria-valuenow="482" aria-valuemin="0" aria-valuemax="600" aria-valuetext="482 euro di 600, 80 per cento"><div class="track"><span class="used" style="width:72%"></span><span class="est" style="left:72%;width:8%"></span><span class="tick" aria-hidden="true"></span></div><div class="lbl num"><span data-it="432,00 € + ≈ 50,00 € in corso" data-en="€432.00 + ≈ €50.00 in progress">432,00 € + ≈ 50,00 € in corso</span><span data-it="di 600,00 € · 80 %" data-en="of €600.00 · 80%">di 600,00 € · 80 %</span></div></div>
+        <div class="budget over" style="margin-top:18px"><div class="track"><span class="used" style="width:100%"></span><span class="tick" aria-hidden="true"></span></div><div class="lbl num"><span style="color:var(--money-over);font-weight:600;display:inline-flex;gap:4px;align-items:center"><svg style="width:12px;height:12px" aria-hidden="true"><use href="#i-warn"/></svg><span data-it="Oltre budget: +38,00 €" data-en="Over budget: +€38.00">Oltre budget: +38,00 €</span></span><span data-it="638,00 € di 600,00 €" data-en="€638.00 of €600.00">638,00 € di 600,00 €</span></div></div>
+      </div>
+      <div class="tile">
+        <b class="lab" data-it="FreshnessMark: livelli discreti, mai un contatore di secondi" data-en="FreshnessMark: discrete levels, never a seconds counter">FreshnessMark: livelli discreti, mai un contatore di secondi</b>
+        <dl class="dl" style="margin-top:14px">
+          <dt>≤ 10 s</dt><dd><span class="fresh"><i aria-hidden="true"></i>live</span></dd>
+          <dt>≤ 60 s</dt><dd><span class="fresh" data-it="aggiornato 45 s fa" data-en="updated 45 s ago">aggiornato 45 s fa</span></dd>
+          <dt>&gt; 60 s</dt><dd><span class="fresh stale"><svg style="width:12px;height:12px" aria-hidden="true"><use href="#i-refresh"/></svg><span data-it="dati alle 14:32 · Aggiorna" data-en="data as of 14:32 · Refresh">dati alle 14:32 · Aggiorna</span></span></dd>
+          <dt data-it="definitivo" data-en="final">definitivo</dt><dd><span class="fresh" data-it="chiuso alle 15:04" data-en="closed at 15:04">chiuso alle 15:04</span></dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPAZIO / RAGGI / ELEVAZIONE / MOTO -->
+  <section id="spazio">
+    <header><h2 data-it="Spaziatura, raggi, elevazione, movimento" data-en="Spacing, radii, elevation, motion">Spaziatura, raggi, elevazione, movimento</h2><p class="muted" data-it="Base 4px, tessere più imbottite della variante A (20px), righe 52px. Sul nero l'elevazione è tono, non ombra: le ombre esistono solo sugli overlay. Molle brevi alla Apple." data-en="4px base, tiles more padded than variant A (20px), rows 52px. On black, elevation is tone, not shadow: shadows exist only on overlays. Short Apple-like springs.">Base 4px, tessere più imbottite della variante A (20px), righe 52px. Sul nero l'elevazione è tono, non ombra: le ombre esistono solo sugli overlay. Molle brevi alla Apple.</p></header>
+    <div class="scroll tile"><table class="tbl"><thead><tr><th>Token</th><th class="r" data-it="Comoda" data-en="Comfortable">Comoda</th><th class="r" data-it="Compatta" data-en="Compact">Compatta</th><th data-it="Nota" data-en="Note">Nota</th></tr></thead><tbody>
+      <tr><td>size-control / control-lg</td><td class="r num">40 / 50</td><td class="r num">32 / 50</td><td data-it="capsule; 50 = primario mobile (Apple)" data-en="capsules; 50 = mobile primary (Apple)">capsule; 50 = primario mobile (Apple)</td></tr>
+      <tr><td>size-row-list / row-table</td><td class="r num">52 / 44</td><td class="r num">40 / 32</td><td data-it="stop di riga ≥ 32×32 (44 su touch)" data-en="row stop ≥ 32×32 (44 on touch)">stop di riga ≥ 32×32 (44 su touch)</td></tr>
+      <tr><td>space-card-padding / section-gap</td><td class="r num">20 / 32</td><td class="r num">16 / 20</td><td data-it="tessere ariose, come il riferimento" data-en="airy tiles, like the reference">tessere ariose, come il riferimento</td></tr>
+      <tr><td>size-rail / rail-tile / dock-height</td><td class="r num">64 / 40 / 56</td><td class="r num">64 / 36 / 48</td><td data-it="rail e dock dal riferimento" data-en="rail and dock from the reference">rail e dock dal riferimento</td></tr>
+      <tr><td>size-col-money (F1)</td><td class="r num">120</td><td class="r num">100</td><td data-it="sempre a destra, filetto a sinistra" data-en="always right, hairline left">sempre a destra, filetto a sinistra</td></tr>
+    </tbody></table></div>
+    <div class="two">
+      <div class="tile"><b class="lab" data-it="Raggi: capsule per i controlli, 10 campi, 14 tessere, 20 fogli; badge ≤ 8 (icona app)" data-en="Radii: capsules for controls, 10 fields, 14 tiles, 20 sheets; badge ≤ 8 (app icon)">Raggi: capsule per i controlli, 10 campi, 14 tessere, 20 fogli; badge ≤ 8 (icona app)</b><div class="radii" style="margin-top:14px"><div><i style="border-radius:var(--r-badge)"></i>badge 6</div><div><i style="border-radius:var(--r-field)"></i>field 10</div><div><i style="border-radius:var(--r-tile)"></i>tile 14</div><div><i style="border-radius:var(--r-overlay)"></i>overlay 20</div><div><i style="border-radius:9999px"></i>capsule</div></div><p class="why" style="margin-top:12px" data-it="La capsula è la forma di Apple e Revolut per i pulsanti; la tessera a 14 è quella del riferimento. L'AgentMark resta un quadrato arrotondato (icona app), la persona un cerchio (contatto): la grammatica delle forme sopravvive." data-en="The capsule is Apple's and Revolut's button shape; the 14px tile is the reference's. The AgentMark stays a rounded square (app icon), the person a circle (contact): the shape grammar survives.">La capsula è la forma di Apple e Revolut per i pulsanti; la tessera a 14 è quella del riferimento. L'AgentMark resta un quadrato arrotondato (icona app), la persona un cerchio (contatto): la grammatica delle forme sopravvive.</p></div>
+      <div class="tile"><b class="lab" data-it="Elevazione: tono prima dell'ombra" data-en="Elevation: tone before shadow">Elevazione: tono prima dell'ombra</b><div class="elev" style="margin-top:14px"><div><b>0</b><span data-it="tessera: tono + bordo 8%" data-en="tile: tone + 8% border">tessera: tono + bordo 8%</span></div><div style="background:var(--raised)"><b>1</b><span data-it="rialzo: tono più chiaro, nessuna ombra" data-en="raised: lighter tone, no shadow">rialzo: tono più chiaro, nessuna ombra</span></div><div style="background:var(--overlay);box-shadow:var(--el2);border-color:transparent"><b>2</b><span data-it="popover, toast" data-en="popover, toast">popover, toast</span></div><div style="background:var(--overlay);box-shadow:var(--el3);border-color:transparent"><b>3</b><span data-it="fogli, dialoghi + scrim" data-en="sheets, dialogs + scrim">fogli, dialoghi + scrim</span></div></div></div>
+    </div>
+    <div class="tile"><b class="lab" data-it="Movimento: 120 / 200 / 320 ms con molla breve; un solo elemento vivo per regione" data-en="Motion: 120 / 200 / 320 ms on a short spring; one live element per region">Movimento: 120 / 200 / 320 ms con molla breve; un solo elemento vivo per regione</b><div style="margin-top:14px;display:flex;gap:24px;flex-wrap:wrap;align-items:center"><span><span class="live" aria-hidden="true"></span><span class="num">3</span> <span class="muted" data-it="in esecuzione — l'unico alone del sistema (anello 3px al 22%, nessun blur), pulsa in 2 s" data-en="running — the system's only halo (3px ring at 22%, no blur), pulsing over 2 s">in esecuzione — l'unico alone del sistema (anello 3px al 22%, nessun blur), pulsa in 2 s</span></span><span class="chip stopping"><svg aria-hidden="true"><use href="#i-stopping"/></svg><span data-it="Arresto…" data-en="Stopping…">Arresto…</span></span><span class="muted cap" data-it="rotazione 1 s · con prefers-reduced-motion tutto è statico" data-en="1 s spin · with prefers-reduced-motion everything is static">rotazione 1 s · con prefers-reduced-motion tutto è statico</span></div></div>
+    <div class="tile"><b class="lab" data-it="Iconografia: un set outline a 1,5px (SF Symbols su Apple, Phosphor sul web), mai emoji" data-en="Iconography: one 1.5px outline set (SF Symbols on Apple, Phosphor on the web), never emoji">Iconografia: un set outline a 1,5px (SF Symbols su Apple, Phosphor sul web), mai emoji</b><div class="icons" style="margin-top:14px"><div><svg aria-hidden="true"><use href="#i-run"/></svg>running</div><div><svg aria-hidden="true"><use href="#i-apr"/></svg>approval</div><div><svg aria-hidden="true"><use href="#i-stopping"/></svg>stopping</div><div><svg aria-hidden="true"><use href="#i-stp"/></svg>stopped</div><div><svg aria-hidden="true"><use href="#i-cmp"/></svg>completed</div><div><svg aria-hidden="true"><use href="#i-fail"/></svg>failed</div><div><svg aria-hidden="true"><use href="#i-que"/></svg>queued</div><div><svg aria-hidden="true"><use href="#i-warn"/></svg><span data-it="avviso" data-en="warning">avviso</span></div></div></div>
+  </section>
+
+  <!-- COMPONENTI -->
+  <section id="componenti">
+    <header><h2 data-it="Componenti di base" data-en="Base components">Componenti di base</h2><p class="muted" data-it="Stessi componenti della variante A, più tre presi dal riferimento: rail di icone, tab a pillola, dock con composer. Mostrati isolati." data-en="Same components as variant A, plus three taken from the reference: icon rail, pill tabs, dock with composer. Shown in isolation.">Stessi componenti della variante A, più tre presi dal riferimento: rail di icone, tab a pillola, dock con composer. Mostrati isolati.</p></header>
+
+    <div class="tile">
+      <b class="lab">Button</b>
+      <div class="btn-row" style="margin-top:14px">
+        <button class="btn primary" data-it="Approva e pubblica" data-en="Approve &amp; publish">Approva e pubblica</button>
+        <button class="btn secondary" data-it="Chiedi modifiche" data-en="Request changes">Chiedi modifiche</button>
+        <button class="btn tertiary" data-it="Rifiuta" data-en="Reject">Rifiuta</button>
+        <button class="btn stop"><svg aria-hidden="true"><use href="#i-square"/></svg><span data-it="Ferma" data-en="Stop">Ferma</span></button>
+        <button class="btn stop-all"><svg aria-hidden="true"><use href="#i-square"/></svg><span data-it="Ferma tutto (3)" data-en="Stop all (3)">Ferma tutto (3)</span></button>
+        <button class="btn armed"><svg aria-hidden="true"><use href="#i-square"/></svg><span data-it="Confermi: ferma 3" data-en="Confirm: stop 3">Confermi: ferma 3</span></button>
+        <button class="btn danger" data-it="Elimina dipartimento" data-en="Delete department">Elimina dipartimento</button>
+      </div>
+      <p class="why" style="margin-top:12px" data-it="Capsule come nel dock del riferimento. Grammatica invariata: pieno lime = primario, contorno chiaro = secondario, contorno corallo = «Ferma tutto» (unico per schermata, si arma per 5 s), pieno rosso = irreversibile con dialogo." data-en="Capsules as in the reference's dock. Grammar unchanged: solid lime = primary, light outline = secondary, coral outline = “Stop all” (one per screen, arms for 5 s), solid red = irreversible with a dialog.">Capsule come nel dock del riferimento. Grammatica invariata: pieno lime = primario, contorno chiaro = secondario, contorno corallo = «Ferma tutto» (unico per schermata, si arma per 5 s), pieno rosso = irreversibile con dialogo.</p>
+    </div>
+
+    <div class="two">
+      <div class="tile">
+        <b class="lab" data-it="Field · Tabs · Rail" data-en="Field · Tabs · Rail">Field · Tabs · Rail</b>
+        <div class="field" style="margin-top:14px"><label for="f1" data-it="Limite giornaliero (obbligatorio)" data-en="Daily limit (required)">Limite giornaliero (obbligatorio)</label><input id="f1" class="num" value="50,00" aria-describedby="f1h"><span class="help" id="f1h" data-it="Accetta 1.200,50 · 1200.50 · 1,2k. Riformattato all'uscita dal campo." data-en="Accepts 1,200.50 · 1200.50 · 1.2k. Reformatted on blur.">Accetta 1.200,50 · 1200.50 · 1,2k. Riformattato all'uscita dal campo.</span></div>
+        <div class="field error" style="margin-top:12px"><label for="f2" data-it="Importo massimo per task" data-en="Maximum per task">Importo massimo per task</label><input id="f2" value="12.5.0" aria-invalid="true" aria-describedby="f2e"><span class="err" id="f2e"><svg aria-hidden="true"><use href="#i-warn"/></svg><span data-it="Importo non valido. Usa la virgola per i decimali, es. 12,50" data-en="Invalid amount. Use a dot for decimals, e.g. 12.50">Importo non valido. Usa la virgola per i decimali, es. 12,50</span></span></div>
+        <div style="margin-top:16px;display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+          <div class="tabs" role="tablist"><span role="tab" aria-current="true" data-it="Risultati" data-en="Results">Risultati</span><span role="tab" data-it="Costi" data-en="Costs">Costi</span><span role="tab" data-it="Tracce" data-en="Traces">Tracce</span></div>
+          <div style="display:flex;gap:8px"><span class="rail-demo"><span class="t" style="display:inline-grid;place-items:center;width:40px;height:40px;border-radius:10px;background:var(--raised);border:1px solid var(--border);color:var(--icon)"><svg style="width:18px;height:18px" aria-hidden="true"><use href="#i-inbox"/></svg></span></span><span class="t" style="display:inline-grid;place-items:center;width:40px;height:40px;border-radius:10px;background:var(--accent);color:var(--on-accent)"><svg style="width:18px;height:18px" aria-hidden="true"><use href="#i-org"/></svg></span></div>
+        </div>
+        <p class="why" style="margin-top:12px" data-it="Campi a raggio 10 su rialzo con bordo ≥ 3:1; tab a pillola con la voce attiva su tono più chiaro; tessera del rail attiva in lime con glifo nero, come nel riferimento." data-en="Fields at radius 10 on a raised tone with a ≥ 3:1 border; pill tabs with the active item on a lighter tone; active rail tile in lime with a black glyph, as in the reference.">Campi a raggio 10 su rialzo con bordo ≥ 3:1; tab a pillola con la voce attiva su tono più chiaro; tessera del rail attiva in lime con glifo nero, come nel riferimento.</p>
+      </div>
+      <div class="tile">
+        <b class="lab">AgentMark · PersonMark</b>
+        <div style="margin-top:14px">
+          <span class="who"><span class="mark icon"><svg aria-hidden="true"><use href="#i-pen"/></svg></span><span class="nm">Copywriter<span>Marketing · <span data-it="agente" data-en="agent">agente</span></span></span></span>
+          <span class="who"><span class="mark">DV</span><span class="nm">Developer<span>Tech · <span data-it="agente" data-en="agent">agente</span></span></span></span>
+          <span class="who"><span class="mark disabled">RS</span><span class="nm">Researcher<span data-it="Disattivato" data-en="Disabled">Disattivato</span></span></span>
+          <span class="who"><span class="mark person">MR</span><span class="nm">Marco Rossi<span data-it="Titolare · persona" data-en="Owner · person">Titolare · persona</span></span></span>
+        </div>
+        <p class="why" style="margin-top:12px" data-it="Il riferimento mette un'icona in un quadratino scuro in cima a ogni tessera: l'AgentMark può portare l'icona del ruolo o il monogramma, mai un'illustrazione. La persona resta un cerchio (foto di contatto)." data-en="The reference puts an icon in a small dark square atop every tile: the AgentMark may carry the role icon or the monogram, never an illustration. The person stays a circle (contact photo).">Il riferimento mette un'icona in un quadratino scuro in cima a ogni tessera: l'AgentMark può portare l'icona del ruolo o il monogramma, mai un'illustrazione. La persona resta un cerchio (foto di contatto).</p>
+      </div>
+    </div>
+
+    <div class="tile">
+      <b class="lab" data-it="ControlStrip su mobile (in alto, una riga) e RunRow" data-en="ControlStrip on mobile (top, one row) and RunRow">ControlStrip su mobile (in alto, una riga) e RunRow</b>
+      <div class="strip mobile" style="margin-top:14px" role="region" aria-label="Stato dell'azienda (mobile)">
+        <span class="pill" style="min-height:32px;padding:0 10px"><span class="live" aria-hidden="true"></span><span class="num">3</span></span>
+        <span class="pill money num" style="min-height:32px;padding:0 12px" data-it="4,82 € oggi" data-en="€4.82 today">4,82 € oggi</span>
+        <button class="btn stop-all end" style="min-height:36px;min-width:0;padding-inline:12px"><svg aria-hidden="true"><use href="#i-square"/></svg><span data-it="Ferma tutto" data-en="Stop all">Ferma tutto</span></button>
+      </div>
+      <div class="run" style="margin-top:12px">
+        <span class="chip running"><svg aria-hidden="true"><use href="#i-run"/></svg><span data-it="In esecuzione" data-en="Running">In esecuzione</span></span>
+        <div class="task" style="display:flex;gap:10px;align-items:center"><span class="mark icon" style="width:26px;height:26px"><svg aria-hidden="true" style="width:14px;height:14px"><use href="#i-pen"/></svg></span><div class="task"><b data-it="Copywriter · Scrivi il post di lancio per Rossi Srl" data-en="Copywriter · Write the launch post for Rossi Srl">Copywriter · Scrivi il post di lancio per Rossi Srl</b><span data-it="Passo 4/7 · Ricerca web" data-en="Step 4/7 · Web search">Passo 4/7 · Ricerca web</span></div></div>
+        <span class="dur num">12 min</span>
+        <div class="money-cell num"><b data-it="≈ 0,42 €" data-en="≈ €0.42">≈ 0,42 €</b><span class="muted cap" data-it="≈ 0,03 €/min" data-en="≈ €0.03/min">≈ 0,03 €/min</span></div>
+        <span class="stopc"><button class="btn stop" style="min-height:34px;min-width:0"><svg aria-hidden="true"><use href="#i-square"/></svg><span data-it="Ferma" data-en="Stop">Ferma</span></button></span>
+      </div>
+      <p class="why" style="margin-top:12px" data-it="Su desktop le quattro domande vivono nel dock in basso, come la barra del riferimento; su telefono salgono in alto in una riga, perché la zona pollice appartiene all'approvazione. Il pulsante di riga ha contorno neutro e glifo corallo: «Ferma tutto» resta l'unico contorno corallo." data-en="On desktop the four questions live in the bottom dock, like the reference's bar; on a phone they move to a single top row, because the thumb zone belongs to approval. The row button has a neutral outline with a coral glyph: “Stop all” stays the only coral outline.">Su desktop le quattro domande vivono nel dock in basso, come la barra del riferimento; su telefono salgono in alto in una riga, perché la zona pollice appartiene all'approvazione. Il pulsante di riga ha contorno neutro e glifo corallo: «Ferma tutto» resta l'unico contorno corallo.</p>
+    </div>
+
+    <div class="two">
+      <div class="tile">
+        <b class="lab" data-it="ApprovalCard su telefono: blocco impegno + footer nella zona pollice" data-en="ApprovalCard on a phone: commitment block + footer in the thumb zone">ApprovalCard su telefono: blocco impegno + footer nella zona pollice</b>
+        <div class="phone" style="margin-top:14px">
+          <div class="body">
+            <div class="commit"><div class="row"><span class="muted" data-it="Destinazione" data-en="Destination">Destinazione</span><span>LinkedIn · Rossi Srl</span></div><div class="row"><span class="muted" data-it="Costo stimato" data-en="Estimated cost">Costo stimato</span><span class="num" data-it="≈ 3,20 €" data-en="≈ €3.20">≈ 3,20 €</span></div><div class="row"><span class="muted" data-it="Scadenza" data-en="Due">Scadenza</span><span data-it="tra 2 h" data-en="in 2 h">tra 2 h</span></div><span class="muted cap" data-it="L'agente è fermo e non consuma in attesa." data-en="The agent is idle and not spending while it waits.">L'agente è fermo e non consuma in attesa.</span><span class="irrev"><svg aria-hidden="true"><use href="#i-lock"/></svg><span data-it="Non annullabile dopo la pubblicazione" data-en="Cannot be undone after publishing">Non annullabile dopo la pubblicazione</span></span></div>
+          </div>
+          <div class="foot">
+            <div class="top"><button class="btn secondary" style="min-height:44px" data-it="Chiedi modifiche" data-en="Request changes">Chiedi modifiche</button><button class="btn tertiary" style="min-height:44px" data-it="Rifiuta" data-en="Reject">Rifiuta</button></div>
+            <button class="btn primary lg" data-it="Approva e pubblica" data-en="Approve &amp; publish">Approva e pubblica</button>
+          </div>
+        </div>
+      </div>
+      <div class="tile">
+        <b class="lab" data-it="Dopo il tocco: ResolvedBar con undo reale, poi la fine del flusso" data-en="After the tap: ResolvedBar with a real undo, then the end of the flow">Dopo il tocco: ResolvedBar con undo reale, poi la fine del flusso</b>
+        <div class="phone" style="margin-top:14px">
+          <div class="foot"><div class="resolved"><span class="chip completed"><svg aria-hidden="true"><use href="#i-cmp"/></svg><span data-it="Approvata" data-en="Approved">Approvata</span></span><button class="btn tertiary" style="min-height:44px"><svg aria-hidden="true"><use href="#i-undo"/></svg><span class="num" data-it="Annulla approvazione · 8&amp;nbsp;s" data-en="Undo approval · 8&amp;nbsp;s">Annulla approvazione · 8&nbsp;s</span></button></div><span class="muted cap" data-it="Il post verrà pubblicato tra 8 s. L'esecuzione parte solo alla fine della grazia, lato server." data-en="The post will publish in 8 s. Execution starts only when the grace period ends, server-side.">Il post verrà pubblicato tra 8 s. L'esecuzione parte solo alla fine della grazia, lato server.</span></div>
+          <div class="body"><div class="commit"><div class="row"><span class="chip running"><svg aria-hidden="true"><use href="#i-run"/></svg><span data-it="In pubblicazione" data-en="Publishing">In pubblicazione</span></span></div><div class="row"><span data-it="Pubblicato su LinkedIn alle 15:04" data-en="Published on LinkedIn at 15:04">Pubblicato su LinkedIn alle 15:04</span><a href="#componenti" data-it="Vedi" data-en="View">Vedi</a></div><div class="row"><span class="muted" data-it="Costo effettivo" data-en="Actual cost">Costo effettivo</span><span class="num" data-it="3,14 €" data-en="€3.14">3,14 €</span></div></div><button class="btn secondary" style="min-height:44px;width:100%" data-it="Prossima richiesta (2)" data-en="Next request (2)">Prossima richiesta (2)</button></div>
+        </div>
+        <p class="why" style="margin-top:12px" data-it="Identico alla variante A nella logica: l'undo è reale perché l'esecuzione è differita; il flusso finisce con cosa è successo, quanto è costato e la prossima richiesta." data-en="Identical to variant A in logic: undo is real because execution is deferred; the flow ends with what happened, what it cost and the next request.">Identico alla variante A nella logica: l'undo è reale perché l'esecuzione è differita; il flusso finisce con cosa è successo, quanto è costato e la prossima richiesta.</p>
+      </div>
+    </div>
+
+    <div class="tile">
+      <b class="lab" data-it="Toast con undo (overlay: l'unica ombra) e MessageBar" data-en="Toast with undo (overlay: the only shadow) and MessageBar">Toast con undo (overlay: l'unica ombra) e MessageBar</b>
+      <div style="margin-top:14px;display:grid;gap:14px"><div class="toast" role="status"><span data-it="3 agenti fermati · costo fermo a 4,82 €" data-en="3 agents stopped · cost frozen at €4.82">3 agenti fermati · costo fermo a 4,82 €</span><button class="btn secondary" style="min-height:44px"><span class="num" data-it="Riprendi tutto · 28&amp;nbsp;s" data-en="Resume all · 28&amp;nbsp;s">Riprendi tutto · 28&nbsp;s</span></button></div>
+      <div class="composer" style="max-width:560px"><span class="ph" data-it="Scrivi a Copywriter… (es. «Accorcia il post e cambia tono»)" data-en="Message Copywriter… (e.g. “Shorten the post and change the tone”)">Scrivi a Copywriter… (es. «Accorcia il post e cambia tono»)</span><span class="mono id">run_7f3a·b2c9</span><span class="send" aria-hidden="true"><svg><use href="#i-send"/></svg></span></div></div>
+      <p class="why" style="margin-top:12px" data-it="La MessageBar viene dal riferimento (chat + ID in mono + invio): è il modo in cui l'utente parla a un dipendente. L'ID resta in mono, l'unico uso del monospazio insieme alle tracce." data-en="The MessageBar comes from the reference (chat + mono ID + send): it is how the user talks to an employee. The ID stays in mono, the only monospace use besides traces.">La MessageBar viene dal riferimento (chat + ID in mono + invio): è il modo in cui l'utente parla a un dipendente. L'ID resta in mono, l'unico uso del monospazio insieme alle tracce.</p>
+    </div>
+  </section>
+
+  <section id="whitelabel">
+    <header><h2 data-it="White-label e accessibilità" data-en="White-label and accessibility">White-label e accessibilità</h2><p class="muted" data-it="Contratto identico alla variante A: aperto accento (un valore), font, scala dei raggi, logo, nome; chiuso tutto ciò che è significato o accessibilità. Coppie di contrasto verificate in scuro e in chiaro con lo stesso strumento." data-en="Contract identical to variant A: open accent (one value), fonts, radius scale, logo, name; closed everything that is meaning or accessibility. Contrast pairs verified in dark and light with the same tool.">Contratto identico alla variante A: aperto accento (un valore), font, scala dei raggi, logo, nome; chiuso tutto ciò che è significato o accessibilità. Coppie di contrasto verificate in scuro e in chiaro con lo stesso strumento.</p></header>
+    <p class="why" data-it="Documento completo: design-system/variants/b-dark-lime/DESIGN-B.md; token: tokens-b.css; riferimenti: design-system/reference/." data-en="Full document: design-system/variants/b-dark-lime/DESIGN-B.md; tokens: tokens-b.css; references: design-system/reference/.">Documento completo: design-system/variants/b-dark-lime/DESIGN-B.md; token: tokens-b.css; riferimenti: design-system/reference/.</p>
+  </section>
+</main>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  function press(attr,val){document.querySelectorAll('['+attr+']').forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute(attr)===val));});}
+  root.setAttribute('data-theme','dark');
+  document.querySelectorAll('[data-theme-set]').forEach(function(b){b.addEventListener('click',function(){var v=b.getAttribute('data-theme-set');if(v)root.setAttribute('data-theme',v);else root.removeAttribute('data-theme');press('data-theme-set',v);});});
+  document.querySelectorAll('[data-density-set]').forEach(function(b){b.addEventListener('click',function(){var v=b.getAttribute('data-density-set');root.setAttribute('data-density',v);press('data-density-set',v);try{localStorage.setItem('dgt-b-density',v)}catch(e){}});});
+  function setLang(l){document.querySelectorAll('[data-it]').forEach(function(el){el.innerHTML=el.getAttribute(l==='it'?'data-it':'data-en');});root.setAttribute('lang',l);press('data-lang-set',l);try{localStorage.setItem('dgt-b-lang',l)}catch(e){}}
+  document.querySelectorAll('[data-lang-set]').forEach(function(b){b.addEventListener('click',function(){setLang(b.getAttribute('data-lang-set'));});});
+  var brands={default:{},blue:{'--brand-accent':'#5B9CFF','--brand-accent-hover':'#78AEFF','--brand-accent-subtle':'#1E2A3D','--brand-accent-text':'#9CC3FF','--brand-accent-subtle-light':'#E6F0FF','--brand-accent-text-light':'#1F4F9C'}};
+  document.querySelectorAll('[data-brand-set]').forEach(function(b){b.addEventListener('click',function(){var k=b.getAttribute('data-brand-set');Object.keys(brands.blue).forEach(function(p){root.style.removeProperty(p)});Object.keys(brands[k]).forEach(function(p){root.style.setProperty(p,brands[k][p])});press('data-brand-set',k);});});
+  try{var d=localStorage.getItem('dgt-b-density');if(d){root.setAttribute('data-density',d);press('data-density-set',d);}var l=localStorage.getItem('dgt-b-lang');if(l&&l!=='it')setLang(l);}catch(e){}
+})();
+</script>
