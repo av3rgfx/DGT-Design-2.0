@@ -2,9 +2,9 @@
 
 > Stato: **proposta per approvazione**. Nessuna schermata è stata disegnata. Questo documento fissa i token e i componenti di base che ogni schermata dovrà usare. I valori vivono in `tokens.css`; il marchio si cambia solo in `brand.css` / `brand.json`.
 
-## Nota preliminare: l'immagine di riferimento non è arrivata
+## Nota preliminare: due varianti
 
-Nella sessione non è presente alcuna immagine allegata (né negli upload, né nel repository, né nel messaggio). Il sistema qui sotto è quindi costruito **solo sul brief scritto**: le quattro domande, i due pubblici, gli anti-riferimenti e i vincoli di sistema.
+Questa variante **A** («registro chiaro») è stata costruita **solo sul brief scritto**, perché le immagini di riferimento non erano ancora disponibili. Le immagini sono arrivate il 2026-09-03 e sono salvate in `design-system/reference/`; da esse deriva la variante **B** («Console nera e lime», `design-system/variants/b-dark-lime/`), che condivide con A tutta la struttura (stati, quattro domande, stop, denaro, densità, white-label) e cambia mondo visivo e cornice applicativa.
 
 Per rispettare l'istruzione "per filo e segno, non inventare nulla di nuovo se il design allegato presenta già soluzioni", tutte le scelte **puramente visive** sono confinate in token singoli e marcate come *assunzione da riallineare* (sezione 12): tinta dei neutri, accento di default, famiglia tipografica, set di icone, raggi. Le scelte **strutturali** (grammatica degli stati, architettura dei token, componenti, regole di densità e accessibilità) derivano dal brief e restano valide con qualunque immagine.
 

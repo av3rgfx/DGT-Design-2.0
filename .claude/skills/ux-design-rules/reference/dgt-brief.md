@@ -39,7 +39,7 @@ L'interfaccia serve entrambi senza diventare due prodotti: densità regolabile e
 
 ## Riferimento visivo
 
-L'utente ha indicato un'immagine di riferimento da seguire "per filo e segno": dove quel design presenta già soluzioni UX, riusarle senza inventare. Se l'immagine non è disponibile nella sessione, dirlo esplicitamente e segnare come "assunzione da riallineare" ogni scelta puramente visiva (tinte, famiglia tipografica, raggi).
+L'utente ha fornito due immagini di riferimento (`design-system/reference/riferimento-01-case-study.jpg`, `riferimento-02-ui.jpg`): case study scuro con accento lime; interfaccia scura con tessere, rail di icone, tab a pillola, dock in basso, ID in mono. Dove quel design presenta già soluzioni UX, riusarle senza inventare. Richiesta esplicita: stile professionale "tipo Apple e Revolut". Tensione registrata: il riferimento è un editor a nodi con bagliori, che gli anti-riferimenti escludono; si riusano finitura e soluzioni di interfaccia, non il canvas a nodi, il vetro, i gradienti. Esistono due varianti del sistema: A (`design-system/DESIGN.md`, registro chiaro) e B (`design-system/variants/b-dark-lime/`, console nera e lime).
 
 ## Dove vive il sistema di design
 
