@@ -1,6 +1,7 @@
 # Product
 
 <!-- impeccable:product-schema 1 -->
+<!-- Le intestazioni in inglese sono lo schema letto dagli strumenti di design; il contenuto è in italiano. -->
 
 ## Platform
 

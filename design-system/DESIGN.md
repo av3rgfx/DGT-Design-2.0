@@ -72,7 +72,7 @@ gli avatar sono iniziali su gradiente.
 
 Specimen: `design-system/specimen.html`. Token: `design-system/tokens.css`.
 
-## Overview
+## Panoramica (Overview)
 
 Fondo nero assoluto per l'app, `#181818` per la presentazione. Un solo accento: il verde lime
 `#B8FC64`. Tutto è una **pillola** o un **cerchio**; le card hanno raggio 28 e un **intaglio**
@@ -80,7 +80,7 @@ Fondo nero assoluto per l'app, `#181818` per la presentazione. Un solo accento: 
 leggera e grande: i titoli sono in peso 300–400, mai bold. Le foto del case study sono sostituite
 da avatar con iniziali; le icone di terzi da un'icona video di DGT.
 
-## Colors
+## Colori (Colors)
 
 | Ruolo | Valore | Dove |
 |---|---|---|
@@ -100,7 +100,7 @@ da avatar con iniziali; le icone di terzi da un'icona video di DGT.
 | Punti | `#FC9498 #FCA464 #FCDC64 #A8FC64 #68FC64`, spento `#4A4A4A` | interesse a 5 livelli |
 | Testo 2 | `#9A9A9A` (su chiaro `#6B6B6B`) | ruoli, etichette, orari |
 
-## Typography
+## Tipografia (Typography)
 
 Urbanist, pesi 300–600 caricato da Google Fonts. Nessun bold nei titoli.
 
@@ -117,7 +117,7 @@ Urbanist, pesi 300–600 caricato da Google Fonts. Nessun bold nei titoli.
 | ruolo | 400 · 13/18 · `#9A9A9A` | Direttrice marketing, Bianchi & Co. |
 | etichetta | 400 · 11/14 · `#9A9A9A` | Fonte · Stato · 14:15 |
 
-## Layout
+## Impaginazione (Layout)
 
 - **Console** (1224×912 nella cornice): logo a 34/44; barra agenda a 102/28 larga 960; riga
   WORKSPACE a 118; rail a sinistra (26px) da 260 in giù; sezioni a 232 e 546; card a 302 e 616;
@@ -128,14 +128,14 @@ Urbanist, pesi 300–600 caricato da Google Fonts. Nessun bold nei titoli.
 - **Presentazione**: contenitore 1300, etichette di sezione "(01) …" in `#BDBDBD` 14px, titoli a
   due colonne (h2 56/60 a sinistra, paragrafo 24/32 a destra), sezioni con padding 64.
 
-## Elevation & Depth
+## Profondità (Elevation & Depth)
 
 Nessuna ombra sulle card: la profondità nasce dal contrasto tra nero, `#1C1C1C`, `#4D4D4D`, lime e
 bianco, e dal **riflesso** verticale (`#262626 → #1C1C1C`). Le uniche ombre sono quelle del
 dispositivo (`0 60px 120px rgb(0 0 0/.6)`) e dei campioni colore. Il pannello di chiamata è un
 gradiente radiale grigio-caldo con pulsanti in vetro (`rgb(255 255 255/.22)`).
 
-## Shapes
+## Forme (Shapes)
 
 - Card: raggio 28 (22 dentro il Riepilogo, 24 su mobile).
 - **Intaglio**: blocco del colore di sfondo in alto a destra, raggio 28 in basso a sinistra, con
@@ -144,7 +144,7 @@ gradiente radiale grigio-caldo con pulsanti in vetro (`rgb(255 255 255/.22)`).
 - Tutto il resto: pillole (`9999px`) e cerchi.
 - Campioni colore: 220×220, raggio 38, bordo 4px `#565656`.
 
-## Components
+## Componenti (Components)
 
 - **Pulsante rotondo** 48 (40, 32): scuro `#1E1E1E`; bianco se attivo; vuoto con bordo `.14`;
   nero pieno per il video; rosso `#F15E60` per chiudere la chiamata; vetro nella chiamata.
@@ -166,7 +166,7 @@ gradiente radiale grigio-caldo con pulsanti in vetro (`rgb(255 255 255/.22)`).
   intaglio per il download e due miniature (`#D2D2D2`, foglio bianco, etichetta `#A7A7A7`); card
   Obiettivo con matita, testo 13/19 con parti in 500.
 - **Chiamata**: gradiente grigio, avatar grande, controlli in vetro + rosso.
-- **Mobile**: WORKSPACE chiaro; agenda nera con pannello lime, ore 38/300 ("2 pm"), eventi bianchi,
+- **Mobile**: WORKSPACE chiaro; agenda nera con pannello lime, ore 38/300 ("14:00"), eventi bianchi,
   marcatore nero, blocco tratteggiato; videochiamata con Riepilogo (Obiettivo lime).
 - **Kit**: stessi componenti ingranditi (pillole 68, cerchi 68–88, card lead 490) e conteggio
   "189+ componenti" in lime 88px.
@@ -178,7 +178,7 @@ gradiente radiale grigio-caldo con pulsanti in vetro (`rgb(255 255 255/.22)`).
   disattivato con cestino, connettori `#4FCB58` con bagliore, mini-mappa, zoom, pillole in basso a
   destra (l'ora in lime), barra chat con ID monospazio.
 
-## Do's and Don'ts
+## Sì e no (Do's and Don'ts)
 
 - Sì: nero, `#1C1C1C`, `#4D4D4D`, lime, bianco. No: altri accenti oltre a verde/blu/rosso.
 - Sì: pillole e cerchi. No: angoli vivi, rettangoli con raggio piccolo.
