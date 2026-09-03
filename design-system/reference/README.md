@@ -1,10 +1,10 @@
 # Riferimenti visivi
 
-Due immagini fornite dall'utente il 2026-09-03 come ispirazione per la variante B del sistema di design.
+Due immagini fornite dall'utente il 2026-09-03. Su richiesta dell'utente, il design di DGT le **copia così come sono**: ogni elemento visibile (colori, tipografia, tessere, griglia puntinata, canvas a nodi, connettori luminosi, rail, tab, barra in basso, pillole) è riprodotto in `design-system/specimen.html` e descritto in `design-system/DESIGN.md`.
 
-| File | Cosa mostra | Cosa se ne riusa | Cosa no |
-|---|---|---|---|
-| `riferimento-01-case-study.jpg` | Case study di prodotto: fondo quasi nero, accento lime, titoli bianchi, blocchi lime con testo nero, mockup | Mondo cromatico (nero tonale + lime), lime pieno con testo nero per il primario, tipografia leggera dei titoli | Gradienti, bagliori decorativi |
-| `riferimento-02-ui.jpg` | Interfaccia scura: rail di icone con tessera attiva verde, titolo con percorso e tag, tab a pillola, tessere con icona e stato, tessera selezionata con righe interne, dock in basso con chat, ID in mono e pillole di stato, canvas a nodi | Rail, titolo con percorso, tab, tessere e stato scritto nell'etichetta, tessera selezionata, dock, composer, ID mono, pillole | Canvas a nodi, griglia puntinata, connettori luminosi, vetro (anti-riferimenti del brief) |
+| File | Cosa mostra |
+|---|---|
+| `riferimento-01-case-study.jpg` | Presentazione di prodotto: fondo nero, accento lime, titoli bianchi bold, blocchi lime con testo nero, schede scure con etichette lime, timeline con punti lime |
+| `riferimento-02-ui.jpg` | Interfaccia: rail di icone a sinistra con tessera attiva verde, titolo con percorso e tag rosso, tab a pillola, canvas con griglia puntinata, nodi scuri con icona e spunta verde, nodo selezionato verde con campi interni, connettori verdi luminosi con etichette, nodo disattivato con cestino, mini-mappa e zoom in basso a sinistra, barra chat in basso con ID in mono, pillole "Prova" / "Nascondi chat" e pillola lime con l'ora |
 
-Provenienza: caricate dall'utente nella sessione; non generate. Copie di lavoro, non asset di prodotto.
+Non vengono copiati loghi, foto o marchi di terzi: i contenuti sono di DGT e sintetici.
