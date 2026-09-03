@@ -5,7 +5,7 @@ del case study originale.
 
 ## Stato
 
-- Branch: `claude/dgt-design-system-fz5r1g`, PR aperta verso `main` (vedi la PR per il riepilogo).
+- Branch: `claude/dgt-design-system-fz5r1g`, PR #1 aperta verso `main`: https://github.com/av3rgfx/DGT-Design-2.0/pull/1
 - Artefatto: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b (si aggiorna
   ripubblicando `design-system/specimen.html` dallo stesso percorso).
 - Documento unico: `SYSTEM-DESIGN.md`. Dettaglio: `design-system/DESIGN.md`, token: `design-system/tokens.css`.

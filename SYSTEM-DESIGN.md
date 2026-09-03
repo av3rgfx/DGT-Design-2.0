@@ -140,4 +140,4 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 ## 10. Collegamenti
 
 - Artefatto pubblicato: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b
-- Branch di lavoro: `claude/dgt-design-system-fz5r1g` (PR verso `main`).
+- Branch di lavoro: `claude/dgt-design-system-fz5r1g`, PR #1 verso `main`: https://github.com/av3rgfx/DGT-Design-2.0/pull/1
