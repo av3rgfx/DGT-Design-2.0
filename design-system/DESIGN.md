@@ -100,7 +100,7 @@ Quattro livelli, nome che dichiara il livello: `--{tier}-{categoria}-{ruolo}[-{v
 
 ### 2.1 Neutri (tema chiaro, "carta")
 
-Rampa generata in OKLCH a luminosità fissa per gradino, tinta `--brand-neutral-hue` (default 80°, carta calda) e croma `--brand-neutral-chroma` (default 0.008, massimo 0.02). I gradini di luminosità non sono sovrascrivibili: garantiscono i contrasti.
+Rampa in OKLCH a luminosità fissa per gradino, tinta 80° (carta calda) e croma 0,008. **In v1 i neutri sono chiusi al marchio**: i margini di contrasto sono stretti (4,67:1 su n100) e ogni deriva verso il grigio freddo è il primo passo verso il SaaS AI. Un eventuale `--brand-neutral-hue/chroma` clampato è candidato per la v1.1, solo con il validatore attivo. Sulle superfici n200 (chip Fermato, selezione in hover) il testo secondario usa n600, non n500.
 
 | Token `--ref-color-neutral-*` | Hex (default) | Ruolo semantico | Contrasto verificato |
 |---|---|---|---|
@@ -145,7 +145,7 @@ Sei stati stabili più uno transitorio. Ogni stato ha cinque token (`bg`, `borde
 | Stato | Glifo (forma) | `bg` | `border` | `fg` (testo su bg) | `solid` (glifo su bianco) | IT corta / lunga | EN corta / lunga |
 |---|---|---|---|---|---|---|---|
 | `running` | ● punto con anello (◉) | `#E6F0FB` | `#B7D0F0` | `#1D4F9C` (6,9:1) | `#2B6CD4` (5,0:1) | **In esecuzione** / In esecuzione da {durata} · passo {n}/{m} | **Running** / Running for {duration} · step {n}/{m} |
-| `approval` | ◆ rombo | `#FBF1DC` | `#EFD59A` | `#7A4E00` (6,4:1) | `#B8740A` (3,8:1) | **Da approvare** / In attesa della tua approvazione da {durata} | **Needs approval** / Awaiting your approval for {duration} |
+| `approval` | ◆ rombo | `#FBF1DC` | `#EFD59A` | `#7A4E00` (6,4:1) | `#A96A08` (4,4:1) | **Da approvare** / In attesa della tua approvazione da {durata} | **Needs approval** / Awaiting your approval for {duration} |
 | `stopping` (transitorio) | ■ in anello che ruota | = stopped | = stopped | = stopped | = stopped | **Arresto…** / Arresto in corso da {durata} | **Stopping…** / Stopping for {duration} |
 | `stopped` | ■ quadrato pieno | `#E6E3DC` | `#D3CFC6` | `#3F3B35` (8,7:1) | `#5C574F` (7,2:1) | **Fermato** / Fermato: {motivo} · {ora} | **Stopped** / Stopped: {reason} · {time} |
 | `completed` | ✓ spunta | `#E4F3E9` | `#ABD8BA` | `#1B6B3A` (5,7:1) | `#2E8B57` (4,3:1) | **Completato** / Completato alle {ora} · {n} modifiche | **Completed** / Completed at {time} · {n} changes |
@@ -223,7 +223,7 @@ Grammatica unica: **contorno = reversibile, pieno = impegna**.
 |---|---|---|
 | `Button variant=stop` (riga) | contorno `border-input`, testo `text`, glifo ■ in `#C93A2C` | "Ferma" nella RunRow, nel dettaglio agente, nell'header di dipartimento ("Ferma Marketing (2)") |
 | `Button variant=stop-all` | contorno `#9B2A1F` 1,5px, testo `#9B2A1F`, glifo ■ | **solo** "Ferma tutto (n)" nella ControlStrip: l'unico contorno rosso per schermata |
-| stato **armato** di stop-all | pieno `#9B2A1F`, testo bianco (7,7:1), etichetta "Confermi: ferma 3" | dopo il primo tocco, per 4 s |
+| stato **armato** di stop-all | pieno `#9B2A1F`, testo bianco (7,7:1), etichetta "Confermi: ferma 3" | dopo il primo tocco, per 5 s |
 | `Button variant=danger` | pieno `#C93A2C`, testo bianco (5,1:1); hover `#B0301F`; active `#9B2A1F` | Elimina, Forza arresto: sempre con Dialog |
 
 *Perché il rosso non è su ogni riga*: in una lista di 12 run ci sarebbero 13 elementi rossi e il segnale d'emergenza si diluisce (Von Restorff); il glifo rosso sul contorno neutro resta trovabile senza gridare. *Perché lo stesso rosso di `failed`*: un'azione (pulsante) e uno stato (chip) hanno grammatica diversa e non compaiono mai nello stesso contenitore con lo stesso trattamento; i token restano distinti (`--sys-color-danger-*` vs `--sys-color-status-failed-*`) così il tema scuro o un futuro riallineamento possono separarli.
@@ -242,7 +242,7 @@ Il tema scuro è una **preferenza personale** (`data-theme`, assente = sistema),
 |---|---|---|
 | canvas / surface / surface-raised / surface-overlay | n50 / n0 / n0 / n0 | n900 / n850 / n800 / n750 |
 | text / text-secondary / icon | n900 / n500 / n600 | n100 `#F1EFEA` (14,3:1) / n300 `#B5AFA5` (6,9:1) / n300 |
-| border / border-input | n200 / n450 | n750 / n500 (3,1:1) |
+| border / border-input | n200 / n450 | n750 / n400 (4,8:1 anche sui fogli n750) |
 | accent / on-accent (default inchiostro) | `#2B2823` / bianco | `#F1EFEA` / `#1A1814` (15,4:1) — primario "inverso" |
 | stato: bg / fg / solid | 100 / 700 / 500 della rampa | `color-mix(solid 18%, surface)` / gradino 300 / 500 (stopped e queued solid → `#A8A39A`) |
 | focus-ring | n900 | n100 |
@@ -448,12 +448,11 @@ Esiti: **Approva** → il footer diventa la ResolvedBar "✓ Approvata · il pos
 |---|---|---|
 | `--brand-accent` (obbligatorio) | `on-accent` su di esso ≥ 4,5:1; `accent-text` su surface ≥ 4,5:1; tinta a ≥ 40° dall'azzurro running, altrimenti il sistema attiva la variante running "petrolio" (`--ref-color-teal-*`) | primario, hover, active, subtle, link, selezione |
 | `--brand-on-accent`, `--brand-accent-dark` (opz.) | verificati | testo sul primario; primario nel tema scuro |
-| `--brand-neutral-hue` 0–360, `--brand-neutral-chroma` 0–0,02 (clampato) | i gradini di luminosità restano chiusi | tutta la rampa neutra, ombre e scrim |
 | `--brand-font-sans`, `--brand-font-numeric`, `--brand-font-mono` | pesi 400/500/600; Latin-1 + Latin Extended-A + €; `tnum` (altrimenti il numerico resta IBM Plex Sans); woff2 ≤ 120 KB/peso; `font-display: swap` + `size-adjust` | tutta la tipografia |
 | `--brand-radius-scale` 0–1,25 | chip e AgentMark restano ≤ 4px | raggi di controlli, schede, overlay |
 | `brand.json`: `name` (≤ 24), `shortName` (≤ 12), `logo.{wordmark, wordmarkDark, mark, markDark, alt{it,en}}`, `themes`, `defaults.{density, detail}`, `allowDetailToggle`, `supportEmail`, `legalUrls`, `senderName` | SVG con viewBox, senza font incorporati, ≤ 40 KB; nome verificato nei pulsanti a 360px | Logo, favicon/PWA, email, testi legali, `{{brandName}}` nelle stringhe |
 
-**Chiuso** (semantica di prodotto e accessibilità, uguali in ogni installazione): colori di stato e feedback, danger/stop, focus, gradini dei neutri, scala tipografica, spazi e misure, target minimi, elevazione, z-index, moto, breakpoint, forma persona/agente/rombo, set di icone, testo dei chip. In `tokens.css` gli stati vivono in `@layer tokens.status` caricato dopo `@layer brand`: anche un override fuori validatore perde la cascata.
+**Chiuso** (semantica di prodotto e accessibilità, uguali in ogni installazione): colori di stato e feedback, danger/stop, focus, rampa dei neutri (in v1: tinta e gradini), scala tipografica, spazi e misure, target minimi, elevazione, z-index, moto, breakpoint, forma persona/agente/rombo, set di icone, testo dei chip. In `tokens.css` gli stati vivono in `@layer tokens.status` caricato dopo `@layer brand`: anche un override fuori validatore perde la cascata.
 
 *Perché la distinzione*: chi rivende deve poter fidarsi che "■ Fermato" e "⊗ Fallito" abbiano lo stesso aspetto in ogni tenant (Similarità tra installazioni, Jakob); l'identità è nell'accento, nel font, nel logo e nelle forme (F1–F3), non nel significato. *Perché un solo file concettuale*: `brand.css` è generato da `brand.json`; in produzione multi-tenant il manifest viene serializzato negli stessi `--brand-*` sull'attributo `style` di `<html>`, quindi CSS arbitrario è impossibile per costruzione (Postel: tollerante sui valori, rigido sulla forma).
 
@@ -528,7 +527,7 @@ In `@media print`: sfondi tinta rimossi, chip resi come testo tra parentesi quad
 | ◆ rombo per "Da approvare" | ✋ mano; ◐; orologio | La mano renderizza come emoji (giocattolo); ◐ è un terzo cerchio; il rombo è il nodo-decisione dei diagrammi e l'unica forma del set che "chiede l'umano". |
 | ⊗ per "Fallito", ▲ riservato agli avvisi | ▲! per fallito | In ogni console ▲ è avviso e ✕ è fallimento; DGT ha bisogno di entrambi (budget ≥ 80%, nessun segnale). |
 | Etichetta corta "Da approvare" | "In attesa" / "In attesa di te" | "In attesa" è ambiguo con la coda; "In attesa di te" supera il budget di 14 caratteri (misurato 116px). |
-| Stop singolo immediato; "Ferma tutto" armato in loco (2 tocchi, 4 s) | Dialogo di conferma; nessuna protezione; press-and-hold | Il dialogo porta fuori contesto in emergenza; nessuna protezione = un tocco accidentale ferma l'azienda; press-and-hold è inaccessibile. |
+| Stop singolo immediato; "Ferma tutto" armato in loco (2 tocchi, 5 s) | Dialogo di conferma; nessuna protezione; press-and-hold | Il dialogo porta fuori contesto in emergenza; nessuna protezione = un tocco accidentale ferma l'azienda; press-and-hold è inaccessibile. |
 | Stop di riga con contorno neutro e glifo rosso | Contorno rosso su ogni riga | 12 righe = 13 elementi rossi: il segnale si diluisce (Von Restorff). "Ferma tutto" resta l'unico contorno rosso per schermata. |
 | Footer approvazione su due righe, primario a tutta larghezza in basso | Tre pulsanti in riga | Misurato: 345–381px su 328 disponibili a 360px. |
 | "Chiedi modifiche" secondario, "Rifiuta" terziario | Rifiuta secondario | Dopo "Approva" l'esito frequente è chiedere modifiche (come "Request changes" nella code review); rifiutare è raro e finale (Hick, Jakob). |
@@ -540,7 +539,8 @@ In `@media print`: sfondi tinta rimossi, chip resi come testo tra parentesi quad
 | Tema scuro derivato, opzionale, preferenza personale | Tema scuro "per operatori" | Tracce mono su fondo scuro = terminale finto; un tema per ruolo sdoppia il prodotto. |
 | Un solo input di accento, ruoli derivati | Sei gradini `--brand-accent-{50…800}` | Sei decisioni e quattro verifiche di contrasto scaricate sul rivenditore; nessuno dei sei funzionava nel tema scuro. |
 | `--brand-radius-scale` continuo 0–1,25 con tetto a 4px su chip e marchi | Tre preset (sharp/soft/round) | Il continuo dà più fedeltà al brand; il tetto protegge la grammatica delle forme. I preset restano una semplificazione possibile. |
-| Tinta dei neutri aperta ma clampata (croma ≤ 0,02) | Neutri chiusi | Un po' di fedeltà al brand senza poter arrivare ai grigi violacei del SaaS AI. |
+| Neutri chiusi al marchio in v1 | Tinta e croma aperti ma clampati (croma ≤ 0,02) | I margini di contrasto sono stretti e il grigio freddo è la via più corta verso il SaaS AI; l'apertura clampata è candidata per la v1.1 con validatore. |
+| Costo di periodo sul nodo dipartimento della sidebar | Sidebar con soli StateBadge, costo solo nell'intestazione del dipartimento | Risponde a Q2 dove l'occhio già cerca il dipartimento (Prossimità); il costo compare solo sui dipartimenti, mai per agente, così la sidebar non diventa un cruscotto. |
 | IBM Plex Sans/Mono | Inter, Geist, Source Sans | Famiglia da strumento di lavoro con `tnum` e mono gemello, non il font "sicuro" del SaaS AI. Resta un'assunzione. |
 | Token `--ref/--sys/--cmp/--brand` | `--p/--c/--btn` | Il prefisso di livello rende le dipendenze verificabili da lint. |
 
@@ -552,7 +552,7 @@ Ognuna è un solo token o un solo file. Il resto del sistema non cambia.
 
 | Assunzione | Dove si cambia |
 |---|---|
-| Tinta calda dei neutri ("carta") | `--brand-neutral-hue`, `--brand-neutral-chroma` |
+| Tinta calda dei neutri ("carta") | `--ref-color-neutral-*` (chiusi al marchio in v1) |
 | Accento di default inchiostro | `--brand-accent` (+ `--brand-accent-dark`) |
 | IBM Plex Sans / Mono | `--brand-font-sans`, `--brand-font-numeric`, `--brand-font-mono` |
 | Raggi 4/6/8/12 | `--brand-radius-scale` (0–1,25) |

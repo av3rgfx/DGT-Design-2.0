@@ -12,7 +12,7 @@
 /* ---------- 1. PRIMITIVI (privati) ---------- */
 @layer tokens {
 :root {
-  /* Neutri "carta" (default: hue 80, chroma 0.008). Luminosità per gradino NON sovrascrivibili. */
+  /* Neutri "carta" (hue 80, chroma 0.008). Chiusi al marchio in v1: né tinta né gradini sono sovrascrivibili. */
   --ref-color-neutral-0:   #FFFFFF;
   --ref-color-neutral-50:  #F8F7F4;
   --ref-color-neutral-100: #F1EFEA;
@@ -35,7 +35,7 @@
 
   /* Rampe di stato: 100 bg · 300 fg-dark · 500 solid · 700 fg-light */
   --ref-color-blue-100:  #E6F0FB; --ref-color-blue-200:  #B7D0F0; --ref-color-blue-300:  #8DB4F0; --ref-color-blue-500:  #2B6CD4; --ref-color-blue-700:  #1D4F9C;
-  --ref-color-amber-100: #FBF1DC; --ref-color-amber-200: #EFD59A; --ref-color-amber-300: #EFD59A; --ref-color-amber-500: #B8740A; --ref-color-amber-700: #7A4E00;
+  --ref-color-amber-100: #FBF1DC; --ref-color-amber-200: #EFD59A; --ref-color-amber-300: #EFD59A; --ref-color-amber-500: #A96A08; --ref-color-amber-700: #7A4E00;
   --ref-color-green-100: #E4F3E9; --ref-color-green-200: #ABD8BA; --ref-color-green-300: #ABD8BA; --ref-color-green-500: #2E8B57; --ref-color-green-700: #1B6B3A;
   --ref-color-red-100:   #FBE7E5; --ref-color-red-200:   #F0B7B1; --ref-color-red-300:   #F0B7B1; --ref-color-red-500:   #C93A2C; --ref-color-red-600:   #B0301F; --ref-color-red-700:   #9B2A1F;
   /* Variante alternativa di running (petrolio), attivata dal validatore se l'accento di brand è blu */
@@ -199,7 +199,7 @@
   --sys-behavior-feedback-max: 400ms;
   --sys-behavior-undo-approval: 10s;
   --sys-behavior-undo-stop-all: 30s;
-  --sys-behavior-stop-arm-timeout: 4s;
+  --sys-behavior-stop-arm-timeout: 5s;
   --sys-behavior-stop-grace: 10s;
   --sys-behavior-stale-after: 120s;
   --sys-behavior-stale-critical: 600s;
@@ -277,8 +277,8 @@
     --sys-color-border: var(--ref-color-neutral-750);
     --sys-color-border-strong: var(--ref-color-neutral-700);
     --sys-color-border-subtle: var(--ref-color-neutral-800);
-    --sys-color-border-input: var(--ref-color-neutral-500);
-    --sys-color-border-input-hover: var(--ref-color-neutral-400);
+    --sys-color-border-input: var(--ref-color-neutral-400);
+    --sys-color-border-input-hover: var(--ref-color-neutral-300);
     --sys-color-accent: var(--brand-accent-dark, var(--ref-color-neutral-100));
     --sys-color-accent-hover: var(--brand-accent-dark-hover, #FFFFFF);
     --sys-color-accent-active: var(--brand-accent-dark-active, var(--ref-color-neutral-300));
@@ -313,8 +313,8 @@
   --sys-color-border: var(--ref-color-neutral-750);
   --sys-color-border-strong: var(--ref-color-neutral-700);
   --sys-color-border-subtle: var(--ref-color-neutral-800);
-  --sys-color-border-input: var(--ref-color-neutral-500);
-  --sys-color-border-input-hover: var(--ref-color-neutral-400);
+  --sys-color-border-input: var(--ref-color-neutral-400);
+  --sys-color-border-input-hover: var(--ref-color-neutral-300);
   --sys-color-accent: var(--brand-accent-dark, var(--ref-color-neutral-100));
   --sys-color-accent-hover: var(--brand-accent-dark-hover, #FFFFFF);
   --sys-color-accent-active: var(--brand-accent-dark-active, var(--ref-color-neutral-300));

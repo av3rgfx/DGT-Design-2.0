@@ -13,8 +13,6 @@
   "accent": "#2B2823",
   "onAccent": "#FFFFFF",
   "accentDark": null,
-  "neutralHue": 80,
-  "neutralChroma": 0.008,
   "fontSans": "IBM Plex Sans",
   "fontNumeric": null,
   "fontMono": "IBM Plex Mono",

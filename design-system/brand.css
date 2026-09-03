@@ -11,9 +11,7 @@
     /* --brand-on-accent: #FFFFFF;            opzionale, verificato ≥ 4.5:1 su --brand-accent */
     /* --brand-accent-dark: #F1EFEA;          opzionale, tema scuro; se assente: derivato (L ≥ 0.68) */
 
-    /* --- Neutri: solo tinta e (poca) saturazione. I gradini di luminosità sono chiusi. --- */
-    /* --brand-neutral-hue: 80;               0–360, default 80 (carta calda) */
-    /* --brand-neutral-chroma: 0.008;         0–0.02, clampato dal sistema */
+    /* --- Neutri: CHIUSI in v1 (tinta 80°, croma 0.008). Un override clampato è candidato per la v1.1. --- */
 
     /* --- Tipografia (i file font via @font-face qui sotto, font-display: swap, size-adjust sul fallback) --- */
     /* --brand-font-sans: "Nome Font", system-ui, sans-serif;   richiede pesi 400/500/600 */
@@ -25,6 +23,6 @@
   }
 }
 
-/* CHIUSO (il validatore rifiuta): colori di stato e feedback, danger/stop, focus, gradini dei neutri,
+/* CHIUSO (il validatore rifiuta): colori di stato e feedback, danger/stop, focus, rampa dei neutri (tinta e gradini),
    scala tipografica, spazi, misure, target minimi, elevazione, z-index, moto, breakpoint,
    forma persona/agente/rombo, set di icone, testo dei chip. */
