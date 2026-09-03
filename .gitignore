@@ -3,3 +3,5 @@ __pycache__/
 .impeccable/review/
 .impeccable/build/
 node_modules/
+design-system/tools/package.json
+design-system/tools/package-lock.json

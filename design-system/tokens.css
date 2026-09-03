@@ -86,10 +86,31 @@
   --dgt-shadow-device: 0 60px 120px rgb(0 0 0 / .6);
   --dgt-shadow-swatch: 0 30px 60px rgb(0 0 0 / .45);
 
-  /* ---- Moto ---- */
-  --dgt-ease: cubic-bezier(.2, .8, .2, 1);
-  --dgt-t-fast: 150ms;
-  --dgt-t-base: 250ms;
+  /* ---- Moto (vedi SYSTEM-DESIGN.md, sezione "Moto"; scala allineata a transitions.dev) ---- */
+  --dgt-t-stagger: 40ms;      /* scarto tra elementi in sequenza (spunte dei nodi, ritardo del tratto) */
+  --dgt-digit-stagger: 70ms;  /* scarto tra le cifre nel pop-in dei numeri */
+  --dgt-t-fast:   150ms;      /* scambio di testo, chiusura della modale, spegnimento del badge, hover */
+  --dgt-t-base:   250ms;      /* scambio icona, apertura della modale, ridimensionamento card, scivolata del badge */
+  --dgt-t-medium: 350ms;      /* chiusura del pannello Riepilogo e della chiamata */
+  --dgt-t-slow:   400ms;      /* apertura del pannello Riepilogo e della chiamata */
+  --dgt-t-slower: 500ms;      /* momenti di enfasi: pop-in delle cifre e dei badge, spunta di conferma */
+  --dgt-t-avatar: 320ms;      /* sollevamento del gruppo di avatar */
+  --dgt-t-flow:   2400ms;     /* luce che scorre sui connettori dell'editor (ciclo) */
+  --dgt-t-pulse:  2400ms;     /* respiro del bagliore delle porte (andata) */
+  --dgt-t-marker: 90000ms;    /* avanzamento del marcatore "14:15" lungo il segmento in corso */
+  --dgt-ease:              cubic-bezier(.22, 1, .36, 1);   /* uscita morbida: aperture, chiusure, spostamenti */
+  --dgt-ease-in-out:       ease-in-out;                     /* scambio icona e testo */
+  --dgt-ease-close:        cubic-bezier(.4, 0, .2, 1);      /* spegnimento del badge */
+  --dgt-ease-spring:       cubic-bezier(.34, 1.36, .64, 1); /* pop del badge, rimbalzo della spunta */
+  --dgt-ease-spring-digit: cubic-bezier(.34, 1.45, .64, 1); /* pop-in delle cifre */
+  --dgt-ease-spring-strong:cubic-bezier(.34, 3.85, .64, 1); /* ritorno elastico degli avatar */
+  --dgt-dist-micro: 4px;      /* scambio di testo */
+  --dgt-dist-base:  8px;      /* pop-in delle cifre, scivolata del badge, rimbalzo della spunta */
+  --dgt-dist-panel: 16px;     /* corsa del pannello Riepilogo e della chiamata */
+  --dgt-blur-sm: 2px;         /* sfocatura di transito (cifre, badge, testo, icone, pannelli) */
+  --dgt-blur-lg: 8px;         /* sfocatura iniziale della spunta di conferma */
+  --dgt-scale-modal: .96;     /* scala iniziale/finale della modale */
+  --dgt-scale-icon:  .25;     /* scala dell'icona in uscita nello scambio icona */
 }
 
 /* ---- Editor a nodi (riferimento 02): palette propria ---- */
