@@ -218,4 +218,5 @@ transizione, misura il CLS e ripete il giro con `prefers-reduced-motion`.
 ## 11. Collegamenti
 
 - Artefatto pubblicato: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b
-- Branch di lavoro: `claude/dgt-design-system-fz5r1g`, PR #1 verso `main`: https://github.com/av3rgfx/DGT-Design-2.0/pull/1
+- PR #1 (sistema di design copiato dal case study, fusa in `main`): https://github.com/av3rgfx/DGT-Design-2.0/pull/1
+- Branch di lavoro: `claude/dgt-emoji-animations-gvkoh9`, PR #2 verso `main` (niente emoji, moto): https://github.com/av3rgfx/DGT-Design-2.0/pull/2

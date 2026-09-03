@@ -6,8 +6,8 @@ copiato dal case study).
 ## Stato
 
 - `main` contiene la PR #1 (sistema di design ricostruito sulla copia fedele del case study).
-- Branch di questa sessione: `claude/dgt-emoji-animations-gvkoh9`, PR verso `main`: vedi
-  `SYSTEM-DESIGN.md`, sezione 11.
+- Branch di questa sessione: `claude/dgt-emoji-animations-gvkoh9`, PR #2 verso `main`:
+  https://github.com/av3rgfx/DGT-Design-2.0/pull/2
 - Artefatto: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b (si aggiorna
   ripubblicando `design-system/specimen.html` sullo stesso URL).
 - Documento unico: `SYSTEM-DESIGN.md`. Dettaglio: `design-system/DESIGN.md`, token:
