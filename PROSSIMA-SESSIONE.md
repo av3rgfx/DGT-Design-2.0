@@ -63,3 +63,65 @@ Vincolo che vale sempre: nessun logo, foto o marchio di terzi; contenuti sinteti
 - Componenti in codice riusabile (CSS o React) a partire dalle classi dello specimen.
 - Versione inglese dei testi con la stessa lunghezza visiva.
 - Stati vuoti, errori e caricamento nello stesso linguaggio (pillole, cerchi, intaglio).
+
+## Richieste dell'utente per la prossima sessione (2026-09-03, fine sessione)
+
+1. **Niente emoji nel System Design: sono accettate solo icone.** Oggi l'emoji 🔥 compare in
+   `design-system/specimen.html` (pillole filtro "Cliente caldo" e "Urgenti", etichetta di interesse
+   nelle card lead, riga "pillola" della tipografia, UI kit) e nei documenti `SYSTEM-DESIGN.md` e
+   `design-system/DESIGN.md`; il glifo ▾ sta nella barra di stato dei telefoni. Vanno sostituiti con
+   icone SVG del set dello specimen (symbol `i-*`), e la regola va scritta in `CLAUDE.md` e in `SYSTEM-DESIGN.md`.
+2. **Animazioni.** Implementare transizioni e micro-interazioni coerenti con il design copiato,
+   usando se utile la libreria transitions.dev (https://github.com/Jakubantalik/transitions.dev,
+   sito https://transitions.dev/): raccolta di transizioni CSS pronte (classi `t-*`, custom property
+   su `:root`, guardia `prefers-reduced-motion`), installabile anche come skill per agenti con
+   `npx skills add Jakubantalik/transitions.dev`.
+
+## Prompt di avvio della prossima sessione
+
+```
+Repository DGT-Design-2.0 (design del prodotto DGT, sistema operativo aziendale per agenti AI).
+Prima di tutto leggi CLAUDE.md, PROSSIMA-SESSIONE.md e SYSTEM-DESIGN.md: contengono stato,
+decisioni e vincoli. Il design è la copia fedele dei riferimenti in design-system/reference/
+(case study nero/lime con Urbanist e l'editor a nodi); non esistono altre regole di stile.
+Vincoli fissi: nessun logo, foto o marchio di terzi; contenuti sintetici di DGT; documenti in italiano.
+Se la PR #1 (https://github.com/av3rgfx/DGT-Design-2.0/pull/1) è ancora aperta e il branch della
+sessione è lo stesso, continua su quel branch; altrimenti parti da main e apri una nuova PR.
+
+Obiettivi di questa sessione, in ordine:
+
+1. Togli ogni emoji dal System Design: sono accettate solo icone. Cerca in
+   design-system/specimen.html, SYSTEM-DESIGN.md, design-system/DESIGN.md e negli altri .md
+   (oggi: 🔥 nelle pillole filtro "Cliente caldo" e "Urgenti", nell'etichetta di interesse delle
+   card lead, nella riga "pillola" della tipografia e nell'UI kit; ▾ nella barra di stato dei
+   telefoni). Sostituisci con icone SVG aggiunte al set di symbol i-* dello specimen (per esempio
+   una fiamma a tratto per "caldo/urgente", un'icona wifi per la barra di stato), con la stessa
+   misura e lo stesso stile delle icone esistenti. Aggiungi la regola "Niente emoji: solo icone
+   SVG" in CLAUDE.md e in SYSTEM-DESIGN.md. Verifica con una ricerca sugli intervalli Unicode
+   delle emoji che il risultato sia zero.
+
+2. Implementa le animazioni. Valuta la libreria transitions.dev
+   (https://github.com/Jakubantalik/transitions.dev, sito https://transitions.dev/): transizioni
+   CSS pronte con classi t-*, custom property su :root e guardia prefers-reduced-motion; si può
+   installare come skill con `npx skills add Jakubantalik/transitions.dev` oppure copiare gli
+   snippet. Usala dove aiuta, altrimenti scrivi CSS nostro coerente con i suoi token di moto.
+   Candidati concreti nello specimen: pop-in dei numeri 34/20/3 e dei badge; badge di notifica
+   sulla campanella; scambio di testo nel selettore di stato delle card attività ("Chiamata
+   fissata"); apertura/chiusura del pannello Riepilogo e della videochiamata (panel reveal, modal);
+   hover del gruppo di avatar nella barra agenda; scambio icona nei filtri e nel rail; spunta di
+   conferma per le approvazioni; ridimensionamento delle card lead/attività; avanzamento del
+   marcatore "14:15" nella timeline; bagliore dei connettori nell'editor a nodi. Il moto deve
+   restare sobrio e coerente con il design copiato, rispettare prefers-reduced-motion e non
+   causare spostamenti di layout. Definisci i token di moto in design-system/tokens.css
+   (esistono già --dgt-ease, --dgt-t-fast, --dgt-t-base) e documenta una sezione "Moto" in
+   SYSTEM-DESIGN.md e in design-system/DESIGN.md con durate, curve e dove si usa ogni transizione.
+
+3. Verifica con gli strumenti in design-system/tools/ (fetch-fonts.py, screenshot.js; in questo
+   ambiente Google Fonts è bloccato in Chromium headless, quindi passa LOCAL_FONT_CSS): nessun
+   overflow, font caricato, nessun errore in console; per le animazioni registra un video con
+   Playwright o controlla i frame chiave, e prova la modalità reduced-motion.
+
+4. Aggiorna PROSSIMA-SESSIONE.md (stato, decisioni, come riprendere), committa con messaggi in
+   italiano, pusha sul branch della sessione, ripubblica l'artefatto dallo stesso percorso
+   design-system/specimen.html (mantiene l'URL) e apri o aggiorna la PR verso main.
+```
