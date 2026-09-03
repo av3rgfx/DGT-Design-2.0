@@ -1,94 +1,102 @@
 /* =====================================================================
    DGT Design System — tokens.css
-   Copia dei due riferimenti in design-system/reference/ (case study + interfaccia).
-   Fondo nero, verde/lime, tessere scure con riflesso e bagliore, griglia puntinata,
-   canvas a nodi con connettori luminosi, rail di icone, tab a pillola, barra chat in basso.
-   Font: Urbanist (dichiarato nel case study).
+   Copia fedele del case study originale (Behance 188798347, immagini a 1920 px)
+   e del secondo riferimento (editor a nodi). Valori campionati dagli originali.
+   Font: Urbanist (dichiarato nel case study: "green as an accent and Urbanist font").
    ===================================================================== */
 :root {
-  /* ---- Colore ---- */
-  --dgt-black-0:   #0A0A0A;   /* canvas dell'app, barra in basso */
-  --dgt-black-1:   #0F0F0F;   /* tessera / nodo */
-  --dgt-black-2:   #151515;   /* pillole, tab, campi */
-  --dgt-black-3:   #1A1A1A;   /* tab attiva, rialzi */
-  --dgt-black-4:   #1C1C1C;   /* card del case study */
-  --dgt-black-5:   #242424;   /* hover, bordi forti */
-  --dgt-page:      #111111;   /* sfondo pagina di presentazione */
-  --dgt-gray-1:    #3A3A3A;   /* bordi */
-  --dgt-gray-2:    #6B6B6B;   /* testo terziario, icone spente */
-  --dgt-gray-3:    #8E8E8E;   /* testo secondario */
-  --dgt-gray-4:    #B5B5B5;   /* testo secondario chiaro */
-  --dgt-white:     #F5F5F5;   /* testo */
+  /* ---- Colore: fondi ---- */
+  --dgt-black:        #000000;   /* sfondo dell'app (WORKSPACE, agenda mobile) */
+  --dgt-page:         #181818;   /* sfondo della pagina di presentazione */
+  --dgt-bezel:        #3A3A3A;   /* cornice del dispositivo */
+  --dgt-card:         #1C1C1C;   /* card lead sul nero (riflesso da #262626 in alto) */
+  --dgt-card-top:     #262626;
+  --dgt-card-2:       #2C2C2C;   /* card sul fondo #181818 (kit, elementi) */
+  --dgt-card-2-top:   #353535;
+  --dgt-gray-card:    #4D4D4D;   /* card attività grigia, sfide, pillole del processo */
+  --dgt-round:        #1E1E1E;   /* pulsanti rotondi scuri (rail, indietro, campanella) */
+  --dgt-pill-src:     #3A3A3A;   /* pillole "Fonte" dentro le card */
+  --dgt-dots-box:     #141414;   /* contenitore dei 5 punti di interesse */
 
-  --dgt-lime:      #B8F860;   /* accento del case study: CTA, card evidenziate, pillola dell'ora */
-  --dgt-lime-deep: #9FE04A;
-  --dgt-green:     #4FCB58;   /* verde dell'interfaccia: rail attivo, spunte, connettori */
-  --dgt-green-2:   #2F8F3E;   /* nodo selezionato (alto) */
-  --dgt-green-3:   #1C5A22;   /* nodo selezionato (basso) */
-  --dgt-green-4:   #174A1C;   /* pillole interne del nodo selezionato */
-  --dgt-teal:      #5EEAD4;   /* "Blue" del case study */
-  --dgt-red:       #F05A50;   /* "Red" del case study: tag, cestino */
+  /* ---- Colore: chiari ---- */
+  --dgt-white:        #FCFCFC;   /* pillole bianche, "Tutti" attivo, barra agenda */
+  --dgt-light:        #E0E0E0;   /* sfondo chiaro dell'app mobile */
+  --dgt-light-card:   #F0F0F0;   /* card chiare mobile */
+  --dgt-summary:      #F4F4F4;   /* pannello Riepilogo */
+  --dgt-docs:         #E4E4E4;   /* card Documenti dentro il Riepilogo */
+  --dgt-thumb-pill:   #A7A7A7;   /* etichetta grigia sulle miniature */
 
-  --dgt-border:        rgb(255 255 255 / .08);
-  --dgt-border-strong: rgb(255 255 255 / .14);
-  --dgt-highlight:     rgb(255 255 255 / .07);   /* riflesso in alto sulle tessere */
-  --dgt-glow-green:    rgb(79 203 88 / .55);
-  --dgt-glow-green-soft: rgb(79 203 88 / .28);
+  /* ---- Colore: accenti (dal case study) ---- */
+  --dgt-lime:         #B8FC64;   /* "Green": CTA, card attività, agenda, badge in crescita */
+  --dgt-lime-deep:    #A8E65D;   /* segmento in corso nella timeline */
+  --dgt-blue:         #64FCEC;   /* "Blue" */
+  --dgt-red:          #F04848;   /* "Red" */
+  --dgt-hangup:       #F15E60;   /* pulsante chiudi chiamata */
+  --dgt-badge-red:    #F9A3A3;   /* badge in calo */
+  --dgt-badge-red-ink:#7A1F1F;
 
-  /* ---- Superfici (riflesso + bordo + ombra) ---- */
-  --dgt-tile-bg: linear-gradient(180deg, rgb(255 255 255 / .06), rgb(255 255 255 / .015)), var(--dgt-black-1);
-  --dgt-tile-border: 1px solid var(--dgt-border);
-  --dgt-tile-shadow: inset 0 1px 0 var(--dgt-highlight), 0 12px 30px rgb(0 0 0 / .55);
-  --dgt-selected-bg: linear-gradient(180deg, var(--dgt-green-2), var(--dgt-green-3));
-  --dgt-selected-border: 1px solid rgb(170 255 150 / .55);
-  --dgt-selected-shadow: 0 0 0 1px rgb(90 200 100 / .25), 0 0 44px var(--dgt-glow-green-soft), inset 0 1px 0 rgb(255 255 255 / .18);
-  --dgt-active-tile-shadow: 0 0 26px var(--dgt-glow-green), inset 0 1px 0 rgb(255 255 255 / .35);
-  --dgt-overlay-shadow: 0 20px 60px rgb(0 0 0 / .7);
+  /* ---- Punti di interesse (5 livelli) ---- */
+  --dgt-dot-1: #FC9498; --dgt-dot-2: #FCA464; --dgt-dot-3: #FCDC64; --dgt-dot-4: #A8FC64; --dgt-dot-5: #68FC64; --dgt-dot-off: #4A4A4A;
 
-  /* ---- Griglia puntinata del canvas ---- */
-  --dgt-grid-dot: rgb(255 255 255 / .10);
-  --dgt-grid-size: 18px;
+  /* ---- Testo ---- */
+  --dgt-ink:          #0A0A0A;   /* testo su lime e su chiaro */
+  --dgt-t2:           #9A9A9A;   /* ruoli, etichette, orari su scuro */
+  --dgt-t3:           #6E6E6E;
+  --dgt-t2-light:     #6B6B6B;   /* secondario su chiaro */
 
-  /* ---- Tipografia (Urbanist) ---- */
+  /* ---- Bordi ---- */
+  --dgt-border:       rgb(255 255 255 / .14);   /* pillole filtro, pulsanti rotondi vuoti */
+  --dgt-border-light: rgb(0 0 0 / .14);         /* pulsanti vuoti su bianco/lime */
+
+  /* ---- Tipografia (Urbanist, pesi 300–600) ---- */
   --dgt-font: "Urbanist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --dgt-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  --dgt-display: 500 56px/60px var(--dgt-font);   /* titoli del case study */
-  --dgt-h1:      500 40px/46px var(--dgt-font);
-  --dgt-h2:      500 28px/34px var(--dgt-font);
-  --dgt-title:   400 26px/32px var(--dgt-font);   /* titolo di pagina dell'app ("AI Agent Battlecard") */
-  --dgt-path:    400 15px/20px var(--dgt-font);   /* "/personal" */
-  --dgt-body:    400 15px/22px var(--dgt-font);
-  --dgt-label:   500 13px/18px var(--dgt-font);   /* tab, pillole, etichette dei nodi */
-  --dgt-small:   400 12px/16px var(--dgt-font);   /* porte, "1 elemento", sottotitoli */
-  --dgt-tiny:    400 11px/14px var(--dgt-font);
-  --dgt-mono:    400 12px/16px var(--dgt-font-mono);   /* ID nella barra chat */
+  --dgt-display: 300 88px/88px var(--dgt-font);   /* "Non perderti" */
+  --dgt-h1:      400 56px/60px var(--dgt-font);   /* titoli di sezione del case study */
+  --dgt-number:  300 48px/56px var(--dgt-font);   /* 34 · 20 · 3 */
+  --dgt-title:   400 46px/56px var(--dgt-font);   /* WORKSPACE, maiuscolo, tracking .02em */
+  --dgt-section: 400 28px/34px var(--dgt-font);   /* "Nuovi lead", "Riepilogo" */
+  --dgt-name:    400 26px/30px var(--dgt-font);   /* nome nella card, titolo attività */
+  --dgt-body:    400 18px/24px var(--dgt-font);   /* "La tua agenda", "Documenti:" */
+  --dgt-pill:    400 15px/20px var(--dgt-font);   /* filtri, pulsanti */
+  --dgt-role:    400 13px/18px var(--dgt-font);   /* ruolo, data */
+  --dgt-label:   400 11px/14px var(--dgt-font);   /* "Fonte", "Stato", ora del marcatore */
 
   /* ---- Raggi ---- */
-  --dgt-r-tile: 18px;      /* nodi, rail tile grande */
-  --dgt-r-card: 20px;      /* card del case study */
-  --dgt-r-panel: 24px;     /* cornice dell'app, mini-mappa */
-  --dgt-r-button: 12px;    /* pulsanti quadrati (zoom, invio) */
-  --dgt-r-tab: 14px;       /* contenitore tab e tab attiva */
-  --dgt-r-field: 12px;     /* pillole interne del nodo selezionato */
-  --dgt-r-pill: 9999px;    /* pillole, tag, CTA */
+  --dgt-r-card:   28px;     /* card lead e attività */
+  --dgt-r-inner:  22px;     /* card dentro il Riepilogo */
+  --dgt-r-swatch: 38px;     /* campioni colore */
+  --dgt-r-pill:   9999px;   /* tutto il resto è una pillola o un cerchio */
 
   /* ---- Misure ---- */
-  --dgt-rail-w: 72px;
-  --dgt-rail-tile: 44px;
-  --dgt-node: 96px;        /* nodo quadrato */
-  --dgt-node-wide: 208px;  /* nodo agente */
-  --dgt-node-selected: 216px;
-  --dgt-bottombar-h: 68px;
-  --dgt-pill-h: 36px;
-  --dgt-tab-h: 40px;
-  --dgt-icon: 18px;
-  --dgt-port: 10px;
+  --dgt-round-btn: 48px;    /* pulsante rotondo standard */
+  --dgt-round-sm:  40px;
+  --dgt-round-xs:  32px;
+  --dgt-pill-h:    44px;    /* filtri */
+  --dgt-bar-h:     64px;    /* barra agenda, pulsante "Nuova attività" 52px */
+  --dgt-avatar:    48px;
+  --dgt-dot:       13px;
+  --dgt-notch-pad: 12px;    /* respiro dell'intaglio attorno ai pulsanti */
+  --dgt-lead-w:    260px;
+  --dgt-task-w:    336px;
 
   /* ---- Spazio ---- */
-  --dgt-s-1: 4px; --dgt-s-2: 8px; --dgt-s-3: 12px; --dgt-s-4: 16px; --dgt-s-5: 20px; --dgt-s-6: 24px; --dgt-s-8: 32px; --dgt-s-10: 40px; --dgt-s-12: 48px; --dgt-s-16: 64px;
+  --dgt-s-1: 4px; --dgt-s-2: 8px; --dgt-s-3: 12px; --dgt-s-4: 16px; --dgt-s-5: 20px; --dgt-s-6: 24px; --dgt-s-8: 32px; --dgt-s-10: 40px; --dgt-s-14: 56px; --dgt-s-16: 64px;
+
+  /* ---- Ombre ---- */
+  --dgt-shadow-device: 0 60px 120px rgb(0 0 0 / .6);
+  --dgt-shadow-swatch: 0 30px 60px rgb(0 0 0 / .45);
 
   /* ---- Moto ---- */
   --dgt-ease: cubic-bezier(.2, .8, .2, 1);
   --dgt-t-fast: 150ms;
   --dgt-t-base: 250ms;
+}
+
+/* ---- Editor a nodi (riferimento 02): palette propria ---- */
+:root {
+  --dgt-ed-black-0: #0A0A0A; --dgt-ed-black-1: #0F0F0F; --dgt-ed-black-2: #151515; --dgt-ed-black-3: #1A1A1A;
+  --dgt-ed-gray-1: #3A3A3A; --dgt-ed-gray-2: #6B6B6B; --dgt-ed-gray-3: #8E8E8E; --dgt-ed-gray-4: #B5B5B5; --dgt-ed-white: #F5F5F5;
+  --dgt-ed-green: #4FCB58; --dgt-ed-green-2: #2F8F3E; --dgt-ed-green-3: #1C5A22; --dgt-ed-red: #F05A50;
+  --dgt-ed-glow: rgb(79 203 88 / .55);
+  --dgt-ed-r-tile: 18px; --dgt-ed-r-panel: 24px; --dgt-ed-r-button: 12px; --dgt-ed-grid: 18px;
 }

@@ -1,10 +1,17 @@
-# Riferimenti visivi
+# Riferimenti
 
-Due immagini fornite dall'utente il 2026-09-03. Su richiesta dell'utente, il design di DGT le **copia così come sono**: ogni elemento visibile (colori, tipografia, tessere, griglia puntinata, canvas a nodi, connettori luminosi, rail, tab, barra in basso, pillole) è riprodotto in `design-system/specimen.html` e descritto in `design-system/DESIGN.md`.
+Il design di DGT è la **copia identica** di questi due riferimenti, per richiesta dell'utente
+(2026-09-03). Le regole e i brief precedenti sono stati eliminati.
 
-| File | Cosa mostra |
-|---|---|
-| `riferimento-01-case-study.jpg` | Presentazione di prodotto: fondo nero, accento lime, titoli bianchi bold, blocchi lime con testo nero, schede scure con etichette lime, timeline con punti lime |
-| `riferimento-02-ui.jpg` | Interfaccia: rail di icone a sinistra con tessera attiva verde, titolo con percorso e tag rosso, tab a pillola, canvas con griglia puntinata, nodi scuri con icona e spunta verde, nodo selezionato verde con campi interni, connettori verdi luminosi con etichette, nodo disattivato con cestino, mini-mappa e zoom in basso a sinistra, barra chat in basso con ID in mono, pillole "Prova" / "Nascondi chat" e pillola lime con l'ora |
+| File | Cosa mostra | Cosa se ne copia |
+|---|---|---|
+| `riferimento-01-case-study.jpg` | Case study Behance "HubSpot CRM — SaaS UX/UI Dashboard" (studio: ARTEMIS SOLUTIONS). Nero `#181818`, lime `#B8FC64`, Urbanist; dashboard WORKSPACE con barra agenda, card lead e attività con intaglio, pannello Riepilogo chiaro; app mobile chiara e nera; UI kit; sfide; processo. | Layout, colori, componenti, tipografia, interazioni. |
+| `riferimento-02-ui.jpg` | Interfaccia "AI Agent Battlecard" (quarn.com): rail di icone, titolo con percorso e tag, tab, canvas a nodi con connettori luminosi, nodo selezionato verde, barra chat. | Layout, colori, componenti dell'editor a nodi. |
 
-Non vengono copiati loghi, foto o marchi di terzi: i contenuti sono di DGT e sintetici.
+**Fonte ad alta risoluzione del primo riferimento**: lo screenshot allegato è a bassa qualità, quindi
+la copia è stata fatta sulle immagini originali del case study
+(`https://www.behance.net/gallery/188798347/HubSpot-CRM-SaaS-UX-UI-Dashboard-Design`, 22 moduli a
+1920 px). I colori in `tokens.css` sono campionati da quelle immagini.
+
+**Non si copiano** logo, foto o marchi di terzi (logo HubSpot, foto delle persone, icona Google Meet):
+al loro posto marchio DGT, avatar con iniziali, icona video di DGT. I contenuti sono sintetici.

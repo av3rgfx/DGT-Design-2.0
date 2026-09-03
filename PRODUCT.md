@@ -16,12 +16,12 @@ DGT è un sistema operativo aziendale per agenti AI: l'utente crea un'azienda di
 
 ## Brand Commitments
 
-- Il design è la **copia identica** delle due immagini di riferimento in `design-system/reference/` (richiesta dell'utente del 2026-09-03, che ha annullato tutte le regole e i brief precedenti).
+- Il design è la **copia identica** delle due immagini di riferimento in `design-system/reference/` (richiesta dell'utente del 2026-09-03, che ha annullato tutte le regole e i brief precedenti). Per il primo riferimento fa fede il case study originale su Behance (188798347), consultato alle immagini piene a 1920 px.
 - Nessun logo, foto o marchio di terzi viene copiato: si riproducono stile, layout, colori, componenti e interazioni con contenuti di DGT.
 - Nome di lavoro: DGT.
 
 ## Evidence on Hand
 
-- `design-system/reference/riferimento-01-case-study.jpg` (stile di presentazione: nero, lime, titoli bold)
+- `design-system/reference/riferimento-01-case-study.jpg` + immagini originali del case study (nero `#181818`, lime `#B8FC64`, Urbanist leggero; dashboard WORKSPACE con barra agenda, card con intaglio, Riepilogo chiaro; app mobile; UI kit)
 - `design-system/reference/riferimento-02-ui.jpg` (interfaccia: rail, titolo con percorso e tag, tab, canvas a nodi con connettori luminosi, nodo selezionato verde, barra chat in basso, pillole)
 - Nessun dato reale: i contenuti degli specimen sono sintetici.
