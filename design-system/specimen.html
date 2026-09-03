@@ -29,6 +29,7 @@ h1,h2,h3,p{margin:0;font-weight:400}
 @media (max-width:899px){.sec .hd{grid-template-columns:1fr;gap:16px}.sec .hd h2{font-size:40px;line-height:44px}.sec .hd p{font-size:18px;line-height:26px}}
 .note{color:var(--t2);font-size:13px;line-height:19px;max-width:80ch}
 .ic{width:20px;height:20px;flex:none}
+.ti{width:16px;height:16px;vertical-align:-3px;margin-right:4px}
 .big{font-size:64px;line-height:72px;text-align:center;letter-spacing:-.01em;max-width:16em;margin:0 auto;position:relative}
 .big em{font-style:normal;color:var(--lime)}
 .big .rb{display:inline-grid;vertical-align:middle;margin:0 4px}
@@ -55,6 +56,7 @@ h1,h2,h3,p{margin:0;font-weight:400}
 .pair{display:inline-flex;align-items:center}
 .pair .av{border:2px solid var(--white)}.pair .av+.av{margin-left:-10px}
 .pill{display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 20px;border-radius:var(--r-pill);border:1px solid rgb(255 255 255/.14);background:transparent;color:var(--white);font-size:15px;white-space:nowrap;flex:none}
+.pill svg{width:16px;height:16px;flex:none;margin-left:-4px}
 .pill.on{background:var(--white);color:var(--ink);border-color:transparent}
 .pill.white{background:var(--white);color:var(--ink);border-color:transparent}
 .pill.lime{background:var(--lime);color:var(--ink);border-color:transparent}
@@ -91,17 +93,18 @@ h1,h2,h3,p{margin:0;font-weight:400}
 .ncard.lime .who div>span{color:rgb(0 0 0/.6)}.ncard.gray .who div>span{color:#CFCFCF}
 
 /* ---------- lead card ---------- */
-.lead{width:260px;height:204px;padding:20px}
-.lead .name{font-size:26px;line-height:30px;margin-top:22px}
-.lead .role{font-size:13px;color:var(--t2);margin-top:4px}
+.lead{width:260px;min-height:204px;padding:20px}
+.lead .name{font-size:26px;line-height:30px;margin-top:12px}
+.lead .role{font-size:13px;line-height:18px;color:var(--t2);margin-top:2px}
 .lead.light .role{color:var(--t2-light)}
-.lead .ft{display:flex;justify-content:space-between;align-items:flex-end;margin-top:16px}
-.lead .k{font-size:11px;color:var(--t2);display:block;margin-bottom:6px}
+.lead .ft{display:flex;justify-content:space-between;align-items:flex-end;margin-top:6px}
+.lead .k{font-size:11px;line-height:14px;color:var(--t2);display:flex;align-items:center;gap:4px;margin-bottom:4px}
+.lead .k svg{width:12px;height:12px;flex:none}
 .lead.light .k{color:var(--t2-light)}
 .lead .src{display:flex;gap:6px}
 
 /* ---------- task card ---------- */
-.task{width:336px;min-height:262px;display:grid;grid-template-rows:auto 1fr auto}
+.task{width:336px;min-height:262px;display:grid;grid-template-rows:auto 1fr auto auto}
 .task .body{display:flex;align-items:center;gap:16px;padding:26px 20px 0}
 .task .ico{width:64px;height:64px;border-radius:50%;border:1px solid rgb(255 255 255/.16);display:grid;place-items:center;flex:none}
 .task.lime .ico{border-color:rgb(0 0 0/.14)}
@@ -174,6 +177,12 @@ h1,h2,h3,p{margin:0;font-weight:400}
 .summary .h{grid-column:1/3;display:flex;align-items:center;gap:16px;padding-right:14px}
 .summary .h h4{margin:0;font-weight:400;font-size:26px;flex:1}
 .summary .h .rb.ghost{border-color:rgb(0 0 0/.14);color:var(--ink)}
+.summary .sbody{grid-column:1/3;display:grid;grid-template-rows:1fr;transition:grid-template-rows var(--dgt-t-medium) var(--dgt-ease)}
+.summary .sbody .in{min-height:0;overflow:hidden;display:grid;grid-template-columns:44px 1fr;gap:10px;transition:transform var(--dgt-t-slow) var(--dgt-ease),opacity var(--dgt-t-slow) var(--dgt-ease),filter var(--dgt-t-slow) var(--dgt-ease)}
+.summary.closed .sbody{grid-template-rows:0fr}
+.summary.closed .sbody .in{transform:translateY(calc(var(--dgt-dist-panel) * -1));opacity:0;filter:blur(var(--dgt-blur-sm));transition-duration:var(--dgt-t-medium)}
+.summary .h .rb.ghost svg{transition:transform var(--dgt-t-medium) var(--dgt-ease)}
+.summary.closed .h .rb.ghost svg{transform:rotate(180deg)}
 .summary .tline{display:grid;gap:12px;position:relative;padding-top:12px;font-size:12px}
 .summary .tline .m{display:grid;gap:6px;justify-items:start}
 .summary .tline .m i{width:22px;height:22px;border-radius:50%;display:grid;place-items:center}
@@ -205,7 +214,8 @@ h1,h2,h3,p{margin:0;font-weight:400}
 .screen.lightbg{background:var(--light);color:var(--ink);--behind:var(--light)}
 .screen .sb{display:flex;justify-content:space-between;align-items:center;padding:14px 26px 0;font-weight:600;font-size:14px}
 .screen .sb .isl{position:absolute;left:50%;top:10px;transform:translateX(-50%);width:84px;height:24px;border-radius:14px;background:#000}
-.screen .sb .sig{display:flex;gap:5px;align-items:center}
+.screen .sb .sig{display:flex;gap:4px;align-items:center}
+.screen .sb .sig svg{width:14px;height:14px}
 .screen .sb .sig i{display:block;height:9px;width:18px;border-radius:3px;border:1px solid currentColor}
 .screen .sb .sig i::after{content:"";display:block;height:100%;width:80%;background:currentColor;border-radius:2px}
 .screen .nav{display:flex;justify-content:space-between;padding:18px 18px 0}
@@ -222,7 +232,8 @@ h1,h2,h3,p{margin:0;font-weight:400}
 .screen .lead .role{font-size:11px}
 .screen .lead .nt{padding:0 0 8px 8px;border-bottom-left-radius:24px}
 .screen .lead .nt .rb{width:40px;height:40px;background:transparent;border-color:rgb(0 0 0/.14);color:var(--ink)}
-.screen .lead .k{font-size:9px;margin-bottom:4px}
+.screen .lead .k{font-size:9px;line-height:12px;margin-bottom:4px}
+.screen .lead .k svg{width:10px;height:10px}
 .screen .lead .chip{height:22px;font-size:10px;padding:0 9px}
 .screen .lead .dots{height:24px;padding:0 7px;gap:4px}.screen .lead .dots i{width:10px;height:10px}
 .screen .task{width:auto;min-height:0;margin:0 12px;border-radius:24px;grid-template-rows:auto}
@@ -263,6 +274,7 @@ h1,h2,h3,p{margin:0;font-weight:400}
 .callscr .vid .ctl .rb{width:34px;height:34px}.callscr .vid .ctl .rb svg{width:14px;height:14px}
 .callscr .vid .ex{position:absolute;right:10px;top:10px;width:34px;height:34px}
 .callscr .summary{margin:10px 12px 0;border-radius:24px;padding:12px 0 14px 10px;grid-template-columns:36px 1fr;gap:8px;--behind:var(--summary)}
+.callscr .summary .sbody .in{grid-template-columns:36px 1fr;gap:8px}
 .callscr .summary .h h4{font-size:18px}.callscr .summary .h .rb{width:38px;height:38px}
 .callscr .summary .tline{font-size:10px;padding-top:6px}.callscr .summary .tline .m i{width:18px;height:18px}
 .callscr .summary .tline::before{left:8px;top:44px}
@@ -307,6 +319,7 @@ h1,h2,h3,p{margin:0;font-weight:400}
 .kit .tlk .now b{position:absolute;left:0;top:0;transform:translate(-50%,-50%);height:32px;padding:0 14px;border-radius:var(--r-pill);background:var(--ink);color:var(--white);font-size:14px;font-weight:400;display:flex;align-items:center;white-space:nowrap}
 .kit .tlk .now i{position:absolute;left:0;bottom:0;width:12px;height:12px;border-radius:50%;background:var(--white);transform:translateX(-50%)}
 .kit .pill.xl{height:68px;padding:0 26px;font-size:17px}
+.kit .pill.xl svg{width:20px;height:20px;margin-left:-6px}
 .kit .rb.xl{width:68px;height:68px}.kit .rb.xl svg{width:24px;height:24px}
 .kit .rb.xl.g2{background:var(--gray-card);border-color:transparent}
 .kit .nt2{height:68px;padding:0 24px 0 8px;border-radius:var(--r-pill);background:var(--white);color:var(--ink);display:flex;align-items:center;gap:22px;font-size:22px}
@@ -322,7 +335,8 @@ h1,h2,h3,p{margin:0;font-weight:400}
 .kit .lead .av{width:92px;height:92px;font-size:28px}
 .kit .lead .name{font-size:38px;line-height:44px;margin-top:34px}
 .kit .lead .role{font-size:19px;margin-top:6px}
-.kit .lead .k{font-size:14px;margin-bottom:10px}
+.kit .lead .k{font-size:14px;line-height:18px;margin-bottom:10px}
+.kit .lead .k svg{width:15px;height:15px}
 .kit .lead .chip{height:44px;padding:0 20px;font-size:15px}
 .kit .lead .dots{height:44px;padding:0 12px;gap:8px}.kit .lead .dots i{width:20px;height:20px}
 .kit .lead .ft{margin-top:44px}
@@ -373,7 +387,7 @@ h1,h2,h3,p{margin:0;font-weight:400}
 .editor .rail{grid-row:1/3;position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;padding:20px 0 14px;gap:12px;background:var(--eb0);border-right:1px solid var(--eborder)}
 .rtile{width:44px;height:44px;border-radius:14px;background:var(--tile-bg);border:1px solid var(--eborder);box-shadow:var(--tile-shadow);display:grid;place-items:center;color:var(--eg4);flex:none}
 .rtile svg{width:18px;height:18px}
-.rtile.plus{color:var(--ew);font-size:22px;font-weight:300}
+.rtile.plus{color:var(--ew)}
 .rtile.active{background:linear-gradient(180deg,#6BDD72,#3FB847);color:#0A2A0F;border-color:rgb(255 255 255/.35);box-shadow:0 0 26px var(--eglow),inset 0 1px 0 rgb(255 255 255/.35)}
 .rtile.sm{width:40px;height:40px;border-radius:12px}
 .editor .rail .spacer{flex:1}
@@ -412,7 +426,8 @@ h1,h2,h3,p{margin:0;font-weight:400}
 .node.selected .fv svg{width:14px;height:14px;color:#DDFFD6}
 .port{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--egreen);box-shadow:0 0 10px var(--eglow);transform:translate(-50%,-50%)}
 .port.gray{background:#D9D9D9;box-shadow:0 0 8px rgb(255 255 255/.35)}
-.port.plus{width:16px;height:16px;background:var(--eb3);border:1px solid var(--eborder-strong);box-shadow:none;color:var(--eg4);display:grid;place-items:center;font-size:12px;line-height:1}
+.port.plus{width:16px;height:16px;background:var(--eb3);border:1px solid var(--eborder-strong);box-shadow:none;color:var(--eg4);display:grid;place-items:center}
+.port.plus svg{width:9px;height:9px}
 .plabel{position:absolute;font-size:12px;line-height:14px;color:var(--eg3);transform:translateX(-50%);white-space:nowrap}
 .elabel{position:absolute;font-size:11px;line-height:14px;color:var(--eg2);transform:translate(-50%,-50%);white-space:nowrap;background:var(--eb0);padding:0 4px}
 .minimap{position:absolute;left:20px;bottom:88px;width:150px;height:72px;border-radius:14px;background:var(--tile-bg);border:1px solid var(--eborder);box-shadow:var(--tile-shadow);padding:10px}
@@ -436,6 +451,132 @@ h1,h2,h3,p{margin:0;font-weight:400}
 .footer h2{font-size:88px;line-height:88px;letter-spacing:-.01em}
 .footer h2 em{font-style:normal;color:var(--lime)}
 @media (max-width:899px){.footer h2{font-size:48px;line-height:52px}}
+/* ===================== MOTO =====================
+   Token --dgt-* (gli stessi di tokens.css). Le classi t-* riprendono gli snippet di transitions.dev
+   (card resize, number pop-in, notification badge, text states swap, modal, panel reveal, icon swap,
+   success check, avatar group hover) con i nostri token; il resto è CSS di DGT sulla stessa scala. */
+:root{
+  --dgt-t-stagger:40ms;--dgt-t-fast:150ms;--dgt-t-base:250ms;--dgt-t-medium:350ms;--dgt-t-slow:400ms;--dgt-t-slower:500ms;
+  --dgt-t-avatar:320ms;--dgt-t-flow:2400ms;--dgt-t-pulse:2400ms;--dgt-t-marker:90000ms;--dgt-digit-stagger:70ms;
+  --dgt-ease:cubic-bezier(.22,1,.36,1);--dgt-ease-in-out:ease-in-out;--dgt-ease-close:cubic-bezier(.4,0,.2,1);
+  --dgt-ease-spring:cubic-bezier(.34,1.36,.64,1);--dgt-ease-spring-digit:cubic-bezier(.34,1.45,.64,1);--dgt-ease-spring-strong:cubic-bezier(.34,3.85,.64,1);
+  --dgt-dist-micro:4px;--dgt-dist-base:8px;--dgt-dist-panel:16px;--dgt-blur-sm:2px;--dgt-blur-lg:8px;--dgt-scale-modal:.96;--dgt-scale-icon:.25;
+}
+/* stati hover e attivo (solo con script attivo: lo specimen resta una figura statica senza JS) */
+.rb,.pill,.rtile,.epill,.task .sel,.fbtn{transition:background-color var(--dgt-t-fast) var(--dgt-ease),color var(--dgt-t-fast) var(--dgt-ease),border-color var(--dgt-t-fast) var(--dgt-ease)}
+.js .app .rail .rb,.js .fbtn,.js .app .pill,.js .app .lead,.js .app .task .body,.js .task .sel,.js .bell,.js .summary .h .rb.ghost,.js .call .top .rb,.js .task .rb.black,.js .rtile.plus,.js .modal .rb,.js .modal .mback{cursor:pointer}
+.js .app .rail .rb:not(.white):hover,.js .fbtn:not(.on):hover{border-color:rgb(255 255 255/.32)}
+.js .app .pill:not(.on):hover{border-color:rgb(255 255 255/.32)}
+.js .rtile:not(.active):hover{border-color:var(--eborder-strong);color:var(--ew)}
+.fbtn.on{background:var(--white);color:var(--ink);border-color:transparent}
+
+/* 1 · pop-in di numeri e badge (number pop-in) */
+@keyframes t-digit-pop-in{0%{transform:translateY(var(--dgt-dist-base));opacity:0;filter:blur(var(--dgt-blur-sm))}100%{transform:none;opacity:1;filter:blur(0)}}
+.t-digit-group{display:inline-flex;align-items:baseline}
+.t-digit{display:inline-block;will-change:transform,opacity,filter}
+.t-digit-group.is-animating .t-digit{animation:t-digit-pop-in var(--dgt-t-slower) var(--dgt-ease-spring-digit) both;animation-delay:calc(var(--dgt-digit-stagger) * (var(--d,0) + 2 * var(--g,0)))}
+@keyframes t-pop{0%{transform:scale(.6);opacity:0;filter:blur(var(--dgt-blur-sm))}100%{transform:scale(1);opacity:1;filter:blur(0)}}
+.t-pop.in{animation:t-pop var(--dgt-t-slower) var(--dgt-ease-spring) both;animation-delay:calc(var(--dgt-digit-stagger) * (3 + 2 * var(--g,0)))}
+
+/* 2 · badge di notifica sulla campanella (notification badge) */
+@keyframes t-badge-slide-in{from{transform:translate(calc(var(--dgt-dist-base) * -1),calc(var(--dgt-dist-base) * 1.5))}to{transform:none}}
+.rb .nb{position:absolute;top:11px;right:12px;width:8px;height:8px;pointer-events:none;will-change:transform}
+.rb .nb .dot{position:static;display:block;transform-origin:center;transition:transform var(--dgt-t-slower) var(--dgt-ease-spring),opacity var(--dgt-t-slow) var(--dgt-ease-spring),filter var(--dgt-t-slower) var(--dgt-ease-spring)}
+.t-badge[data-open="true"]{animation:t-badge-slide-in var(--dgt-t-base) var(--dgt-ease)}
+.t-badge[data-open="false"] .dot{transform:scale(0);opacity:0;filter:blur(var(--dgt-blur-sm));transition:transform var(--dgt-t-fast) var(--dgt-ease-close),opacity var(--dgt-t-fast) var(--dgt-ease-close),filter var(--dgt-t-fast) var(--dgt-ease-close)}
+
+/* 3 · scambio di testo nel selettore di stato (text states swap) */
+.t-text-swap{display:inline-block;transition:transform var(--dgt-t-fast) var(--dgt-ease-in-out),filter var(--dgt-t-fast) var(--dgt-ease-in-out),opacity var(--dgt-t-fast) var(--dgt-ease-in-out);will-change:transform,filter,opacity}
+.t-text-swap.is-exit{transform:translateY(calc(var(--dgt-dist-micro) * -1));filter:blur(var(--dgt-blur-sm));opacity:0}
+.t-text-swap.is-enter-start{transform:translateY(var(--dgt-dist-micro));filter:blur(var(--dgt-blur-sm));opacity:0;transition:none}
+
+/* 4 · spunta di conferma nel selettore (success check) */
+.selav{display:inline-grid;width:36px;height:36px;flex:none}
+.selav>*{grid-area:1/1}
+.selav .av{position:relative;z-index:1;transition:opacity var(--dgt-t-fast) var(--dgt-ease)}
+.sel.ok .selav .av{opacity:0}
+.selav .okc{width:36px;height:36px;border-radius:50%;background:var(--lime);color:var(--ink);display:grid;place-items:center}
+.selav .okc svg{width:16px;height:16px}
+.t-success-check{transform-origin:center;opacity:0;will-change:transform,opacity,filter}
+.t-success-check svg{display:block;overflow:visible}
+.t-success-check svg path{stroke-dasharray:16;stroke-dashoffset:16}
+.t-success-check[data-state="in"]{animation:t-check-fade var(--dgt-t-slower) var(--dgt-ease) forwards,t-check-rotate var(--dgt-t-slower) var(--dgt-ease) forwards,t-check-blur var(--dgt-t-slower) var(--dgt-ease) forwards,t-check-bob var(--dgt-t-slower) var(--dgt-ease-spring) forwards}
+.t-success-check[data-state="in"] svg path{animation:t-check-draw var(--dgt-t-slower) var(--dgt-ease) calc(var(--dgt-t-stagger) * 2) forwards}
+@keyframes t-check-fade{from{opacity:0}to{opacity:1}}
+@keyframes t-check-rotate{from{transform:rotate(80deg)}to{transform:rotate(0)}}
+@keyframes t-check-blur{from{filter:blur(var(--dgt-blur-lg))}to{filter:blur(0)}}
+@keyframes t-check-bob{from{translate:0 var(--dgt-dist-base)}to{translate:0 0}}
+@keyframes t-check-draw{to{stroke-dashoffset:0}}
+
+/* 5 · pannello Riepilogo (panel reveal, vedi .sbody sopra) e chiamata richiudibile */
+.callwrap{display:grid;grid-template-rows:1fr;overflow:hidden;border-radius:var(--r-card) 0 0 var(--r-card);transition:grid-template-rows var(--dgt-t-medium) var(--dgt-ease)}
+.callwrap .call{min-height:0;transition:transform var(--dgt-t-slow) var(--dgt-ease),opacity var(--dgt-t-slow) var(--dgt-ease),filter var(--dgt-t-slow) var(--dgt-ease)}
+.callwrap.closed{grid-template-rows:0fr}
+.callwrap.closed .call{transform:translateY(calc(var(--dgt-dist-panel) * -1));opacity:0;filter:blur(var(--dgt-blur-sm));transition-duration:var(--dgt-t-medium)}
+
+/* 6 · videochiamata a schermo intero (modal open / close), dentro la cornice della console */
+.modal{position:absolute;inset:0;z-index:5;display:grid;place-items:center;pointer-events:none}
+.modal .mback{position:absolute;inset:0;background:rgb(0 0 0/.62);backdrop-filter:blur(6px);opacity:0;transition:opacity var(--dgt-t-base) var(--dgt-ease)}
+.modal .mcall{position:relative;width:640px;height:400px;border-radius:var(--r-card);background:radial-gradient(120% 90% at 60% 30%,#8E8E86,#5C5C57 55%,#3D3D3A);overflow:hidden;transform:scale(var(--dgt-scale-modal));opacity:0;transition:transform var(--dgt-t-base) var(--dgt-ease),opacity var(--dgt-t-base) var(--dgt-ease);will-change:transform,opacity}
+.modal .mcall .face{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);width:150px;height:150px;border-radius:50%;background:linear-gradient(135deg,#F7D9C4,#E7B49A);display:grid;place-items:center;font-size:48px;color:#3A2A22}
+.modal .mcall .top{position:absolute;left:16px;right:16px;top:16px;display:flex;align-items:center;gap:12px}
+.modal .mcall .top .mt{flex:1;font-size:18px;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.modal .mcall .top .r{display:flex;gap:8px}
+.modal .mcall .ctl{position:absolute;left:0;right:0;bottom:20px;display:flex;justify-content:center;gap:10px}
+.modal.is-open{pointer-events:auto}
+.modal.is-open .mback{opacity:1}
+.modal.is-open .mcall{transform:scale(1);opacity:1}
+.modal.is-closing .mback{opacity:0;transition-duration:var(--dgt-t-fast)}
+.modal.is-closing .mcall{transform:scale(var(--dgt-scale-modal));opacity:0;transition-duration:var(--dgt-t-fast)}
+
+/* 7 · hover del gruppo di avatar (avatar group hover) */
+.pair .av{position:relative;transform:translateY(var(--shift,0px)) scale(var(--scale-active,1));transition:transform var(--dgt-t-avatar) var(--dgt-ease);will-change:transform}
+.pair .av:hover{z-index:1}
+
+/* 8 · scambio icona nei filtri e nel rail (icon swap) */
+.t-icon-swap{position:relative}
+.t-icon-swap .t-icon{grid-area:1/1;transition:opacity var(--dgt-t-base) var(--dgt-ease-in-out),filter var(--dgt-t-base) var(--dgt-ease-in-out),transform var(--dgt-t-base) var(--dgt-ease-in-out);will-change:opacity,filter,transform}
+.t-icon-swap[data-state="a"] .t-icon[data-icon="a"],.t-icon-swap[data-state="b"] .t-icon[data-icon="b"]{opacity:1;filter:blur(0);transform:scale(1)}
+.t-icon-swap[data-state="a"] .t-icon[data-icon="b"],.t-icon-swap[data-state="b"] .t-icon[data-icon="a"]{opacity:0;filter:blur(var(--dgt-blur-sm));transform:scale(var(--dgt-scale-icon))}
+@keyframes icon-in{from{opacity:0;filter:blur(var(--dgt-blur-sm));transform:scale(var(--dgt-scale-icon))}to{opacity:1;filter:blur(0);transform:scale(1)}}
+.app .rail .rb svg.swap{animation:icon-in var(--dgt-t-base) var(--dgt-ease-in-out)}
+
+/* 9 · ridimensionamento delle card lead e attività (card resize su righe di griglia 0fr → 1fr) */
+.more{display:grid;grid-template-rows:0fr;transition:grid-template-rows var(--dgt-t-base) var(--dgt-ease)}
+.more>div{min-height:0;overflow:hidden;font-size:13px;line-height:18px;color:var(--t2);opacity:0;transition:opacity var(--dgt-t-base) var(--dgt-ease)}
+.more .mi{display:block;padding-top:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.task .more .mi{padding:6px 20px 0}
+.lead.open .more,.task.open .more{grid-template-rows:1fr}
+.lead.open .more>div,.task.open .more>div{opacity:1}
+.task.lime .more>div{color:rgb(0 0 0/.6)}.task.gray .more>div{color:#D0D0D0}
+
+/* 10 · avanzamento del marcatore "14:15" nella timeline */
+@keyframes now-advance{from{left:0}to{left:calc(100% - 44px)}}
+.app.seen .tl .now{animation:now-advance var(--dgt-t-marker) linear forwards}
+
+/* 11 · bagliore dei connettori e delle porte nell'editor a nodi */
+.edges .flow{stroke:#DFFFD2;stroke-width:2;stroke-linecap:round;stroke-dasharray:14 120;stroke-dashoffset:134;opacity:.85;filter:url(#glowsoft);animation:edge-flow var(--dgt-t-flow) linear infinite}
+@keyframes edge-flow{to{stroke-dashoffset:0}}
+@keyframes port-pulse{from{box-shadow:0 0 6px var(--eglow)}to{box-shadow:0 0 16px var(--eglow)}}
+.port:not(.gray):not(.plus){animation:port-pulse var(--dgt-t-pulse) var(--dgt-ease-in-out) infinite alternate}
+.editor .node .ok svg{stroke-dasharray:16;stroke-dashoffset:0}
+@keyframes ok-draw{from{stroke-dashoffset:16}to{stroke-dashoffset:0}}
+.editor.seen .node .ok svg{animation:ok-draw var(--dgt-t-slower) var(--dgt-ease) calc(var(--dgt-t-stagger) * 3 * var(--i,0)) both}
+
+/* stati iniziali nascosti solo se lo script gira e il moto è permesso */
+@media (prefers-reduced-motion:no-preference){
+  .js .t-digit-group:not(.is-animating) .t-digit,.js .t-pop:not(.in){opacity:0}
+  .js .editor:not(.seen) .node .ok svg{stroke-dashoffset:16}
+}
+/* moto ridotto: tutto fermo, tutto visibile */
+@media (prefers-reduced-motion:reduce){
+  .t-digit-group .t-digit,.t-pop,.t-badge,.t-success-check,.t-success-check svg path,.app.seen .tl .now,.edges .flow,.port,.editor .node .ok svg,.app .rail .rb svg{animation:none!important}
+  .t-success-check[data-state="in"]{opacity:1}
+  .t-success-check svg path,.editor .node .ok svg{stroke-dashoffset:0!important}
+  .edges .flow{display:none}
+  .rb,.pill,.rtile,.epill,.task .sel,.fbtn,.nb .dot,.t-text-swap,.t-icon-swap .t-icon,.modal .mcall,.modal .mback,.summary .sbody,.summary .sbody .in,.summary .h .rb.ghost svg,.callwrap,.callwrap .call,.more,.more>div,.pair .av,.selav .av{transition:none!important}
+  .pair .av{transform:none!important}
+}
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -498,6 +639,9 @@ h1,h2,h3,p{margin:0;font-weight:400}
     <symbol id="i-undo" viewBox="0 0 16 16"><path d="M6 4 2.5 7.5 6 11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 7.5h6.5a3.5 3.5 0 0 1 0 7H8" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-clock" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 4.5V8l2.5 1.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 16 16"><path d="M8 1.5C8.6 4.2 11.7 5.6 11.7 9.2a3.7 3.7 0 0 1-7.4 0c0-1.5.6-2.6 1.6-3.4.1 1 .6 1.8 1.5 2.2C7.2 5.7 7.6 3.6 8 1.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+    <symbol id="i-wifi" viewBox="0 0 16 16"><path d="M1.8 6.6a9 9 0 0 1 12.4 0M4.4 9.4a5.2 5.2 0 0 1 7.2 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="12.6" r="1.2" fill="currentColor"/></symbol>
+    <symbol id="i-signal" viewBox="0 0 16 16"><path d="M2.5 12.5V10M6 12.5V7.5M9.5 12.5V5M13 12.5V2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
     <symbol id="i-orgb" viewBox="0 0 20 20"><rect x="7" y="2" width="6" height="5" rx="1.5" fill="currentColor"/><rect x="2" y="13" width="6" height="5" rx="1.5" fill="currentColor"/><rect x="12" y="13" width="6" height="5" rx="1.5" fill="currentColor"/><path d="M10 7v3M5 13v-3h10v3" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
   </defs>
 </svg>
@@ -529,7 +673,7 @@ h1,h2,h3,p{margin:0;font-weight:400}
         </div>
         <span class="rb go"><svg><use href="#i-ne"/></svg></span>
       </div>
-      <div class="tr"><span class="rb"><svg><use href="#i-bell"/></svg><i class="dot"></i></span><span class="av a2">MR</span></div>
+      <div class="tr"><span class="rb bell"><svg><use href="#i-bell"/></svg><span class="nb t-badge" data-open="true"><i class="dot"></i></span></span><span class="av a2">MR</span></div>
 
       <span class="rb back"><svg><use href="#i-left"/></svg></span>
       <h3 class="title">W<svg style="color:var(--lime)"><use href="#i-mark"/></svg>RKSPACE</h3>
@@ -549,50 +693,54 @@ h1,h2,h3,p{margin:0;font-weight:400}
 
       <div class="shead" style="top:232px">
         <h3>Nuovi lead</h3><span class="cnt"><b>7</b><span>Lead</span></span>
-        <span class="rb sm ghost"><svg><use href="#i-search"/></svg></span><span class="rb sm ghost"><svg><use href="#i-sliders"/></svg></span>
-        <div class="filters"><span class="pill on">Tutti</span><span class="pill">🔥 Cliente caldo</span><span class="pill">Interesse alto</span><span class="pill">Interesse medio</span><span class="pill">Interesse basso</span><span class="pill">Nessun interesse</span></div>
+        <span class="rb sm ghost"><svg><use href="#i-search"/></svg></span><span class="rb sm ghost fbtn t-icon-swap" data-state="a"><svg class="t-icon" data-icon="a"><use href="#i-sliders"/></svg><svg class="t-icon" data-icon="b"><use href="#i-x"/></svg></span>
+        <div class="filters"><span class="pill on">Tutti</span><span class="pill"><svg><use href="#i-flame"/></svg>Cliente caldo</span><span class="pill">Interesse alto</span><span class="pill">Interesse medio</span><span class="pill">Interesse basso</span><span class="pill">Nessun interesse</span></div>
       </div>
       <div class="cards" style="top:302px">
-        <div class="ncard lead"><span class="av a1">GB</span><div class="nt"><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div><div class="name">Giulia Bianchi</div><div class="role">Direttrice marketing, Bianchi &amp; Co.</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip">Linkedin</span><span class="chip">Email</span></div></div><div><span class="k">🔥 Cliente caldo</span><span class="dots l5"><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
-        <div class="ncard lead"><span class="av a2">DR</span><div class="nt"><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div><div class="name">Dario Rossi</div><div class="role">Responsabile finanza, Rossi Srl</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip">Linkedin</span><span class="chip">Facebook</span></div></div><div><span class="k">Interesse alto</span><span class="dots l4"><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
-        <div class="ncard lead"><span class="av a3">WV</span><div class="nt"><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div><div class="name">Walter Verdi</div><div class="role">Direttore operativo, Zenith</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip">Modulo web</span></div></div><div><span class="k">Interesse medio</span><span class="dots"><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
-        <div class="ncard lead"><span class="av a4">JN</span><div class="nt"><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div><div class="name">Jonah Neri</div><div class="role">Sviluppatore web, Binary Bytes</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip">Modulo web</span></div></div><div><span class="k">Interesse basso</span><span class="dots l2"><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
+        <div class="ncard lead"><span class="av a1">GB</span><div class="nt"><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div><div class="name">Giulia Bianchi</div><div class="role">Direttrice marketing, Bianchi &amp; Co.</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip">Linkedin</span><span class="chip">Email</span></div></div><div><span class="k"><svg><use href="#i-flame"/></svg>Cliente caldo</span><span class="dots l5"><i></i><i></i><i></i><i></i><i></i></span></div></div><div class="more"><div><span class="mi">Prossimo passo: proposta venerdì</span></div></div></div>
+        <div class="ncard lead"><span class="av a2">DR</span><div class="nt"><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div><div class="name">Dario Rossi</div><div class="role">Responsabile finanza, Rossi Srl</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip">Linkedin</span><span class="chip">Facebook</span></div></div><div><span class="k">Interesse alto</span><span class="dots l4"><i></i><i></i><i></i><i></i><i></i></span></div></div><div class="more"><div><span class="mi">Prossimo passo: verifica lunedì</span></div></div></div>
+        <div class="ncard lead"><span class="av a3">WV</span><div class="nt"><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div><div class="name">Walter Verdi</div><div class="role">Direttore operativo, Zenith</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip">Modulo web</span></div></div><div><span class="k">Interesse medio</span><span class="dots"><i></i><i></i><i></i><i></i><i></i></span></div></div><div class="more"><div><span class="mi">Prossimo passo: caso studio</span></div></div></div>
+        <div class="ncard lead"><span class="av a4">JN</span><div class="nt"><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div><div class="name">Jonah Neri</div><div class="role">Sviluppatore web, Binary Bytes</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip">Modulo web</span></div></div><div><span class="k">Interesse basso</span><span class="dots l2"><i></i><i></i><i></i><i></i><i></i></span></div></div><div class="more"><div><span class="mi">Prossimo passo: in attesa</span></div></div></div>
       </div>
 
       <div class="shead" style="top:546px">
         <h3>Le tue attività di oggi</h3><span class="cnt"><b>16</b><span>Attività</span></span>
-        <span class="rb sm ghost"><svg><use href="#i-search"/></svg></span><span class="rb sm ghost"><svg><use href="#i-sliders"/></svg></span>
-        <div class="filters"><span class="pill on">Tutte</span><span class="pill">🔥 Urgenti</span><span class="pill">Scadono oggi</span><span class="pill">In ritardo</span><span class="pill">Completate</span></div>
+        <span class="rb sm ghost"><svg><use href="#i-search"/></svg></span><span class="rb sm ghost fbtn t-icon-swap" data-state="a"><svg class="t-icon" data-icon="a"><use href="#i-sliders"/></svg><svg class="t-icon" data-icon="b"><use href="#i-x"/></svg></span>
+        <div class="filters"><span class="pill on">Tutte</span><span class="pill"><svg><use href="#i-flame"/></svg>Urgenti</span><span class="pill">Scadono oggi</span><span class="pill">In ritardo</span><span class="pill">Completate</span></div>
       </div>
       <div class="cards" style="top:616px">
         <div class="ncard task lime">
           <div class="who"><span class="av a5">PT</span><div><b>Pietro Toma</b><span>CEO, Madira Ink</span></div></div>
-          <div class="nt"><span class="rb ghost"><svg><use href="#i-bell"/></svg><i class="dot"></i></span><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div>
+          <div class="nt"><span class="rb ghost bell"><svg><use href="#i-bell"/></svg><span class="nb t-badge" data-open="true"><i class="dot"></i></span></span><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div>
           <div class="body"><span class="ico"><svg><use href="#i-video"/></svg></span><div><div class="tt">Videochiamata</div><div class="meta"><span class="pair"><span class="av a3 xs">WV</span><span class="av a4 xs">PT</span></span><b>28.03.2026</b><span>alle</span><b>14:00</b></div></div></div>
-          <div class="st"><span class="k">Stato</span><div class="row"><span class="sel"><span class="av a5 s">PT</span>Chiamata fissata<svg><use href="#i-chev"/></svg></span><span class="rb ghost"><svg><use href="#i-mail"/></svg></span><span class="rb black"><svg><use href="#i-video"/></svg></span></div></div>
+          <div class="more"><div><span class="mi">Note · demo del flusso, link 10 minuti prima</span></div></div>
+          <div class="st"><span class="k">Stato</span><div class="row"><span class="sel" data-states="Chiamata fissata|In corso|Approvata*"><span class="selav"><span class="av a5 s">PT</span><span class="okc t-success-check" data-state="out" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8.5 6.5 12 13 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><span class="t-text-swap">Chiamata fissata</span><svg><use href="#i-chev"/></svg></span><span class="rb ghost"><svg><use href="#i-mail"/></svg></span><span class="rb black"><svg><use href="#i-video"/></svg></span></div></div>
         </div>
         <div class="ncard task gray">
           <div class="who"><span class="av a6">AG</span><div><b>Alessia Giacinti</b><span>CEO, Metamorfosi</span></div></div>
           <div class="nt"><span class="rb ghost"><svg><use href="#i-bell"/></svg></span><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div>
           <div class="body"><span class="ico"><svg><use href="#i-doc"/></svg></span><div><div class="tt">Invia proposta</div><div class="meta"><span>Importo</span><b>20.000 €</b></div></div></div>
-          <div class="st"><span class="k">Stato</span><div class="row"><span class="sel"><span class="av a6 s">AG</span>Bozza pronta<svg><use href="#i-chev"/></svg></span><span class="rb ghost"><svg><use href="#i-mail"/></svg></span><span class="rb black"><svg><use href="#i-video"/></svg></span></div></div>
+          <div class="more"><div><span class="mi">Note · allegare il preventivo aggiornato</span></div></div>
+          <div class="st"><span class="k">Stato</span><div class="row"><span class="sel" data-states="Bozza pronta|In revisione|Approvata*"><span class="selav"><span class="av a6 s">AG</span><span class="okc t-success-check" data-state="out" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8.5 6.5 12 13 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><span class="t-text-swap">Bozza pronta</span><svg><use href="#i-chev"/></svg></span><span class="rb ghost"><svg><use href="#i-mail"/></svg></span><span class="rb black"><svg><use href="#i-video"/></svg></span></div></div>
         </div>
         <div class="ncard task dark">
           <div class="who"><span class="av a1">MF</span><div><b>Miriam Fanni</b><span>Brand manager, Summit Marketing</span></div></div>
           <div class="nt"><span class="rb ghost"><svg><use href="#i-bell"/></svg></span><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div>
           <div class="body"><span class="ico"><svg><use href="#i-video"/></svg></span><div><div class="tt">Videochiamata</div><div class="meta"><span class="pair"><span class="av a1 xs">MF</span><span class="av a2 xs">DR</span></span><b>28.03.2026</b><span>alle</span><b>20:00</b></div></div></div>
-          <div class="st"><span class="k">Stato</span><div class="row"><span class="sel"><span class="av a1 s">MF</span>Da confermare<svg><use href="#i-chev"/></svg></span><span class="rb ghost"><svg><use href="#i-mail"/></svg></span><span class="rb black"><svg><use href="#i-video"/></svg></span></div></div>
+          <div class="more"><div><span class="mi">Note · confermare l'orario entro le 18</span></div></div>
+          <div class="st"><span class="k">Stato</span><div class="row"><span class="sel" data-states="Da confermare|Confermata*|Chiamata fissata"><span class="selav"><span class="av a1 s">MF</span><span class="okc t-success-check" data-state="out" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M3 8.5 6.5 12 13 4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><span class="t-text-swap">Da confermare</span><svg><use href="#i-chev"/></svg></span><span class="rb ghost"><svg><use href="#i-mail"/></svg></span><span class="rb black"><svg><use href="#i-video"/></svg></span></div></div>
         </div>
       </div>
 
       <div class="overlay">
-        <div class="call">
+        <div class="callwrap"><div class="call">
           <div class="top"><span class="rb glass"><svg><use href="#i-video"/></svg></span><span class="r"><span class="rb glass"><svg><use href="#i-expand"/></svg></span><span class="rb glass"><svg><use href="#i-x"/></svg></span></span></div>
           <span class="face">PT</span>
           <div class="ctl"><span class="rb glass"><svg><use href="#i-video"/></svg></span><span class="rb glass"><svg><use href="#i-mic"/></svg></span><span class="rb glass"><svg><use href="#i-speaker"/></svg></span><span class="rb red"><svg><use href="#i-phone"/></svg></span></div>
-        </div>
+        </div></div>
         <div class="summary">
           <div class="h"><span class="rb black"><svg><use href="#i-wand"/></svg></span><h4>Riepilogo</h4><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div>
+          <div class="sbody"><div class="in">
           <div class="tline">
             <div class="m"><span>15:15</span><i style="background:var(--lime);color:var(--ink)"><svg><use href="#i-like"/></svg></i></div>
             <div class="m" style="margin-top:150px"><span>14:46</span><i style="background:var(--badge-red);color:var(--ink)"><svg><use href="#i-star"/></svg></i></div>
@@ -608,6 +756,15 @@ h1,h2,h3,p{margin:0;font-weight:400}
               <p class="goal">Pubblicare <b>12 post in 30 giorni</b> con approvazione del titolare su ogni uscita. L'obiettivo è <b>quantitativo e misurabile</b> e ha un impatto diretto sul fatturato del cliente.</p>
             </div>
           </div>
+          </div></div>
+        </div>
+      </div>
+      <div class="modal" role="dialog" aria-label="Videochiamata a schermo intero" aria-hidden="true">
+        <div class="mback"></div>
+        <div class="mcall">
+          <div class="top"><span class="rb glass"><svg><use href="#i-video"/></svg></span><span class="mt">Videochiamata · Pietro Toma</span><span class="r"><span class="rb glass mmin"><svg><use href="#i-expand"/></svg></span><span class="rb glass mclose"><svg><use href="#i-x"/></svg></span></span></div>
+          <span class="face">PT</span>
+          <div class="ctl"><span class="rb glass"><svg><use href="#i-video"/></svg></span><span class="rb glass"><svg><use href="#i-mic"/></svg></span><span class="rb glass"><svg><use href="#i-speaker"/></svg></span><span class="rb red mclose"><svg><use href="#i-phone"/></svg></span></div>
         </div>
       </div>
     </div>
@@ -625,12 +782,12 @@ h1,h2,h3,p{margin:0;font-weight:400}
     </div>
     <div class="phones">
       <div class="phone"><div class="screen lightbg">
-        <div class="sb"><span>9:41</span><span class="isl"></span><span class="sig">▾<i></i></span></div>
+        <div class="sb"><span>9:41</span><span class="isl"></span><span class="sig"><svg><use href="#i-signal"/></svg><svg><use href="#i-wifi"/></svg><i></i></span></div>
         <div class="nav"><span class="rb white"><svg><use href="#i-left"/></svg></span><span class="rb white"><svg><use href="#i-plus"/></svg></span></div>
         <h3 class="h1">W<svg style="color:var(--lime)"><use href="#i-mark"/></svg>RKSPACE</h3>
         <div class="sh"><h4>Nuovi lead</h4><span class="rb"><svg><use href="#i-search"/></svg></span><span class="rb"><svg><use href="#i-sliders"/></svg></span></div>
         <div class="leadrow">
-          <div class="ncard lead light"><span class="av a1 s">GB</span><div class="nt"><span class="rb"><svg><use href="#i-ne"/></svg></span></div><div class="name">Giulia Bianchi</div><div class="role">Direttrice marketing, Bianchi &amp; Co.</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip light">Linkedin</span><span class="chip light">Email</span></div></div><div><span class="k">🔥 Cliente caldo</span><span class="dots light l5"><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
+          <div class="ncard lead light"><span class="av a1 s">GB</span><div class="nt"><span class="rb"><svg><use href="#i-ne"/></svg></span></div><div class="name">Giulia Bianchi</div><div class="role">Direttrice marketing, Bianchi &amp; Co.</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip light">Linkedin</span><span class="chip light">Email</span></div></div><div><span class="k"><svg><use href="#i-flame"/></svg>Cliente caldo</span><span class="dots light l5"><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
           <div class="ncard lead light"><span class="av a2 s">DR</span><div class="nt"><span class="rb"><svg><use href="#i-ne"/></svg></span></div><div class="name">Dario Rossi</div><div class="role">Responsabile finanza</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip light">Linkedin</span></div></div></div></div>
         </div>
         <div class="sh"><h4>Attività di oggi</h4><span class="rb"><svg><use href="#i-search"/></svg></span><span class="rb"><svg><use href="#i-sliders"/></svg></span></div>
@@ -639,7 +796,7 @@ h1,h2,h3,p{margin:0;font-weight:400}
       </div></div>
 
       <div class="phone"><div class="screen daily">
-        <div class="sb"><span>9:41</span><span class="isl"></span><span class="sig">▾<i></i></span></div>
+        <div class="sb"><span>9:41</span><span class="isl"></span><span class="sig"><svg><use href="#i-signal"/></svg><svg><use href="#i-wifi"/></svg><i></i></span></div>
         <div class="nav"><span class="rb"><svg><use href="#i-left"/></svg></span><span class="r"><span class="rb"><svg><use href="#i-cal"/></svg></span><span class="rb"><svg><use href="#i-plus"/></svg></span></span></div>
         <h3 class="h1" style="letter-spacing:0">Agenda del giorno</h3>
         <div class="date">28<small>marzo</small></div>
@@ -659,11 +816,12 @@ h1,h2,h3,p{margin:0;font-weight:400}
       </div></div>
 
       <div class="phone"><div class="screen callscr">
-        <div class="sb"><span>9:41</span><span class="isl"></span><span class="sig">▾<i></i></span></div>
+        <div class="sb"><span>9:41</span><span class="isl"></span><span class="sig"><svg><use href="#i-signal"/></svg><svg><use href="#i-wifi"/></svg><i></i></span></div>
         <div class="top"><span class="rb"><svg><use href="#i-video"/></svg></span><h4>Videochiamata</h4><span class="rb"><svg><use href="#i-x"/></svg></span></div>
         <div class="vid"><span class="rb glass ex"><svg><use href="#i-expand"/></svg></span><span class="face">PT</span><div class="ctl"><span class="rb glass"><svg><use href="#i-video"/></svg></span><span class="rb glass"><svg><use href="#i-mic"/></svg></span><span class="rb glass"><svg><use href="#i-speaker"/></svg></span><span class="rb red"><svg><use href="#i-phone"/></svg></span></div></div>
         <div class="summary">
           <div class="h"><span class="rb ghost"><svg><use href="#i-wand"/></svg></span><h4>Riepilogo</h4><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div>
+          <div class="sbody"><div class="in">
           <div class="tline">
             <div class="m"><span>15:15</span><i style="background:var(--badge-red);color:var(--ink)"><svg><use href="#i-like"/></svg></i></div>
             <div class="m" style="margin-top:96px"><span>14:46</span><i style="background:var(--lime);color:var(--ink)"><svg><use href="#i-star"/></svg></i></div>
@@ -679,6 +837,7 @@ h1,h2,h3,p{margin:0;font-weight:400}
               <p class="goal">Pubblicare <b>12 post in 30 giorni</b> con approvazione del titolare su ogni uscita. L'obiettivo è <b>quantitativo e misurabile</b>.</p>
             </div>
           </div>
+          </div></div>
         </div>
       </div></div>
     </div>
@@ -717,7 +876,7 @@ h1,h2,h3,p{margin:0;font-weight:400}
       <div class="r"><span>sezione · 28/34 · 400</span><div style="font:400 28px/34px var(--font)">Le tue attività di oggi</div></div>
       <div class="r"><span>nome · 26/30 · 400</span><div style="font:400 26px/30px var(--font)">Giulia Bianchi</div></div>
       <div class="r"><span>corpo · 18/24 · 400</span><div style="font:400 18px/24px var(--font)">La tua agenda · Documenti: · Obiettivo:</div></div>
-      <div class="r"><span>pillola · 15/20 · 400</span><div style="font:400 15px/20px var(--font)">Tutti · 🔥 Cliente caldo · Interesse alto · Nuova attività</div></div>
+      <div class="r"><span>pillola · 15/20 · 400</span><div style="font:400 15px/20px var(--font)">Tutti · <svg class="ti"><use href="#i-flame"/></svg>Cliente caldo · Interesse alto · Nuova attività</div></div>
       <div class="r"><span>ruolo · 13/18 · 400</span><div style="font:400 13px/18px var(--font);color:var(--t2)">Direttrice marketing, Bianchi &amp; Co. · 28.03.2026 alle 14:00</div></div>
       <div class="r"><span>etichetta · 11/14 · 400</span><div style="font:400 11px/14px var(--font);color:var(--t2)">Fonte · Stato · 14:15</div></div>
     </div>
@@ -733,13 +892,13 @@ h1,h2,h3,p{margin:0;font-weight:400}
     <div class="kit">
       <div class="col">
         <div class="tlk"><span class="ev"><span class="pair"><span class="av a3">WV</span><span class="av a4">PT</span></span></span><div class="live"><span class="rb"><svg><use href="#i-video"/></svg></span></div><span class="now"><b>14:15</b><i></i></span></div>
-        <div class="krow"><span class="pill xl on">Tutte</span><span class="pill xl">🔥 Urgenti</span><span class="pill xl">Scadono oggi</span></div>
+        <div class="krow"><span class="pill xl on">Tutte</span><span class="pill xl"><svg><use href="#i-flame"/></svg>Urgenti</span><span class="pill xl">Scadono oggi</span></div>
         <div class="krow"><span class="nt2"><i><svg><use href="#i-plus"/></svg></i>Nuova attività</span><span class="rb xl g2"><svg><use href="#i-video"/></svg></span><span class="rb xl g2"><svg><use href="#i-mic"/></svg></span><span class="rb xl g2"><svg><use href="#i-speaker"/></svg></span></div>
         <div class="krow"><span class="rb xl ghost"><svg><use href="#i-search"/></svg></span><span class="rb xl ghost"><svg><use href="#i-sliders"/></svg></span><span class="evk"><span class="pair"><span class="av a1">GB</span><span class="av a2">DR</span></span>36 min<span class="rb"><svg><use href="#i-ne"/></svg></span></span></div>
         <div class="krow" style="gap:40px"><span class="chip xl lime">Facebook</span><span class="chip xl">Linkedin</span><span class="dots xl l4"><i></i><i></i><i></i><i></i><i></i></span></div>
       </div>
       <div class="col">
-        <div class="ncard lead on2"><span class="av a1">GB</span><div class="nt"><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div><div class="name">Giulia Bianchi</div><div class="role">Direttrice marketing, Bianchi &amp; Co.</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip">Linkedin</span><span class="chip">Email</span></div></div><div><span class="k">🔥</span><span class="dots l5"><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
+        <div class="ncard lead on2"><span class="av a1">GB</span><div class="nt"><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div><div class="name">Giulia Bianchi</div><div class="role">Direttrice marketing, Bianchi &amp; Co.</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip">Linkedin</span><span class="chip">Email</span></div></div><div><span class="k"><svg><use href="#i-flame"/></svg>Cliente caldo</span><span class="dots l5"><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
         <div class="ncard lead on2"><span class="av a3">WV</span><div class="nt"><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div><div class="name">Walter Verdi</div><div class="role">Direttore operativo, Zenith</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip">Modulo web</span></div></div><div><span class="k">Interesse medio</span><span class="dots"><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
       </div>
       <div class="col">
@@ -800,7 +959,7 @@ h1,h2,h3,p{margin:0;font-weight:400}
     <div class="editor" role="figure" aria-label="Interfaccia agente (contenuto sintetico)">
       <div class="canvasbg" aria-hidden="true"></div>
       <div class="rail">
-        <span class="rtile plus" title="Nuovo">+</span>
+        <span class="rtile plus t-icon-swap" data-state="a" title="Nuovo"><svg class="t-icon" data-icon="a"><use href="#i-plus"/></svg><svg class="t-icon" data-icon="b"><use href="#i-x"/></svg></span>
         <span class="rtile" title="Chat"><svg><use href="#i-chatb"/></svg></span>
         <span class="rtile active" title="Agenti"><svg><use href="#i-bot"/></svg></span>
         <span class="rtile" title="Organizzazione"><svg><use href="#i-orgb"/></svg></span>
@@ -821,6 +980,9 @@ h1,h2,h3,p{margin:0;font-weight:400}
             <path d="M166 88 C 240 88, 260 80, 330 80" stroke="#4FCB58" stroke-width="2.2" fill="none" filter="url(#glow)"/>
             <path d="M538 80 C 700 80, 760 92, 940 92" stroke="#4FCB58" stroke-width="2.2" fill="none" filter="url(#glow)"/>
             <path d="M350 130 C 350 190, 358 205, 358 268" stroke="#4FCB58" stroke-width="2.2" fill="none" filter="url(#glow)"/>
+            <path class="flow" d="M166 88 C 240 88, 260 80, 330 80" fill="none"/>
+            <path class="flow" d="M538 80 C 700 80, 760 92, 940 92" fill="none"/>
+            <path class="flow" d="M350 130 C 350 190, 358 205, 358 268" fill="none"/>
             <path d="M430 130 C 430 195, 608 200, 608 280" stroke="#D9D9D9" stroke-width="1.8" fill="none" filter="url(#glowsoft)" opacity=".9"/>
             <path d="M510 130 C 510 165, 560 165, 560 196" stroke="#8E8E8E" stroke-width="1.6" fill="none"/>
             <path d="M358 262 l-7 -10 h14 z" fill="#4FCB58" filter="url(#glowsoft)"/>
@@ -833,7 +995,7 @@ h1,h2,h3,p{margin:0;font-weight:400}
           <span class="port" style="left:350px;top:130px"></span><span class="plabel" style="left:350px;top:142px">Modello</span>
           <span class="port" style="left:430px;top:130px"></span><span class="plabel" style="left:430px;top:142px">Memoria</span>
           <span class="port" style="left:510px;top:130px"></span><span class="plabel" style="left:510px;top:142px">Strumento</span>
-          <span class="port plus" style="left:560px;top:196px">+</span>
+          <span class="port plus" style="left:560px;top:196px"><svg><use href="#i-plus"/></svg></span>
           <span class="port" style="left:538px;top:80px"></span>
           <span class="elabel" style="left:740px;top:86px">1 elemento</span>
           <span class="plabel" style="left:900px;top:60px">Strumento</span>
@@ -870,3 +1032,111 @@ h1,h2,h3,p{margin:0;font-weight:400}
     <p class="note">Sistema di design copiato dai riferimenti in design-system/reference e dal case study originale. Token in tokens.css, descrizione in DESIGN.md. Contenuti sintetici, nessun logo o foto di terzi.</p>
   </div>
 </div>
+<script>
+// Moto dello specimen: solo classi e attributi, il CSS fa il resto. Senza script la pagina resta una figura statica.
+(function () {
+  const doc = document, root = doc.documentElement;
+  root.classList.add('js');
+  const rm = matchMedia('(prefers-reduced-motion: reduce)');
+  const reduced = () => rm.matches;
+  const ms = (name, fallback) => { const v = parseFloat(getComputedStyle(root).getPropertyValue(name)); return Number.isFinite(v) ? v : fallback; };
+  const on = (sel, ev, fn, ctx) => (ctx || doc).querySelectorAll(sel).forEach(el => el.addEventListener(ev, e => fn(el, e)));
+
+  // 1 · cifre e badge: ogni cifra diventa uno span (pop-in con scarto)
+  doc.querySelectorAll('.stat b, .shead .cnt b, .count b').forEach(el => {
+    const chars = [...el.textContent]; el.textContent = ''; el.classList.add('t-digit-group');
+    chars.forEach((ch, i) => { const d = doc.createElement('span'); d.className = 't-digit'; d.textContent = ch; d.style.setProperty('--d', i); el.appendChild(d); });
+  });
+  doc.querySelectorAll('.stats').forEach(st => st.querySelectorAll('.stat').forEach((g, i) => { g.querySelector('b').style.setProperty('--g', i); const b = g.querySelector('.badge'); if (b) { b.classList.add('t-pop'); b.style.setProperty('--g', i); } }));
+  doc.querySelectorAll('.editor .node .ok').forEach((ok, i) => ok.style.setProperty('--i', i));
+
+  // comparsa: numeri, badge di notifica, marcatore, spunte dei nodi
+  const reveal = el => {
+    el.querySelectorAll('.t-digit-group').forEach(g => g.classList.add('is-animating'));
+    el.querySelectorAll('.t-pop').forEach(b => b.classList.add('in'));
+    el.querySelectorAll('.t-badge').forEach(b => { b.dataset.open = 'true'; });
+    el.classList.add('seen');
+    if (el.classList.contains('app')) tickMarker(el);
+  };
+  const targets = doc.querySelectorAll('.app, .editor, .count');
+  if (!reduced()) doc.querySelectorAll('.t-badge').forEach(b => { b.dataset.open = 'false'; });
+  if ('IntersectionObserver' in window && !reduced()) {
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { reveal(e.target); io.unobserve(e.target); } }), { threshold: .2 });
+    targets.forEach(t => io.observe(t));
+  } else targets.forEach(reveal);
+
+  // 10 · il marcatore avanza (CSS) e l'ora segue: da 14:15 a 15:00 nella durata --dgt-t-marker
+  function tickMarker(app) {
+    const b = app.querySelector('.tl .now b'); if (!b || reduced()) return;
+    let m = 15; const step = ms('--dgt-t-marker', 90000) / 45;
+    const id = setInterval(() => { m++; b.textContent = m >= 60 ? '15:00' : '14:' + String(m).padStart(2, '0'); if (m >= 60) clearInterval(id); }, step);
+  }
+
+  // 2 · campanella: il badge si spegne e si riaccende
+  on('.bell', 'click', el => { const b = el.querySelector('.t-badge'); if (b) b.dataset.open = b.dataset.open === 'true' ? 'false' : 'true'; });
+
+  // 3 + 4 · selettore di stato: scambio di testo; gli stati con * mostrano la spunta di conferma
+  const swapText = (el, next) => {
+    if (reduced()) { el.textContent = next; return; }
+    el.classList.add('is-exit');
+    setTimeout(() => { el.textContent = next; el.classList.remove('is-exit'); el.classList.add('is-enter-start'); void el.offsetHeight; el.classList.remove('is-enter-start'); }, ms('--dgt-t-fast', 150));
+  };
+  doc.querySelectorAll('.sel[data-states]').forEach(sel => {
+    const states = sel.dataset.states.split('|'); let i = 0;
+    const txt = sel.querySelector('.t-text-swap'), chk = sel.querySelector('.okc');
+    sel.addEventListener('click', () => {
+      i = (i + 1) % states.length; const ok = states[i].endsWith('*');
+      swapText(txt, states[i].replace('*', ''));
+      if (ok) { sel.classList.add('ok'); chk.dataset.state = 'out'; void chk.offsetWidth; chk.dataset.state = 'in'; }
+      else { sel.classList.remove('ok'); setTimeout(() => { chk.dataset.state = 'out'; }, ms('--dgt-t-fast', 150)); }
+    });
+  });
+
+  // 5 + 6 · Riepilogo richiudibile, chiamata richiudibile, videochiamata a schermo intero
+  const app = doc.querySelector('.app'), modal = app && app.querySelector('.modal'), callwrap = app && app.querySelector('.callwrap');
+  const openModal = () => { modal.classList.remove('is-closing'); modal.classList.add('is-open'); modal.setAttribute('aria-hidden', 'false'); };
+  const closeModal = () => {
+    if (!modal.classList.contains('is-open')) return;
+    modal.classList.remove('is-open'); modal.classList.add('is-closing'); modal.setAttribute('aria-hidden', 'true');
+    setTimeout(() => modal.classList.remove('is-closing'), ms('--dgt-t-fast', 150));
+    callwrap.classList.remove('closed');
+  };
+  if (app) {
+    on('.summary .h .rb.ghost', 'click', el => el.closest('.summary').classList.toggle('closed'), app);
+    on('.call .top .r .rb:last-child', 'click', () => callwrap.classList.add('closed'), app);
+    on('.call .top .r .rb:first-child, .task .rb.black', 'click', openModal, app);
+    on('.modal .mclose, .modal .mmin, .modal .mback', 'click', closeModal, app);
+    doc.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  }
+
+  // 7 · gruppi di avatar: l'avatar sotto il puntatore si solleva, i vicini seguono con decadimento
+  doc.querySelectorAll('.pair').forEach(group => {
+    const avs = [...group.querySelectorAll('.av')];
+    const set = (active, phase) => {
+      const tf = phase === 'out' ? 'var(--dgt-ease-spring-strong)' : 'var(--dgt-ease)';
+      avs.forEach((el, i) => {
+        el.style.transitionTimingFunction = tf;
+        if (active == null) { el.style.setProperty('--shift', '0px'); el.style.setProperty('--scale-active', '1'); return; }
+        const d = Math.abs(i - active);
+        el.style.setProperty('--shift', (-4 * Math.pow(.45, d)).toFixed(2) + 'px');
+        el.style.setProperty('--scale-active', i === active ? '1.05' : '1');
+      });
+    };
+    avs.forEach((el, i) => el.addEventListener('mouseenter', () => set(i, 'in')));
+    group.addEventListener('mouseleave', () => set(null, 'out'));
+  });
+
+  // 8 · filtri e rail: scambio icona e stato attivo
+  on('.fbtn', 'click', el => { const b = el.dataset.state === 'a'; el.dataset.state = b ? 'b' : 'a'; el.classList.toggle('on', b); });
+  on('.app .filters .pill', 'click', el => { el.parentNode.querySelectorAll('.pill').forEach(p => p.classList.toggle('on', p === el)); });
+  on('.app .rail .rb', 'click', el => {
+    el.parentNode.querySelectorAll('.rb').forEach(r => r.classList.toggle('white', r === el));
+    const svg = el.querySelector('svg'); svg.classList.remove('swap'); void svg.offsetWidth; svg.classList.add('swap');
+  });
+  on('.rtile.plus', 'click', el => { el.dataset.state = el.dataset.state === 'a' ? 'b' : 'a'; });
+
+  // 9 · card lead e attività: si allargano per mostrare una riga in più
+  on('.app .lead', 'click', (el, e) => { if (!e.target.closest('.nt')) el.classList.toggle('open'); });
+  on('.app .task .body', 'click', el => el.closest('.task').classList.toggle('open'));
+})();
+</script>
