@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DGT Tre Direzioni</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600&family=Inter:wght@400;500;600&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+/* Pagina di presentazione nello stile del sistema di design (specimen): #181818, Urbanist, etichette "(01)". Tema unico, scuro, voluto. */
+:root{--page:#181818;--card:#2C2C2C;--card-top:#353535;--white:#FCFCFC;--lime:#B8FC64;--t2:#9A9A9A;--rosa:#F9A3A3;--rosa-ink:#7A1F1F;--bezel:#3A3A3A;--font:"Urbanist",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--page)}
+body{color:var(--white);font:400 16px/24px var(--font);-webkit-font-smoothing:antialiased}
+h1,h2,h3,p{margin:0;font-weight:400}
+.p-wrap{max-width:1300px;margin:0 auto;padding:0 24px 120px}
+.p-lbl{font-size:14px;color:#BDBDBD;padding:44px 0 0}
+.p-sec{padding:40px 0 24px;display:grid;gap:28px}
+.p-sec .p-hd{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.p-sec .p-hd h2{font-size:56px;line-height:60px;letter-spacing:-.01em;text-wrap:balance}
+.p-sec .p-hd h2 em{font-style:normal;color:var(--lime)}
+.p-sec .p-hd p{font-size:22px;line-height:30px;color:#EDEDED;max-width:26em}
+@media (max-width:899px){.p-sec .p-hd{grid-template-columns:1fr;gap:16px}.p-sec .p-hd h2{font-size:40px;line-height:44px}.p-sec .p-hd p{font-size:18px;line-height:26px}}
+.p-note{color:var(--t2);font-size:13px;line-height:19px;max-width:80ch}
+/* barra di controllo */
+.p-ctl{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,var(--page) 80%,transparent);padding:16px 0 20px;display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center}
+.p-seg{display:inline-flex;gap:6px;padding:6px;border-radius:9999px;background:var(--card)}
+.p-seg button{appearance:none;border:0;background:transparent;color:var(--white);font:400 15px/20px var(--font);height:44px;padding:0 20px;border-radius:9999px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;white-space:nowrap}
+.p-seg button b{font-weight:500;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:rgb(255 255 255/.1);font-size:13px}
+.p-seg button[aria-pressed="true"]{background:var(--white);color:#0A0A0A}
+.p-seg button[aria-pressed="true"] b{background:var(--lime);color:#0A0A0A}
+.p-seg button:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.p-ctl .p-apri{margin-left:auto;color:var(--t2);font-size:14px;display:inline-flex;align-items:center;gap:8px}
+.p-ctl .p-apri a{color:var(--white);text-decoration:underline;text-underline-offset:3px}
+.p-ctl .p-apri a:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+/* cornice del dispositivo, come nello specimen */
+.p-device{background:var(--bezel);border-radius:44px;padding:14px;box-shadow:0 60px 120px rgb(0 0 0/.6)}
+.p-stage{position:relative;border-radius:32px;overflow:hidden;background:#000}
+.p-stage .p-inner{position:absolute;left:0;top:0;width:1440px;transform-origin:0 0}
+.p-stage.caricando::after{content:"Rendering…";position:absolute;inset:0;display:grid;place-items:center;color:var(--t2)}
+.p-cap{display:flex;justify-content:space-between;gap:16px;color:var(--t2);font-size:13px;flex-wrap:wrap}
+.p-cap b{color:var(--white);font-weight:400}
+/* guadagna / perde */
+.p-gp{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:899px){.p-gp{grid-template-columns:1fr}}
+.p-gcard{background:linear-gradient(180deg,var(--card-top),var(--card));border-radius:28px;padding:24px 24px 28px;display:grid;gap:16px;align-content:start}
+.p-gcard h3{font-size:26px;line-height:30px;display:flex;align-items:center;gap:12px}
+.p-gcard h3 i{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none}
+.p-gcard h3 i svg{width:16px;height:16px;display:block}
+.p-gcard.g h3 i{background:var(--lime);color:#0A0A0A}
+.p-gcard.p h3 i{background:var(--rosa);color:var(--rosa-ink)}
+.p-gcard ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.p-gcard li{display:flex;gap:12px;font-size:16px;line-height:24px;color:#EDEDED}
+.p-gcard li::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;margin-top:8px;background:var(--lime)}
+.p-gcard.p li::before{background:var(--rosa)}
+.p-gcard li b{font-weight:500;color:var(--white)}
+.p-gcard li>span{flex:1;min-width:0}
+/* verdetto a 40 */
+.p-v40{background:linear-gradient(180deg,var(--card-top),var(--card));border-radius:28px;padding:28px;display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:start}
+@media (max-width:899px){.p-v40{grid-template-columns:1fr}}
+.p-v40 .p-num{font-weight:300;font-size:64px;line-height:64px}
+.p-v40 .p-num small{display:block;font-size:14px;line-height:20px;color:var(--t2);margin-top:6px}
+.p-v40 p{font-size:17px;line-height:26px;color:#EDEDED;max-width:62ch}
+.p-v40 p b{font-weight:500;color:var(--white)}
+.p-pill{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 16px;border-radius:9999px;border:1px solid rgb(255 255 255/.14);font-size:14px;white-space:nowrap}
+.p-pill.lime{background:var(--lime);color:#0A0A0A;border-color:transparent}
+.p-pill.rosa{background:var(--rosa);color:var(--rosa-ink);border-color:transparent}
+/* tabella finale */
+.p-tab{width:100%;border-collapse:collapse;font-size:15px;line-height:22px}
+.p-tab th,.p-tab td{text-align:left;padding:12px 14px;border-bottom:1px solid rgb(255 255 255/.1);vertical-align:top}
+.p-tab th{font-weight:400;color:var(--t2);font-size:13px}
+.p-tab td:first-child{color:var(--t2);white-space:nowrap}
+.p-tabwrap{overflow-x:auto;background:var(--card);border-radius:28px;padding:8px 12px}
+.p-scelta{background:var(--lime);color:#0A0A0A;border-radius:28px;padding:32px 36px;display:grid;gap:14px}
+.p-scelta h3{font-size:32px;line-height:38px}
+.p-scelta p{font-size:18px;line-height:27px;max-width:66ch}
+.p-scelta p b{font-weight:500}
+.p-scelta ul{margin:0;padding:0 0 0 20px;font-size:16px;line-height:24px;display:grid;gap:6px}
+.p-footer{padding:100px 0 0;display:grid;gap:18px;text-align:center;justify-items:center}
+.p-footer h2{font-size:72px;line-height:76px;letter-spacing:-.01em}
+.p-footer h2 em{font-style:normal;color:var(--lime)}
+@media (max-width:899px){.p-footer h2{font-size:44px;line-height:48px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="p-wrap">
+  <p class="p-lbl">(01) DGT — Schermate reali · tre direzioni per la vista principale dell'azienda</p>
+  <section class="p-sec">
+    <div class="p-hd">
+      <h2>Una schermata,<br>tre <em>direzioni</em></h2>
+      <p>La vista principale di Nova Studio: quattro dipartimenti, undici dipendenti AI, tre al lavoro in questo momento. Solo la direzione A segue il sistema di design; B e C se ne allontanano apposta per mostrare cosa si esclude. Il selettore 11 / 40 è la prova di scala.</p>
+    </div>
+  </section>
+
+  <div class="p-ctl" role="toolbar" aria-label="Direzione e numero di dipendenti">
+    <div class="p-seg" id="seg-dir">
+      <button type="button" data-dir="A" aria-pressed="true"><b>A</b>Console</button>
+      <button type="button" data-dir="B" aria-pressed="false"><b>B</b>Registro operativo</button>
+      <button type="button" data-dir="C" aria-pressed="false"><b>C</b>Mappa viva</button>
+    </div>
+    <div class="p-seg" id="seg-n">
+      <button type="button" data-n="11" aria-pressed="true">11 dipendenti</button>
+      <button type="button" data-n="40" aria-pressed="false">40 dipendenti</button>
+    </div>
+    <span class="p-apri" id="apri"></span>
+  </div>
+
+  <div class="p-device"><div class="p-stage" id="stage"><div class="p-inner" id="inner"></div></div></div>
+  <p class="p-cap" id="cap"></p>
+
+  <section class="p-sec" id="gp"></section>
+
+  <p class="p-lbl">(02) La prova dei quaranta</p>
+  <section class="p-sec">
+    <div class="p-hd">
+      <h2>Quale regge<br>a <em>quaranta</em></h2>
+      <p>Undici dipendenti stanno in qualsiasi impaginazione. Quaranta no: la domanda è quale unità cresce e quale resta ferma.</p>
+    </div>
+    <div class="p-tabwrap"><table class="p-tab">
+      <thead><tr><th>Direzione</th><th>Cosa resta uguale</th><th>Cosa cresce</th><th>Altezza della pagina a 40</th><th>Il «adesso» (12 al lavoro)</th></tr></thead>
+      <tbody>
+        <tr><td>A · Console</td><td>Barra delle esecuzioni, riga dei numeri, quattro card dipartimento, pannello approvazioni</td><td>L'elenco dei dipendenti, che passa da card a pillole (3 per riga)</td><td>≈ 1.970 px (11: ≈ 1.720)</td><td>Un luogo: la riga in alto, scorrevole, con «da approvare» in testa</td></tr>
+        <tr><td>B · Registro</td><td>Barra laterale, cinque numeri, pannello a destra</td><td>La tabella, una riga per dipendente (36 px)</td><td>≈ 1.900 px (11: 900)</td><td>Una colonna «Stato»: si trova filtrando, non guardando</td></tr>
+        <tr><td>C · Mappa</td><td>Le quattro stanze, il diario</td><td>Le stanze: 10 cerchi ciascuna, un fumetto per riga, altezze diverse da stanza a stanza</td><td>≈ 1.140 px (11: ≈ 950)</td><td>Dodici anelli accesi in quattro stanze: si vede chi, e cosa solo leggendo i fumetti</td></tr>
+      </tbody>
+    </table></div>
+    <div class="p-v40">
+      <div class="p-num">A<small>regge meglio, a una condizione</small></div>
+      <div style="display:grid;gap:14px">
+        <p><b>La direzione A regge a quaranta perché l'unità che cresce non è il dipendente ma il dipartimento e l'esecuzione.</b> Le quattro card restano quattro, la barra delle esecuzioni mostra chi lavora adesso qualunque sia l'organico, il pannello di approvazione resta uno. L'unica parte che cresce è l'elenco dei dipendenti, che il sistema già sa comprimere: la pillola con avatar, nome e stato è un componente del riferimento (l'evento dell'agenda), non un'invenzione.</p>
+        <p><b>La condizione:</b> oltre i sedici dipendenti la griglia di card diventa elenco di pillole e il filtro predefinito è il dipartimento. Senza questa regola A è dieci righe di card e perde a mani basse contro B.</p>
+        <p><b>B regge meccanicamente</b> (una riga per persona, tutto confrontabile) ma il «adesso» diventa una colonna da filtrare e l'azienda un foglio di calcolo. <b>C si rompe</b>: a dodici al lavoro ogni fumetto prende una riga, le stanze crescono in modo disuguale e la posizione di un cerchio non dice niente.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="p-pill lime">A · regge con la regola dei 16</span><span class="p-pill">B · regge, ma piatta</span><span class="p-pill rosa">C · si affolla a 12 al lavoro</span></div>
+      </div>
+    </div>
+  </section>
+
+  <p class="p-lbl">(03) Direzione scelta</p>
+  <section class="p-sec">
+    <div class="p-scelta">
+      <h3>Si continua con la direzione A, «Console».</h3>
+      <p>È il sistema di design applicato senza sconti, e con la regola di scala regge a quaranta. Le prossime schermate (dipartimento, dipendente, esecuzione, approvazioni da mobile, costi) nascono solo dentro questa direzione. Da B si porta una sola idea, non lo stile: <b>ogni elenco oltre i sedici elementi ha una vista compatta</b>. Da C non si porta niente.</p>
+      <ul>
+        <li>Unità di scala: dipartimento ed esecuzione. Il dipendente è la foglia.</li>
+        <li>Il «adesso» è un luogo: la barra in alto e la prima riga di card, ordinate con «da approvare» in testa.</li>
+        <li>Oltre sedici dipendenti: griglia → pillole, filtro predefinito sul dipartimento.</li>
+        <li>Un solo accento: lime = attenzione del titolare (al lavoro, da approvare). Rosa solo per errori e cali.</li>
+      </ul>
+    </div>
+    <p class="p-note">Contenuti sintetici (Nova Studio è un'azienda inventata). Le tre schermate sono generate dallo stesso modello dati; il selettore ridisegna la schermata con 11 o 40 dipendenti. Sorgenti in schermate/direzioni/ nel repository.</p>
+  </section>
+
+  <div class="p-footer"><h2>Prossimo passo:<br>la <em>schermata</em> del dipartimento</h2></div>
+</div>
+
+<script src="comune.js"></script>
+<script src="dati.js"></script>
+<script src="direzione-a.js"></script>
+<script src="direzione-b.js"></script>
+<script src="direzione-c.js"></script>
+<script>
+(function () {
+  const DIR = { A: DIREZIONE_A, B: DIREZIONE_B, C: DIREZIONE_C };
+  const GP = {
+    A: {
+      titolo: 'Console', sotto: 'Il sistema di design così com\'è: nero, lime, Urbanist, pillole e cerchi, card con intaglio, barra agenda, Riepilogo chiaro.',
+      guadagna: ['<b>Identità immediata.</b> Nessun altro prodotto per agenti AI assomiglia a questo; il titolare la riconosce a un metro di distanza.', '<b>Il «adesso» è un luogo.</b> Barra delle esecuzioni in alto e prima riga di card: tre persone al lavoro si vedono senza cercare.', '<b>Un solo accento con un solo significato.</b> Lime = serve il titolare (al lavoro, da approvare). Il pannello a destra è la sua scrivania.', '<b>Componenti già pronti.</b> Card attività, card lead, pillola-evento, Riepilogo: ogni schermata successiva ha i pezzi.'],
+      perde: ['<b>Densità.</b> Una card da 240×204 per dipendente: a 40 serve la regola «griglia → pillole».', '<b>Confrontabilità.</b> Costi, tempi e passi sono dentro le card, non in colonne allineate; ordinare per costo è una vista a parte.', '<b>Testo lungo.</b> Titoli di attività e ruoli vanno tenuti corti: le pillole stanno su una riga o si tagliano.', '<b>Contrasto non normato.</b> Il grigio #9A9A9A sul nero e il nero sul lime sono del riferimento, non di una regola di accessibilità.'],
+      n40: 'A 40 la riga «Al lavoro adesso» scorre in orizzontale (12 card, da approvare in testa), le quattro card dipartimento restano, i dipendenti diventano 40 pillole su 3 colonne.'
+    },
+    B: {
+      titolo: 'Registro operativo', sotto: 'Deliberatamente lontana: fondo chiaro, tabella raggruppata, Inter 13 px, bordi da 1 px, un blu funzionale. L\'azienda come foglio operativo.',
+      guadagna: ['<b>Densità e confronto.</b> Undici righe in una schermata, quaranta in due; costi, tempi e passi in colonne ordinabili.', '<b>Strumenti da tavolo operativo.</b> Ricerca ⌘K, raggruppa, ordina, filtri per stato: la lingua di chi opera per otto ore al giorno.', '<b>Stato leggibile per forma.</b> Pallino + tag colorato per stato; l\'errore è una riga rossa, non una card da cercare.', '<b>Il registro degli eventi.</b> La colonna destra racconta la giornata in ordine di tempo.'],
+      perde: ['<b>L\'identità.</b> Potrebbe essere qualsiasi SaaS del 2024; il riferimento nero e lime sparisce del tutto.', '<b>Il «adesso» come luogo.</b> Chi lavora è una riga verde in mezzo alle altre: lo trovi filtrando, non guardando.', '<b>Il titolare.</b> È una vista da operatore; il titolare che vuole «approvare e andare» trova un foglio.', '<b>Il mobile.</b> Una tabella di sette colonne non ha una versione da telefono; servirebbe un secondo linguaggio.'],
+      n40: 'A 40 la tabella cresce di 29 righe (≈ 1.900 px). Regge, ma «12 al lavoro» si trova solo con il filtro; i gruppi per dipartimento sono l\'unico appiglio.'
+    },
+    C: {
+      titolo: 'Mappa viva', sotto: 'Deliberatamente lontana: crema caldo, quattro stanze con una tinta ciascuna, dipendenti come cerchi, chi lavora ha l\'anello acceso e un fumetto, diario a destra.',
+      guadagna: ['<b>Modello mentale istantaneo.</b> Quattro stanze, undici persone, tre anelli accesi: l\'organico si capisce senza leggere.', '<b>Calore.</b> Serif, tinte per dipartimento, fumetti: l\'azienda digitale sembra una squadra, non un cruscotto.', '<b>Il diario.</b> La giornata raccontata come si racconta a un titolare: chi ha fatto cosa e quando.', '<b>Approvazioni in vista.</b> «In attesa di te» è la prima cosa a destra, con due soli pulsanti.'],
+      perde: ['<b>Scala.</b> A 40 le stanze si affollano: dieci cerchi e tre fumetti per stanza, altezze disuguali, e le posizioni non significano niente.', '<b>Confrontabilità.</b> Nessuna colonna: costi e tempi stanno nei fumetti o nel diario.', '<b>Cinque tinte.</b> Quattro colori di dipartimento più il rosso errore: il sistema a un accento salta.', '<b>Il riferimento.</b> Niente nero, niente lime, niente pillole e cerchi: si butta via il sistema appena costruito.'],
+      n40: 'A 40 ogni stanza ospita dieci cerchi in modalità compatta (nomi solo per chi lavora); i fumetti dei tre al lavoro per stanza prendono una riga ciascuno.'
+    }
+  };
+  const SVG = { su: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5 6.5 12 13 4.5"/></svg>', giu: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m4 4 8 8M12 4l-8 8"/></svg>' };
+
+  DGT_UI.iconeInserisci();
+  ['A', 'B', 'C'].forEach(k => DGT_UI.stile('css-' + k, DIR[k].css));
+
+  const stato = { dir: 'A', n: 11 };
+  const stage = document.getElementById('stage'), inner = document.getElementById('inner'), cap = document.getElementById('cap'), gp = document.getElementById('gp'), apri = document.getElementById('apri');
+
+  function disegna() {
+    const d = DIR[stato.dir];
+    inner.className = 'p-inner dir' + stato.dir;
+    inner.innerHTML = d.render(DGT_DATI.modello(stato.n));
+    adatta();
+    const g = GP[stato.dir];
+    cap.innerHTML = `<span><b>Direzione ${stato.dir} · ${g.titolo}</b> · ${stato.n} dipendenti · 1440 px, scala ${Math.round(scala() * 100)}%</span><span>${g.n40}</span>`;
+    gp.innerHTML = `<div class="p-hd"><h2>${stato.dir} · <em>${g.titolo}</em></h2><p>${g.sotto}</p></div>
+      <div class="p-gp"><div class="p-gcard g"><h3><i>${SVG.su}</i>Cosa guadagna</h3><ul>${g.guadagna.map(x => '<li><span>' + x + '</span></li>').join('')}</ul></div>
+      <div class="p-gcard p"><h3><i>${SVG.giu}</i>Cosa perde</h3><ul>${g.perde.map(x => '<li><span>' + x + '</span></li>').join('')}</ul></div></div>`;
+    apri.innerHTML = `Sorgente: <a href="direzione-${stato.dir.toLowerCase()}.html?n=${stato.n}" target="_blank" rel="noopener">direzione-${stato.dir.toLowerCase()}.html?n=${stato.n}</a>`;
+  }
+  function scala() { return Math.min(1, stage.clientWidth / 1440); }
+  function adatta() {
+    const s = scala();
+    inner.style.transform = 'scale(' + s + ')';
+    const h = inner.firstElementChild ? inner.firstElementChild.offsetHeight : 900;
+    stage.style.height = Math.round(h * s) + 'px';
+  }
+  document.getElementById('seg-dir').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; stato.dir = b.dataset.dir; [...e.currentTarget.children].forEach(x => x.setAttribute('aria-pressed', x === b)); disegna(); });
+  document.getElementById('seg-n').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; stato.n = +b.dataset.n; [...e.currentTarget.children].forEach(x => x.setAttribute('aria-pressed', x === b)); disegna(); });
+  window.addEventListener('resize', adatta);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(adatta);
+  disegna();
+})();
+</script>
+</body>
+</html>

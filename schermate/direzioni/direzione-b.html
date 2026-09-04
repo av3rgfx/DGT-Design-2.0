@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<title>DGT — Direzione B · Registro operativo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+<style>html,body{margin:0;background:#F5F6F8}</style>
+</head>
+<body>
+<div class="dirB" id="root"></div>
+<script src="comune.js"></script>
+<script src="dati.js"></script>
+<script src="direzione-b.js"></script>
+<script>
+  DGT_UI.iconeInserisci();
+  DGT_UI.stile('css-b', DIREZIONE_B.css);
+  document.getElementById('root').innerHTML = DIREZIONE_B.render(DGT_DATI.modello(DGT_DATI.nDaUrl()));
+</script>
+</body>
+</html>
