@@ -19,17 +19,15 @@
       pelle(nome) / ?pelle=… per il confronto.
    2. «Tondi e meno ovali»: il corpo è un cerchio, sempre (raggio 95–100 dal
       seme). Niente superellisse, inclinazione o rigonfiamento; niente squash e
-      stretch. Un dipendente si distingue dagli occhi: forma (tondi, pillola
-      alta, pillola larga), distanza, altezza; e dalla posizione del riflesso.
+      stretch. Un dipendente si distingue dagli occhi e dal riflesso.
    3. «Le animazioni sono scadenti e poco fluide»: via i keyframe CSS (i
       saltelli, i tremiti, le scrollate, le «z»). Un solo requestAnimationFrame
       per pagina muove tutti gli orbi visibili con funzioni continue del tempo
       (seni, rumore periodico, finestre morbide sin²): niente scatti, niente
       pause secche. Base per tutti: respiro (scala uniforme ±1,6 %), leggero
-      galleggiamento, deriva dello sguardo con proiezione sferica (l'occhio che
-      va verso il bordo si stringe: è questo che dà volume), battito delle
-      palpebre con easing e calendario dal seme. Per stato, un solo moto quieto:
-        lavoro       occhi lime, lo sguardo scandisce piano da un lato all'altro,
+      galleggiamento, sguardo che deriva, battito delle palpebre con easing e
+      calendario dal seme. Per stato, un solo moto quieto:
+        lavoro       occhi lime, lo sguardo scandisce da un lato all'altro,
                      il respiro è un poco più svelto;
         attesa       occhi gialli più grandi; ogni ~6 s l'orbe si solleva di poco
                      e guarda in alto verso il titolare, poi torna;
@@ -37,11 +35,28 @@
                      basso e ogni ~7 s scuote la testa lentamente (±4,5°);
         pianificato  dondola lentamente da un lato all'altro; ogni ~10 s guarda
                      in alto a destra «l'orologio» e torna;
-        libero       palpebre socchiuse, respiro profondo e lento, l'orbe si
-                     abbassa un poco.
+        libero       palpebre chiuse a fessura, respiro profondo e lento,
+                     l'orbe si abbassa un poco.
       Fase e periodi dal seme (nessuno in sincrono). Solo gli orbi nel viewport
       si aggiornano (IntersectionObserver); con la scheda nascosta si ferma;
       con prefers-reduced-motion niente si muove (posa di riposo).
+
+   Settima versione (stessa sessione): «preferivo gli occhi del kit di
+   riferimento: più grossi e con movimenti più carini». Gli occhi sono ora
+   quelli del kit (vendor-avatars, gaze.js), portati dentro l'orbe:
+   - la pupilla del kit per il seme (deriveRole: tonda, quadrato morbido o
+     anello), grande 0,16–0,185 del raggio (il kit: 0,16; da approvare 0,2;
+     al lavoro 0,155 × 0,13; libero fessure 0,145 × 0,02 inclinate di 8°);
+   - le pupille sono DIPINTE SULLA SFERA: la stessa base tangente proiettata
+     del kit (yaw, pitch, roll ruotano la testa, le due pupille distano
+     15,5–19° dal centro), per cui quando lo sguardo va di lato l'occhio
+     lontano si stringe e si inclina da solo, e il roll fa piegare la testa;
+   - lo stesso repertorio di moti del kit: deriva dello sguardo a due armoniche
+     (yaw ±6, pitch ±5, roll ±1,6), scansione ±13° al lavoro, sguardo fisso e
+     occhi grandi da approvare, dondolio ±3,5° da fermo, ±2° con le palpebre a
+     fessura da libero; il battito è uno schiacciamento verticale attorno al
+     centro della pupilla, come nel kit. Il puntatore ruota la testa (±30° yaw,
+     ±24° pitch) con inseguimento morbido.
    - L'anteprima dell'editor (.av[data-segue]) segue il puntatore con gli
      occhi, con inseguimento morbido.
 
@@ -70,21 +85,23 @@ window.DGT_AVATAR_ORBE = (function () {
   const pelleDi = () => (typeof document !== 'undefined' && document.documentElement.dataset.pelle) || PELLI[0].id;
 
   function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
-  /** Rumore periodico 1D in [-1, 1]: tre seni in rapporto armonico, quindi continuo e senza cuciture. */
+  /** Rumore periodico 1D in [-1, 1]: tre seni in rapporto armonico, quindi continuo e senza cuciture (come loopNoise del kit). */
   const rumore = (t, per, seme) => { const p = t / per * TAU; return 0.55 * Math.sin(p + seme) + 0.3 * Math.sin(2 * p + seme * 1.7 + 1.1) + 0.15 * Math.sin(3 * p + seme * 2.3 + 2.4); };
   /** Finestra morbida: ogni `per` secondi un impulso lungo `dur`, che sale e scende come sin² (mai uno scatto). */
   const impulso = (t, per, dur) => { const f = ((t % per) + per) % per; if (f >= dur) return 0; const s = Math.sin(Math.PI * f / dur); return s * s; };
   const liscia = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
 
-  /** I parametri dell'orbe dal seme: tutti cerchi, si distinguono per gli occhi e per il riflesso. */
+  /** I parametri dell'orbe dal seme: tutti cerchi, si distinguono per gli occhi (la pupilla del kit) e per il riflesso. */
   function forma(seme) {
-    const rng = M.createRng(hash((seme || 'dipendente').trim().toLowerCase()));
-    const occhi = ['tondo', 'pillola', 'largo'][Math.floor(rng() * 3)];
+    const chiave = (seme || 'dipendente').trim().toLowerCase();
+    const rng = M.createRng(hash(chiave));
+    rng(); rng(); rng();   // (i tre estratti della vecchia forma, per tenere fase e periodi di prima)
     return {
       r: 95 + rng() * 5,                    // raggio del cerchio
-      occhi,
-      dist: 27 + rng() * 11,                // mezza distanza fra gli occhi
-      alt: -12 + rng() * 12,                // altezza degli occhi (negativo = più in alto)
+      pupilla: M.deriveRole(chiave).pupil,  // dot | square | ring: la stessa pupilla del kit per questo seme
+      split: 15.5 + rng() * 3.5,            // semi-distanza delle pupille sulla sfera, in gradi (il kit: 17)
+      pitch: -7 + rng() * 5,                // sguardo di riposo: mento appena basso, come il kit (-6)
+      misura: 0.16 + rng() * 0.025,         // raggio della pupilla in frazione del raggio (il kit: 0,16)
       luce: -36 + rng() * 12,               // dove sta il riflesso
       fase: rng() * 40,                     // nessun orbe in sincrono con un altro
       periodo: 4.6 + rng() * 1.6,           // respiro
@@ -92,30 +109,50 @@ window.DGT_AVATAR_ORBE = (function () {
     };
   }
 
-  /** Gli occhi per tipo e stato: larghezza, altezza, raggio. */
-  function occhi(p, stato) {
-    let w, h;
-    if (p.occhi === 'tondo') { w = 27; h = 27; } else if (p.occhi === 'pillola') { w = 20; h = 40; } else { w = 34; h = 22; }
-    if (stato === 'attesa') { w *= 1.2; h *= 1.2; }
-    if (stato === 'lavoro') { h *= 0.88; }
-    return { w, h, rx: Math.min(w, h) / 2 };
+  /* ---------- gli occhi del kit: pupille dipinte su una sfera (base tangente proiettata in ortografico) ---------- */
+  const deg = d => d * Math.PI / 180;
+  function spin(u, v, a) { const c = Math.cos(a), s = Math.sin(a); return [[u[0] * c + v[0] * s, u[1] * c + v[1] * s, u[2] * c + v[2] * s], [v[0] * c - u[0] * s, v[1] * c - u[1] * s, v[2] * c - u[2] * s]]; }
+  /** Posizione e base tangente delle due pupille per una posa di sguardo (yaw, pitch, roll in gradi). x a destra, y in basso. */
+  function posaOcchi(g, R, split) {
+    let f = [0, 0, 1], right = [1, 0, 0], down = [0, 1, 0];
+    [f, right] = spin(f, right, deg(g.yaw));
+    [down, f] = spin(down, f, deg(g.pitch));
+    [right, down] = spin(right, down, deg(g.roll));
+    const build = lato => { const [ef, er] = spin(f, right, deg(split * lato)); return { x: ef[0] * R, y: ef[1] * R, a: er[0], b: er[1], c: down[0], d: down[1], depth: ef[2] }; };
+    return [build(-1), build(1)];
   }
+  /** La matrice di una pupilla: base tangente × misura (w, h in frazione del raggio) × inclinazione × battito k (schiacciamento verticale, come nel kit). */
+  function matrice(e, w, h, tilt, k, R) {
+    const phi = deg(tilt), cp = Math.cos(phi), sp = Math.sin(phi);
+    const ax = e.a * cp + e.c * sp, ay = e.b * cp + e.d * sp, cx2 = -e.a * sp + e.c * cp, cy2 = -e.b * sp + e.d * cp;
+    return `matrix(${r2(ax * w * R)} ${r2(ay * w * R * k)} ${r2(cx2 * h * R)} ${r2(cy2 * h * R * k)} ${r2(e.x)} ${r2(e.y)})`;
+  }
+  /** Misura e inclinazione delle pupille per stato (rapporti del kit). */
+  function occhiConf(p, stato) {
+    const m = p.misura * (p.pupilla === 'ring' ? 1.12 : 1);
+    if (stato === 'lavoro') return { w: m * 0.97, h: m * 0.82, tilt: [0, 0] };
+    if (stato === 'attesa') return { w: m * 1.25, h: m * 1.25, tilt: [0, 0] };
+    if (stato === 'libero') return { w: m * 0.9, h: 0.028, tilt: [8, -8] };
+    if (stato === 'errore') return { w: m * 1.1, h: m * 1.1, tilt: [0, 0] };
+    return { w: m, h: m, tilt: [0, 0] };
+  }
+  /** Lo sguardo di riposo per stato (senza vita): quello del markup e degli screenshot. */
+  const sguardoRiposo = (p, stato) => ({ yaw: 0, pitch: p.pitch + (stato === 'lavoro' ? 3 : stato === 'libero' ? -3 : 0), roll: 0 });
 
   /** Il markup dell'orbe: un <svg> inline nella posa di riposo; il motore sotto lo muove. Colori e volume della pelle stanno nel CSS (variabili --av-*). */
   function html(seme, stato) {
     const p = forma(seme);
     const volto = VOLTO[stato] || VOLTO.libero;
-    const o = occhi(p, stato);
-    const lid0 = stato === 'libero' ? 0.32 : 1;
-    const occhio = lato => {
-      const dentro = stato === 'errore'
-        ? `<rect x="-17" y="-4.5" width="34" height="9" rx="4.5" transform="rotate(45)"/><rect x="-17" y="-4.5" width="34" height="9" rx="4.5" transform="rotate(-45)"/>`
-        : `<rect x="${r2(-o.w / 2)}" y="${r2(-o.h / 2)}" width="${r2(o.w)}" height="${r2(o.h)}" rx="${r2(o.rx)}"/>`;
-      return `<g class="occhio" transform="translate(${r2(lato * p.dist)} ${r2(p.alt)}) scale(1 ${lid0})">${dentro}</g>`;
-    };
-    /* --volto colore degli occhi (i neutri leggono --av-occhi-neutri: neri sul corpo chiaro), --bordo-c 4 se l'occhio è colorato (contorno nero sul corpo chiaro) */
+    const o = occhiConf(p, stato), poses = posaOcchi(sguardoRiposo(p, stato), p.r, p.split);
+    /* la pupilla in spazio unitario (raggio 1): la matrice la porta a misura; le X dell'errore sono due tacche 1,8 × 0,4 */
+    const dentro = stato === 'errore'
+      ? `<rect x="-.9" y="-.2" width="1.8" height=".4" rx=".2" transform="rotate(45)"/><rect x="-.9" y="-.2" width="1.8" height=".4" rx=".2" transform="rotate(-45)"/>`
+      : `<path d="${p.pupilla === 'square' ? M.UNIT_SQUARE : M.UNIT_CIRCLE}"/>`;
+    const anello = p.pupilla === 'ring' && stato !== 'errore' && stato !== 'libero';
+    const occhio = i => `<g class="occhio${anello ? ' anello' : ''}" transform="${matrice(poses[i], o.w, o.h, o.tilt[i], 1, p.r)}">${dentro}</g>`;
+    /* --volto colore degli occhi (i neutri leggono --av-occhi-neutri: neri sul corpo chiaro), --bordo-c contorno nero (in spazio unitario) se l'occhio è colorato sul corpo chiaro */
     const neutro = volto === '#FCFCFC';
-    const vars = `--volto:${neutro ? 'var(--av-occhi-neutri,#FCFCFC)' : volto};--bordo-c:${neutro ? 0 : 4}`;
+    const vars = `--volto:${neutro ? 'var(--av-occhi-neutri,#FCFCFC)' : volto};--bordo-c:${neutro ? 0 : 0.25}`;
     const lx = r2(p.luce), ly = r2(-0.42 * p.r);
     return `<svg class="ava orbe ${stato}" viewBox="${VIEWBOX}" aria-hidden="true" focusable="false" style="${vars}" data-seme="${String(seme || '').replace(/"/g, '&quot;')}" data-stato="${stato}">`
       + `<circle class="alone" r="122"/>`
@@ -124,7 +161,7 @@ window.DGT_AVATAR_ORBE = (function () {
       + `<g class="corpo"><circle class="pelle" r="${r2(p.r)}"/><circle class="orlo" r="${r2(p.r)}"/>`
       + `<ellipse class="luce" cx="${lx}" cy="${ly}" rx="${r2(p.r * 0.3)}" ry="${r2(p.r * 0.17)}" transform="rotate(-30 ${lx} ${ly})"/>`
       + `<ellipse class="riflesso" cx="0" cy="${r2(p.r * 0.66)}" rx="${r2(p.r * 0.5)}" ry="${r2(p.r * 0.16)}"/></g>`
-      + `<g class="occhi">${occhio(-1)}${occhio(1)}</g>`
+      + `<g class="occhi">${occhio(0)}${occhio(1)}</g>`
       + `</g></svg>`;
   }
 
@@ -140,7 +177,8 @@ window.DGT_AVATAR_ORBE = (function () {
 .ava.orbe .corpo>.luce{fill:url(#av-orbe-luce);opacity:var(--av-c-luce,var(--av-luce,.55))}
 .ava.orbe .corpo>.riflesso{fill:url(#av-orbe-riflesso);opacity:var(--av-c-riflesso,var(--av-riflesso,.22))}
 .ava.orbe .bagliore{fill:url(#av-orbe-bagliore);opacity:var(--av-c-bagliore,var(--av-bagliore,.6))}
-.ava.orbe .occhio rect{fill:var(--volto);stroke:#0A0A0A;stroke-width:calc(var(--bordo-c,0) * var(--av-c-bordo,var(--av-bordo,0)));paint-order:stroke}
+.ava.orbe .occhio path,.ava.orbe .occhio rect{fill:var(--volto);stroke:#0A0A0A;stroke-width:calc(var(--bordo-c,0) * var(--av-c-bordo,var(--av-bordo,0)));paint-order:stroke}
+.ava.orbe .occhio.anello path{fill:none;stroke:var(--volto);stroke-width:.34;paint-order:normal}
 .ava.orbe .alone{display:var(--av-alone,none);fill:url(#av-orbe-alone)}
 /* la casella: con il disco (pelle «disco») è chiara e taglia; senza disco è trasparente, non taglia i moti e l'orbe cresce dall'80 al 92 % */
 [data-pelle] .av:has(>svg.orbe){background:var(--av-fondo,transparent);border-color:transparent;overflow:var(--av-taglio,visible)}
@@ -213,7 +251,7 @@ window.DGT_AVATAR_ORBE = (function () {
     const oc = svg.querySelectorAll('.occhio');
     const v = { svg, p, stato, tutto: svg.querySelector('.tutto'), corpo: svg.querySelector('.corpo'), occhi: svg.querySelector('.occhi'), oS: oc[0], oD: oc[1],
       rng: M.createRng(hash((seme || '') + '#battito')), inizio: -1, visibile: true,
-      segue: !!(svg.parentElement && svg.parentElement.hasAttribute('data-segue')), tgx: 0, tgy: 0, fgx: 0, fgy: 0 };
+      segue: !!(svg.parentElement && svg.parentElement.hasAttribute('data-segue')), tyaw: 0, tpit: 0, fyaw: 0, fpit: 0 };
     if (!v.tutto || !v.corpo || !v.oS || !v.oD) return;
     v.prossimo = ora() + 1.2 + v.rng() * 3.4;   // primo battito
     vivi.set(svg, v);
@@ -222,40 +260,39 @@ window.DGT_AVATAR_ORBE = (function () {
     if (!avviato && fermoA === null) { avviato = true; requestAnimationFrame(ciclo); }
   }
 
-  /** Palpebre: 1 aperte … 0,08 chiuse; chiusura svelta e riapertura più lenta, entrambe con easing; ogni tanto un battito doppio. */
+  /** Palpebre: 1 aperte … 0 chiuse; chiusura svelta e riapertura più lenta, entrambe con easing; ogni tanto un battito doppio. */
   function palpebra(v, t) {
     if (v.inizio < 0 && t >= v.prossimo) v.inizio = v.prossimo;
     if (v.inizio < 0) return 1;
     const k = (t - v.inizio) / 0.24;
     if (k >= 1) { v.inizio = -1; v.prossimo = t + (v.rng() < 0.14 ? 0.3 : 2.8 + v.rng() * 4.4); return 1; }
-    const a = k < 0.42 ? 1 - liscia(k / 0.42) : liscia((k - 0.42) / 0.58);
-    return 0.08 + 0.92 * a;
+    return k < 0.42 ? 1 - liscia(k / 0.42) : liscia((k - 0.42) / 0.58);
   }
 
-  /** La posa dell'orbe al tempo t: tutto continuo, niente scatti. */
+  /** La posa dell'orbe al tempo t: tutto continuo, niente scatti. Lo sguardo è quello del kit: yaw, pitch, roll della testa. */
   function posa(v, t) {
     const p = v.p, st = v.stato, T = t + p.fase;
-    let per = p.periodo, amp = 0.016, tx = 0, ty = 2.2 * rumore(T, 5.7, p.s3), rot = 0, sc = 1, lid = 1, op = 1, apre = 1;
-    let gx = 6 * rumore(T, 6.3, p.s1), gy = 4 * rumore(T, 7.9, p.s2);
-    if (st === 'lavoro') { per *= 0.72; gx += 11 * Math.sin(TAU * T / 3.4); gy += 1.5 * Math.sin(TAU * T / 1.7); }
-    else if (st === 'attesa') { const k = impulso(T, 6.2, 1.9); ty -= 7 * k; gy -= 6 * k; apre = 1 + 0.14 * k; }
-    else if (st === 'errore') { sc = 0.975; ty += 4; gx *= 0.5; gy *= 0.5; const k = impulso(T, 7.5, 1.6); rot = 4.5 * k * Math.sin(TAU * (((T % 7.5) + 7.5) % 7.5) / 0.8); op = 0.78 + 0.22 * Math.sin(TAU * T / 2.6); }
-    else if (st === 'pianificato') { tx = 5 * Math.sin(TAU * T / 7.2); rot = 2.5 * Math.sin(TAU * T / 7.2); const k = impulso(T, 10.5, 2.2); gx += 8 * k; gy -= 7 * k; }
-    else if (st === 'libero') { per *= 1.45; amp = 0.026; ty += 5; lid = 0.32; gx *= 0.5; gy *= 0.5; }
+    let per = p.periodo, amp = 0.016, tx = 0, ty = 2.2 * rumore(T, 5.7, p.s3), rot = 0, sc = 1, op = 1, apre = 1;
+    let yaw = 0, pitch = p.pitch, roll = 0, deriva = 1, batte = true;
+    const o = occhiConf(p, st);
+    if (st === 'lavoro') { per *= 0.72; yaw = Math.sin(TAU * T / 1.8) * 13; pitch += 3; deriva = 0.35; }
+    else if (st === 'attesa') { deriva = 0.2; const g = impulso(T, 6.2, 1.9); ty -= 7 * g; pitch += 12 * g; apre = 1 + 0.12 * g; }
+    else if (st === 'errore') { sc = 0.975; ty += 4; deriva = 0; batte = false; const g = impulso(T, 7.5, 1.6); rot = 4.5 * g * Math.sin(TAU * (((T % 7.5) + 7.5) % 7.5) / 0.8); op = 0.78 + 0.22 * Math.sin(TAU * T / 2.6); }
+    else if (st === 'pianificato') { tx = 5 * Math.sin(TAU * T / 7.2); rot = 2.5 * Math.sin(TAU * T / 7.2); yaw = Math.sin(TAU * T / 4) * 3.5; pitch += Math.sin(TAU * T / 2) * 1.5; const g = impulso(T, 10.5, 2.2); yaw += 14 * g; pitch += 10 * g; }
+    else if (st === 'libero') { per *= 1.45; amp = 0.026; ty += 5; yaw = Math.sin(TAU * T / 3) * 2; pitch -= 3; deriva = 0; batte = false; }
+    /* la vita del kit: deriva dello sguardo a due armoniche e un roll leggero */
+    yaw += (rumore(T, 10.7, p.s1) * 4.8 + rumore(T, 3.9, p.s2) * 1.4) * deriva;
+    pitch += (rumore(T, 8.7, p.s2) * 3.6 + rumore(T, 4.7, p.s3) * 1.1) * deriva;
+    roll += rumore(T, 12.9, p.s3) * 1.6 * deriva;
+    if (v.segue) { v.fyaw += (v.tyaw - v.fyaw) * 0.14; v.fpit += (v.tpit - v.fpit) * 0.14; yaw += v.fyaw; pitch += v.fpit; }
+    const k = batte ? 0.08 + 0.92 * palpebra(v, t) : 1;
     const respiro = 1 + amp * Math.sin(TAU * T / per);
-    if (v.segue) { v.fgx += (v.tgx - v.fgx) * 0.14; v.fgy += (v.tgy - v.fgy) * 0.14; gx += v.fgx; gy += v.fgy; }
-    lid *= palpebra(v, t);
     v.tutto.setAttribute('transform', `translate(${r2(tx)} ${r2(ty)}) rotate(${r2(rot)}) scale(${r2(sc)})`);
     v.corpo.setAttribute('transform', `scale(${r2(respiro)})`);
     v.occhi.setAttribute('opacity', r2(op));
-    /* proiezione sferica: l'occhio che va verso il bordo si stringe (normalizzata: a riposo scala 1) */
-    const base = Math.sqrt(1 - (p.dist / p.r) ** 2);
-    const occhio = (el, lato) => {
-      const x = lato * p.dist + gx, y = p.alt + gy;
-      const sx = Math.max(0.55, Math.sqrt(Math.max(0.05, 1 - (x / p.r) ** 2)) / base);
-      el.setAttribute('transform', `translate(${r2(x)} ${r2(y)}) scale(${r2(sx)} ${r2(lid * apre)})`);
-    };
-    occhio(v.oS, -1); occhio(v.oD, 1);
+    const poses = posaOcchi({ yaw, pitch, roll }, p.r, p.split);
+    v.oS.setAttribute('transform', matrice(poses[0], o.w * apre, o.h * apre, o.tilt[0], k, p.r));
+    v.oD.setAttribute('transform', matrice(poses[1], o.w * apre, o.h * apre, o.tilt[1], k, p.r));
   }
 
   function ciclo() {
@@ -274,15 +311,15 @@ window.DGT_AVATAR_ORBE = (function () {
   function riprendi() { fermoA = null; if (!ridotto && vivi.size && !avviato) { avviato = true; requestAnimationFrame(ciclo); } }
   function fotogramma(svg, t) { const v = vivi.get(svg); if (v) posa(v, t); }
 
-  /* ---------- lo sguardo segue il puntatore (solo [data-segue]) ---------- */
+  /* ---------- lo sguardo segue il puntatore (solo [data-segue]): la testa ruota, come nel kit ---------- */
   function segui(ev) {
     for (const [svg, v] of vivi) {
       if (!v.segue) continue;
       const r = svg.getBoundingClientRect(); if (!r.width) continue;
-      const dx = (ev.clientX - (r.left + r.width / 2)) / Math.max(r.width * 3, 220);
-      const dy = (ev.clientY - (r.top + r.height / 2)) / Math.max(r.height * 3, 220);
+      const dx = (ev.clientX - (r.left + r.width / 2)) / Math.max(r.width * 4, 260);
+      const dy = (ev.clientY - (r.top + r.height / 2)) / Math.max(r.height * 4, 260);
       const c = x => Math.max(-1, Math.min(1, x));
-      v.tgx = c(dx) * 16; v.tgy = c(dy) * 12;
+      v.tyaw = c(dx) * 30; v.tpit = c(-dy) * 24;
     }
   }
   function anima(radice) {

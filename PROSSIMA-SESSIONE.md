@@ -1,7 +1,7 @@
 # Prossima sessione — passaggio di consegne
 
 Stato al 2026-09-04, fine della sessione sull'**orbe senza disco** (versione 7 della direzione A · Console: le pelli;
-7b: perla, corpi tondi, moti fluidi) e sulla **pagina dell'Esecuzione** (versione 8). Tutto è committato e pushato sul branch indicato sotto.
+7b: perla, corpi tondi, moti fluidi; 7c: gli occhi del kit) e sulla **pagina dell'Esecuzione** (versione 8). Tutto è committato e pushato sul branch indicato sotto.
 
 ## Stato
 
@@ -27,7 +27,7 @@ Stato al 2026-09-04, fine della sessione sull'**orbe senza disco** (versione 7 d
 - Artefatto dello specimen del sistema: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b
 - Documento unico: `SYSTEM-DESIGN.md` (sezione 10, regole 1–15; sezione 6 con le righe «Avatar del dipendente AI»
   riscritta senza disco e «Pagina Esecuzione»). Studio e versioni della direzione A: `schermate/direzioni/DIREZIONI.md`
-  (sezione 4: regole 13 e 14, «Versione 7» per le pelli, «Versione 7b» per perla, tondi e moti fluidi, «Versione 8»
+  (sezione 4: regole 13 e 14, «Versione 7» per le pelli, «Versione 7b» per perla, tondi e moti fluidi, «Versione 7c» per gli occhi del kit, «Versione 8»
   per la pagina dell'Esecuzione).
 
 ## Decisioni dell'utente (in ordine)
@@ -66,7 +66,12 @@ Stato al 2026-09-04, fine della sessione sull'**orbe senza disco** (versione 7 d
     riflesso, luce riflessa, orlo e bagliore, un solo colore su ogni fondo), **corpi tondi** (cerchi; via superellisse,
     inclinazione, rigonfiamento, squash e stretch), **moti continui** (via i keyframe CSS; un solo
     `requestAnimationFrame` per pagina con funzioni del tempo: respiro, galleggiamento, sguardo con proiezione sferica,
-    palpebre con easing, un moto quieto per stato). **Da confermare dall'utente** insieme alla pagina Esecuzione.
+    palpebre con easing, un moto quieto per stato). Giudizio: «Così già meglio».
+17. **Terza tornata**: «preferivo gli occhi del kit di riferimento, nel quale hanno occhi più grossi e i movimenti
+    degli occhi più carini». Fatto (versione 7c): le pupille del kit per seme (`deriveRole(seme).pupil`: tonda,
+    quadrato morbido, anello; 0,16–0,185 del raggio), dipinte sulla sfera con la base tangente del kit (yaw, pitch,
+    roll della testa: l'occhio lontano si stringe da solo) e con i suoi moti dello sguardo. **Da confermare
+    dall'utente** insieme alla pagina Esecuzione.
 
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto); contenuti sintetici di DGT; documenti in italiano.
@@ -74,7 +79,7 @@ Esperto); contenuti sintetici di DGT; documenti in italiano.
 ## Come riprendere
 
 1. Leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezione 10) e `schermate/direzioni/DIREZIONI.md` (sezioni 1 e 4, in
-   particolare «Versione 7» e «Versione 8»). Controllare se questo branch è stato unito (vedi «Stato»).
+   particolare «Versione 7b», «Versione 7c» e «Versione 8»). Controllare se questo branch è stato unito (vedi «Stato»).
 2. Aprire `schermate/direzioni/direzione-a.html`: la home con gli orbi perla tondi in moto; `?pelle=grigio|chiaro|alone|disco`
    per le altre pelli; `?pagina=esecuzione&id=4` (Nora al lavoro, passo 2 di 4), `&id=3` (Kim in errore: «Riprova il
    passo 3»), `&id=5` (Social media manager: consegnato, «Apri la richiesta»), `&id=2` (Tester QA pianificata: «Avvia
@@ -82,9 +87,10 @@ Esperto); contenuti sintetici di DGT; documenti in italiano.
    Modello dati in `dati.js` (`ESEC11`, `esecuzioneGenerata`, `esecuzioneDi`), pagina in `direzione-a.js`
    (`esecuzione`, `testataEsecuzione`, `barraPassi`, `rigaPasso`, `rigaLog`, `cardOutput`, `riepilogoEsecuzione`;
    azioni in `monta`: `esecAzione`, `inviaNota`, filtro `filtro-log`), pelli in `avatar/avatar-orbe.js` (`PELLI`,
-   `pelle`, il CSS `[data-pelle=…]`, il motore: `registra`, `posa`, `palpebra`, `ciclo`, `fermo`, `fotogramma`) e
+   `pelle`, il CSS `[data-pelle=…]`, il motore: `registra`, `posa`, `palpebra`, `ciclo`, `fermo`, `fotogramma`; gli
+   occhi del kit: `posaOcchi`, `matrice`, `occhiConf`) e
    l'inversione di contesto in `direzione-a.js` (le regole `… .av svg.orbe`, che contano solo per la pelle «chiaro»).
-3. Raccogliere il giudizio dell'utente su tre cose: l'**orbe perla tondo con i moti nuovi** (versione 7b), la
+3. Raccogliere il giudizio dell'utente su tre cose: l'**orbe perla tondo con gli occhi del kit** (versioni 7b e 7c), la
    **pagina dell'Esecuzione**, la **pagina del Dipendente** (versione 6, mai giudicata). Punti aperti che possono
    uscire:
    - i moti sono volutamente **quieti** (respiro ±1,6 %, sguardo, palpebre, un gesto ogni 6–10 s per stato): se
@@ -138,6 +144,11 @@ Esperto); contenuti sintetici di DGT; documenti in italiano.
   registrano da soli con un `MutationObserver` sul body (anche via `innerHTML`), si aggiornano solo nel viewport
   (`IntersectionObserver`), si fermano con la scheda nascosta; con `prefers-reduced-motion` non si registrano e restano
   nella posa di riposo del markup. `fermo(t)` / `riprendi()` / `fotogramma(svg, t)` servono agli screenshot.
+- Gli **occhi sono quelli del kit** (7c): `posaOcchi(gaze, R, split)` è `eyePoses` di `gaze.js` (base tangente della
+  sfera proiettata in ortografico), `matrice(e, w, h, tilt, k, R)` la stessa matrice che il kit dà alla pupilla
+  (`[ax·w·R, ay·w·R·k, cx·h·R, cy·h·R·k, x, y]`, con k lo schiacciamento del battito); la pupilla è un path unitario
+  (`M.UNIT_CIRCLE` / `M.UNIT_SQUARE`, anello = cerchio con solo il tratto), le X dell'errore due tacche unitarie.
+  Lo sguardo si esprime in gradi (yaw, pitch, roll): per ampliarlo o attenuarlo si toccano i coefficienti in `posa()`.
 - **Le pelli dell'orbe sono solo variabili CSS** (`--av-corpo`, `--av-orlo`, `--av-orlo-w`, `--av-luce`,
   `--av-occhi-neutri`, `--av-bordo`, `--av-zeta`, `--av-alone`, `--av-fondo`, `--av-taglio`, `--av-scala`,
   `--av-anello-pelle`) dichiarate su `[data-pelle="…"]` ed ereditate: vale l'antenato più vicino, così una cella o una

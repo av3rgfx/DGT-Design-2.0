@@ -201,7 +201,9 @@ direzione. Regole che valgono da qui in avanti:
 13. **L'avatar è un avatar, non un'icona** (versioni 7 e 7b): niente disco né anello bianco dietro l'orbe; pelle
     **perla nera** su ogni fondo, che si stacca dal nero per il volume (riflesso, luce riflessa, orlo di luce,
     bagliore di pochi pixel), non per un contorno; **corpi tondi** (cerchi, niente ovali né squash e stretch) e
-    **moti continui** (un solo motore per pagina, funzioni del tempo senza scatti). Gli avatar impilati (coppie,
+    **moti continui** (un solo motore per pagina, funzioni del tempo senza scatti); gli **occhi sono quelli del kit**
+    (pupille grandi dipinte sulla sfera con la sua base tangente e i suoi moti dello sguardo, versione 7c). Gli avatar
+    impilati (coppie,
     tendine) si sovrappongono di 6 px senza anello. Le altre pelli (grigio, chiaro, alone, disco) restano dietro
     `?pelle=` per il confronto.
 14. **La pagina dell'Esecuzione** (versione 8) nella stessa cornice, aperta dall'«occhio» e dalla freccia delle card
@@ -505,6 +507,33 @@ dopo un'azione registrati, anteprima che segue il puntatore, 94 orbi vivi a 40, 
 delle pelli (273 orbi, perla segnata, niente scorrimento), confronto kit/orbe, reduced motion fermo; nessun errore in
 console. Pellicola `screenshot/avatar-orbe-pellicola.png` (Copywriter, cinque stati a 0…5 s con `fotogramma`).
 
+### Versione 7c: gli occhi del kit (2026-09-04, stessa sessione, terza tornata)
+
+Giudizio dell'utente sulla 7b: «Così già meglio, però preferivo gli occhi del kit di riferimento, nel quale hanno occhi
+più grossi e i movimenti degli occhi più carini». Gli occhi dell'orbe sono ora quelli del kit (`vendor-avatars`,
+`gaze.js`), portati dentro `avatar-orbe.js` (settima versione del file); corpo, pelle e moti del corpo restano quelli
+della 7b.
+
+- **La pupilla del kit per seme**: `deriveRole(seme).pupil` decide la forma (tonda, quadrato morbido, anello), la
+  stessa che il seme avrebbe nel kit; grande 0,16–0,185 del raggio (il kit 0,16; prima era 0,135), da approvare ×1,25
+  (il kit 0,2), al lavoro 0,97 × 0,82 (il kit 0,155 × 0,13), da libero due fessure inclinate di ±8° (il kit
+  0,145 × 0,02), in errore le X sopra le pupille.
+- **Dipinte sulla sfera**: la stessa base tangente proiettata del kit. Le due pupille distano 15,5–19° dal centro
+  della sfera (il kit 17°) e lo sguardo di riposo ha il mento appena basso (pitch −7…−2; il kit −6). Yaw, pitch e
+  roll ruotano la testa: quando lo sguardo va di lato l'occhio lontano si stringe e si inclina da solo, il roll piega
+  la testa. È questo che rende i movimenti «carini»: gli occhi non scivolano sul disco, la testa gira.
+- **Lo stesso repertorio di moti del kit**: deriva dello sguardo a due armoniche (yaw ±6,2°, pitch ±4,7°, roll
+  ±1,6°); scansione ±13° in 1,8 s al lavoro con la deriva al 35 %; sguardo fisso e occhi grandi da approvare (deriva
+  al 20 %); dondolio ±3,5° da fermo; ±2° con le fessure da libero; niente deriva né battito in errore e da libero. Il
+  battito è lo schiacciamento verticale della pupilla attorno al suo centro (0,08 da chiusa), come nel kit. Il
+  puntatore ruota la testa (±30° yaw, ±24° pitch) con inseguimento morbido. I gesti di stato della 7b (sollevamento
+  con lo sguardo in alto da approvare, scossa in errore, dondolio e sguardo all'orologio da pianificato) restano e ora
+  agiscono sullo sguardo in gradi.
+
+Prova con Playwright, 24 verifiche (le 22 di prima più «pupille del kit: tonde, quadrate, X» e «pupilla grande: raggio
+14,1 unità»), continuità 1,33 unità per frame (la scansione al lavoro è più svelta), nessun errore in console.
+Pellicola `screenshot/avatar-orbe-pellicola.png` e screenshot rigenerati.
+
 ### Versione 8: la pagina dell'Esecuzione (2026-09-04, stessa sessione)
 
 Richiesta dell'utente: la pagina dell'esecuzione (passi, log, output) dal pulsante «occhio» delle card al lavoro,
@@ -554,7 +583,7 @@ esecuzione generata a 40; nessun errore in console. Screenshot: `a-esecuzione.pn
 | `comune.js` | sprite di icone di DGT, prefisso CSS, utilità |
 | `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo); cliccabile |
 | `avatar/avatar-dgt.js` | involucro degli avatar nel linguaggio della Console (colori, stati, simboli statici, animazione); `usa('orbe'|'kit')` sceglie la famiglia |
-| `avatar/avatar-orbe.js` | la famiglia «orbe» (versioni 5b, 5c, 7, 7b): cerchi dal seme, un solo motore `requestAnimationFrame` con funzioni continue del tempo, sguardo che segue il puntatore; senza disco, con le pelli (`pelle('perla'|'grigio'|'chiaro'|'alone'|'disco')`, solo variabili CSS; perla predefinita); `fermo(t)`, `riprendi()`, `fotogramma(svg, t)` per gli screenshot |
+| `avatar/avatar-orbe.js` | la famiglia «orbe» (versioni 5b, 5c, 7, 7b, 7c): cerchi dal seme con le pupille e lo sguardo del kit, un solo motore `requestAnimationFrame` con funzioni continue del tempo, sguardo che segue il puntatore; senza disco, con le pelli (`pelle('perla'|'grigio'|'chiaro'|'alone'|'disco')`, solo variabili CSS; perla predefinita); `fermo(t)`, `riprendi()`, `fotogramma(svg, t)` per gli screenshot |
 | `confronto-avatar.html` | le due famiglie a confronto nelle viste della Console |
 | `avatar-pelli.html` | le quattro pelli dell'orbe senza disco a confronto su tutti i fondi della Console, con il selettore che cambia la pelle |
 | `avatar/avatar-motore.js` | motore del kit impacchettato (generato da `build-motore.js`, non si modifica a mano) |
