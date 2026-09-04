@@ -155,9 +155,13 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
    «Riepilogo di oggi» (pillola bianca con bacchetta; consegne, spesa, obiettivo, diario). Si chiudono verso destra;
    la home prende tutta la larghezza.
 7. Logo del prodotto = acronimo DGT in alto a sinistra; titolo dell'azienda in maiuscolo con la O normale.
-8. Pagina Richieste nella stessa cornice, con pieno controllo: filtri per stato, tipo, periodo, cliente e
-   dipendente; Da approvare con ordinamento e «Approva tutte»; Storico per giorno a righe compatte; Regole di
-   approvazione.
+8. Pagina Richieste nella stessa cornice, con pieno controllo: filtri per stato, tipo, periodo, dipartimento,
+   cliente e dipendente; Da approvare con ordinamento e «Approva tutte»; Storico per giorno a righe compatte;
+   Regole di approvazione.
+9. Pagina Dipartimento nella stessa cornice: Oggi in ‹dipartimento› (esecuzioni: al lavoro, errore, pianificate) ·
+   Dipendenti (+ card «Aggiungi») · Obiettivi (card con barra di avanzamento a pillola; lime = in ritardo) · Da
+   approvare dal dipartimento · Spesa del mese per cliente. Ogni pagina interna ripete la cornice: barra in alto,
+   titolo con numeri, rail, sezioni con intestazione e pillole, tendine del titolare.
 
 Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in

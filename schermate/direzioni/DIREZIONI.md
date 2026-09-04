@@ -200,13 +200,34 @@ Risposte alle tre richieste successive dell'utente.
    di lead, Spese sopra 50 €) con modo e stato. Approva, rifiuta e chiedi modifiche cambiano davvero lo stato
    nella pagina (i dati si azzerano ricaricando). Screenshot: `a-richieste.png`.
 
+### Versione 4 della direzione A: pagina Dipartimento (2026-09-04, «Va bene procedi»)
+
+Si apre dalle card dei dipartimenti nella home (o dal rail, icona organizzazione) e usa la stessa cornice della
+Console: titolo con il nome del dipartimento in maiuscolo, «Nuovo obiettivo», tre numeri del dipartimento (al
+lavoro, da approvare, spesi oggi), cerchio delle impostazioni a destra, rail con l'organizzazione attiva. Cinque
+sezioni, tutte con intestazione, conteggio e pillole:
+
+1. **Oggi in ‹dipartimento›**: le esecuzioni di oggi come card attività, in ordine al lavoro → errore →
+   pianificate. La card errore ha il triangolo nel cerchio, la pillola «Errore · motivo» e il pulsante «Riprova»;
+   la card pianificata ha l'ora nella pillola, «In coda» e «Avvia ora».
+2. **Dipendenti**: le card dei dipendenti del dipartimento e una card tratteggiata «Aggiungi un dipendente».
+3. **Obiettivi**: card obiettivo (nuova): cliente e scadenza nella striscia, titolo, «45% · 3 di 7 consegne»,
+   barra di avanzamento a pillola, «Prossima: …», stato con gli avatar di chi ci lavora. Lime = in ritardo.
+4. **Da approvare**: le richieste in attesa che arrivano dal dipartimento, con il collegamento «Tutte le richieste
+   di ‹dipartimento›» che apre la pagina Richieste già filtrata (nuovo filtro «Dipartimento» nella barra).
+5. **Spesa del mese per cliente**: righe compatte con consegne approvate, spesa di oggi, quota del dipartimento e
+   totale degli ultimi 30 giorni (calcolate dalle richieste e dalle esecuzioni del dipartimento).
+
+Dati: `obiettivi` per dipartimento in `dati.js` (11 a mano, 3 per dipartimento a 40). Parametri:
+`?pagina=dipartimento&dip=svi|mkt|ven|amm`. Screenshot: `a-dipartimento.png`.
+
 ## 5. File
 
 | File | Ruolo |
 |---|---|
 | `dati.js` | modello sintetico (11 e 40) condiviso |
 | `comune.js` | sprite di icone di DGT, prefisso CSS, utilità |
-| `direzione-a.js` / `.html` | Console (direzione scelta): home con tendina a tre stati e pagina Richieste, cliccabile |
+| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento; cliccabile |
 | `direzione-b.js` / `.html` | Registro operativo |
 | `direzione-c.js` / `.html` | Mappa viva |
 | `confronto.html` | pagina di confronto con tab e selettore 11/40 |

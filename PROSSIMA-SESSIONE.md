@@ -35,6 +35,8 @@ Stato al 2026-09-04, fine della sessione che ha applicato il sistema di design a
    (filtri funzionanti, storico per giorno, approva tutte, regole di approvazione).
 9. **"Va bene separato"**: il Riepilogo ha la sua pillola e la sua tendina; l'opzione «insieme» e il selettore di
    prova sono stati tolti dal codice.
+10. **"Va bene procedi"** (schermata del dipartimento come proposta): fatta la pagina Dipartimento con esecuzioni
+    di oggi, dipendenti, obiettivi con avanzamento, richieste in attesa e spesa del mese per cliente.
 
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi; contenuti sintetici di DGT; documenti in italiano.
 
@@ -43,7 +45,10 @@ Vincolo che vale sempre: nessun logo, foto o marchio di terzi; contenuti sinteti
 1. Leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezione 10) e `schermate/direzioni/DIREZIONI.md` (sezioni 1 e 4).
 2. Aprire `schermate/direzioni/direzione-a.html` (e `?n=40`): è la base di codice delle prossime schermate.
    Il modello dati è `dati.js`, le icone e le utilità sono in `comune.js`, i componenti in `direzione-a.js`.
-3. Prossima schermata: il **dipartimento** (Sviluppo: 3 dipendenti, esecuzioni, obiettivi, costi), dipendente,
+3. Pagine fatte nella direzione A: home, Richieste, Dipartimento (tutte in `direzione-a.js`, cliccabili).
+   Prossime schermate possibili: il **dipendente** (profilo, configurazione, esecuzioni, costi), l'**esecuzione**
+   (passi, log, output), le **approvazioni da mobile**, i **costi** dell'azienda. La schermata del dipartimento era
+   stata proposta così: il **dipartimento** (Sviluppo: 3 dipendenti, esecuzioni, obiettivi, costi), dipendente,
    esecuzione, approvazioni da mobile, costi. Stessa cornice della Console: barra in alto, riga con titolo e numeri,
    rail, sezioni con intestazione e pillole, tendina del titolare.
 

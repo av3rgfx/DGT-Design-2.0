@@ -47,6 +47,7 @@ window.DGT_UI = (function () {
 <symbol id="i-home" viewBox="0 0 16 16"><path d="m2.5 8 5.5-5 5.5 5M4 7v6.5h8V7" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></symbol>
 <symbol id="i-gear" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.2" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.8v2M8 12.2v2M1.8 8h2M12.2 8h2M3.6 3.6l1.4 1.4M11 11l1.4 1.4M3.6 12.4 5 11M11 5l1.4-1.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></symbol>
 <symbol id="i-sort" viewBox="0 0 16 16"><path d="M5 3v10M3 11l2 2 2-2M11 13V3M9 5l2-2 2 2" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="i-target" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="1" fill="currentColor"/></symbol>
 <symbol id="i-send" viewBox="0 0 16 16"><path d="M2.5 8 13.5 3l-3 10-2.5-4.5L2.5 8Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></symbol>
 </defs></svg>`;
 

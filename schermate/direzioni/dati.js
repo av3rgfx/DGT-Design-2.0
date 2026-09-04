@@ -113,6 +113,21 @@ window.DGT_DATI = (function () {
     r.giorno = chiave ? GIORNI11[chiave] : 0;
   });
 
+  /* Obiettivi assegnati ai dipartimenti. stato: corso | ritardo | concluso | nuovo */
+  const obiettivi11 = [
+    { id: 'o1', dip: 'svi', titolo: 'E-commerce Bianchi & Co. online', cliente: 'Bianchi & Co.', scadenza: '30 set', avanz: 45, consegne: [3, 7], chi: [1, 2, 3], stato: 'corso', prossima: 'Checkout · 8 set' },
+    { id: 'o2', dip: 'svi', titolo: 'Area riservata Zenith', cliente: 'Zenith', scadenza: '15 set', avanz: 70, consegne: [5, 7], chi: [1, 2], stato: 'ritardo', prossima: 'Deploy in staging · fallito' },
+    { id: 'o3', dip: 'svi', titolo: 'Automazione ordini Madira Ink', cliente: 'Madira Ink', scadenza: '15 ott', avanz: 10, consegne: [0, 5], chi: [1], stato: 'nuovo', prossima: 'Analisi del flusso · 12 set' },
+    { id: 'o4', dip: 'mkt', titolo: '12 post LinkedIn per Rossi Srl', cliente: 'Rossi Srl', scadenza: '30 set', avanz: 33, consegne: [4, 12], chi: [4], stato: 'corso', prossima: 'Post 5 · oggi' },
+    { id: 'o5', dip: 'mkt', titolo: 'Piano e contenuti di ottobre', cliente: 'Madira Ink', scadenza: '25 set', avanz: 20, consegne: [1, 5], chi: [5, 6], stato: 'corso', prossima: 'Piano editoriale · da approvare' },
+    { id: 'o6', dip: 'mkt', titolo: 'Audit e ottimizzazione SEO', cliente: 'Metamorfosi', scadenza: '20 set', avanz: 60, consegne: [3, 5], chi: [6], stato: 'ritardo', prossima: 'Audit con priorità · modifiche chieste' },
+    { id: 'o7', dip: 'ven', titolo: '200 lead e-commerce in Lombardia', cliente: 'Nova Studio', scadenza: '10 set', avanz: 60, consegne: [1, 2], chi: [7], stato: 'corso', prossima: 'Seconda metà della lista · oggi' },
+    { id: 'o8', dip: 'ven', titolo: 'Tre proposte a nuovi clienti', cliente: 'Nova Studio', scadenza: '30 set', avanz: 66, consegne: [2, 3], chi: [8], stato: 'corso', prossima: 'Proposta Lumen Caffè · 9 set' },
+    { id: 'o9', dip: 'ven', titolo: 'Follow-up settimanale ai clienti', cliente: 'Nova Studio', scadenza: 'ogni venerdì', avanz: 100, consegne: [4, 4], chi: [9], stato: 'concluso', prossima: 'Prossimo giro · domani 17:00' },
+    { id: 'o10', dip: 'amm', titolo: 'Chiusura contabile di agosto', cliente: 'Nova Studio', scadenza: '10 set', avanz: 80, consegne: [4, 5], chi: [10], stato: 'corso', prossima: 'Riconciliazione banca · 8 set' },
+    { id: 'o11', dip: 'amm', titolo: 'Report giornaliero al titolare', cliente: 'Nova Studio', scadenza: 'ogni giorno', avanz: 100, consegne: [4, 4], chi: [11], stato: 'concluso', prossima: 'Stasera alle 18:00' },
+  ];
+
   /* Diario del giorno (in ordine di tempo). */
   const diario11 = [
     { ora: '08:30', chi: 7, testo: 'ha iniziato «200 lead e-commerce in Lombardia»', tipo: 'inizio' },
@@ -206,11 +221,19 @@ window.DGT_DATI = (function () {
       { ora: '17:00', chi: dipendenti.filter(e => e.stato === 'pianificato' && e.att.quando === '17:00').map(e => e.id), stato: 'pianificato' },
       { ora: '18:00', chi: dipendenti.filter(e => e.stato === 'pianificato' && e.att.quando === '18:00').map(e => e.id), stato: 'pianificato' },
     ];
-    return { dipendenti, approvazioni, richieste, diario, agenda };
+    const obiettivi = [];
+    dipartimenti.forEach((d, di) => {
+      const lst = dipendenti.filter(e => e.dip === d.id);
+      [0, 1, 2].forEach(k => {
+        const e = lst[k * 3], av = [15, 45, 80][(di + k) % 3], tot = 4 + ((di + k) % 5);
+        obiettivi.push({ id: 'o' + d.id + k, dip: d.id, titolo: TITOLI[d.id][k * 3], cliente: e.att.cliente, scadenza: ['15 set', '30 set', '15 ott'][k], avanz: av, consegne: [Math.round(tot * av / 100), tot], chi: lst.slice(k * 3, k * 3 + 3).map(x => x.id), stato: av >= 100 ? 'concluso' : (di + k) % 4 === 1 ? 'ritardo' : av < 20 ? 'nuovo' : 'corso', prossima: 'Prossima consegna · ' + ['8 set', '10 set', '12 set'][k] });
+      });
+    });
+    return { dipendenti, approvazioni, richieste, diario, agenda, obiettivi };
   }
 
   function modello(n) {
-    const m = n >= 40 ? modello40() : { dipendenti: base, approvazioni: approvazioni11, richieste: richieste11, diario: diario11, agenda: agenda11 };
+    const m = n >= 40 ? modello40() : { dipendenti: base, approvazioni: approvazioni11, richieste: richieste11, diario: diario11, agenda: agenda11, obiettivi: obiettivi11 };
     const byId = Object.fromEntries(m.dipendenti.map(e => [e.id, e]));
     const perDip = Object.fromEntries(dipartimenti.map(d => [d.id, m.dipendenti.filter(e => e.dip === d.id)]));
     const conta = s => m.dipendenti.filter(e => e.stato === s).length;
@@ -219,6 +242,8 @@ window.DGT_DATI = (function () {
     return {
       azienda, dipartimenti, STATI, n: m.dipendenti.length,
       dipendenti: m.dipendenti, byId, perDip, approvazioni: m.approvazioni, richieste: m.richieste, diario: m.diario, agenda: m.agenda,
+      obiettivi: m.obiettivi,
+      obiettiviDi: dip => m.obiettivi.filter(o => o.dip === dip),
       richiesteDi: st => m.richieste.filter(r => r.stato === st),
       periodoDi: r => r.giorno === 0 ? 'oggi' : r.giorno === 1 ? 'ieri' : r.giorno <= 7 ? 'settimana' : r.giorno <= 31 ? 'mese' : 'prima',
       clienti: [...new Set(m.richieste.map(r => r.cliente))].sort(),
@@ -229,7 +254,8 @@ window.DGT_DATI = (function () {
         const okPer = !f.periodo || f.periodo === 'tutti' || f.periodo === per || (f.periodo === 'settimana' && r.giorno <= 7) || (f.periodo === 'mese' && r.giorno <= 31);
         const okQ = !f.q || (r.cosa + ' ' + r.cliente + ' ' + byId[r.chi].nome).toLowerCase().includes(f.q.toLowerCase());
         return (!f.stato || f.stato === 'tutti' || r.stato === f.stato) && (!f.tipo || f.tipo === 'tutti' || r.tipo === f.tipo)
-          && (!f.chi || f.chi === 'tutti' || r.chi === +f.chi) && (!f.cliente || f.cliente === 'tutti' || r.cliente === f.cliente) && okPer && okQ;
+          && (!f.chi || f.chi === 'tutti' || r.chi === +f.chi) && (!f.dip || f.dip === 'tutti' || byId[r.chi].dip === f.dip)
+          && (!f.cliente || f.cliente === 'tutti' || r.cliente === f.cliente) && okPer && okQ;
       }),
       regole: [
         { id: 'g1', nome: 'Uscite verso i clienti', desc: 'Post, proposte e documenti per i clienti', modo: 'Sempre da approvare', attiva: true, icona: 'i-mega' },

@@ -12,10 +12,14 @@
    dipendente, storico per giorno, approva/rifiuta anche in blocco, regole di
    approvazione.
 
+   Versione 4 (stessa data): pagina Dipartimento (esecuzioni di oggi,
+   dipendenti, obiettivi con avanzamento, richieste in attesa, spesa del mese
+   per cliente), raggiungibile dalle card dei dipartimenti nella home.
+
    API: DIREZIONE_A.render(m, opz) → HTML; DIREZIONE_A.monta(radice, m, opz)
-   disegna e collega i clic. opz = { pagina: 'home'|'richieste',
-   tendina: 'chiusa'|'aperta'|'estesa', richiesta: indice,
-   pannello: 'richieste'|'riepilogo' }.
+   disegna e collega i clic. opz = { pagina: 'home'|'richieste'|'dipartimento',
+   dip: 'svi'|'mkt'|'ven'|'amm', tendina: 'chiusa'|'aperta'|'estesa',
+   richiesta: indice, pannello: 'richieste'|'riepilogo' }.
    ===================================================================== */
 window.DIREZIONE_A = (function () {
   const { ic, esc, prefissa, iconaDip } = window.DGT_UI;
@@ -123,6 +127,28 @@ window.DIREZIONE_A = (function () {
 .task.gray .sel,.task.dark .sel{background:var(--ink);color:var(--white)}
 .task.lime .st .rb.ghost{border-color:rgb(0 0 0/.16);color:var(--ink)}
 .task .sel .chip{height:24px;font-size:11px;flex:none}
+.task .sel .pair{flex:none}.task .sel .pair .av{border-color:var(--white)}.task.gray .sel .pair .av,.task.dark .sel .pair .av{border-color:var(--ink)}
+.task .who .ico{width:48px;height:48px}.task .who .ico svg{width:20px;height:20px}
+.task.lime .who .ico{border-color:rgb(0 0 0/.14)}
+.prog{height:12px;border-radius:var(--r-pill);background:rgb(255 255 255/.12);overflow:hidden;margin-top:12px}
+.prog i{display:block;height:100%;background:var(--lime);border-radius:var(--r-pill)}
+.task.lime .prog{background:rgb(0 0 0/.12)}.task.lime .prog i{background:var(--ink)}
+.task.gray .prog{background:rgb(0 0 0/.25)}
+.task.obj .body{padding-top:22px}
+.task .next{font-size:12px;color:var(--t2);margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.task.lime .next{color:rgb(0 0 0/.6)}.task.gray .next{color:#D0D0D0}
+.lead.add{border:1px dashed rgb(255 255 255/.25);background:transparent;display:grid;place-items:center;align-content:center;gap:12px;text-align:center;color:var(--t2);font-size:14px}
+.lead.add .rb{background:transparent}
+.crow{height:56px;border-radius:var(--r-pill);background:linear-gradient(180deg,var(--card-top),var(--card));display:grid;grid-template-columns:40px minmax(0,1fr) 150px 150px 120px 32px;align-items:center;gap:12px;padding:0 8px 0 10px}
+.crow>*{min-width:0}
+.crow .ico{width:40px;height:40px;border-radius:50%;border:1px solid rgb(255 255 255/.16);display:grid;place-items:center}
+.crow .ico svg{width:16px;height:16px}
+.crow .tx b{display:block;font-weight:500;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crow .tx span{display:block;font-size:11px;color:var(--t2)}
+.crow .v{font-size:14px;white-space:nowrap}.crow .v small{font-size:11px;color:var(--t2);margin-left:4px}
+.crow .eur{font-size:18px;font-weight:300;text-align:right;white-space:nowrap}
+.crow .rb.xs{background:transparent;border-color:rgb(255 255 255/.16)}
+.a-head .impost{margin-left:auto}
 /* impaginazione della console */
 .a-logo{position:absolute;left:28px;top:40px;height:40px;display:flex;align-items:center;font-weight:600;font-size:22px;letter-spacing:.12em;color:var(--white)}
 .a-sched{position:absolute;left:102px;top:28px;right:158px;height:64px;border-radius:var(--r-pill);background:var(--white);color:var(--ink);display:flex;align-items:center;gap:14px;padding:6px 6px 6px 22px}
@@ -330,13 +356,38 @@ window.DIREZIONE_A = (function () {
       <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${av(m, e, 's')}<span>Passo ${e.att.passo[0]} di ${e.att.passo[1]}</span>${ic('i-chev')}</span><span class="rb ghost">${ic('i-chat')}</span><span class="rb black">${ic('i-eye')}</span></div></div>
     </div>`;
   }
+  function cardEsecuzione(m, e, i) {
+    if (e.stato === 'lavoro') return cardAttivita(m, e, i);
+    const d = m.dipDi(e);
+    const a = e.att;
+    const err = e.stato === 'errore';
+    const tono = err ? 'gray' : 'dark';
+    const meta = err ? `<b>${esc(a.cliente)}</b><span>fallito alle</span><b>${esc(a.da)}</b>` : `<b>${esc(a.cliente)}</b><span>parte alle</span><b>${esc(a.quando)}</b>`;
+    const sel = err ? `<span class="chip rosa">${ic('i-warn')}Errore</span><span>${esc(a.errore)}</span>` : `<span class="chip">${ic('i-clock')}${esc(a.quando)}</span><span>In coda</span>`;
+    return `<div class="ncard task ${tono}">
+      <div class="who">${av(m, e)}<div><b>${esc(e.nome)}</b><span>${esc(e.ruolo)} · ${esc(d.nome)}</span></div></div>
+      <div class="nt"><span class="rb ghost">${ic('i-bell')}${err ? '<i class="dot"></i>' : ''}</span><span class="rb ghost">${ic('i-ne')}</span></div>
+      <div class="body"><span class="ico">${ic(err ? 'i-warn' : iconaDip[e.dip])}</span><div><div class="tt">${esc(a.titolo)}</div><div class="meta">${meta}</div></div></div>
+      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${sel}${ic('i-chev')}</span><span class="rb ghost">${ic('i-chat')}</span><span class="rb black" title="${err ? 'Riprova' : 'Avvia ora'}">${ic('i-play')}</span></div></div>
+    </div>`;
+  }
+  function cardObiettivo(m, o, i) {
+    const tono = o.stato === 'ritardo' ? 'lime' : (i % 2 ? 'dark' : 'gray');
+    const st = { corso: 'In corso', ritardo: 'In ritardo', concluso: 'Concluso', nuovo: 'Da iniziare' }[o.stato];
+    return `<div class="ncard task ${tono} obj">
+      <div class="who"><span class="ico">${ic('i-target')}</span><div><b>${esc(o.cliente)}</b><span>scadenza ${esc(o.scadenza)} · ${o.chi.length} dipendent${o.chi.length === 1 ? 'e' : 'i'}</span></div></div>
+      <div class="nt"><span class="rb ghost">${ic('i-bell')}${o.stato === 'ritardo' ? '<i class="dot"></i>' : ''}</span><span class="rb ghost">${ic('i-ne')}</span></div>
+      <div class="body"><div><div class="tt">${esc(o.titolo)}</div><div class="meta"><b>${o.avanz}%</b><span>·</span><b>${o.consegne[0]} di ${o.consegne[1]}</b><span>consegne</span></div><div class="prog"><i style="width:${o.avanz}%"></i></div><div class="next">Prossima: ${esc(o.prossima)}</div></div></div>
+      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${pair(m, o.chi, 'xs', 2)}<span>${st}</span>${ic('i-chev')}</span><span class="rb ghost">${ic('i-chat')}</span><span class="rb black">${ic('i-eye')}</span></div></div>
+    </div>`;
+  }
   function cardDipartimento(m, d) {
     const lst = m.perDip[d.id];
     const lav = lst.filter(e => e.stato === 'lavoro').length;
     const occ = lst.filter(e => e.stato === 'lavoro' || e.stato === 'attesa').length;
     const lv = lst.length ? Math.min(5, Math.round(5 * occ / lst.length)) : 0;
     const err = lst.filter(e => e.stato === 'errore').length;
-    return `<div class="ncard lead">
+    return `<div class="ncard lead" data-az="pagina" data-pagina="dipartimento" data-dip="${d.id}">
       <span class="ico">${ic(iconaDip[d.id])}</span>
       <div class="nt"><span class="rb ghost">${ic('i-ne')}</span></div>
       <div class="name">${esc(d.nome)}</div>
@@ -456,15 +507,16 @@ window.DIREZIONE_A = (function () {
       <span class="a-logo">DGT</span>
       ${barraAgenda(m)}
       <div class="a-tr"><span class="rb">${ic('i-bell')}<i class="dot"></i></span><span class="av a2">${esc(m.azienda.titolare.iniziali)}</span></div>
-      <span class="rb a-back" ${opz.pagina === 'richieste' ? 'data-az="pagina" data-pagina="home"' : ''}>${ic('i-left')}</span>
+      <span class="rb a-back" ${opz.pagina !== 'home' ? 'data-az="pagina" data-pagina="home"' : ''}>${ic('i-left')}</span>
       <div class="a-head">
         <h3 class="a-title">${esc(titolo)}</h3>
         ${nuovo ? `<span class="a-new"><i>${ic('i-plus')}</i>${nuovo}</span>` : ''}
         <div class="a-stats">${stats}</div>
+        ${opz.pagina === 'dipartimento' ? `<span class="rb ghost impost" title="Impostazioni del dipartimento">${ic('i-sliders')}</span>` : ''}
       </div>
       <div class="a-rail">
         <span class="rb ${railAttivo === 'home' ? 'white' : ''}" data-az="pagina" data-pagina="home">${ic('i-list')}</span>
-        <span class="rb">${ic('i-org')}</span>
+        <span class="rb ${railAttivo === 'org' ? 'white' : ''}" data-az="pagina" data-pagina="dipartimento">${ic('i-org')}</span>
         <span class="rb ${railAttivo === 'richieste' ? 'white' : ''}" data-az="pagina" data-pagina="richieste">${ic('i-bell')}</span>
         <span class="rb">${ic('i-chat')}</span>
         <span class="rb">${ic('i-cal')}</span>
@@ -527,7 +579,8 @@ window.DIREZIONE_A = (function () {
         <span class="sep"></span><span class="k" style="width:auto">Tipo</span><div class="pills due">${p('tipo', 'tutti', 'Tutti')}${p('tipo', 'post', 'Post')}${p('tipo', 'documento', 'Documenti')}${p('tipo', 'lista', 'Liste')}${p('tipo', 'proposta', 'Proposte')}</div></div>
       <div class="frow"><span class="k">Periodo</span><div class="pills due">${p('periodo', 'tutti', 'Tutto')}${p('periodo', 'oggi', 'Oggi')}${p('periodo', 'ieri', 'Ieri')}${p('periodo', 'settimana', '7 giorni')}${p('periodo', 'mese', '30 giorni')}</div>
         <span class="sep"></span><span class="k" style="width:auto">Cliente</span><div class="pills">${p('cliente', 'tutti', 'Tutti')}${m.clienti.map(c => p('cliente', c, esc(c))).join('')}</div></div>
-      <div class="frow"><span class="k">Dipendente</span><div class="pills">${p('chi', 'tutti', 'Tutti')}${conRichieste.map(e => p('chi', e.id, esc(e.nome), av(m, e, 'xs'))).join('')}</div></div>
+      <div class="frow"><span class="k">Dipartim.</span><div class="pills due">${p('dip', 'tutti', 'Tutti')}${m.dipartimenti.map(d => p('dip', d.id, esc(d.nome))).join('')}</div>
+        <span class="sep"></span><span class="k" style="width:auto">Dipendente</span><div class="pills">${p('chi', 'tutti', 'Tutti')}${conRichieste.filter(e => !f.dip || f.dip === 'tutti' || e.dip === f.dip).map(e => p('chi', e.id, esc(e.nome), av(m, e, 'xs'))).join('')}</div></div>
       <div class="fsum"><span><b>${filtrate}</b> di ${tot} richieste</span>${attivi ? `<span>· ${attivi} filtr${attivi === 1 ? 'o attivo' : 'i attivi'}</span><span class="pill" data-az="azzera">${ic('i-x')}Azzera</span>` : `<span>· nessun filtro</span>`}</div>
     </div>`;
   }
@@ -565,14 +618,63 @@ window.DIREZIONE_A = (function () {
     return cornice(m, opz, 'RICHIESTE', stats, 'richieste', corpo, 'Nuova regola');
   }
 
+  /* ---------- pagina Dipartimento ---------- */
+  function dipartimento(m, opz) {
+    const d = m.dipartimenti.find(x => x.id === opz.dip) || m.dipartimenti[0];
+    const lst = m.perDip[d.id];
+    const ids = lst.map(e => e.id);
+    const ordine = { lavoro: 0, errore: 1, pianificato: 2 };
+    const esec = lst.filter(e => e.stato in ordine).sort((a, b) => ordine[a.stato] - ordine[b.stato]);
+    const att = inAttesa(m).filter(r => ids.includes(r.chi));
+    const ob = m.obiettiviDi(d.id);
+    const costoOggi = lst.reduce((t, e) => t + (e.att.costo || 0), 0);
+    const lav = lst.filter(e => e.stato === 'lavoro').length;
+    const stats = `<div class="stat"><b>${lav}</b><span>al lavoro</span><span class="badge up">${ic('i-up')}${lav}</span></div>
+      <div class="stat"><b>${att.length}</b><span>da approvare</span>${att.length ? `<span class="badge down">${ic('i-bell')}${att.length}</span>` : ''}</div>
+      <div class="stat"><b>${costoOggi} €</b><span>spesi oggi</span></div>`;
+    // spesa del mese per cliente: richieste degli ultimi 30 giorni + esecuzioni di oggi
+    const perCliente = {};
+    m.richieste.filter(r => ids.includes(r.chi) && r.giorno <= 31).forEach(r => { const c = perCliente[r.cliente] = perCliente[r.cliente] || { cliente: r.cliente, consegne: 0, mese: 0, oggi: 0 }; c.mese += r.costo; if (r.stato === 'approvata') c.consegne++; if (r.giorno === 0) c.oggi += r.costo; });
+    lst.forEach(e => { const c = perCliente[e.att.cliente] = perCliente[e.att.cliente] || { cliente: e.att.cliente, consegne: 0, mese: 0, oggi: 0 }; c.mese += e.att.costo || 0; c.oggi += e.att.costo || 0; });
+    const costi = Object.values(perCliente).filter(c => c.mese > 0).sort((a, b) => b.mese - a.mese);
+    const totMese = costi.reduce((t, c) => t + c.mese, 0);
+    const corpo = `
+      <section>
+        <div class="shead"><h3>Oggi in ${esc(d.nome)}</h3><span class="cnt"><b>${esec.length}</b><span>Esecuzioni</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
+          <div class="filters"><span class="pill on">Tutte</span><span class="pill">In corso</span><span class="pill">Pianificate</span><span class="pill">Errori</span><span class="pill">Concluse oggi</span></div></div>
+        ${esec.length ? `<div class="cards riga">${esec.map((e, i) => cardEsecuzione(m, e, i)).join('')}</div>` : `<div class="vuoto">Nessuna esecuzione oggi in ${esc(d.nome)}</div>`}
+      </section>
+      <section>
+        <div class="shead"><h3>Dipendenti</h3><span class="cnt"><b>${lst.length}</b><span>Dipendenti</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
+          <div class="filters"><span class="pill on">Tutti</span><span class="pill">Al lavoro</span><span class="pill">Liberi</span><span class="pill">Con errori</span></div></div>
+        <div class="cards">${lst.map(e => cardDipendente(m, e)).join('')}<div class="ncard lead add"><span class="rb ghost">${ic('i-plus')}</span>Aggiungi un dipendente<br>a ${esc(d.nome)}</div></div>
+      </section>
+      <section>
+        <div class="shead"><h3>Obiettivi</h3><span class="cnt"><b>${ob.length}</b><span>Obiettivi</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
+          <div class="filters"><span class="pill on">Tutti</span><span class="pill">🔥 In ritardo</span><span class="pill">In corso</span><span class="pill">Da iniziare</span><span class="pill">Conclusi</span></div></div>
+        ${ob.length ? `<div class="cards">${ob.map((o, i) => cardObiettivo(m, o, i)).join('')}</div>` : `<div class="vuoto">Nessun obiettivo assegnato a ${esc(d.nome)}</div>`}
+      </section>
+      <section>
+        <div class="shead"><h3>Da approvare</h3><span class="cnt"><b>${att.length}</b><span>Richieste</span></span><span class="rb sm ghost">${ic('i-search')}</span>
+          <div class="filters"><span class="pill" data-az="pagina" data-pagina="richieste" data-dip="${d.id}">Tutte le richieste di ${esc(d.nome)} ${ic('i-ne')}</span></div></div>
+        ${att.length ? `<div class="cards">${att.map((r, i) => cardRichiesta(m, r, i)).join('')}</div>` : `<div class="vuoto">Niente da approvare da ${esc(d.nome)}</div>`}
+      </section>
+      <section>
+        <div class="shead"><h3>Spesa del mese</h3><span class="cnt"><b>${totMese} €</b><span>per cliente</span></span><span class="rb sm ghost">${ic('i-down')}</span>
+          <div class="filters"><span class="pill on">Ultimi 30 giorni</span><span class="pill">Oggi</span><span class="pill">Da inizio anno</span></div></div>
+        <div class="hlist">${costi.map(c => `<div class="crow"><span class="ico">${ic('i-euro')}</span><div class="tx"><b>${esc(c.cliente)}</b><span>${c.consegne} consegne approvate</span></div><span class="v">${c.oggi} €<small>oggi</small></span><span class="v">${Math.round(100 * c.mese / Math.max(1, totMese))}%<small>del dipartimento</small></span><span class="eur">${c.mese} €</span><span class="rb xs">${ic('i-ne')}</span></div>`).join('')}</div>
+      </section>`;
+    return cornice(m, opz, d.nome.toUpperCase(), stats, 'org', corpo, 'Nuovo obiettivo');
+  }
+
   function render(m, opz) {
-    opz = Object.assign({ pagina: 'home', tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie' }, opz || {});
-    return opz.pagina === 'richieste' ? richieste(m, opz) : home(m, opz);
+    opz = Object.assign({ pagina: 'home', dip: 'svi', tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie' }, opz || {});
+    return opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : home(m, opz);
   }
 
   /* Disegna e collega i clic: tendina, cambio pagina, filtri, decisioni. Ritorna lo stato. */
   function monta(radice, m, opz) {
-    const st = Object.assign({ pagina: 'home', tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie' }, opz || {});
+    const st = Object.assign({ pagina: 'home', dip: 'svi', tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie' }, opz || {});
     const n = () => m.richiesteDi('attesa').length;
     const tutto = () => { const y = window.scrollY; radice.innerHTML = render(m, st); window.scrollTo(0, y); };
     const soloTendina = () => { const t = radice.querySelector('#a-tendina'); if (t) t.innerHTML = tendina(m, st); else tutto(); };
@@ -596,7 +698,7 @@ window.DIREZIONE_A = (function () {
       else if (az === 'succ') { if (n()) st.richiesta = (st.richiesta + 1) % n(); soloTendina(); }
       else if (az === 'vai') { st.richiesta = +el.dataset.idx; soloTendina(); }
       else if (az === 'richiesta') { if (ev.target.closest('[data-az="approva"],[data-az="rifiuta"]')) return; st.richiesta = +el.dataset.idx; st.tendina = 'estesa'; st.pannello = 'richieste'; soloTendina(); }
-      else if (az === 'pagina') { st.pagina = el.dataset.pagina; tutto(); window.scrollTo(0, 0); }
+      else if (az === 'pagina') { st.pagina = el.dataset.pagina; if (el.dataset.dip) { st.dip = el.dataset.dip; if (st.pagina === 'richieste') st.filtri = { dip: el.dataset.dip }; } tutto(); window.scrollTo(0, 0); }
       else if (az === 'filtro') { const k = el.dataset.k, v = el.dataset.v; st.filtri[k] = (st.filtri[k] === v || v === 'tutti') ? undefined : v; tutto(); }
       else if (az === 'azzera') { st.filtri = {}; tutto(); }
       else if (az === 'ordina') { st.ordine = el.dataset.v; tutto(); }
