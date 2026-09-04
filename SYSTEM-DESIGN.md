@@ -2,7 +2,7 @@
 
 Documento unico del sistema di design di DGT (sistema operativo aziendale per agenti AI).
 Raccoglie tutto ciò che serve per progettare e costruire schermate coerenti: fonti, palette,
-tipografia, forme, componenti, schermate e strumenti di verifica. Aggiornato al 2026-09-03.
+tipografia, forme, componenti, schermate e strumenti di verifica. Aggiornato al 2026-09-04.
 
 ## 1. Che cos'è e da dove viene
 
@@ -29,6 +29,7 @@ sintetici, in italiano.
 | `design-system/reference/` | I due riferimenti dell'utente e il README che dice cosa se ne copia. |
 | `design-system/tools/` | `screenshot.js` (cattura desktop/mobile), `fetch-fonts.py` (Urbanist locale per gli ambienti senza Google Fonts), `wcag.py` (utilità di contrasto, non è una regola). |
 | `design-system/archive/` | Varianti precedenti (A e B). **Non fanno testo.** |
+| `schermate/direzioni/` | Prime schermate reali: tre direzioni per la vista principale, prova a 40, direzione scelta (`DIREZIONI.md`). |
 | `PRODUCT.md`, `CLAUDE.md` | Contesto di prodotto e istruzioni per le sessioni. |
 | `PROSSIMA-SESSIONE.md` | Passaggio di consegne: stato, decisioni, come riprendere. |
 
@@ -137,7 +138,28 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 - Differenza voluta: le card delle sfide sono su una griglia regolare invece che sparse attorno al
   titolo, per restare leggibili su mobile.
 
-## 10. Collegamenti
+## 10. Schermate del prodotto: direzione scelta
+
+Il 2026-09-04 il sistema è stato applicato alla prima schermata reale (vista principale dell'azienda: 4 dipartimenti,
+11 dipendenti AI, 3 al lavoro) in tre direzioni, con prova di scala a 40. Studio, confronto e verdetto in
+`schermate/direzioni/DIREZIONI.md`. **Direzione scelta: A · Console**, cioè questo sistema applicato senza sconti.
+Le schermate successive nascono solo dentro questa direzione, con queste regole:
+
+1. Unità di scala: dipartimento ed esecuzione; il dipendente è la foglia.
+2. Il «adesso» è un luogo: barra «Oggi in azienda» in alto e prima riga di card esecuzione, «da approvare» in testa.
+3. Oltre sedici elementi ogni elenco ha una vista compatta a pillole (3 per riga) e il filtro predefinito è il dipartimento.
+4. Un solo accento: lime = attenzione del titolare (al lavoro, da approvare); rosa solo per errori e cali.
+5. Testi corti: titoli entro due righe a 24 px, ruoli in una riga a 13 px, pillole su una riga.
+6. Il pannello destro è del titolare: un'approvazione alla volta (apri, commenta, approva, rifiuta) e il Riepilogo.
+
+Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
+dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in
+`schermate/direzioni/DIREZIONI.md`, sezione 1. Sorgenti in `schermate/direzioni/` (`dati.js`, `comune.js`,
+`direzione-a.js`).
+
+## 11. Collegamenti
+
+- Confronto delle tre direzioni (artefatto): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
 
 - Artefatto pubblicato: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b
 - Branch di lavoro: `claude/dgt-design-system-fz5r1g`, PR #1 verso `main`: https://github.com/av3rgfx/DGT-Design-2.0/pull/1

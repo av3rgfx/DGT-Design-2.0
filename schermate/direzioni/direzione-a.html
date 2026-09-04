@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<title>DGT — Direzione A · Console</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600&display=swap">
+<style>html,body{margin:0;background:#000}</style>
+</head>
+<body>
+<div class="dirA" id="root"></div>
+<script src="comune.js"></script>
+<script src="dati.js"></script>
+<script src="direzione-a.js"></script>
+<script>
+  DGT_UI.iconeInserisci();
+  DGT_UI.stile('css-a', DIREZIONE_A.css);
+  document.getElementById('root').innerHTML = DIREZIONE_A.render(DGT_DATI.modello(DGT_DATI.nDaUrl()));
+</script>
+</body>
+</html>

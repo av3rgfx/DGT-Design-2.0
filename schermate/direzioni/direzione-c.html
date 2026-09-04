@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<title>DGT — Direzione C · Mappa viva</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>html,body{margin:0;background:#F4EFE6}</style>
+</head>
+<body>
+<div class="dirC" id="root"></div>
+<script src="comune.js"></script>
+<script src="dati.js"></script>
+<script src="direzione-c.js"></script>
+<script>
+  DGT_UI.iconeInserisci();
+  DGT_UI.stile('css-c', DIREZIONE_C.css);
+  document.getElementById('root').innerHTML = DIREZIONE_C.render(DGT_DATI.modello(DGT_DATI.nDaUrl()));
+</script>
+</body>
+</html>
