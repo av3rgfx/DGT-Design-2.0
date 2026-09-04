@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<title>Le pelli dell'orbe</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600&display=swap">
+<style>
+html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.v-wrap{width:1440px;margin:0 auto;padding:40px 64px 80px;box-sizing:border-box;display:grid;gap:44px}
+.v-hd{display:grid;gap:8px}
+.v-hd h1{margin:0;font-weight:400;font-size:46px;line-height:56px;letter-spacing:.02em}
+.v-hd p{margin:0;color:#9A9A9A;font-size:18px;line-height:26px;max-width:78ch}
+.v-hd p b{color:#FCFCFC;font-weight:500}
+.v-sec{display:grid;gap:18px}
+.v-sec h2{margin:0;font-weight:400;font-size:28px;line-height:34px;display:flex;align-items:center;gap:14px}
+.v-sec h2 .chip{display:inline-flex;align-items:center;height:28px;padding:0 12px;border-radius:9999px;background:#3A3A3A;color:#E8E8E8;font-size:13px}
+.v-sec h2 .chip.lime{background:#B8FC64;color:#0A0A0A}
+.v-note{color:#9A9A9A;font-size:14px;line-height:20px;max-width:88ch;margin:0}
+.v-note b{color:#FCFCFC;font-weight:500}
+/* la casella dell'avatar fuori dalla cornice della Console (stesse regole di .av in direzione-a.js) */
+.av{width:48px;height:48px;border-radius:50%;background:#E4E4E4;overflow:hidden;display:grid;place-items:center;border:2px solid transparent;flex:none}
+.av svg{width:100%;height:100%;display:block}
+.av.xl{width:96px;height:96px}.av.lg{width:68px;height:68px}.av.md{width:40px;height:40px}.av.s{width:36px;height:36px}.av.xs{width:28px;height:28px}.av.xxs{width:26px;height:26px}
+.pair{display:inline-flex;align-items:center}.pair .av{border:2px solid var(--av-anello-pelle,#FCFCFC)}.pair .av+.av{margin-left:-10px}
+/* le quattro soluzioni, una accanto all'altra */
+.v-quattro{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
+.v-sol{min-width:0;border-radius:28px;background:linear-gradient(180deg,#262626,#1C1C1C);padding:22px 22px 20px;display:grid;gap:14px;align-content:start;position:relative}
+.v-sol.on{outline:2px solid #B8FC64;outline-offset:-2px}
+.v-sol .top{display:flex;align-items:center;gap:16px;min-width:0}.v-sol .top h3{min-width:0}
+.v-sol h3{margin:0;font-weight:400;font-size:22px;line-height:26px}
+.v-sol h3 small{display:block;font-size:12px;color:#9A9A9A;margin-top:2px}
+.v-sol p{margin:0;font-size:13px;line-height:18px;color:#CFCFCF}
+.v-sol .pc{display:grid;gap:4px;font-size:12px;line-height:16px;color:#9A9A9A}
+.v-sol .pc b{color:#B8FC64;font-weight:500}.v-sol .pc i{font-style:normal;color:#F9A3A3;font-weight:500}
+.v-sol .scegli{display:inline-flex;align-items:center;justify-content:center;height:40px;padding:0 18px;border-radius:9999px;border:1px solid rgb(255 255 255/.16);font-size:14px;cursor:pointer;margin-top:4px}
+.v-sol.on .scegli{background:#B8FC64;color:#0A0A0A;border-color:transparent}
+.v-sol .stati{display:flex;gap:6px}
+/* la tabella dei fondi: righe = superfici, colonne = pelli */
+.v-tab{display:grid;grid-template-columns:150px repeat(5,minmax(0,1fr));gap:6px;align-items:stretch}
+.v-tab .k{display:flex;align-items:center;font-size:13px;color:#9A9A9A;padding-right:6px}
+.v-tab .k b{color:#FCFCFC;font-weight:400;display:block;font-size:14px}
+.v-tab .h{font-size:11px;color:#9A9A9A;text-transform:uppercase;letter-spacing:.06em;padding:0 0 4px 12px}
+.v-cell{min-height:72px;border-radius:20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;padding:8px 10px;min-width:0}
+.v-cell.nero{background:#000;box-shadow:inset 0 0 0 1px rgb(255 255 255/.08)}
+.v-cell.card{background:linear-gradient(180deg,#262626,#1C1C1C)}
+.v-cell.grigia{background:#4D4D4D}
+.v-cell.lime{background:#B8FC64}
+.v-cell.bianca{background:#FCFCFC}
+.v-cell.tendina{background:#F4F4F4}
+/* la Console vera, ritagliata dalla home: qui la pelle la decide il selettore in alto */
+.v-sel{position:sticky;top:0;z-index:5;background:rgb(0 0 0/.85);backdrop-filter:blur(8px);padding:12px 0;display:flex;align-items:center;gap:8px;margin:-12px 0}
+.v-sel span{font-size:13px;color:#9A9A9A;margin-right:8px}
+.v-sel .pill{display:inline-flex;align-items:center;height:40px;padding:0 18px;border-radius:9999px;border:1px solid rgb(255 255 255/.16);font-size:14px;cursor:pointer;white-space:nowrap}
+.v-sel .pill.on{background:#FCFCFC;color:#0A0A0A;border-color:transparent}
+.dirA .a-app.v-solo{min-height:0;width:auto;padding:0;overflow:visible}
+.dirA .a-app.v-solo .cards{margin-top:0}
+.dirA .a-app.v-solo .elenco{margin-top:0;grid-template-columns:repeat(2,minmax(0,1fr))}
+.dirA .a-app.v-solo .dtesta{margin-top:0}
+.v-due{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.v-due>div{min-width:0}
+.dirA .a-app.v-solo .a-tend{position:static;height:auto;max-height:none;width:330px;box-shadow:none;border-radius:28px}
+.dirA .a-app.v-solo .a-sched{position:static;width:1312px}
+</style>
+</head>
+<body>
+<div class="v-wrap">
+  <div class="v-hd">
+    <h1>Le pelli dell'orbe</h1>
+    <p>Richiesta dell'utente: <b>«non un'icona animata: un avatar, senza quel contorno bianco»</b>. Il disco chiaro se ne va e l'orbe diventa un oggetto con volume, che riempie la casella. Sul nero della Console un corpo nero si vede poco: qui quattro soluzioni con la stessa forma, gli stessi occhi e gli stessi moti, su tutti i fondi e in tutte le misure della Console. La quinta colonna è la versione precedente, per confronto.</p>
+  </div>
+
+  <section class="v-sec">
+    <h2>Quattro soluzioni, un solo orbe <span class="chip">Nora · al lavoro · 96 px</span></h2>
+    <div class="v-quattro" id="quattro"></div>
+  </section>
+
+  <section class="v-sec">
+    <h2>Su tutti i fondi della Console <span class="chip">48 px · cinque stati</span></h2>
+    <div class="v-tab" id="fondi"></div>
+    <p class="v-note">Fondi: il nero della pagina, la card scura <b>#262626 → #1C1C1C</b>, la card grigia <b>#4D4D4D</b>, la card lime, le pillole bianche (selettore di stato, coda, agenda) e le tendine chiare <b>#F4F4F4</b>. Con la pelle <b>chiaro</b> l'orbe si inverte da solo in perla nera sulle superfici chiare e lime.</p>
+  </section>
+
+  <section class="v-sec">
+    <h2>Le misure <span class="chip">96 · 68 · 48 · 40 · 36 · 28 · 26 · impilati</span></h2>
+    <div class="v-tab" id="misure"></div>
+  </section>
+
+  <section class="v-sec">
+    <div class="v-sel" id="sel"><span>Nella Console con la pelle</span></div>
+    <h2>Le card al lavoro adesso <span class="chip lime">animate</span></h2>
+    <div id="c-lavoro"></div>
+    <h2>La barra «Oggi in azienda»</h2>
+    <div id="c-barra"></div>
+    <div class="v-due">
+      <div><h2>Le card dei dipendenti</h2><div id="c-card" style="margin-top:18px"></div></div>
+      <div><h2>Righe compatte e tendina</h2><div id="c-righe" style="margin-top:18px;display:grid;gap:18px"></div></div>
+    </div>
+    <h2>La testata della pagina del Dipendente <span class="chip">96 px · segue il puntatore</span></h2>
+    <div id="c-testata"></div>
+  </section>
+</div>
+<script src="comune.js"></script>
+<script src="avatar/avatar-motore.js"></script>
+<script src="avatar/avatar-dgt.js"></script>
+<script src="avatar/avatar-orbe.js"></script>
+<script src="dati.js"></script>
+<script src="direzione-a.js"></script>
+<script>
+  DGT_UI.iconeInserisci();
+  DGT_UI.stile('css-a', DIREZIONE_A.css);
+  DGT_AVATAR.usa('orbe');
+  const q = new URLSearchParams(location.search);
+  DGT_AVATAR.pelle(q.get('pelle') || 'chiaro');
+  const PELLI = DGT_AVATAR_ORBE.PELLI;
+  const STATI = ['lavoro', 'attesa', 'errore', 'pianificato', 'libero'];
+  const av = (seme, stato, cls) => `<span class="av${cls ? ' ' + cls : ''}">${DGT_AVATAR.html(seme, stato)}</span>`;
+  const PRO = {
+    perla: ['<b>Per</b> un solo colore di corpo ovunque; gli occhi colorati restano il segnale; è l\'orbe della modalità voce, nero lucido', '<i>Contro</i> sulle card scure si legge dal volume e dagli occhi, non dalla sagoma: a 26–28 px è la più discreta'],
+    grigio: ['<b>Per</b> si stacca da ogni fondo senza trucchi; un solo colore di corpo; il grigio è già nella palette (card, pillole)', '<i>Contro</i> sulla card grigia #4D4D4D si confonde; è la meno «viva»: sembra un robot di plastica'],
+    chiaro: ['<b>Per</b> la più visibile e la più «avatar» sul nero; è l\'orbe di riferimento (sfera chiara sul nero); sta con le pillole bianche della Console', '<i>Contro</i> due corpi (chiaro sul nero, nero sul chiaro): l\'avatar cambia colore fra card e pillola, come fanno i pulsanti rotondi; gli occhi di stato hanno un contorno nero'],
+    alone: ['<b>Per</b> il passo più piccolo dal disco: stesso corpo nero, il fondo resta nero, niente bordo netto', '<i>Contro</i> l\'alone è comunque un campo chiaro dietro l\'avatar: a 48 px torna a somigliare a un disco sfumato'],
+    disco: ['<i>Contro</i> il disco chiaro con il corpo dentro ha la forma dei pulsanti rotondi bianchi della Console: sembra un\'icona', ''],
+  };
+  /* 1. le quattro soluzioni */
+  document.getElementById('quattro').innerHTML = PELLI.map(p => `<div class="v-sol${p.id === DGT_AVATAR.pelle() ? ' on' : ''}" data-pelle="${p.id}" data-id="${p.id}">
+      <div class="top">${av('Copywriter', 'lavoro', 'xl')}<h3>${p.nome}<small>?pelle=${p.id}</small></h3></div>
+      <p>${p.desc}</p>
+      <div class="stati">${STATI.map(s => av('Copywriter', s, 's')).join('')}</div>
+      <div class="pc">${PRO[p.id].filter(Boolean).map(t => `<span>${t}</span>`).join('')}</div>
+      <span class="scegli" data-scegli="${p.id}">${p.id === DGT_AVATAR.pelle() ? 'Scelta' : 'Prova nella Console'}</span>
+    </div>`).join('');
+  /* 2. i fondi */
+  const FONDI = [['nero', 'Nero', 'la pagina'], ['card', 'Card scura', '#262626 → #1C1C1C'], ['grigia', 'Card grigia', '#4D4D4D'], ['lime', 'Card lime', 'da approvare'], ['bianca', 'Pillola bianca', 'selettore, coda, agenda'], ['tendina', 'Tendina chiara', '#F4F4F4']];
+  const RUOLI5 = ['Sviluppatore full-stack', 'Social media manager', 'DevOps', 'Tester QA', 'Specialista SEO'];
+  /* le stesse superfici della Console, con le variabili di inversione della pelle «chiaro» (come in direzione-a.js) */
+  const INV = 'style="--av-c-corpo:var(--av-inv-corpo);--av-c-orlo:var(--av-inv-orlo);--av-c-orlo-w:var(--av-inv-orlo-w);--av-c-luce:var(--av-inv-luce);--av-occhi-neutri:#FCFCFC;--av-c-bordo:0;--av-c-zeta:#FCFCFC"';
+  const cella = (f, p, dentro) => `<div class="v-cell ${f}" data-pelle="${p}">${dentro}</div>`;
+  const svgInv = html => html.replace(/<svg class="ava orbe/g, `<svg ${INV} class="ava orbe`);
+  document.getElementById('fondi').innerHTML = '<span></span>' + PELLI.map(p => `<span class="h">${p.nome}</span>`).join('')
+    + FONDI.map(([f, nome, sub]) => `<div class="k"><span><b>${nome}</b>${sub}</span></div>` + PELLI.map(p => cella(f, p.id, STATI.map((s, i) => { const h = av(RUOLI5[i], s, 'md'); return (f === 'lime' || f === 'bianca' || f === 'tendina') ? svgInv(h) : h; }).join(''))).join('')).join('');
+  /* 3. le misure */
+  const MIS = [['xl', 96], ['lg', 68], ['', 48], ['md', 40], ['s', 36], ['xs', 28], ['xxs', 26]];
+  document.getElementById('misure').innerHTML = '<span></span>' + PELLI.map(p => `<span class="h">${p.nome}</span>`).join('')
+    + [['card', 'Card scura', 'tutte le misure'], ['nero', 'Nero', 'impilati e coppie']].map(([f, nome, sub], k) => `<div class="k"><span><b>${nome}</b>${sub}</span></div>` + PELLI.map(p => cella(f, p.id, k === 0
+      ? MIS.map(([c]) => av('Copywriter', 'lavoro', c)).join('')
+      : `<span class="pair">${av('DevOps', 'errore', 'xs')}${av('Tester QA', 'pianificato', 'xs')}${av('Ricerca lead', 'lavoro', 'xs')}</span><span class="pair">${av('Copywriter', 'lavoro', 's')}${av('Social media manager', 'attesa', 's')}</span>${av('Fatturazione', 'libero', 'lg')}`)).join('')).join('');
+  /* 4. la Console vera */
+  const m = DGT_DATI.modello(11);
+  const tmp = document.createElement('div'); tmp.className = 'dirA';
+  tmp.innerHTML = DIREZIONE_A.render(m, { tendina: 'aperta' });
+  const cards = tmp.querySelector('.cards.dipendenti'); cards.querySelector('.lead.add').remove();
+  [...cards.children].slice(4).forEach(n => n.remove());
+  const lav = tmp.querySelector('.cards.riga');
+  const barra = tmp.querySelector('.a-sched');
+  const tend = tmp.querySelector('.a-tend');
+  const m40 = DGT_DATI.modello(40);
+  const tmp40 = document.createElement('div'); tmp40.className = 'dirA';
+  tmp40.innerHTML = DIREZIONE_A.render(m40, { tendina: 'chiusa' });
+  const righe = tmp40.querySelector('.elenco'); [...righe.children].slice(6).forEach(n => n.remove()); righe.style.gridTemplateColumns = 'repeat(2,1fr)';
+  const tmpD = document.createElement('div'); tmpD.className = 'dirA';
+  tmpD.innerHTML = DIREZIONE_A.render(m, { pagina: 'dipendente', id: 4, tendina: 'chiusa' });
+  const testata = tmpD.querySelector('.dtesta');
+  const solo = html => `<div class="dirA"><div class="a-app v-solo">${html}</div></div>`;
+  document.getElementById('c-lavoro').innerHTML = solo(lav.outerHTML);
+  document.getElementById('c-barra').innerHTML = solo(barra.outerHTML);
+  document.getElementById('c-card').innerHTML = solo(cards.outerHTML);
+  document.getElementById('c-righe').innerHTML = solo(righe.outerHTML) + solo(tend.outerHTML);
+  document.getElementById('c-testata').innerHTML = solo(testata.outerHTML);
+  ['c-lavoro', 'c-card', 'c-testata', 'c-righe'].forEach(id => DGT_AVATAR.anima(document.getElementById(id)));
+  /* il selettore: cambia la pelle di tutta la pagina (html[data-pelle]); le tabelle sopra restano fisse per colonna */
+  const sel = document.getElementById('sel');
+  function segna() {
+    const p = DGT_AVATAR.pelle();
+    sel.innerHTML = '<span>Nella Console con la pelle</span>' + PELLI.map(x => `<span class="pill${x.id === p ? ' on' : ''}" data-scegli="${x.id}">${x.nome}</span>`).join('');
+    document.querySelectorAll('.v-sol').forEach(n => { n.classList.toggle('on', n.dataset.id === p); n.querySelector('.scegli').textContent = n.dataset.id === p ? 'Scelta' : 'Prova nella Console'; });
+  }
+  segna();
+  document.addEventListener('click', ev => { const el = ev.target.closest('[data-scegli]'); if (!el) return; DGT_AVATAR.pelle(el.dataset.scegli); segna(); });
+</script>
+</body>
+</html>

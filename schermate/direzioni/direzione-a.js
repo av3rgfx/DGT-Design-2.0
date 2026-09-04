@@ -33,8 +33,15 @@
    criterio di scelta, strumenti e connessioni, budget e permessi, colloquio.
    La revisione è anche una richiesta al titolare (tipo `revisione`).
 
+   Versione 8 (stessa sessione): la pagina dell'Esecuzione, aperta dall'«occhio»
+   e dalla freccia delle card esecuzione: testata con la barra dei passi (la
+   barra agenda del sistema), passi come righe, log con filtri e barra di
+   scrittura, output come card, costo per modello e per strumento; azioni
+   pausa, interrompi, riprova, avvia ora, nota del titolare. Dati in
+   m.esecuzioneDi(e). Avatar senza disco (avatar-orbe.js, pelli).
+
    API: DIREZIONE_A.render(m, opz) → HTML; DIREZIONE_A.monta(radice, m, opz)
-   disegna e collega i clic. opz = { pagina: 'home'|'richieste'|'dipartimento'|'dipendente',
+   disegna e collega i clic. opz = { pagina: 'home'|'richieste'|'dipartimento'|'dipendente'|'esecuzione',
    dip: 'svi'|'mkt'|'ven'|'amm', id: id del dipendente, tendina: 'chiusa'|'aperta'|'estesa'|'dipendente'|'confronto'|'dossier',
    richiesta: indice, pannello: 'richieste'|'riepilogo', editor: 'nuovo'|id, confronto: 'a,b' }.
    ===================================================================== */
@@ -72,8 +79,11 @@ window.DIREZIONE_A = (function () {
 .av svg{width:14px;height:14px}
 .av svg.ava{width:100%;height:100%}
 .pair{display:inline-flex;align-items:center}
-.pair .av{border:2px solid var(--white)}.pair .av+.av,.pair .av+.more{margin-left:-10px}
-.pair .more{height:28px;padding:0 9px;border-radius:var(--r-pill);background:var(--ink);color:var(--white);font-size:11px;display:inline-flex;align-items:center;border:2px solid var(--white)}
+/* l'anello degli avatar impilati prende il colore del fondo; con le pelli senza disco (avatar-orbe.js) sparisce (--av-anello-pelle) */
+.pair .av{border:2px solid var(--av-anello-pelle,var(--white))}.pair .av+.av,.pair .av+.more{margin-left:-10px}
+/* superfici chiare: con la pelle «chiaro» l'orbe si inverte da solo in perla nera (variabili --av-inv-* della pelle, lette da avatar-orbe.js; con le altre pelli non contano) */
+.ncard.lime .av svg.orbe,.task .sel .av svg.orbe,.qrow .av svg.orbe,.a-sched .av svg.orbe,.hrow.attesa .av svg.orbe,.vrow.on .av svg.orbe,.vrow.prop .av svg.orbe,.a-tend .av svg.orbe,.pdoc .av svg.orbe,.erow.lav .av svg.orbe,.pill.on .av svg.orbe,.lead.mod.on .av svg.orbe{--av-c-corpo:var(--av-inv-corpo);--av-c-orlo:var(--av-inv-orlo);--av-c-orlo-w:var(--av-inv-orlo-w);--av-c-luce:var(--av-inv-luce);--av-occhi-neutri:#FCFCFC;--av-c-bordo:0;--av-c-zeta:#FCFCFC}
+.task.gray .sel .av svg.orbe,.task.dark .sel .av svg.orbe,.a-tend .ncard .av svg.orbe,.a-tend .appr .av svg.orbe{--av-c-corpo:initial;--av-c-orlo:initial;--av-c-orlo-w:initial;--av-c-luce:initial;--av-occhi-neutri:initial;--av-c-bordo:initial;--av-c-zeta:initial}
 .pill{display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 20px;border-radius:var(--r-pill);border:1px solid rgb(255 255 255/.14);background:transparent;color:var(--white);font-size:15px;white-space:nowrap;flex:none}
 .pill.on{background:var(--white);color:var(--ink);border-color:transparent}
 .pill.lime{background:var(--lime);color:var(--ink);border-color:transparent}
@@ -153,7 +163,7 @@ window.DIREZIONE_A = (function () {
 .task.gray .sel,.task.dark .sel{background:var(--ink);color:var(--white)}
 .task.lime .st .rb.ghost{border-color:rgb(0 0 0/.16);color:var(--ink)}
 .task .sel .chip{height:24px;font-size:11px;flex:none}
-.task .sel .pair{flex:none}.task .sel .pair .av{border-color:var(--white)}.task.gray .sel .pair .av,.task.dark .sel .pair .av{border-color:var(--ink)}
+.task .sel .pair{flex:none}.task .sel .pair .av{border-color:var(--av-anello-pelle,var(--white))}.task.gray .sel .pair .av,.task.dark .sel .pair .av{border-color:var(--av-anello-pelle,var(--ink))}
 .task .who .ico{width:48px;height:48px}.task .who .ico svg{width:20px;height:20px}
 .task.lime .who .ico{border-color:rgb(0 0 0/.14)}
 .prog{height:12px;border-radius:var(--r-pill);background:rgb(255 255 255/.12);overflow:hidden;margin-top:12px}
@@ -193,7 +203,7 @@ window.DIREZIONE_A = (function () {
 .tl .live .rb{width:32px;height:32px;background:rgb(0 0 0/.06);border-color:transparent;color:var(--ink)}
 .tl .live .rb svg{width:14px;height:14px}
 .tl .live .pair{margin-left:auto;margin-right:6px}
-.tl .live .pair .av{border-color:var(--lime-deep)}
+.tl .live .pair .av{border-color:var(--av-anello-pelle,var(--lime-deep))}
 .tl .now{position:absolute;left:0;top:2px;bottom:-8px;width:1px;background:var(--ink)}
 .tl .now b{position:absolute;left:0;top:0;transform:translate(-50%,-50%);height:22px;padding:0 10px;border-radius:var(--r-pill);background:var(--ink);color:var(--white);font-size:11px;font-weight:400;display:flex;align-items:center;white-space:nowrap}
 .tl .now i{position:absolute;left:0;bottom:0;width:8px;height:8px;border-radius:50%;background:var(--white);transform:translateX(-50%)}
@@ -484,6 +494,74 @@ window.DIREZIONE_A = (function () {
 .a-tend.vers .azioni.motivo .k{font-size:11px;color:var(--t2-light);text-transform:uppercase;letter-spacing:.06em;width:100%}
 .a-tend.vers .azioni.motivo input{flex:1;height:44px;border-radius:var(--r-pill);background:var(--white);border:1px solid transparent;padding:0 16px;font:400 14px/20px var(--font);color:var(--ink);outline:none;min-width:240px}
 .a-tend.vers .azioni.motivo input:focus{border-color:var(--ink)}
+/* ===== pagina Esecuzione (versione 8): testata con la barra dei passi, passi, log con la barra di scrittura, output, costo ===== */
+.etesta{display:grid;gap:18px;margin-top:-8px}
+.etesta .ident{display:flex;align-items:center;gap:18px;min-width:0;flex-wrap:wrap}
+.etesta .ident .tx{min-width:0;display:grid;gap:2px}
+.etesta .ident .tx>b{font-weight:500;font-size:18px;line-height:22px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.etesta .ident .tx>span{font-size:13px;color:var(--t2);white-space:nowrap}
+.etesta .chips{display:flex;gap:6px;flex-wrap:wrap;margin-left:14px}
+.etesta .chips .chip[data-az]{cursor:pointer}
+.etesta .adesso{font-size:17px;line-height:25px;color:#DADADA;max-width:78ch;margin:0}
+.etesta .adesso b{font-weight:500;color:var(--white)}
+.etesta .azioni{display:flex;gap:8px;flex-wrap:wrap}
+.etesta .azioni .pill{cursor:pointer}
+/* la barra dei passi: la barra agenda del sistema, ferma nella testata; i passi fatti sono eventi bianchi, quello in corso è il segmento «adesso», quelli da fare sono eventi traslucidi */
+.etesta .a-sched{position:static;height:64px;margin-top:4px;padding-left:22px}
+.etesta .a-sched .t{font-size:18px}
+.etesta .tl{overflow-x:auto}
+.etesta .tl .ev{gap:8px;padding:0 12px 0 4px;color:#6B6B6B}
+.etesta .tl .ev .n{width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--white);display:grid;place-items:center;font-size:12px;flex:none}
+.etesta .tl .ev .n svg{width:14px;height:14px}
+.etesta .tl .ev.plan .n{background:transparent;border:1px solid rgb(0 0 0/.3);color:var(--ink)}
+.etesta .tl .ev.err{background:var(--badge-red);color:var(--badge-red-ink)}
+.etesta .tl .ev.err .n{background:var(--badge-red-ink);color:var(--white)}
+.etesta .tl .ev .nm{max-width:190px;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+.etesta .tl .ev.plan .nm{color:rgb(0 0 0/.55)}
+.etesta .tl .ev b{font-weight:500;color:var(--ink)}
+.etesta .tl .live .lbl{overflow:hidden;text-overflow:ellipsis;margin-right:8px}
+.etesta .tl .live .lbl b{font-weight:500;color:var(--ink)}
+.etesta .tl .fine{height:40px;border-radius:var(--r-pill);background:var(--white);display:flex;align-items:center;gap:8px;padding:0 14px 0 6px;font-size:12px;color:#6B6B6B;white-space:nowrap;flex:none;margin-left:auto}
+.etesta .tl .fine b{color:var(--ink);font-weight:500}
+.etesta .tl .fine .rb{width:28px;height:28px;background:var(--ink);color:var(--white);border-color:transparent}.etesta .tl .fine .rb svg{width:12px;height:12px}
+/* i passi come righe */
+.hrow.passo{grid-template-columns:40px minmax(0,1fr) 120px 170px 110px 64px 32px}
+.hrow.passo .n{width:40px;height:40px;border-radius:50%;border:1px solid rgb(255 255 255/.16);display:grid;place-items:center;font-size:14px}
+.hrow.passo .n svg{width:16px;height:16px}
+.hrow.passo.corso{background:var(--lime);color:var(--ink)}.hrow.passo.corso .tx span,.hrow.passo.corso .chi{color:rgb(0 0 0/.6)}.hrow.passo.corso .n{border-color:rgb(0 0 0/.2)}.hrow.passo.corso .rb.xs{border-color:rgb(0 0 0/.16);color:var(--ink)}
+.hrow.passo.errore{background:var(--gray-card)}.hrow.passo.errore .tx span,.hrow.passo.errore .chi{color:#D0D0D0}
+.hrow.passo.dafare{opacity:.6}
+.hrow.passo .tx b{font-weight:500}
+.hrow.passo .chi small{margin-left:6px;font-size:11px}
+.hrow.passo.corso .chi small{color:rgb(0 0 0/.6)}
+/* il log: righe più basse, il testo può stare su due righe; la barra di scrittura in fondo (barra chat del riferimento) */
+.lrow{min-height:48px;border-radius:24px;background:linear-gradient(180deg,var(--card-top),var(--card));display:grid;grid-template-columns:64px 118px minmax(0,1fr) 64px 32px;align-items:center;gap:10px;padding:6px 8px 6px 18px}
+.lrow>*{min-width:0}
+.lrow .ora{font-size:13px;color:var(--t2);white-space:nowrap}
+.lrow .chip{height:24px;font-size:11px}
+.lrow .tx{font-size:14px;line-height:18px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lrow .tx small{color:var(--t2);font-size:12px;margin-left:6px}
+.lrow .eur{font-size:13px;text-align:right;white-space:nowrap;color:var(--t2)}
+.lrow .rb.xs{background:transparent;border-color:rgb(255 255 255/.16)}
+.lrow.errore{background:var(--gray-card)}
+.lrow.titolare{background:var(--white);color:var(--ink)}.lrow.titolare .ora,.lrow.titolare .eur{color:var(--t2-light)}.lrow.titolare .rb.xs{border-color:rgb(0 0 0/.16);color:var(--ink)}
+.chat{height:56px;border-radius:var(--r-pill);background:var(--white);color:var(--ink);display:flex;align-items:center;gap:12px;padding:0 6px 0 8px;margin-top:8px}
+.chat input{flex:1;height:44px;border:0;background:transparent;font:400 15px/20px var(--font);color:var(--ink);outline:none;min-width:0}
+.chat input::placeholder{color:#8A8A8A}
+.chat .rb.sm{background:var(--ink);color:var(--white);border-color:transparent;cursor:pointer}
+/* gli output come card lead: da approvare = lime, in corso = grigia, fatto e approvato = scura, da fare = spenta */
+.lead.out .name.md{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:26px;max-height:52px;font-size:22px}
+.lead.out .role{white-space:normal;line-height:17px;height:34px;overflow:hidden}
+.lead.out{display:flex;flex-direction:column;height:224px}
+.lead.out .ft{margin-top:auto}
+.lead.out .ft>div{min-width:0}
+.lead.out .ft .v{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ncard.lime .ico{border-color:rgb(0 0 0/.14)}.ncard.lime .role,.ncard.lime .k{color:rgb(0 0 0/.6)}.ncard.lime .rb.ghost{border-color:rgb(0 0 0/.16);color:var(--ink)}
+.ncard.gray .role,.ncard.gray .k{color:#D0D0D0}
+.costo{display:grid;grid-template-columns:517px minmax(0,1fr);gap:16px;margin-top:24px;align-items:start}
+.task.spesa .body{padding-top:16px}
+.task.spesa .tt small{font-size:14px}
+.task.spesa .ripart{margin-top:14px}
 `;
 
   const S = n => `<i></i>`.repeat(n);
@@ -523,9 +601,9 @@ window.DIREZIONE_A = (function () {
     const d = m.dipDi(e);
     return `<div class="ncard task ${tono}">
       <div class="who">${av(m, e, '', null, 'data-anima="1"')}<div><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div></div>
-      <div class="nt"><span class="rb ghost">${ic('i-bell')}${pend ? '<i class="dot"></i>' : ''}</span><span class="rb ghost">${ic('i-ne')}</span></div>
+      <div class="nt"><span class="rb ghost">${ic('i-bell')}${pend ? '<i class="dot"></i>' : ''}</span><span class="rb ghost" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Apri l'esecuzione">${ic('i-ne')}</span></div>
       <div class="body"><span class="ico">${ic(iconaDip[e.dip])}</span><div><div class="tt">${esc(e.att.titolo)}</div><div class="meta"><b>${esc(e.att.cliente)}</b><span>da</span><b>${esc(e.att.da)}</b></div></div></div>
-      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${av(m, e, 's')}<span>Passo ${e.att.passo[0]} di ${e.att.passo[1]}</span>${ic('i-chev')}</span><span class="rb ghost">${ic('i-chat')}</span><span class="rb black">${ic('i-eye')}</span></div></div>
+      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${av(m, e, 's')}<span>Passo ${e.att.passo[0]} di ${e.att.passo[1]}</span>${ic('i-chev')}</span><span class="rb ghost">${ic('i-chat')}</span><span class="rb black" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Passi, log e output">${ic('i-eye')}</span></div></div>
     </div>`;
   }
   function cardEsecuzione(m, e, i) {
@@ -537,9 +615,9 @@ window.DIREZIONE_A = (function () {
     const sel = err ? `<span class="chip rosa">${ic('i-warn')}Errore</span><span>${esc(a.errore)}</span>` : `<span class="chip">${ic('i-clock')}${esc(a.quando)}</span><span>In coda</span>`;
     return `<div class="ncard task ${tono}">
       <div class="who">${av(m, e)}<div><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div></div>
-      <div class="nt"><span class="rb ghost">${ic('i-bell')}${err ? '<i class="dot"></i>' : ''}</span><span class="rb ghost">${ic('i-ne')}</span></div>
+      <div class="nt"><span class="rb ghost">${ic('i-bell')}${err ? '<i class="dot"></i>' : ''}</span><span class="rb ghost" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Apri l'esecuzione">${ic('i-ne')}</span></div>
       <div class="body"><span class="ico">${ic(err ? 'i-warn' : iconaDip[e.dip])}</span><div><div class="tt">${esc(a.titolo)}</div><div class="meta">${meta}</div></div></div>
-      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${sel}${ic('i-chev')}</span><span class="rb ghost">${ic('i-chat')}</span><span class="rb black" title="${err ? 'Riprova' : 'Avvia ora'}">${ic('i-play')}</span></div></div>
+      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${sel}${ic('i-chev')}</span><span class="rb ghost">${ic('i-chat')}</span><span class="rb black" data-az="${err ? 'esec-riprova' : 'esec-avvia'}" data-id="${e.id}" title="${err ? 'Riprova' : 'Avvia ora'}">${ic('i-play')}</span></div></div>
     </div>`;
   }
   function cardObiettivo(m, o, i) {
@@ -711,9 +789,9 @@ window.DIREZIONE_A = (function () {
 
   /* ---------- cornice comune ---------- */
   function cornice(m, opz, titolo, stats, railAttivo, corpo, nuovo) {
-    /* dal dipendente si torna al suo dipartimento; dalle altre pagine alla home */
-    const e = opz.pagina === 'dipendente' ? m.byId[opz.id] : null;
-    const indietro = e ? `data-az="pagina" data-pagina="dipartimento" data-dip="${e.dip}"` : opz.pagina !== 'home' ? 'data-az="pagina" data-pagina="home"' : '';
+    /* dal dipendente si torna al suo dipartimento, dall'esecuzione al dipendente; dalle altre pagine alla home */
+    const e = (opz.pagina === 'dipendente' || opz.pagina === 'esecuzione') ? m.byId[opz.id] : null;
+    const indietro = e && opz.pagina === 'esecuzione' ? `data-az="pagina" data-pagina="dipendente" data-id="${e.id}"` : e ? `data-az="pagina" data-pagina="dipartimento" data-dip="${e.dip}"` : opz.pagina !== 'home' ? 'data-az="pagina" data-pagina="home"' : '';
     const lungo = e ? (titolo.length > 20 ? ' lunghissimo' : titolo.length > 12 ? ' lungo' : '') : '';
     return `<div class="a-app" role="figure" aria-label="Direzione A — ${esc(titolo)} (contenuto sintetico)">
       <span class="a-logo">DGT</span>
@@ -944,9 +1022,9 @@ window.DIREZIONE_A = (function () {
     const a = e.att, att = e.stato === 'attesa';
     return `<div class="ncard task ${att ? 'lime' : 'dark'}">
       <div class="who">${av(m, e)}<div><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div></div>
-      <div class="nt"><span class="rb ghost">${ic('i-bell')}${att ? '<i class="dot"></i>' : ''}</span><span class="rb ghost">${ic('i-ne')}</span></div>
+      <div class="nt"><span class="rb ghost">${ic('i-bell')}${att ? '<i class="dot"></i>' : ''}</span><span class="rb ghost" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Apri l'esecuzione">${ic('i-ne')}</span></div>
       <div class="body"><span class="ico">${ic(iconaDip[e.dip])}</span><div><div class="tt">${esc(a.titolo)}</div><div class="meta"><b>${esc(a.cliente || '—')}</b><span>${att ? 'consegnato alle' : 'concluso'}</span><b>${esc(a.fine || '')}</b></div></div></div>
-      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${att ? `<span class="chip ink">${ic('i-bell')}Da approvare</span><span>aspetta il titolare</span>` : `<span class="chip">Libero</span><span>nessuna esecuzione in corso</span>`}${ic('i-chev')}</span><span class="rb ghost">${ic('i-chat')}</span><span class="rb black">${ic(att ? 'i-eye' : 'i-play')}</span></div></div>
+      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${att ? `<span class="chip ink">${ic('i-bell')}Da approvare</span><span>aspetta il titolare</span>` : `<span class="chip">Libero</span><span>nessuna esecuzione in corso</span>`}${ic('i-chev')}</span><span class="rb ghost">${ic('i-chat')}</span><span class="rb black" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Passi, log e output">${ic('i-eye')}</span></div></div>
     </div>`;
   }
   function sezioneOggi(m, e) {
@@ -1092,6 +1170,146 @@ window.DIREZIONE_A = (function () {
     return cornice(m, opz, m.etichetta(e).toUpperCase(), stats, 'org', corpo, '');
   }
 
+  /* ---------- pagina Esecuzione (versione 8, 2026-09-04) ----------
+     Si apre dall'«occhio» e dalla freccia nell'intaglio delle card esecuzione. Stessa cornice
+     (titolo = titolo dell'esecuzione, tre numeri: passi fatti, spesi, tempo). Testata con chi,
+     chip, la frase «adesso / prossimo», le azioni e la barra dei passi (la barra agenda del
+     sistema); poi Passi, Log (con la barra di scrittura), Output e Costo. Dati in m.esecuzioneDi(e). */
+  const minuti = t => { const k = /(\d\d):(\d\d)/.exec(t || ''); return k ? +k[1] * 60 + +k[2] : null; };
+  const durataFra = (da, a) => { const x = minuti(da), y = minuti(a); if (x === null || y === null) return ''; const d = Math.max(0, y - x); return d >= 60 ? `${Math.floor(d / 60)} h ${String(d % 60).padStart(2, '0')}` : `${d} min`; };
+  const TIPO_LOG = { passo: ['i-check', 'Passo'], strumento: ['i-bolt', 'Strumento'], modello: ['i-bot', 'Modello'], nota: ['i-doc', 'Nota'], richiesta: ['i-bell', 'Richiesta'], errore: ['i-warn', 'Errore'], titolare: ['i-hand', 'Titolare'] };
+  const ICONA_OUT = { post: 'i-mega', documento: 'i-doc', lista: 'i-list', immagine: 'i-grid', codice: 'i-code', proposta: 'i-receipt' };
+  const chipPasso = p => p.stato === 'fatto' ? `<span class="chip">${ic('i-check')}Fatto</span>` : p.stato === 'corso' ? `<span class="chip ink">${ic('i-play')}In corso</span>` : p.stato === 'errore' ? `<span class="chip rosa">${ic('i-warn')}Errore</span>` : `<span class="chip">${ic('i-clock')}Da fare</span>`;
+  const chipOut = o => ({ attesa: `<span class="chip ink">${ic('i-bell')}Da approvare</span>`, approvata: `<span class="chip lime">${ic('i-check')}Approvata</span>`, fatto: `<span class="chip lime">${ic('i-check')}Fatto</span>`, bozza: `<span class="chip lime">${ic('i-play')}In corso</span>`, errore: `<span class="chip rosa">${ic('i-warn')}Non fatto</span>` })[o.stato] || `<span class="chip">${ic('i-clock')}Da fare</span>`;
+  /* Riepilogo dell'esecuzione: passi fatti, il passo corrente (in corso o in errore), il prossimo, costo finora e stima a fine. */
+  function riepilogoEsecuzione(m, e, x) {
+    const a = e.att;
+    const fatti = x.passi.filter(p => p.stato === 'fatto').length;
+    const cur = x.passi.find(p => p.stato === 'corso' || p.stato === 'errore');
+    const prossimo = x.passi.find(p => p.stato === 'da fare');
+    const costo = Math.round(10 * x.passi.reduce((t, p) => t + (p.stato === 'da fare' ? 0 : p.costo), 0)) / 10;
+    const stima = Math.round(10 * x.passi.reduce((t, p) => t + p.costo, 0)) / 10;
+    const durata = (e.stato === 'lavoro' || e.stato === 'errore') ? durataFra(a.da, m.azienda.ora) : durataFra(a.da, a.fine);
+    return { fatti, cur, prossimo, costo, stima, durata, n: x.passi.length };
+  }
+  /* La barra dei passi: eventi bianchi = fatti, segmento «adesso» = in corso, rosa = errore, traslucidi = da fare. */
+  function barraPassi(m, e, x, r) {
+    const a = e.att;
+    const ev = x.passi.map(p => {
+      const num = p.stato === 'fatto' ? `<i class="n">${ic('i-check')}</i>` : `<i class="n">${p.n}</i>`;
+      if (p.stato === 'corso') return `<div class="live"><span class="now"><b>${esc(m.azienda.ora)}</b><i></i></span><span class="lbl"><b>passo ${p.n}</b> · ${esc(p.nome)} · ${durataFra(p.inizio, m.azienda.ora)}</span><span class="rb">${ic('i-play')}</span></div>`;
+      if (p.stato === 'errore') return `<span class="ev err"><i class="n">${ic('i-warn')}</i><span class="nm">${esc(p.nome)}</span><b>${esc(p.fine || '')}</b></span>`;
+      if (p.stato === 'fatto') return `<span class="ev">${num}<span class="nm">${esc(p.nome)}</span><b>${esc(p.durata || '')}</b></span>`;
+      return `<span class="ev plan">${num}<span class="nm">${esc(p.nome)}</span>${p.stima ? `<b>≈ ${esc(p.stima)}</b>` : ''}</span>`;
+    }).join('');
+    const fine = e.stato === 'attesa' ? `<span class="fine"><span class="rb">${ic('i-bell')}</span><b>consegnato alle ${esc(a.fine)}</b>aspetta il titolare</span>`
+      : e.stato === 'libero' ? `<span class="fine"><span class="rb">${ic('i-check')}</span><b>concluso ${esc(a.fine || '')}</b></span>`
+      : e.stato === 'pianificato' ? `<span class="fine"><span class="rb">${ic('i-clock')}</span><b>parte alle ${esc(a.quando)}</b>${r.n} passi · circa ${eur(r.stima)}</span>` : '';
+    const cal = e.stato === 'lavoro' ? `da ${esc(a.da)} · ${r.durata}` : e.stato === 'errore' ? `fermo dalle ${esc(a.da)}` : e.stato === 'pianificato' ? `alle ${esc(a.quando)}` : `${esc(a.da || '')}${a.da && a.fine ? ' → ' : ''}${esc(a.fine || '')}`;
+    return `<div class="a-sched"><span class="t">Passi</span><span class="cal"><i>${ic('i-clock')}</i>${cal}</span><div class="tl">${ev}${fine}</div><span class="rb go" data-az="pagina" data-pagina="dipendente" data-id="${e.id}" title="La pagina del dipendente">${ic('i-ne')}</span></div>`;
+  }
+  function testataEsecuzione(m, e, x, r) {
+    const a = e.att, d = m.dossierDi(e);
+    const md = m.MODELLI[r.cur ? r.cur.modello : d.modello.assegnato];
+    const ob = x.obiettivo ? m.obiettivi.find(o => o.id === x.obiettivo) : null;
+    const richiesta = x.output.find(o => o.stato === 'attesa' && o.richiesta);
+    const idx = richiesta ? inAttesa(m).findIndex(q => q.id === richiesta.richiesta) : -1;
+    const frase = e.pausa ? `<b>In pausa</b> dal titolare al passo ${r.cur ? r.cur.n : r.fatti} di ${r.n}: ${eur(r.costo)} spesi finora. Riprendi per continuare${r.cur ? ' con «' + esc(r.cur.nome) + '»' : ''}.`
+      : e.stato === 'lavoro' && r.cur ? `<b>Adesso</b> passo ${r.cur.n} di ${r.n}, ${esc(r.cur.nome)}: ${esc(r.cur.esito || 'in corso')}. ${r.prossimo ? `<b>Prossimo</b> ${esc(r.prossimo.nome)}${r.prossimo.stima ? ', circa ' + esc(r.prossimo.stima) : ''}.` : ''}`
+      : e.stato === 'errore' && r.cur ? `<b>Fermo</b> al passo ${r.cur.n} di ${r.n}, ${esc(r.cur.nome)}: ${esc(r.cur.esito || a.errore)}. Serve un intervento del titolare o dell'operatore.`
+      : e.stato === 'pianificato' ? `<b>Parte alle ${esc(a.quando)}</b>: ${r.n} passi, circa ${eur(r.stima)}. ${x.log.length ? esc(x.log[x.log.length - 1].testo) : ''}`
+      : e.stato === 'attesa' ? `<b>Consegnato alle ${esc(a.fine)}</b> e aspetta l'approvazione del titolare: ${r.n} passi in ${r.durata || '—'}, ${eur(r.costo)}.`
+      : `<b>Concluso ${esc(a.fine || '')}</b>: ${r.n} passi${r.durata ? ' in ' + r.durata : ''}, ${eur(r.costo)}.`;
+    const pillDip = `<span class="pill sm" data-az="pagina" data-pagina="dipendente" data-id="${e.id}">${ic('i-ne')}La pagina di ${esc(m.etichetta(e))}</span>`;
+    const azioni = e.pausa ? `<span class="pill sm on" data-az="esec-pausa" data-id="${e.id}">${ic('i-play')}Riprendi</span><span class="pill sm" data-az="esec-stop" data-id="${e.id}">${ic('i-x')}Interrompi</span>${pillDip}`
+      : e.stato === 'lavoro' ? `<span class="pill sm" data-az="esec-pausa" data-id="${e.id}">${ic('i-pause')}Metti in pausa</span><span class="pill sm" data-az="esec-stop" data-id="${e.id}">${ic('i-x')}Interrompi</span><span class="pill sm" data-az="esec-scrivi">${ic('i-chat')}Scrivi a ${esc(m.etichetta(e))}</span>${pillDip}`
+      : e.stato === 'errore' ? `<span class="pill sm lime" data-az="esec-riprova" data-id="${e.id}">${ic('i-play')}Riprova il passo ${r.cur ? r.cur.n : ''}</span><span class="pill sm" data-az="pagina" data-pagina="dipendente" data-id="${e.id}">${ic('i-org')}Rinnova la connessione</span><span class="pill sm" data-az="esec-stop" data-id="${e.id}">${ic('i-x')}Interrompi</span>`
+      : e.stato === 'pianificato' ? `<span class="pill sm lime" data-az="esec-avvia" data-id="${e.id}">${ic('i-play')}Avvia ora</span><span class="pill sm">${ic('i-cal')}Sposta</span>${pillDip}`
+      : e.stato === 'attesa' ? `${idx >= 0 ? `<span class="pill sm lime" data-az="richiesta" data-idx="${idx}">${ic('i-bell')}Apri la richiesta</span>` : ''}<span class="pill sm" data-az="esec-scrivi">${ic('i-chat')}Scrivi a ${esc(m.etichetta(e))}</span>${pillDip}`
+      : `<span class="pill sm">${ic('i-play')}Ripeti</span>${pillDip}`;
+    return `<section class="etesta">
+      <div class="ident">${av(m, e, 'lg', e.pausa ? 'libero' : null, 'data-anima="1"')}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div>
+        <div class="chips">${chipStato(m, e)}${r.cur ? `<span class="chip">${ic('i-rows')}Passo ${r.cur.n} di ${r.n}</span>` : `<span class="chip">${ic('i-rows')}${r.fatti} di ${r.n} passi</span>`}<span class="chip">${ic(md.icona)}${esc(md.nome)}</span><span class="chip">${ic('i-hand')}${esc(a.cliente || 'Nova Studio')}</span>${ob ? `<span class="chip" data-az="pagina" data-pagina="dipartimento" data-dip="${e.dip}" title="Apri il dipartimento">${ic('i-target')}${esc(ob.titolo)}</span>` : ''}</div>
+      </div>
+      <p class="adesso">${frase}</p>
+      <div class="azioni">${azioni}</div>
+      ${barraPassi(m, e, x, r)}
+    </section>`;
+  }
+  function rigaPasso(m, e, p) {
+    const tempo = p.stato === 'fatto' || p.stato === 'errore' ? `${esc(p.inizio)} → ${esc(p.fine)}<small>${esc(p.durata || '')}</small>` : p.stato === 'corso' ? `da ${esc(p.inizio)}<small>${durataFra(p.inizio, m.azienda.ora)}</small>` : (p.stima ? `≈ ${esc(p.stima)}` : '—');
+    const cls = p.stato === 'corso' ? ' corso' : p.stato === 'errore' ? ' errore' : p.stato === 'da fare' ? ' dafare' : '';
+    const num = p.stato === 'fatto' ? ic('i-check') : p.stato === 'corso' ? ic('i-play') : p.stato === 'errore' ? ic('i-warn') : p.n;
+    return `<div class="hrow passo${cls}"><span class="n">${num}</span><div class="tx"><b>${p.n}. ${esc(p.nome)}</b><span>${esc(p.esito || (p.strumenti.length ? 'Strumenti: ' + p.strumenti.join(', ') : 'Nessuno strumento'))}</span></div>${chipPasso(p)}<span class="chi">${tempo}</span><span class="chip light">${ic(m.MODELLI[p.modello].icona)}${esc(m.MODELLI[p.modello].nome)}</span><span class="eur">${p.stato === 'da fare' ? '≈ ' : ''}${eur(p.costo)}</span><span class="rb xs">${ic('i-ne')}</span></div>`;
+  }
+  function rigaLog(m, e, v) {
+    const [icona, nome] = TIPO_LOG[v.tipo] || TIPO_LOG.nota;
+    const r = v.richiesta ? m.richieste.find(q => q.id === v.richiesta) : null;
+    const idx = r && r.stato === 'attesa' ? inAttesa(m).indexOf(r) : -1;
+    const chip = v.tipo === 'errore' ? `<span class="chip rosa">${ic(icona)}${nome}</span>` : v.tipo === 'richiesta' ? `<span class="chip lime">${ic(icona)}${nome}</span>` : v.tipo === 'titolare' ? `<span class="chip ink">${ic(icona)}${nome}</span>` : `<span class="chip${v.tipo === 'passo' ? ' light' : ''}">${ic(icona)}${nome}</span>`;
+    return `<div class="lrow ${v.tipo}" ${idx >= 0 ? `data-az="richiesta" data-idx="${idx}"` : ''}><span class="ora">${esc(v.ora)}</span>${chip}<div class="tx">${esc(v.testo)}${v.passo ? `<small>passo ${v.passo}</small>` : ''}</div><span class="eur">${v.costo ? eur(v.costo) : ''}</span><span class="rb xs">${ic(idx >= 0 ? 'i-chevr' : 'i-ne')}</span></div>`;
+  }
+  function cardOutput(m, e, o) {
+    const r = o.richiesta ? m.richieste.find(q => q.id === o.richiesta) : null;
+    const idx = r && r.stato === 'attesa' ? inAttesa(m).indexOf(r) : -1;
+    const tono = o.stato === 'attesa' ? ' lime' : (o.stato === 'bozza' || o.stato === 'errore') ? ' gray' : o.stato === 'da fare' ? ' spenta' : '';
+    return `<div class="ncard lead out${tono}" ${idx >= 0 ? `data-az="richiesta" data-idx="${idx}"` : ''}>
+      <span class="ico">${ic(ICONA_OUT[o.tipo] || 'i-doc')}</span>
+      <div class="nt">${o.stato === 'attesa' ? `<span class="rb ghost">${ic('i-bell')}<i class="dot"></i></span>` : ''}<span class="rb ghost">${ic(idx >= 0 ? 'i-eye' : 'i-ne')}</span></div>
+      <div class="name md">${esc(o.nome)}</div>
+      <div class="role">${esc(o.desc)}</div>
+      <div class="ft"><div><span class="k">Stato</span>${chipOut(o)}</div><div><span class="k">Quando</span><span class="v">${esc(o.quando)}</span></div></div>
+    </div>`;
+  }
+  function esecuzione(m, opz) {
+    const e = m.byId[opz.id] || m.alLavoro[0] || m.dipendenti[0];
+    const x = m.esecuzioneDi(e), a = e.att, d = m.dossierDi(e);
+    const r = riepilogoEsecuzione(m, e, x);
+    const stats = `<div class="stat"><b>${r.fatti}</b><span>di ${r.n} passi</span></div>
+      <div class="stat"><b>${eur(r.costo)}</b><span>spesi</span>${r.costo > d.budget.giorno ? `<span class="badge down">${ic('i-warn')}oltre</span>` : ''}</div>
+      <div class="stat"><b>${r.durata || '—'}</b><span>${e.stato === 'lavoro' ? 'da ' + esc(a.da) : e.stato === 'errore' ? 'fermo dalle ' + esc(a.da) : e.stato === 'pianificato' ? 'parte alle ' + esc(a.quando) : 'in tutto'}</span></div>`;
+    const filtro = opz.log || 'tutto';
+    const voci = x.log.filter(v => filtro === 'tutto' || v.tipo === filtro || (filtro === 'nota' && v.tipo === 'titolare')).slice().reverse();
+    const conta = t => x.log.filter(v => v.tipo === t).length;
+    const pillLog = (v, testo) => `<span class="pill${filtro === v ? ' on' : ''}" data-az="filtro-log" data-v="${v}">${testo}</span>`;
+    const serie = x.serie.map(id => m.richieste.find(q => q.id === id)).filter(Boolean).sort((p, q) => (p.giorno - q.giorno) || (q.min - p.min));
+    const perModello = {}; x.passi.forEach(p => { if (p.stato !== 'da fare') perModello[p.modello] = Math.round(10 * ((perModello[p.modello] || 0) + p.costo)) / 10; });
+    const oltre = r.costo > d.budget.giorno;
+    const corpo = `
+      ${testataEsecuzione(m, e, x, r)}
+      <section>
+        <div class="shead"><h3>Passi</h3><span class="cnt"><b>${r.fatti}</b><span>Fatti su ${r.n}</span></span><span class="rb sm ghost">${ic('i-sliders')}</span>
+          <div class="filters"><span class="pill on">Tutti</span><span class="pill">Fatti</span><span class="pill">Da fare</span><span class="pill">Con strumenti</span></div></div>
+        <div class="hlist" style="margin-top:24px">${x.passi.map(p => rigaPasso(m, e, p)).join('')}</div>
+      </section>
+      <section>
+        <div class="shead"><h3>Log</h3><span class="cnt"><b>${x.log.length}</b><span>Voci</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-down')}</span>
+          <div class="filters">${pillLog('tutto', 'Tutto')}${pillLog('passo', `Passi · ${conta('passo')}`)}${pillLog('strumento', `Strumenti · ${conta('strumento')}`)}${pillLog('richiesta', `Richieste · ${conta('richiesta')}`)}${pillLog('errore', `Errori · ${conta('errore')}`)}${pillLog('nota', `Note · ${conta('nota') + conta('titolare')}`)}</div></div>
+        <div class="hlist" style="margin-top:24px">${voci.length ? voci.map(v => rigaLog(m, e, v)).join('') : `<div class="vuoto" style="margin:0;height:56px">Nessuna voce di questo tipo</div>`}</div>
+        <div class="chat">${av(m, e, 's')}<input type="text" data-campo="chat" placeholder="Scrivi a ${esc(m.etichetta(e))}: una nota per ${r.cur ? 'il passo in corso' : 'la prossima esecuzione'}…" maxlength="160"><span class="rb sm" data-az="esec-invia" data-id="${e.id}" title="Invia">${ic('i-send')}</span></div>
+      </section>
+      <section>
+        <div class="shead"><h3>Output</h3><span class="cnt"><b>${x.output.length}</b><span>Consegne</span></span><span class="rb sm ghost">${ic('i-search')}</span>
+          <div class="filters"><span class="pill on">Tutte</span><span class="pill">🔥 Da approvare</span><span class="pill">In corso</span><span class="pill">Approvate</span></div></div>
+        <div class="cards">${x.output.map(o => cardOutput(m, e, o)).join('')}</div>
+        ${serie.length ? `<div class="hgroup"><b>Consegne precedenti della serie</b>${serie.length} · con l'esito del titolare<span class="link" data-az="pagina" data-pagina="richieste" data-chi="${e.id}">Tutte le richieste di ${esc(m.etichetta(e))} ${ic('i-ne')}</span></div><div class="hlist">${serie.map(q => rigaStorico(m, q)).join('')}</div>` : ''}
+      </section>
+      <section>
+        <div class="shead"><h3>Costo</h3><span class="cnt"><b>${eur(r.costo)}</b><span>Finora · stima a fine ${eur(r.stima)}</span></span><span class="rb sm ghost">${ic('i-sliders')}</span>
+          <div class="filters"><span class="pill on">Per modello</span><span class="pill">Per passo</span><span class="pill">Per strumento</span></div></div>
+        <div class="costo">
+          <div class="ncard task ${oltre ? 'lime' : 'dark'} regola spesa">
+            <div class="who"><span class="ico">${ic('i-euro')}</span><div><b>Costo dell'esecuzione</b><span>${r.n} passi · ${r.durata || '—'} · limite del giorno ${d.budget.giorno} €</span></div></div>
+            <div class="nt"><span class="rb ghost">${ic('i-bell')}${oltre ? '<i class="dot"></i>' : ''}</span></div>
+            <div class="body"><div><div class="tt">${eur(r.costo)} <small>di ${eur(r.stima)} stimati</small></div><div class="ripart">${Object.values(m.MODELLI).map(md => `<i class="${md.id}" style="width:${100 * (perModello[md.id] || 0) / Math.max(0.1, r.costo)}%" title="${md.nome}"></i>`).join('')}</div><div class="leg">${Object.values(m.MODELLI).map(md => `<span><i class="${md.id}"></i>${md.nome} ${eur(perModello[md.id] || 0)}</span>`).join('')}</div></div></div>
+            <div class="st"><span class="k">Oggi</span><div class="row"><span class="sel"><span>${d.budget.oggi} € su ${d.budget.giorno} € al giorno</span>${oltre ? `<span class="chip rosa">${ic('i-warn')}oltre il limite</span>` : `<span class="chip">${ic('i-check')}nel limite</span>`}${ic('i-chev')}</span><span class="rb ghost" data-az="pagina" data-pagina="dipendente" data-id="${e.id}" title="Budget e permessi">${ic('i-ne')}</span></div></div>
+          </div>
+          <div class="hlist" style="margin-top:0">${x.strumentiUso.map(s => `<div class="crow${s.chiamate ? '' : ' spenta'}"><span class="ico">${ic(s.icona)}</span><div class="tx"><b>${esc(s.nome)}</b><span>${s.chiamate ? s.chiamate + ' chiamat' + (s.chiamate === 1 ? 'a' : 'e') : 'non usato'}</span></div><span class="v">${s.errore ? `<span class="chip rosa">${ic('i-warn')}Errore</span>` : s.chiamate ? `<span class="chip lime">${ic('i-check')}Usato</span>` : `<span class="chip">Non usato</span>`}</span><span class="v">${x.passi.filter(p => p.strumenti.includes(s.nome)).map(p => 'passo ' + p.n).join(', ') || '—'}</span><span class="eur">${eur(s.costo)}</span><span class="rb xs">${ic('i-ne')}</span></div>`).join('')}</div>
+        </div>
+      </section>`;
+    return cornice(m, opz, a.titolo.toUpperCase(), stats, 'home', corpo, '');
+  }
+
   /* ---------- tendina estesa delle versioni: dossier di una revisione, o confronto fra due versioni ---------- */
   /* Differenze fra due elenchi (LCS): ops '=' | '-' | '+'. */
   function lcs(a, b) {
@@ -1164,12 +1382,12 @@ window.DIREZIONE_A = (function () {
 
   function render(m, opz) {
     opz = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, confronto: null, motivo: false }, opz || {});
-    return opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : opz.pagina === 'dipendente' ? dipendente(m, opz) : home(m, opz);
+    return opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : opz.pagina === 'dipendente' ? dipendente(m, opz) : opz.pagina === 'esecuzione' ? esecuzione(m, opz) : home(m, opz);
   }
 
   /* Disegna e collega i clic: tendina, cambio pagina, filtri, decisioni. Ritorna lo stato. */
   function monta(radice, m, opz) {
-    const st = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, editor: null, confronto: null, motivo: false }, opz || {});
+    const st = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, editor: null, confronto: null, motivo: false, log: 'tutto' }, opz || {});
     const n = () => m.richiesteDi('attesa').length;
     /* parametri di avvio della pagina del dipendente: ?tendina=dossier (la revisione in sospeso del dipendente, estesa) e ?confronto=a,b (due versioni del prompt) */
     const idxRevisione = id => inAttesa(m).findIndex(r => r.tipo === 'revisione' && r.chi === id);
@@ -1209,6 +1427,23 @@ window.DIREZIONE_A = (function () {
       if (!n() && st.tendina === 'estesa') st.tendina = 'aperta';
       tutto();
     };
+    /* ---- azioni sull'esecuzione (pagina Esecuzione e card): pausa, interrompi, riprova, avvia, nota del titolare ---- */
+    const voce = (testo, extra) => Object.assign({ ora: m.azienda.ora, tipo: 'titolare', testo }, extra || {});
+    const esecAzione = (id, az) => {
+      const e = m.byId[id]; if (!e) return;
+      const x = m.esecuzioneDi(e), r = riepilogoEsecuzione(m, e, x), ora = m.azienda.ora;
+      if (az === 'esec-pausa') { e.pausa = !e.pausa; x.log.push(voce(e.pausa ? 'MR ha messo in pausa l\'esecuzione' : 'MR ha ripreso l\'esecuzione')); }
+      else if (az === 'esec-stop') { if (r.cur) { r.cur.stato = 'da fare'; delete r.cur.inizio; r.cur.esito = 'Interrotto dal titolare alle ' + ora; } e.stato = 'libero'; e.pausa = false; e.att.fine = ora; delete e.att.passo; delete e.att.errore; x.log.push(voce(`MR ha interrotto l'esecuzione al passo ${r.cur ? r.cur.n : r.fatti}`)); }
+      else if (az === 'esec-riprova') { const cur = x.passi.find(p => p.stato === 'errore'); if (!cur) return; cur.stato = 'corso'; cur.inizio = ora; delete cur.fine; delete cur.durata; cur.esito = 'Riprovato dal titolare alle ' + ora; e.stato = 'lavoro'; e.att.da = ora; delete e.att.errore; e.att.passo = [cur.n, x.passi.length]; const pr = x.passi.find(p => p.stato === 'da fare'); e.att.prossimo = pr ? pr.nome : ''; x.log.push(voce(`MR ha riprovato il passo ${cur.n} · ${cur.nome}`, { passo: cur.n })); }
+      else if (az === 'esec-avvia') { const p0 = x.passi.find(p => p.stato === 'da fare'); if (!p0) return; p0.stato = 'corso'; p0.inizio = ora; e.stato = 'lavoro'; const quando = e.att.quando; e.att.da = ora; delete e.att.quando; e.att.passo = [p0.n, x.passi.length]; const pr = x.passi.find(p => p.stato === 'da fare'); e.att.prossimo = pr ? pr.nome : ''; x.log.push(voce(`MR ha avviato l'esecuzione${quando ? ' (era pianificata alle ' + quando + ')' : ''}`)); }
+      m.ricalcola(); tutto();
+    };
+    const inviaNota = id => {
+      const inp = radice.querySelector('.chat input'); const v = inp ? inp.value.trim() : ''; const e = m.byId[id];
+      if (!v) { if (inp) inp.focus(); return; } if (!e) return;
+      const x = m.esecuzioneDi(e), r = riepilogoEsecuzione(m, e, x);
+      x.log.push(voce('MR: ' + v, r.cur ? { passo: r.cur.n } : {})); st.log = 'tutto'; tutto();
+    };
     tutto();
     if (st.editor) apriEditor(st.editor === 'nuovo' ? 0 : +st.editor);
     radice.addEventListener('input', ev => {
@@ -1220,6 +1455,7 @@ window.DIREZIONE_A = (function () {
     });
     radice.addEventListener('keydown', ev => {
       if (ev.key === 'Enter' && ev.target.closest('input[data-campo="motivo"]')) { ev.preventDefault(); const b = radice.querySelector('[data-az="rifiuta-conferma"]'); if (b) b.click(); return; }
+      if (ev.key === 'Enter' && ev.target.closest('input[data-campo="chat"]')) { ev.preventDefault(); const b = radice.querySelector('[data-az="esec-invia"]'); if (b) inviaNota(+b.dataset.id); return; }
       if (ev.key === 'Enter' && st.modifica && ev.target.closest('input[data-campo]')) { ev.preventDefault(); salva(); }
       if (ev.key === 'Escape' && st.modifica) { chiudiEditor(); soloTendina(); }
     });
@@ -1259,6 +1495,11 @@ window.DIREZIONE_A = (function () {
       else if (az === 'prova') { decidi(el.dataset.id, 'approvata', 'Prova su 20 esecuzioni', 'prova'); }
       else if (az === 'rifiuta-motivo') { const r = m.richieste.find(x => x.id === el.dataset.id); const i = r ? inAttesa(m).indexOf(r) : -1; if (i >= 0) { st.richiesta = i; st.tendina = 'estesa'; st.pannello = 'richieste'; st.motivo = true; soloTendina(); const inp = radice.querySelector('input[data-campo="motivo"]'); if (inp) inp.focus(); } }
       else if (az === 'rifiuta-annulla') { st.motivo = false; soloTendina(); }
+      /* ---- esecuzione ---- */
+      else if (az === 'filtro-log') { st.log = el.dataset.v; tutto(); }
+      else if (az === 'esec-scrivi') { const inp = radice.querySelector('.chat input'); if (inp) { inp.scrollIntoView({ block: 'center' }); inp.focus(); } }
+      else if (az === 'esec-invia') { inviaNota(+el.dataset.id); }
+      else if (az === 'esec-pausa' || az === 'esec-stop' || az === 'esec-riprova' || az === 'esec-avvia') { ev.stopPropagation(); esecAzione(+el.dataset.id, az); }
       else if (az === 'rifiuta-conferma') { const inp = radice.querySelector('input[data-campo="motivo"]'); const v = inp ? inp.value.trim() : ''; if (!v) { if (inp) { inp.focus(); inp.style.borderColor = 'var(--hangup)'; } return; } decidi(el.dataset.id, 'rifiutata', v, 'rifiutata'); }
     });
     return st;
