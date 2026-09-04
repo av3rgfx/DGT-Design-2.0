@@ -91,7 +91,27 @@ window.DGT_DATI = (function () {
       passi: ['Scansione', 'Analisi', 'Report'], nota: 'Il titolare ha chiesto le priorità per pagina.', testo: '38 pagine analizzate, 12 con problemi di titolo, 5 senza descrizione.', allegato: 'Documento: 9 pagine', commento: 'Aggiungi le priorità per pagina e una stima dell\'effort.' },
     { id: 'r7', chi: 5, cosa: 'Bozza newsletter di settembre', cliente: 'Madira Ink', ora: 'ieri 15:20', tipo: 'post', stato: 'rifiutata', decisa: 'ieri 15:50', costo: 4,
       passi: ['Brief', 'Bozza'], nota: 'Prima bozza.', testo: 'Settembre è il mese dei nuovi inizi…', allegato: 'Testo: 1.200 battute', commento: 'Fuori tono: troppo generica, ripartire dai casi cliente.' },
+    // storico: oggi presto, questa settimana, prima
+    { id: 'r8',  chi: 11, cosa: 'Report giornaliero di ieri', cliente: 'Nova Studio', ora: '08:15', tipo: 'documento', stato: 'approvata', decisa: '08:15', regola: 'Report interni', costo: 1, passi: ['Raccolta', 'Report'], nota: 'Approvato dalla regola «Report interni: automatica».', testo: 'Ieri: 6 esecuzioni, 4 consegne, 131 € di spesa.', allegato: 'Documento: 1 pagina' },
+    { id: 'r9',  chi: 4, cosa: 'Post LinkedIn 3 di 12', cliente: 'Rossi Srl', ora: 'ieri 10:30', tipo: 'post', stato: 'approvata', decisa: 'ieri 11:02', costo: 3, passi: ['Brief letto', 'Bozza', 'Immagine'], nota: 'Terzo post della serie.', testo: 'Tre passaggi in meno nel checkout…', allegato: 'Immagine 1200×1200' },
+    { id: 'r10', chi: 1, cosa: 'Preventivo hosting e dominio', cliente: 'Bianchi & Co.', ora: 'ieri 12:15', tipo: 'proposta', stato: 'approvata', decisa: 'ieri 16:40', costo: 2, passi: ['Confronto fornitori', 'Documento'], nota: 'Due opzioni, consigliata la seconda.', testo: 'Opzione A 38 €/mese · Opzione B 62 €/mese con backup.', allegato: 'Documento: 2 pagine' },
+    { id: 'r11', chi: 7, cosa: 'Lista di 80 lead ristorazione', cliente: 'Nova Studio', ora: 'mar 2 set', tipo: 'lista', stato: 'approvata', decisa: 'mar 2 set 09:50', costo: 12, passi: ['Ricerca', 'Verifica'], nota: 'Ristoranti con sito ma senza prenotazione online.', testo: '80 righe', allegato: 'Foglio: 80 righe' },
+    { id: 'r12', chi: 4, cosa: 'Post LinkedIn 2 di 12', cliente: 'Rossi Srl', ora: 'lun 1 set', tipo: 'post', stato: 'modifiche', decisa: 'lun 1 set 14:20', costo: 3, passi: ['Brief letto', 'Bozza'], nota: 'Secondo post.', testo: 'Il modulo di registrazione…', allegato: 'Immagine 1200×1200', commento: 'Troppo lungo: massimo 800 battute.' },
+    { id: 'r13', chi: 5, cosa: 'Reel dietro le quinte', cliente: 'Madira Ink', ora: 'lun 1 set', tipo: 'post', stato: 'rifiutata', decisa: 'lun 1 set 17:05', costo: 6, passi: ['Sceneggiatura', 'Montaggio'], nota: 'Primo reel.', testo: 'Sceneggiatura 30 s', allegato: 'Video: 30 s', commento: 'Il cliente non vuole mostrare il laboratorio.' },
+    { id: 'r14', chi: 8, cosa: 'Proposta sito vetrina', cliente: 'Summit Marketing', ora: 'mar 2 set', tipo: 'proposta', stato: 'approvata', decisa: 'mar 2 set 18:10', costo: 9, passi: ['Brief', 'Stima', 'Documento'], nota: 'Sito vetrina in 6 settimane.', testo: '6.500 € in due rate.', allegato: 'Documento: 5 pagine' },
+    { id: 'r15', chi: 6, cosa: 'Audit SEO', cliente: 'Lumen Caffè', ora: '28 ago', tipo: 'documento', stato: 'approvata', decisa: '28 ago 12:30', costo: 8, passi: ['Scansione', 'Analisi', 'Report'], nota: '22 pagine analizzate.', testo: '22 pagine, 4 con problemi.', allegato: 'Documento: 6 pagine' },
+    { id: 'r16', chi: 10, cosa: 'Fatture di luglio', cliente: 'Nova Studio', ora: '1 ago', tipo: 'documento', stato: 'approvata', decisa: '1 ago 09:00', regola: 'Fatture ricorrenti', costo: 2, passi: ['Raccolta', 'Emissione'], nota: 'Approvate dalla regola «Fatture ricorrenti: automatica».', testo: '9 fatture, 14.200 €.', allegato: 'Foglio: 9 righe' },
+    { id: 'r17', chi: 9, cosa: 'Follow-up settimanale', cliente: 'Nova Studio', ora: '29 ago', tipo: 'lista', stato: 'approvata', decisa: '29 ago 17:00', regola: 'Follow-up', costo: 3, passi: ['Bozze', 'Invio'], nota: 'Approvato dalla regola «Follow-up: automatica».', testo: '14 e-mail di follow-up.', allegato: 'Testo: 14 e-mail' },
+    { id: 'r18', chi: 4, cosa: 'Post LinkedIn 1 di 12', cliente: 'Rossi Srl', ora: '26 ago', tipo: 'post', stato: 'approvata', decisa: '26 ago 10:40', costo: 3, passi: ['Brief letto', 'Bozza', 'Immagine'], nota: 'Primo post della serie.', testo: 'Perché il vostro e-commerce perde clienti…', allegato: 'Immagine 1200×1200' },
   ];
+  // giorno (0 = oggi) e minuti del giorno per ordinare e raggruppare
+  const GIORNI11 = { 'ieri': 1, 'mar 2 set': 2, 'lun 1 set': 3, '29 ago': 6, '28 ago': 7, '26 ago': 9, '1 ago': 34 };
+  richieste11.forEach(r => {
+    const m = r.ora.match(/(\d\d):(\d\d)/);
+    r.min = m ? (+m[1]) * 60 + (+m[2]) : 12 * 60;
+    const chiave = Object.keys(GIORNI11).find(k => r.ora.startsWith(k));
+    r.giorno = chiave ? GIORNI11[chiave] : 0;
+  });
 
   /* Diario del giorno (in ordine di tempo). */
   const diario11 = [
@@ -160,9 +180,18 @@ window.DGT_DATI = (function () {
     const NOTE = ['Consegna secondo il brief.', 'Prima versione completa, pronta per la revisione.', 'Rispetta i vincoli di lunghezza e tono.'];
     const TIPI = ['post', 'documento', 'lista', 'proposta'];
     const richieste = approvazioni.map((a, i) => ({ ...a, stato: 'attesa', costo: 3 + (i % 7), passi: ['Brief', 'Bozza', 'Revisione'], nota: NOTE[i % 3], testo: 'Contenuto della consegna «' + a.cosa + '» per ' + a.cliente + '.', allegato: 'Documento: ' + (2 + i) + ' pagine', tipo: TIPI[i % 4] }));
-    dipendenti.filter(e => e.stato === 'libero').slice(0, 10).forEach((e, i) => {
-      const st = i < 6 ? 'approvata' : i < 8 ? 'modifiche' : 'rifiutata';
-      richieste.push({ id: 'st' + i, chi: e.id, cosa: e.att.titolo, cliente: e.att.cliente, ora: i < 4 ? '0' + (8 + i) + ':' + (10 + i * 7) : 'ieri', tipo: TIPI[i % 4], stato: st, decisa: i < 4 ? '09:' + (20 + i * 5) : 'ieri', costo: 4 + i, passi: ['Brief', 'Bozza', 'Revisione'], nota: NOTE[i % 3], testo: 'Contenuto della consegna «' + e.att.titolo + '».', allegato: 'Documento: 3 pagine', commento: st === 'modifiche' ? 'Aggiungi le priorità.' : st === 'rifiutata' ? 'Fuori brief, ripartire.' : '' });
+    richieste.forEach((r, i) => { r.giorno = 0; r.min = 9 * 60 + i * 11; });
+    const GG = [0, 0, 1, 1, 2, 3, 3, 6, 7, 9, 12, 20, 26, 34];
+    const ETI = ['', 'ieri', 'mar 2 set', 'lun 1 set', 'dom 31 ago', 'sab 30 ago', '29 ago', '28 ago', '26 ago', '23 ago', '15 ago', '9 ago', '1 ago'];
+    dipendenti.filter(e => e.stato === 'libero').forEach((e, i) => {
+      for (let k = 0; k < 2; k++) {
+        const j = (i * 2 + k) % GG.length, g = GG[j];
+        const st = (i + k) % 5 === 3 ? 'modifiche' : (i + k) % 7 === 5 ? 'rifiutata' : 'approvata';
+        const hh = 8 + ((i * 3 + k * 5) % 10), mm = (i * 17 + k * 23) % 60;
+        const hm = (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm;
+        const eti = g === 0 ? hm : g === 1 ? 'ieri ' + hm : (ETI[Math.min(ETI.length - 1, j)] || 'ago');
+        richieste.push({ id: 'st' + i + k, chi: e.id, cosa: k ? e.att.titolo + ' (v' + (i % 3 + 1) + ')' : e.att.titolo, cliente: CLIENTI[(i + k * 3) % CLIENTI.length], ora: eti, giorno: g, min: hh * 60 + mm, tipo: TIPI[(i + k) % 4], stato: st, decisa: eti, regola: (i + k) % 6 === 0 ? 'Report interni' : '', costo: 2 + ((i + k) % 9), passi: ['Brief', 'Bozza', 'Revisione'], nota: NOTE[(i + k) % 3], testo: 'Contenuto della consegna «' + e.att.titolo + '».', allegato: 'Documento: 3 pagine', commento: st === 'modifiche' ? 'Aggiungi le priorità.' : st === 'rifiutata' ? 'Fuori brief, ripartire.' : '' });
+      }
     });
     const diario = [];
     lav.slice(0, 6).forEach((e, i) => diario.push({ ora: e.att.da, chi: e.id, testo: 'ha iniziato «' + e.att.titolo + '»', tipo: 'inizio' }));
@@ -191,6 +220,23 @@ window.DGT_DATI = (function () {
       azienda, dipartimenti, STATI, n: m.dipendenti.length,
       dipendenti: m.dipendenti, byId, perDip, approvazioni: m.approvazioni, richieste: m.richieste, diario: m.diario, agenda: m.agenda,
       richiesteDi: st => m.richieste.filter(r => r.stato === st),
+      periodoDi: r => r.giorno === 0 ? 'oggi' : r.giorno === 1 ? 'ieri' : r.giorno <= 7 ? 'settimana' : r.giorno <= 31 ? 'mese' : 'prima',
+      clienti: [...new Set(m.richieste.map(r => r.cliente))].sort(),
+      /* filtri = { stato, tipo, chi, cliente, periodo, q }: valore assente o 'tutti' = nessun filtro */
+      richiesteFiltrate: f => m.richieste.filter(r => {
+        if (!f) return true;
+        const per = r.giorno === 0 ? 'oggi' : r.giorno === 1 ? 'ieri' : r.giorno <= 7 ? 'settimana' : r.giorno <= 31 ? 'mese' : 'prima';
+        const okPer = !f.periodo || f.periodo === 'tutti' || f.periodo === per || (f.periodo === 'settimana' && r.giorno <= 7) || (f.periodo === 'mese' && r.giorno <= 31);
+        const okQ = !f.q || (r.cosa + ' ' + r.cliente + ' ' + byId[r.chi].nome).toLowerCase().includes(f.q.toLowerCase());
+        return (!f.stato || f.stato === 'tutti' || r.stato === f.stato) && (!f.tipo || f.tipo === 'tutti' || r.tipo === f.tipo)
+          && (!f.chi || f.chi === 'tutti' || r.chi === +f.chi) && (!f.cliente || f.cliente === 'tutti' || r.cliente === f.cliente) && okPer && okQ;
+      }),
+      regole: [
+        { id: 'g1', nome: 'Uscite verso i clienti', desc: 'Post, proposte e documenti per i clienti', modo: 'Sempre da approvare', attiva: true, icona: 'i-mega' },
+        { id: 'g2', nome: 'Report interni', desc: 'Report giornalieri e rendiconti', modo: 'Automatica', attiva: true, icona: 'i-doc' },
+        { id: 'g3', nome: 'Liste di lead', desc: 'Liste e ricerche senza invio', modo: 'Automatica sotto 20 €', attiva: true, icona: 'i-list' },
+        { id: 'g4', nome: 'Spese sopra 50 €', desc: 'Qualsiasi consegna che costa più di 50 €', modo: 'Sempre da approvare', attiva: false, icona: 'i-euro' },
+      ],
       alLavoro: m.dipendenti.filter(e => e.stato === 'lavoro'),
       conta, costoOggi, iniziali,
       avatarClasse: e => 'a' + (((e.id - 1) % 6) + 1),

@@ -165,6 +165,7 @@ direzione. Regole che valgono da qui in avanti:
    RICHIESTE con tre numeri, rail con la campanella attiva). Tre sezioni: *Da approvare* (card lime con approva e
    rifiuta), *Approvate* (esito con ora e iniziali di chi ha deciso), *Con modifiche o rifiutate* (esito con il
    commento). Un clic su una card da approvare apre la tendina estesa su quella richiesta.
+   Versione completa (filtri, storico, regole): vedi «Versione 3» più sotto.
 
 ### Versione 2 della direzione A (2026-09-04)
 
@@ -175,6 +176,26 @@ una pagina per le sole richieste dell'azienda. Tutto è in `direzione-a.js` (fun
 Parametri di `direzione-a.html`: `?n=11|40`, `?tendina=chiusa|aperta|estesa`, `?pagina=home|richieste`, `?richiesta=0`.
 Screenshot: `screenshot/a-tendina-chiusa.png`, `a-tendina-aperta.png`, `a-tendina-estesa.png`, `a-richieste.png`.
 Artefatto interattivo: https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
+
+### Versione 3 della direzione A (2026-09-04, stessa sessione)
+
+Risposte alle tre richieste successive dell'utente.
+
+1. **Riepilogo separato, da confrontare** (`?riepilogo=separato`, oppure il selettore di prova in basso a
+   sinistra nella pagina). Da chiuso ci sono **due pillole** al bordo destro: lime «campanella · 2 · da approvare»
+   e bianca «bacchetta · Riepilogo». Ognuna apre la propria tendina: quella delle richieste mostra la richiesta
+   corrente e la **coda** (le altre in attesa, cliccabili); quella del Riepilogo mostra consegne, spesa, obiettivo e
+   le ultime voci del diario. In fondo a ciascuna una riga porta all'altra. Con `insieme` (predefinito finché
+   l'utente non decide) resta la tendina unica: richiesta corrente sopra, Riepilogo sotto.
+   Screenshot: `a-separato-chiusa.png`, `a-separato-richieste.png`, `a-separato-riepilogo.png`.
+2. **Tendina aperta all'apertura della home**: confermato.
+3. **Pagina Richieste completa** («pieno controllo»): barra dei filtri per **stato, tipo, periodo, cliente e
+   dipendente** (pillole, funzionanti, con riepilogo «N di M richieste · filtri attivi · Azzera»); sezione *Da
+   approvare* con ordinamento (più vecchie / più recenti) e **Approva tutte**; **Storico** per giorno (Oggi, Ieri,
+   Ultimi 7 giorni, Ultimi 30 giorni, Prima) con righe compatte: ora, chi, cosa e cliente, tipo, esito, chi ha
+   deciso o quale regola, costo; sezione **Regole di approvazione** (Uscite verso i clienti, Report interni, Liste
+   di lead, Spese sopra 50 €) con modo e stato. Approva, rifiuta e chiedi modifiche cambiano davvero lo stato
+   nella pagina (i dati si azzerano ricaricando). Screenshot: `a-richieste.png`.
 
 ## 5. File
 

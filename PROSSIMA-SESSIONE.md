@@ -29,6 +29,10 @@ Stato al 2026-09-04, fine della sessione che ha applicato il sistema di design a
    prodotto = acronimo DGT, pannello Da approvare + Riepilogo come popup sopra tutto (chiudibile verso destra, con
    icona e conteggio da chiuso, richiesta per intero quando si espande), e in seguito una pagina per le sole
    richieste dell'azienda. Fatto: tendina a tre stati e prima versione della pagina Richieste (da confermare).
+8. **2026-09-04, terzo giro**: (1) mostrare l'alternativa con una seconda pillola per il Riepilogo → fatta come
+   opzione `riepilogo=separato`, decisione dell'utente in sospeso; (2) tendina aperta all'apertura → confermata;
+   (3) pagina Richieste completa con filtri per dipendente e cliente e storico, «pieno controllo» → fatta
+   (filtri funzionanti, storico per giorno, approva tutte, regole di approvazione).
 
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi; contenuti sintetici di DGT; documenti in italiano.
 
@@ -37,10 +41,9 @@ Vincolo che vale sempre: nessun logo, foto o marchio di terzi; contenuti sinteti
 1. Leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezione 10) e `schermate/direzioni/DIREZIONI.md` (sezioni 1 e 4).
 2. Aprire `schermate/direzioni/direzione-a.html` (e `?n=40`): è la base di codice delle prossime schermate.
    Il modello dati è `dati.js`, le icone e le utilità sono in `comune.js`, i componenti in `direzione-a.js`.
-3. Prima cosa da fare: raccogliere il riscontro dell'utente sulla tendina (tre stati) e sulla prima versione della
-   pagina Richieste (domande aperte in fondo al messaggio finale della sessione: Riepilogo nella stessa tendina o
-   in una seconda; tendina aperta o chiusa all'apertura della home; cosa deve contenere la pagina Richieste oltre
-   alle tre sezioni). Poi il **dipartimento** (Sviluppo: 3 dipendenti, esecuzioni, obiettivi, costi), dipendente,
+3. Prima cosa da fare: raccogliere la decisione dell'utente su Riepilogo «insieme» o «separato» (poi togliere
+   l'opzione scartata e il selettore di prova da `direzione-a.html`) e il riscontro sulla pagina Richieste
+   completa. Poi il **dipartimento** (Sviluppo: 3 dipendenti, esecuzioni, obiettivi, costi), dipendente,
    esecuzione, approvazioni da mobile, costi. Stessa cornice della Console: barra in alto, riga con titolo e numeri,
    rail, sezioni con intestazione e pillole, tendina del titolare.
 

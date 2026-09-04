@@ -3,17 +3,18 @@
    Urbanist, pillole e cerchi, card con intaglio, barra agenda, pannello
    chiaro) applicato alla vista principale dell'azienda e alla pagina Richieste.
 
-   Versione 2 (2026-09-04, richieste dell'utente):
-   - titolo dell'azienda con la O normale; logo del prodotto = acronimo DGT;
-   - il pannello del titolare (Da approvare + Riepilogo) è una tendina
-     flottante sopra tutto, con tre stati: chiusa (icona + conteggio al bordo
-     destro), aperta (richiesta corrente + Riepilogo), estesa (la richiesta
-     mostrata per intero); la home prende tutta la larghezza;
-   - pagina Richieste (tutte le richieste dell'azienda).
+   Versione 2 (2026-09-04): titolo con la O normale, logo = DGT, tendina del
+   titolare flottante a tre stati (chiusa / aperta / estesa), home a tutta
+   larghezza, pagina Richieste.
+   Versione 3 (stessa data): opzione «Riepilogo separato» (due pillole e due
+   tendine, da confrontare con «insieme»); pagina Richieste completa: filtri
+   per stato, tipo, periodo, cliente e dipendente, storico per giorno,
+   approva/rifiuta anche in blocco, regole di approvazione.
 
    API: DIREZIONE_A.render(m, opz) → HTML; DIREZIONE_A.monta(radice, m, opz)
    disegna e collega i clic. opz = { pagina: 'home'|'richieste',
-   tendina: 'chiusa'|'aperta'|'estesa', richiesta: indice }.
+   tendina: 'chiusa'|'aperta'|'estesa', richiesta: indice,
+   riepilogo: 'insieme'|'separato', pannello: 'richieste'|'riepilogo' }.
    ===================================================================== */
 window.DIREZIONE_A = (function () {
   const { ic, esc, prefissa, iconaDip } = window.DGT_UI;
@@ -46,6 +47,7 @@ window.DIREZIONE_A = (function () {
 .av.a1{background:linear-gradient(135deg,#F7D9C4,#E7B49A)}.av.a2{background:linear-gradient(135deg,#D8E9F7,#A9C7E3)}.av.a3{background:linear-gradient(135deg,#E9DFF7,#C6B4E8)}
 .av.a4{background:linear-gradient(135deg,#D9F0D3,#A8D7A2)}.av.a5{background:linear-gradient(135deg,#F9E5C4,#EAC48A)}.av.a6{background:linear-gradient(135deg,#F7D2DA,#E4A5B4)}
 .av.s{width:36px;height:36px;font-size:12px}.av.xs{width:28px;height:28px;font-size:10px}
+.av svg{width:14px;height:14px}
 .pair{display:inline-flex;align-items:center}
 .pair .av{border:2px solid var(--white)}.pair .av+.av,.pair .av+.more{margin-left:-10px}
 .pair .more{height:28px;padding:0 9px;border-radius:var(--r-pill);background:var(--ink);color:var(--white);font-size:11px;display:inline-flex;align-items:center;border:2px solid var(--white)}
@@ -54,6 +56,8 @@ window.DIREZIONE_A = (function () {
 .pill.lime{background:var(--lime);color:var(--ink);border-color:transparent}
 .pill.red{background:var(--hangup);color:var(--white);border-color:transparent}
 .pill.olight{border-color:rgb(0 0 0/.14);color:var(--ink)}
+.pill.sm{height:40px;padding:0 16px;font-size:14px;gap:8px}
+.pill.sm .av{width:26px;height:26px;font-size:10px;margin-left:-8px}
 .pill svg{width:16px;height:16px}
 .chip{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:var(--r-pill);background:var(--pill-src);color:#E8E8E8;font-size:12px;white-space:nowrap}
 .chip.lime{background:var(--lime);color:var(--ink)}
@@ -84,14 +88,16 @@ window.DIREZIONE_A = (function () {
 .ncard .who div>b{display:block;font-weight:500;font-size:15px;line-height:20px}
 .ncard .who div>span{display:block;font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ncard.lime .who div>span{color:rgb(0 0 0/.6)}.ncard.gray .who div>span{color:#CFCFCF}
-/* card dipartimento e dipendente (forma della card lead) */
+/* card dipartimento, dipendente e regola (forma della card lead) */
 .lead{width:249px;height:204px;padding:20px;flex:none}
 .lead .ico{width:48px;height:48px;border-radius:50%;border:1px solid rgb(255 255 255/.16);display:grid;place-items:center}
 .lead .ico svg{width:20px;height:20px}
 .lead .name{font-size:26px;line-height:30px;margin-top:22px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:4px}
+.lead .name.md{font-size:22px;line-height:28px;margin-top:20px}
 .lead .role{font-size:13px;color:var(--t2);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lead .ft{display:flex;justify-content:space-between;align-items:flex-end;margin-top:16px;gap:8px}
 .lead .k{font-size:11px;color:var(--t2);display:block;margin-bottom:6px;white-space:nowrap}
+.lead.spenta{opacity:.55}
 /* card attività (esecuzione in corso) e card richiesta */
 .task{width:316px;min-height:262px;display:grid;grid-template-rows:auto 1fr auto;grid-template-columns:minmax(0,1fr);flex:none}
 .task>*{min-width:0}
@@ -159,7 +165,8 @@ window.DIREZIONE_A = (function () {
 .shead .cnt{display:inline-flex;align-items:baseline;gap:5px;border-bottom:1px solid var(--white);padding-bottom:2px;margin-right:24px}
 .shead .cnt b{font-weight:400;font-size:20px}.shead .cnt span{font-size:13px;color:#DADADA}
 .shead .rb.sm{width:46px;height:46px}
-.shead .filters{display:flex;gap:8px;margin-left:8px;overflow:hidden;mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent)}
+.shead .filters{display:flex;gap:8px;margin-left:8px;overflow:hidden;mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);flex:1;min-width:0}
+.shead .destra{margin-left:auto;display:flex;gap:8px;flex:none}
 .cards{display:flex;gap:16px;margin-top:24px;flex-wrap:wrap}
 .cards.riga{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:-26px;padding-right:26px}
 .cards.riga::-webkit-scrollbar{display:none}
@@ -174,20 +181,50 @@ window.DIREZIONE_A = (function () {
 .erow .chip{height:24px;font-size:11px;max-width:150px}.erow .chip span{overflow:hidden;text-overflow:ellipsis}
 .erow .rb.xs{background:transparent;border-color:rgb(255 255 255/.16)}
 .erow.lav{background:var(--lime);color:var(--ink)}.erow.lav .tx span{color:rgb(0 0 0/.6)}.erow.lav .rb.xs{border-color:rgb(0 0 0/.16);color:var(--ink)}
+/* ===== pagina Richieste: barra dei filtri, storico, regole ===== */
+.fbar{display:grid;gap:10px;margin-top:-8px;padding-right:220px}
+.frow{display:flex;align-items:center;gap:8px;min-width:0}
+.frow .k{width:92px;flex:none;font-size:11px;color:var(--t2);text-transform:uppercase;letter-spacing:.06em}
+.frow .pills{display:flex;gap:8px;overflow:hidden;mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);min-width:0;flex:1}
+.frow .pills.due{flex:none;mask-image:none;overflow:visible}
+.frow .sep{width:1px;height:28px;background:rgb(255 255 255/.16);margin:0 8px;flex:none}
+.fsum{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--t2);margin-top:4px}
+.fsum b{color:var(--white);font-weight:400}
+.fsum .pill{height:36px;padding:0 14px;font-size:13px}
+.hgroup{margin-top:18px;font-size:13px;color:var(--t2);display:flex;align-items:baseline;gap:8px}
+.hgroup b{font-weight:400;color:var(--white);font-size:16px}
+.hlist{display:grid;gap:8px;margin-top:10px}
+.hrow{height:56px;border-radius:var(--r-pill);background:linear-gradient(180deg,var(--card-top),var(--card));display:grid;grid-template-columns:76px 40px minmax(0,1fr) 110px 132px 190px 64px 32px;align-items:center;gap:10px;padding:0 8px 0 18px;min-width:0}
+.hrow>*{min-width:0}
+.hrow .ora{font-size:13px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hrow .av{width:40px;height:40px;font-size:13px}
+.hrow .tx{line-height:16px}
+.hrow .tx b{display:block;font-weight:500;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hrow .tx span{display:block;font-size:11px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hrow .chip{height:24px;font-size:11px}
+.hrow .chi{font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hrow .chi b{font-weight:500;color:var(--white)}
+.hrow .eur{font-size:13px;text-align:right;white-space:nowrap}
+.hrow .rb.xs{background:transparent;border-color:rgb(255 255 255/.16)}
+.hrow.attesa{background:var(--lime);color:var(--ink)}.hrow.attesa .ora,.hrow.attesa .tx span,.hrow.attesa .chi{color:rgb(0 0 0/.6)}.hrow.attesa .chi b{color:var(--ink)}.hrow.attesa .rb.xs{border-color:rgb(0 0 0/.16);color:var(--ink)}
+.regole .lead .sel{height:40px;border-radius:var(--r-pill);background:var(--ink);color:var(--white);display:inline-flex;align-items:center;gap:8px;padding:0 12px 0 14px;font-size:13px;white-space:nowrap;max-width:100%}
+.regole .lead .sel svg{width:12px;height:12px}
 /* ===== tendina del titolare: chiusa / aperta / estesa ===== */
 .a-mini{position:fixed;right:0;top:240px;z-index:30;height:56px;padding:0 20px 0 12px;border-radius:var(--r-pill) 0 0 var(--r-pill);background:var(--lime);color:var(--ink);display:flex;align-items:center;gap:10px;box-shadow:0 20px 50px rgb(0 0 0/.6);font-size:14px;white-space:nowrap}
 .a-mini .rb{width:36px;height:36px;background:var(--ink);color:var(--white);border-color:transparent}
 .a-mini .rb svg{width:15px;height:15px}
 .a-mini b{font-weight:500;font-size:22px;line-height:1}
 .a-mini svg.ch{width:14px;height:14px;opacity:.7}
+.a-mini.rie{top:308px;background:var(--white)}
 .a-tend{position:fixed;right:0;top:112px;height:calc(100vh - 136px);max-height:764px;width:330px;z-index:30;background:var(--summary);color:var(--ink);border-radius:var(--r-card) 0 0 var(--r-card);box-shadow:0 30px 80px rgb(0 0 0/.7);display:grid;grid-template-rows:auto 1fr;grid-template-columns:minmax(0,1fr);--behind:var(--summary)}
 .a-tend>*{min-width:0}
 .a-tend.estesa{width:840px}
 .a-tend .th{display:flex;align-items:center;gap:10px;padding:14px 14px 0 14px}
 .a-tend .th h4{font-size:26px;line-height:30px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .a-tend .th .chip{height:28px;font-size:13px}
+.a-tend.aperta .th .rb.olight.sm{width:34px;height:34px}.a-tend.aperta .th .rb.olight.sm svg{width:14px;height:14px}
+.a-tend .th .rb.olight.n{padding:0 10px 0 6px;width:auto;border-radius:var(--r-pill);gap:6px;font-size:13px;display:inline-flex}
 .a-tend .tb{overflow:auto;padding:12px 14px 18px 14px;display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-content:start;scrollbar-width:thin}
-.a-tend .tb>*{margin-right:0}
 /* richiesta corrente (forma della videochiamata) */
 .appr{position:relative;height:240px;border-radius:var(--r-inner);background:radial-gradient(120% 90% at 60% 30%,#8E8E86,#5C5C57 55%,#3D3D3A);overflow:hidden;color:var(--white)}
 .appr .top{position:absolute;left:12px;right:12px;top:12px;display:flex;justify-content:space-between;align-items:center}
@@ -201,6 +238,16 @@ window.DIREZIONE_A = (function () {
 .a-tend .sub{display:flex;align-items:center;gap:12px;padding:8px 0 0}
 .a-tend .sub h5{font-size:18px;line-height:24px;flex:1}
 .a-tend .sub .rb{width:36px;height:36px}.a-tend .sub .rb svg{width:14px;height:14px}
+.qrow{height:48px;border-radius:var(--r-pill);background:var(--white);display:flex;align-items:center;gap:10px;padding:0 6px 0 8px;min-width:0;font-size:13px}
+.qrow .av{width:32px;height:32px;font-size:11px}
+.qrow .tx{flex:1;min-width:0;line-height:15px}
+.qrow .tx b{display:block;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qrow .tx span{display:block;font-size:11px;color:var(--t2-light)}
+.qrow .rb.xs{background:transparent;border-color:rgb(0 0 0/.14);color:var(--ink)}
+.qrow.on{background:var(--lime)}
+.drow{display:grid;grid-template-columns:44px 1fr;gap:8px;font-size:12px;line-height:16px;color:#3E3E3E;padding:6px 0;border-top:1px solid rgb(0 0 0/.08)}
+.drow span{color:var(--t2-light)}
+.drow b{font-weight:500;color:var(--ink)}
 .dcard{position:relative;border-radius:var(--r-inner);background:var(--docs);padding:16px;margin-right:0}
 .dcard h5{font-size:18px;line-height:24px;padding-right:52px}
 .dcard .nt{padding:0 0 10px 10px;border-bottom-left-radius:var(--r-inner)}
@@ -253,6 +300,9 @@ window.DIREZIONE_A = (function () {
   };
   const iconaTipo = { post: 'i-mega', documento: 'i-doc', lista: 'i-list', proposta: 'i-receipt' };
   const nomeTipo = { post: 'Post', documento: 'Documento', lista: 'Lista', proposta: 'Proposta' };
+  const nomePeriodo = { oggi: 'Oggi', ieri: 'Ieri', settimana: 'Ultimi 7 giorni', mese: 'Ultimi 30 giorni', prima: 'Prima' };
+  /* in attesa: le più vecchie prima */
+  const inAttesa = m => m.richiesteDi('attesa').slice().sort((a, b) => (b.giorno - a.giorno) || (a.min - b.min));
 
   function chipStato(m, e) {
     const s = e.stato;
@@ -262,11 +312,14 @@ window.DIREZIONE_A = (function () {
     if (s === 'pianificato') return `<span class="chip">${ic('i-clock')}${esc(e.att.quando)}</span>`;
     return `<span class="chip">Libero</span>`;
   }
+  const chipEsito = r => r.stato === 'attesa' ? `<span class="chip ink">${ic('i-bell')}Da approvare</span>`
+    : r.stato === 'approvata' ? `<span class="chip lime">${ic('i-check')}Approvata</span>`
+    : r.stato === 'modifiche' ? `<span class="chip">${ic('i-pen')}Modifiche</span>` : `<span class="chip rosa">${ic('i-x')}Rifiutata</span>`;
   const livelloOggi = e => ({ lavoro: e.att.da <= '09:00' ? 5 : 4, attesa: 3, errore: 1, pianificato: 0, libero: 0 })[e.stato];
 
   /* ---------- pezzi della home ---------- */
   function cardAttivita(m, e, i) {
-    const pend = m.approvazioni.some(a => a.chi === e.id);
+    const pend = m.richiesteDi('attesa').some(a => a.chi === e.id);
     const tono = pend ? 'lime' : (i % 2 ? 'dark' : 'gray');
     const d = m.dipDi(e);
     return `<div class="ncard task ${tono}">
@@ -317,46 +370,63 @@ window.DIREZIONE_A = (function () {
   }
 
   /* ---------- tendina del titolare ---------- */
-  function riepilogo(m) {
-    const consegne = m.richiesteDi('approvata').length;
-    return `<div class="sub"><span class="rb black">${ic('i-wand')}</span><h5>Riepilogo di oggi</h5><span class="rb olight">${ic('i-ne')}</span></div>
+  function riepilogo(m, conTitolo, conDiario) {
+    const oggi = m.richieste.filter(r => r.giorno === 0 && r.stato === 'approvata').length;
+    const ultime = m.diario.slice(-3).reverse();
+    return `${conTitolo ? `<div class="sub"><span class="rb black">${ic('i-wand')}</span><h5>Riepilogo di oggi</h5><span class="rb olight">${ic('i-ne')}</span></div>` : ''}
       <div class="dcard"><div class="nt"><span class="rb sm">${ic('i-down')}</span></div><h5>Consegne:</h5>
         <div class="thumbs">
           <div class="thumb"><div class="pg"><i class="h"></i><i class="w1"></i><i class="w2"></i><i class="b"></i><i class="w3"></i><i class="w1"></i><i class="w4"></i><i class="b"></i><i class="w2"></i></div><span class="lb">Post 4 di 12</span></div>
           <div class="thumb"><div class="pg"><i class="h"></i><i class="b"></i><i class="w1"></i><i class="w3"></i><i class="w2"></i><i class="b"></i><i class="w1"></i><i class="w4"></i></div><span class="lb">Piano ottobre</span></div>
         </div>
-        <div class="kv"><span>Approvate oggi</span><b>${consegne}</b></div>
+        <div class="kv"><span>Approvate oggi</span><b>${oggi}</b></div>
         <div class="kv"><span>Spesa di oggi</span><b>${m.costoOggi} €</b></div>
       </div>
-      <div class="dcard"><div class="nt"><span class="rb sm">${ic('i-pen')}</span></div><h5>Obiettivo del mese:</h5><p class="goal">${m.azienda.obiettivoMese}</p></div>`;
+      <div class="dcard"><div class="nt"><span class="rb sm">${ic('i-pen')}</span></div><h5>Obiettivo del mese:</h5><p class="goal">${m.azienda.obiettivoMese}</p></div>
+      ${conDiario ? `<div class="dcard"><div class="nt"><span class="rb sm">${ic('i-ne')}</span></div><h5>Ultime voci del diario:</h5><div style="margin-top:10px">${ultime.map(x => `<div class="drow"><span>${esc(x.ora)}</span><div><b>${esc(m.byId[x.chi].nome)}</b> ${esc(x.testo)}</div></div>`).join('')}</div></div>` : ''}`;
   }
-  function pager(m, idx, n) {
-    return `<span class="pager"><span class="rb olight" data-az="prec">${ic('i-left')}</span>${idx + 1} di ${n}<span class="rb olight" data-az="succ">${ic('i-right')}</span></span>`;
-  }
-  function tendinaChiusa(m) {
+  const pager = (m, idx, n) => `<span class="pager"><span class="rb olight" data-az="prec">${ic('i-left')}</span>${idx + 1} di ${n}<span class="rb olight" data-az="succ">${ic('i-right')}</span></span>`;
+  function tendinaChiusa(m, opz) {
     const n = m.richiesteDi('attesa').length;
-    return `<div class="a-mini" data-az="apri" role="button" aria-label="Apri le richieste da approvare">${ic('i-left', 'ch')}<span class="rb">${ic('i-bell')}</span><b>${n}</b><span>da approvare</span></div>`;
+    const pr = `<div class="a-mini" data-az="apri" data-pannello="richieste" role="button" aria-label="Apri le richieste da approvare">${ic('i-left', 'ch')}<span class="rb">${ic('i-bell')}</span><b>${n}</b><span>da approvare</span></div>`;
+    if (opz.riepilogo !== 'separato') return pr;
+    return pr + `<div class="a-mini rie" data-az="apri" data-pannello="riepilogo" role="button" aria-label="Apri il riepilogo">${ic('i-left', 'ch')}<span class="rb">${ic('i-wand')}</span><span>Riepilogo</span></div>`;
   }
-  function tendinaAperta(m, idx) {
-    const att = m.richiesteDi('attesa');
-    const r = att[idx] || att[0];
-    const chi = r ? m.byId[r.chi] : null;
+  function cardRichiestaCorrente(m, r, idx, n) {
+    const chi = m.byId[r.chi];
+    return `<div class="appr">
+      <div class="top"><span class="chip">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]} · ${esc(r.ora)}</span><span class="r"><span class="rb glass" data-az="prec">${ic('i-left')}</span><span class="rb glass" data-az="succ">${ic('i-right')}</span></span></div>
+      <span class="face av ${m.avatarClasse(chi)}">${m.iniziali(chi)}</span>
+      <div class="cap"><b>${esc(r.cosa)}</b>${esc(chi.nome)} · ${esc(r.cliente)} · ${idx + 1} di ${n}</div>
+      <div class="ctl"><span class="rb glass" data-az="espandi" title="Apri">${ic('i-eye')}</span><span class="rb glass" title="Commenta">${ic('i-chat')}</span><span class="rb lime" data-az="approva" data-id="${r.id}" title="Approva">${ic('i-check')}</span><span class="rb red" data-az="rifiuta" data-id="${r.id}" title="Rifiuta">${ic('i-x')}</span></div>
+    </div>`;
+  }
+  function tendinaAperta(m, opz) {
+    const att = inAttesa(m);
+    const idx = Math.min(opz.richiesta || 0, Math.max(0, att.length - 1));
+    const r = att[idx];
+    const sep = opz.riepilogo === 'separato';
+    if (sep && opz.pannello === 'riepilogo') {
+      return `<div class="a-tend aperta" role="dialog" aria-label="Riepilogo di oggi">
+        <div class="th"><span class="rb black">${ic('i-wand')}</span><h4>Riepilogo di oggi</h4><span class="rb olight sm" data-az="chiudi" title="Chiudi">${ic('i-right')}</span></div>
+        <div class="tb">${riepilogo(m, false, true)}<div class="qrow on" data-az="pannello" data-pannello="richieste"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-bell')}</span><div class="tx"><b>Da approvare</b><span>${att.length} richieste in attesa</span></div><span class="rb xs">${ic('i-chevr')}</span></div></div>
+      </div>`;
+    }
+    const coda = sep && att.length > 1 ? `<div class="sub"><h5>In coda</h5><span class="chip light">${att.length}</span></div>` + att.map((x, i) => { const c = m.byId[x.chi]; return `<div class="qrow${i === idx ? ' on' : ''}" data-az="vai" data-idx="${i}">${av(m, c, 'xs')}<div class="tx"><b>${esc(x.cosa)}</b><span>${esc(c.nome)} · ${esc(x.cliente)} · ${esc(x.ora)}</span></div><span class="rb xs">${ic('i-chevr')}</span></div>`; }).join('') : '';
     return `<div class="a-tend aperta" role="dialog" aria-label="Da approvare">
-      <div class="th"><h4>Da approvare</h4><span class="chip lime">${ic('i-bell')}${att.length}</span><span class="rb olight sm" data-az="espandi" title="Apri la richiesta">${ic('i-expand')}</span><span class="rb olight sm" data-az="chiudi" title="Chiudi">${ic('i-right')}</span></div>
+      <div class="th"><h4>Da approvare</h4><span class="chip lime">${att.length}</span><span class="rb olight sm" data-az="espandi" title="Apri la richiesta">${ic('i-expand')}</span><span class="rb olight sm" data-az="chiudi" title="Chiudi">${ic('i-right')}</span></div>
       <div class="tb">
-        ${r ? `<div class="appr">
-          <div class="top"><span class="chip">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]} · ${esc(r.ora)}</span><span class="r"><span class="rb glass" data-az="prec">${ic('i-left')}</span><span class="rb glass" data-az="succ">${ic('i-right')}</span></span></div>
-          <span class="face av ${m.avatarClasse(chi)}">${m.iniziali(chi)}</span>
-          <div class="cap"><b>${esc(r.cosa)}</b>${esc(chi.nome)} · ${esc(r.cliente)} · ${idx + 1} di ${att.length}</div>
-          <div class="ctl"><span class="rb glass" data-az="espandi" title="Apri">${ic('i-eye')}</span><span class="rb glass" title="Commenta">${ic('i-chat')}</span><span class="rb lime" title="Approva">${ic('i-check')}</span><span class="rb red" title="Rifiuta">${ic('i-x')}</span></div>
-        </div>` : `<div class="vuoto" style="margin:0;border-color:rgb(0 0 0/.16)">Niente da approvare</div>`}
-        ${riepilogo(m)}
+        ${r ? cardRichiestaCorrente(m, r, idx, att.length) : `<div class="vuoto" style="margin:0;border-color:rgb(0 0 0/.16)">Niente da approvare</div>`}
+        ${coda}
+        ${sep ? `<div class="qrow" data-az="pannello" data-pannello="riepilogo" style="margin-top:6px"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-wand')}</span><div class="tx"><b>Riepilogo di oggi</b><span>consegne, spesa, obiettivo, diario</span></div><span class="rb xs">${ic('i-chevr')}</span></div>` : riepilogo(m, true)}
       </div>
     </div>`;
   }
-  function tendinaEstesa(m, idx) {
-    const att = m.richiesteDi('attesa');
-    const r = att[idx] || att[0];
+  function tendinaEstesa(m, opz) {
+    const att = inAttesa(m);
+    if (!att.length) return tendinaAperta(m, opz);
+    const idx = Math.min(opz.richiesta || 0, att.length - 1);
+    const r = att[idx];
     const chi = m.byId[r.chi];
     const d = m.dipDi(chi);
     const doc = r.tipo === 'post'
@@ -372,18 +442,18 @@ window.DIREZIONE_A = (function () {
             <div class="passi">${r.passi.map(p => `<span class="chip light">${ic('i-check')}${esc(p)}</span>`).join('')}</div></div>
           <div class="dcard"><h5>Nota del dipendente</h5><p class="nota">${esc(r.nota)}</p></div>
         </div>
-        <div class="azioni"><span class="pill lime">${ic('i-check')}Approva</span><span class="pill olight">${ic('i-pen')}Chiedi modifiche</span><span class="pill olight">${ic('i-chat')}Commenta</span><span class="pill red">${ic('i-x')}Rifiuta</span><span class="link" data-az="pagina" data-pagina="richieste">Tutte le richieste ${ic('i-ne')}</span></div>
+        <div class="azioni"><span class="pill lime" data-az="approva" data-id="${r.id}">${ic('i-check')}Approva</span><span class="pill olight" data-az="modifiche" data-id="${r.id}">${ic('i-pen')}Chiedi modifiche</span><span class="pill olight">${ic('i-chat')}Commenta</span><span class="pill red" data-az="rifiuta" data-id="${r.id}">${ic('i-x')}Rifiuta</span><span class="link" data-az="pagina" data-pagina="richieste">Tutte le richieste ${ic('i-ne')}</span></div>
       </div></div>
     </div>`;
   }
   function tendina(m, opz) {
-    if (opz.tendina === 'chiusa') return tendinaChiusa(m);
-    if (opz.tendina === 'estesa') return tendinaEstesa(m, opz.richiesta || 0);
-    return tendinaAperta(m, opz.richiesta || 0);
+    if (opz.tendina === 'chiusa') return tendinaChiusa(m, opz);
+    if (opz.tendina === 'estesa') return tendinaEstesa(m, opz);
+    return tendinaAperta(m, opz);
   }
 
   /* ---------- cornice comune ---------- */
-  function cornice(m, opz, titolo, stats, railAttivo, corpo) {
+  function cornice(m, opz, titolo, stats, railAttivo, corpo, nuovo) {
     return `<div class="a-app" role="figure" aria-label="Direzione A — ${esc(titolo)} (contenuto sintetico)">
       <span class="a-logo">DGT</span>
       ${barraAgenda(m)}
@@ -391,7 +461,7 @@ window.DIREZIONE_A = (function () {
       <span class="rb a-back" ${opz.pagina === 'richieste' ? 'data-az="pagina" data-pagina="home"' : ''}>${ic('i-left')}</span>
       <div class="a-head">
         <h3 class="a-title">${esc(titolo)}</h3>
-        ${opz.pagina === 'richieste' ? '' : `<span class="a-new"><i>${ic('i-plus')}</i>Nuovo obiettivo</span>`}
+        ${nuovo ? `<span class="a-new"><i>${ic('i-plus')}</i>${nuovo}</span>` : ''}
         <div class="a-stats">${stats}</div>
       </div>
       <div class="a-rail">
@@ -407,7 +477,7 @@ window.DIREZIONE_A = (function () {
   }
 
   function home(m, opz) {
-    const lav = m.alLavoro.slice().sort((a, b) => (m.approvazioni.some(x => x.chi === b.id) ? 1 : 0) - (m.approvazioni.some(x => x.chi === a.id) ? 1 : 0));
+    const lav = m.alLavoro.slice().sort((a, b) => (m.richiesteDi('attesa').some(x => x.chi === b.id) ? 1 : 0) - (m.richiesteDi('attesa').some(x => x.chi === a.id) ? 1 : 0));
     const compatto = m.n > 16;
     const att = m.richiesteDi('attesa').length;
     const stats = `<div class="stat"><b>${lav.length}</b><span>al lavoro</span><span class="badge up">${ic('i-up')}1</span></div>
@@ -429,66 +499,113 @@ window.DIREZIONE_A = (function () {
           <div class="filters"><span class="pill on">Tutti</span>${m.dipartimenti.map(d => `<span class="pill">${esc(d.nome)}</span>`).join('')}</div></div>
         ${compatto ? `<div class="elenco">${m.dipendenti.map(e => rigaDipendente(m, e)).join('')}</div>` : `<div class="cards">${m.dipendenti.map(e => cardDipendente(m, e)).join('')}</div>`}
       </section>`;
-    return cornice(m, opz, m.azienda.titolo, stats, 'home', corpo);
+    return cornice(m, opz, m.azienda.titolo, stats, 'home', corpo, 'Nuovo obiettivo');
   }
 
   /* ---------- pagina Richieste ---------- */
   function cardRichiesta(m, r, i) {
     const chi = m.byId[r.chi];
     const d = m.dipDi(chi);
-    const tono = r.stato === 'attesa' ? 'lime' : (i % 2 ? 'dark' : 'gray');
-    let esito = '';
-    if (r.stato === 'attesa') esito = `<span class="sel"><span class="chip ink">${nomeTipo[r.tipo]}</span><span>alle ${esc(r.ora)}</span>${ic('i-chev')}</span><span class="rb black" title="Approva">${ic('i-check')}</span><span class="rb red" title="Rifiuta">${ic('i-x')}</span>`;
-    else if (r.stato === 'approvata') esito = `<span class="sel"><span class="chip lime">${ic('i-check')}Approvata</span><span>${esc(r.decisa)} · ${esc(m.azienda.titolare.iniziali)}</span>${ic('i-chev')}</span><span class="rb ghost">${ic('i-eye')}</span>`;
-    else if (r.stato === 'modifiche') esito = `<span class="sel"><span class="chip">${ic('i-pen')}Modifiche</span><span>${esc(r.commento)}</span>${ic('i-chev')}</span><span class="rb ghost">${ic('i-eye')}</span>`;
-    else esito = `<span class="sel"><span class="chip rosa">${ic('i-x')}Rifiutata</span><span>${esc(r.commento)}</span>${ic('i-chev')}</span><span class="rb ghost">${ic('i-eye')}</span>`;
-    const idx = r.stato === 'attesa' ? m.richiesteDi('attesa').indexOf(r) : -1;
-    return `<div class="ncard task ${tono}" ${idx >= 0 ? `data-az="richiesta" data-idx="${idx}"` : ''}>
+    const idx = inAttesa(m).indexOf(r);
+    return `<div class="ncard task lime" data-az="richiesta" data-idx="${idx}">
       <div class="who">${av(m, chi)}<div><b>${esc(chi.nome)}</b><span>${esc(chi.ruolo)} · ${esc(d.nome)}</span></div></div>
       <div class="nt"><span class="rb ghost">${ic('i-ne')}</span></div>
       <div class="body"><span class="ico">${ic(iconaTipo[r.tipo])}</span><div><div class="tt">${esc(r.cosa)}</div><div class="meta"><b>${esc(r.cliente)}</b><span>·</span><b>${esc(r.ora)}</b></div></div></div>
-      <div class="st"><span class="k">${r.stato === 'attesa' ? 'Decidi' : 'Esito'}</span><div class="row">${esito}</div></div>
+      <div class="st"><span class="k">Decidi</span><div class="row"><span class="sel"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic(iconaTipo[r.tipo])}</span><span>${r.costo} € · ${r.passi.length} passi · ${esc(r.ora)}</span>${ic('i-chev')}</span><span class="rb black" data-az="approva" data-id="${r.id}" title="Approva">${ic('i-check')}</span><span class="rb red" data-az="rifiuta" data-id="${r.id}" title="Rifiuta">${ic('i-x')}</span></div></div>
+    </div>`;
+  }
+  function rigaStorico(m, r) {
+    const chi = m.byId[r.chi];
+    const decisa = r.stato === 'attesa' ? `in attesa da ${esc(r.ora)}` : r.regola ? `regola · <b>${esc(r.regola)}</b>` : `<b>${esc(m.azienda.titolare.iniziali)}</b> · ${esc(r.decisa)}${r.commento ? ' · «' + esc(r.commento) + '»' : ''}`;
+    const idx = r.stato === 'attesa' ? inAttesa(m).indexOf(r) : -1;
+    return `<div class="hrow ${r.stato}" ${idx >= 0 ? `data-az="richiesta" data-idx="${idx}"` : ''}><span class="ora">${esc(r.ora)}</span>${av(m, chi)}<div class="tx"><b>${esc(r.cosa)}</b><span>${esc(chi.nome)} · ${esc(r.cliente)}</span></div><span class="chip light">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]}</span>${chipEsito(r)}<span class="chi">${decisa}</span><span class="eur">${r.costo} €</span><span class="rb xs">${ic('i-ne')}</span></div>`;
+  }
+  function barraFiltri(m, f, tot, filtrate) {
+    const p = (k, v, testo, extra) => `<span class="pill sm${(f[k] || 'tutti') === String(v) ? ' on' : ''}" data-az="filtro" data-k="${k}" data-v="${esc(String(v))}">${extra || ''}${testo}</span>`;
+    const conRichieste = m.dipendenti.filter(e => m.richieste.some(r => r.chi === e.id));
+    const attivi = Object.keys(f).filter(k => f[k] && f[k] !== 'tutti').length;
+    return `<div class="fbar">
+      <div class="frow"><span class="k">Stato</span><div class="pills due">${p('stato', 'tutti', 'Tutte')}${p('stato', 'attesa', 'Da approvare')}${p('stato', 'approvata', 'Approvate')}${p('stato', 'modifiche', 'Con modifiche')}${p('stato', 'rifiutata', 'Rifiutate')}</div>
+        <span class="sep"></span><span class="k" style="width:auto">Tipo</span><div class="pills due">${p('tipo', 'tutti', 'Tutti')}${p('tipo', 'post', 'Post')}${p('tipo', 'documento', 'Documenti')}${p('tipo', 'lista', 'Liste')}${p('tipo', 'proposta', 'Proposte')}</div></div>
+      <div class="frow"><span class="k">Periodo</span><div class="pills due">${p('periodo', 'tutti', 'Tutto')}${p('periodo', 'oggi', 'Oggi')}${p('periodo', 'ieri', 'Ieri')}${p('periodo', 'settimana', '7 giorni')}${p('periodo', 'mese', '30 giorni')}</div>
+        <span class="sep"></span><span class="k" style="width:auto">Cliente</span><div class="pills">${p('cliente', 'tutti', 'Tutti')}${m.clienti.map(c => p('cliente', c, esc(c))).join('')}</div></div>
+      <div class="frow"><span class="k">Dipendente</span><div class="pills">${p('chi', 'tutti', 'Tutti')}${conRichieste.map(e => p('chi', e.id, esc(e.nome), av(m, e, 'xs'))).join('')}</div></div>
+      <div class="fsum"><span><b>${filtrate}</b> di ${tot} richieste</span>${attivi ? `<span>· ${attivi} filtr${attivi === 1 ? 'o attivo' : 'i attivi'}</span><span class="pill" data-az="azzera">${ic('i-x')}Azzera</span>` : `<span>· nessun filtro</span>`}</div>
     </div>`;
   }
   function richieste(m, opz) {
-    const att = m.richiesteDi('attesa'), appr = m.richiesteDi('approvata'), rif = [...m.richiesteDi('modifiche'), ...m.richiesteDi('rifiutata')];
-    const stats = `<div class="stat"><b>${att.length}</b><span>da approvare</span><span class="badge down">${ic('i-bell')}${Math.min(2, att.length)}</span></div>
-      <div class="stat"><b>${appr.length}</b><span>approvate</span><span class="badge up">${ic('i-up')}${appr.length}</span></div>
-      <div class="stat"><b>${rif.length}</b><span>da rifare</span><span class="badge down">${ic('i-dn')}${rif.length}</span></div>`;
-    const sez = (titolo, lst, filtri, vuoto) => `<section>
-      <div class="shead"><h3>${titolo}</h3><span class="cnt"><b>${lst.length}</b><span>Richieste</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
-        <div class="filters">${filtri.map((f, i) => `<span class="pill${i ? '' : ' on'}">${f}</span>`).join('')}</div></div>
-      ${lst.length ? `<div class="cards">${lst.map((r, i) => cardRichiesta(m, r, i)).join('')}</div>` : `<div class="vuoto">${vuoto}</div>`}
-    </section>`;
-    const corpo = sez('Da approvare', att, ['Tutte', '🔥 Più vecchie', 'Post', 'Documenti', 'Liste', 'Proposte'], 'Niente da approvare')
-      + sez('Approvate', appr, ['Oggi', 'Ieri', 'Questa settimana', 'Tutte'], 'Nessuna approvazione oggi')
-      + sez('Con modifiche o rifiutate', rif, ['Tutte', 'Con modifiche', 'Rifiutate'], 'Niente da rifare');
-    return cornice(m, opz, 'RICHIESTE', stats, 'richieste', corpo);
+    const f = opz.filtri || {};
+    const tutte = m.richiesteFiltrate(f);
+    const att = tutte.filter(r => r.stato === 'attesa').sort((a, b) => (b.giorno - a.giorno) || (a.min - b.min));
+    if (opz.ordine === 'recenti') att.reverse();
+    const storico = tutte.filter(r => r.stato !== 'attesa').sort((a, b) => (a.giorno - b.giorno) || (b.min - a.min));
+    const oggiOk = m.richieste.filter(r => r.giorno === 0 && r.stato === 'approvata').length;
+    const daRifare = m.richieste.filter(r => r.giorno <= 7 && (r.stato === 'modifiche' || r.stato === 'rifiutata')).length;
+    const stats = `<div class="stat"><b>${m.richiesteDi('attesa').length}</b><span>da approvare</span><span class="badge down">${ic('i-bell')}${Math.min(2, m.richiesteDi('attesa').length)}</span></div>
+      <div class="stat"><b>${oggiOk}</b><span>approvate oggi</span><span class="badge up">${ic('i-up')}${oggiOk}</span></div>
+      <div class="stat"><b>${daRifare}</b><span>da rifare</span><span class="badge down">${ic('i-dn')}${daRifare}</span></div>
+      <div class="stat"><b>${m.richieste.length}</b><span>in tutto</span></div>`;
+    const gruppi = ['oggi', 'ieri', 'settimana', 'mese', 'prima'].map(per => ({ per, lst: storico.filter(r => m.periodoDi(r) === per) })).filter(g => g.lst.length);
+    const corpo = `
+      <section>${barraFiltri(m, f, m.richieste.length, tutte.length)}</section>
+      <section>
+        <div class="shead"><h3>Da approvare</h3><span class="cnt"><b>${att.length}</b><span>Richieste</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
+          <div class="filters"><span class="pill${opz.ordine === 'recenti' ? '' : ' on'}" data-az="ordina" data-v="vecchie">Più vecchie prima</span><span class="pill${opz.ordine === 'recenti' ? ' on' : ''}" data-az="ordina" data-v="recenti">Più recenti prima</span></div>
+          <div class="destra">${att.length ? `<span class="pill lime" data-az="approva-tutte">${ic('i-check')}Approva tutte (${att.length})</span>` : ''}</div></div>
+        ${att.length ? `<div class="cards">${att.map((r, i) => cardRichiesta(m, r, i)).join('')}</div>` : `<div class="vuoto">Niente da approvare con questi filtri</div>`}
+      </section>
+      <section>
+        <div class="shead"><h3>Storico</h3><span class="cnt"><b>${storico.length}</b><span>Decise</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span><span class="rb sm ghost">${ic('i-down')}</span>
+          <div class="filters"><span class="pill on">Per giorno</span><span class="pill">Per dipendente</span><span class="pill">Per cliente</span></div></div>
+        ${gruppi.length ? gruppi.map(g => `<div class="hgroup"><b>${nomePeriodo[g.per]}</b>${g.lst.length} richieste · ${g.lst.reduce((t, r) => t + r.costo, 0)} €</div><div class="hlist">${g.lst.map(r => rigaStorico(m, r)).join('')}</div>`).join('') : `<div class="vuoto">Nessuna richiesta decisa con questi filtri</div>`}
+      </section>
+      <section class="regole">
+        <div class="shead"><h3>Regole di approvazione</h3><span class="cnt"><b>${m.regole.length}</b><span>Regole</span></span><span class="rb sm ghost">${ic('i-sliders')}</span>
+          <div class="filters"><span class="pill on">Tutte</span><span class="pill">Attive</span><span class="pill">Spente</span></div></div>
+        <div class="cards">${m.regole.map(g => `<div class="ncard lead${g.attiva ? '' : ' spenta'}"><span class="ico">${ic(g.icona)}</span><div class="nt"><span class="rb ghost">${ic('i-ne')}</span></div><div class="name md">${esc(g.nome)}</div><div class="role">${esc(g.desc)}</div><div class="ft"><div><span class="k">Modo</span><span class="sel">${esc(g.modo)}${ic('i-chev')}</span></div><div><span class="k">Stato</span>${g.attiva ? `<span class="chip lime">${ic('i-check')}Attiva</span>` : `<span class="chip">Spenta</span>`}</div></div></div>`).join('')}</div>
+      </section>`;
+    return cornice(m, opz, 'RICHIESTE', stats, 'richieste', corpo, 'Nuova regola');
   }
 
   function render(m, opz) {
-    opz = Object.assign({ pagina: 'home', tendina: 'aperta', richiesta: 0 }, opz || {});
+    opz = Object.assign({ pagina: 'home', tendina: 'aperta', richiesta: 0, riepilogo: 'insieme', pannello: 'richieste', filtri: {}, ordine: 'vecchie' }, opz || {});
     return opz.pagina === 'richieste' ? richieste(m, opz) : home(m, opz);
   }
 
-  /* Disegna e collega i clic (tendina e cambio pagina). Ritorna lo stato. */
+  /* Disegna e collega i clic: tendina, cambio pagina, filtri, decisioni. Ritorna lo stato. */
   function monta(radice, m, opz) {
-    const st = Object.assign({ pagina: 'home', tendina: 'aperta', richiesta: 0 }, opz || {});
+    const st = Object.assign({ pagina: 'home', tendina: 'aperta', richiesta: 0, riepilogo: 'insieme', pannello: 'richieste', filtri: {}, ordine: 'vecchie' }, opz || {});
     const n = () => m.richiesteDi('attesa').length;
-    const tutto = () => { radice.innerHTML = render(m, st); };
+    const tutto = () => { const y = window.scrollY; radice.innerHTML = render(m, st); window.scrollTo(0, y); };
     const soloTendina = () => { const t = radice.querySelector('#a-tendina'); if (t) t.innerHTML = tendina(m, st); else tutto(); };
+    const decidi = (id, stato, commento) => {
+      const r = m.richieste.find(x => x.id === id); if (!r) return;
+      r.stato = stato; r.decisa = m.azienda.ora; r.giorno = 0; r.min = 10 * 60 + 42; if (commento) r.commento = commento;
+      if (st.richiesta >= n()) st.richiesta = Math.max(0, n() - 1);
+      if (!n() && st.tendina === 'estesa') st.tendina = 'aperta';
+      tutto();
+    };
     tutto();
     radice.addEventListener('click', ev => {
       const el = ev.target.closest('[data-az]'); if (!el || !radice.contains(el)) return;
       const az = el.dataset.az;
       if (az === 'chiudi') { st.tendina = 'chiusa'; soloTendina(); }
-      else if (az === 'apri') { st.tendina = 'aperta'; soloTendina(); }
+      else if (az === 'apri') { st.tendina = 'aperta'; if (el.dataset.pannello) st.pannello = el.dataset.pannello; soloTendina(); }
+      else if (az === 'pannello') { st.pannello = el.dataset.pannello; soloTendina(); }
       else if (az === 'espandi') { st.tendina = 'estesa'; soloTendina(); }
       else if (az === 'riduci') { st.tendina = 'aperta'; soloTendina(); }
-      else if (az === 'prec') { st.richiesta = (st.richiesta - 1 + n()) % n(); soloTendina(); }
-      else if (az === 'succ') { st.richiesta = (st.richiesta + 1) % n(); soloTendina(); }
-      else if (az === 'richiesta') { st.richiesta = +el.dataset.idx; st.tendina = 'estesa'; soloTendina(); }
+      else if (az === 'prec') { if (n()) st.richiesta = (st.richiesta - 1 + n()) % n(); soloTendina(); }
+      else if (az === 'succ') { if (n()) st.richiesta = (st.richiesta + 1) % n(); soloTendina(); }
+      else if (az === 'vai') { st.richiesta = +el.dataset.idx; soloTendina(); }
+      else if (az === 'richiesta') { if (ev.target.closest('[data-az="approva"],[data-az="rifiuta"]')) return; st.richiesta = +el.dataset.idx; st.tendina = 'estesa'; st.pannello = 'richieste'; soloTendina(); }
       else if (az === 'pagina') { st.pagina = el.dataset.pagina; tutto(); window.scrollTo(0, 0); }
+      else if (az === 'filtro') { const k = el.dataset.k, v = el.dataset.v; st.filtri[k] = (st.filtri[k] === v || v === 'tutti') ? undefined : v; tutto(); }
+      else if (az === 'azzera') { st.filtri = {}; tutto(); }
+      else if (az === 'ordina') { st.ordine = el.dataset.v; tutto(); }
+      else if (az === 'approva') { ev.stopPropagation(); decidi(el.dataset.id, 'approvata'); }
+      else if (az === 'rifiuta') { ev.stopPropagation(); decidi(el.dataset.id, 'rifiutata', 'Rifiutata dal titolare'); }
+      else if (az === 'modifiche') { decidi(el.dataset.id, 'modifiche', 'Modifiche chieste dal titolare'); }
+      else if (az === 'approva-tutte') { inAttesa(m).forEach(r => { r.stato = 'approvata'; r.decisa = m.azienda.ora; r.giorno = 0; r.min = 10 * 60 + 42; }); st.richiesta = 0; if (st.tendina === 'estesa') st.tendina = 'aperta'; tutto(); }
     });
     return st;
   }

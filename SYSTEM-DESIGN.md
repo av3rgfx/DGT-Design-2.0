@@ -154,7 +154,10 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
    con campanella e numero delle richieste), aperta (richiesta corrente + Riepilogo), estesa (la richiesta per intero
    con le azioni). Si chiude verso destra; la home prende tutta la larghezza.
 7. Logo del prodotto = acronimo DGT in alto a sinistra; titolo dell'azienda in maiuscolo con la O normale.
-8. Pagina Richieste nella stessa cornice: Da approvare · Approvate · Con modifiche o rifiutate.
+8. Pagina Richieste nella stessa cornice, con pieno controllo: filtri per stato, tipo, periodo, cliente e
+   dipendente; Da approvare con ordinamento e «Approva tutte»; Storico per giorno a righe compatte; Regole di
+   approvazione. Il Riepilogo può stare nella stessa tendina delle richieste («insieme», predefinito) o in una
+   seconda tendina con la sua pillola («separato»): decisione dell'utente in sospeso.
 
 Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in
