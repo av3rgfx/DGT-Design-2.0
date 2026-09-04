@@ -150,14 +150,14 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
 3. Oltre sedici elementi ogni elenco ha una vista compatta a pillole (3 per riga) e il filtro predefinito è il dipartimento.
 4. Un solo accento: lime = attenzione del titolare (al lavoro, da approvare); rosa solo per errori e cali.
 5. Testi corti: titoli entro due righe a 24 px, ruoli in una riga a 13 px, pillole su una riga.
-6. Il pannello del titolare è una tendina flottante sopra tutto, con tre stati: chiusa (pillola lime al bordo destro
-   con campanella e numero delle richieste), aperta (richiesta corrente + Riepilogo), estesa (la richiesta per intero
-   con le azioni). Si chiude verso destra; la home prende tutta la larghezza.
+6. Il pannello del titolare sono due tendine flottanti sopra tutto: «Da approvare» (pillola lime con campanella e
+   numero; aperta mostra la richiesta corrente e la coda; estesa mostra la richiesta per intero con le azioni) e
+   «Riepilogo di oggi» (pillola bianca con bacchetta; consegne, spesa, obiettivo, diario). Si chiudono verso destra;
+   la home prende tutta la larghezza.
 7. Logo del prodotto = acronimo DGT in alto a sinistra; titolo dell'azienda in maiuscolo con la O normale.
 8. Pagina Richieste nella stessa cornice, con pieno controllo: filtri per stato, tipo, periodo, cliente e
    dipendente; Da approvare con ordinamento e «Approva tutte»; Storico per giorno a righe compatte; Regole di
-   approvazione. Il Riepilogo può stare nella stessa tendina delle richieste («insieme», predefinito) o in una
-   seconda tendina con la sua pillola («separato»): decisione dell'utente in sospeso.
+   approvazione.
 
 Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in

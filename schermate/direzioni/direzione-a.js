@@ -6,15 +6,16 @@
    Versione 2 (2026-09-04): titolo con la O normale, logo = DGT, tendina del
    titolare flottante a tre stati (chiusa / aperta / estesa), home a tutta
    larghezza, pagina Richieste.
-   Versione 3 (stessa data): opzione «Riepilogo separato» (due pillole e due
-   tendine, da confrontare con «insieme»); pagina Richieste completa: filtri
-   per stato, tipo, periodo, cliente e dipendente, storico per giorno,
-   approva/rifiuta anche in blocco, regole di approvazione.
+   Versione 3 (stessa data): Riepilogo separato (scelta dell'utente): due
+   pillole e due tendine, «Da approvare» con la coda e «Riepilogo di oggi»;
+   pagina Richieste completa: filtri per stato, tipo, periodo, cliente e
+   dipendente, storico per giorno, approva/rifiuta anche in blocco, regole di
+   approvazione.
 
    API: DIREZIONE_A.render(m, opz) → HTML; DIREZIONE_A.monta(radice, m, opz)
    disegna e collega i clic. opz = { pagina: 'home'|'richieste',
    tendina: 'chiusa'|'aperta'|'estesa', richiesta: indice,
-   riepilogo: 'insieme'|'separato', pannello: 'richieste'|'riepilogo' }.
+   pannello: 'richieste'|'riepilogo' }.
    ===================================================================== */
 window.DIREZIONE_A = (function () {
   const { ic, esc, prefissa, iconaDip } = window.DGT_UI;
@@ -370,11 +371,10 @@ window.DIREZIONE_A = (function () {
   }
 
   /* ---------- tendina del titolare ---------- */
-  function riepilogo(m, conTitolo, conDiario) {
+  function riepilogo(m) {
     const oggi = m.richieste.filter(r => r.giorno === 0 && r.stato === 'approvata').length;
     const ultime = m.diario.slice(-3).reverse();
-    return `${conTitolo ? `<div class="sub"><span class="rb black">${ic('i-wand')}</span><h5>Riepilogo di oggi</h5><span class="rb olight">${ic('i-ne')}</span></div>` : ''}
-      <div class="dcard"><div class="nt"><span class="rb sm">${ic('i-down')}</span></div><h5>Consegne:</h5>
+    return `<div class="dcard"><div class="nt"><span class="rb sm">${ic('i-down')}</span></div><h5>Consegne:</h5>
         <div class="thumbs">
           <div class="thumb"><div class="pg"><i class="h"></i><i class="w1"></i><i class="w2"></i><i class="b"></i><i class="w3"></i><i class="w1"></i><i class="w4"></i><i class="b"></i><i class="w2"></i></div><span class="lb">Post 4 di 12</span></div>
           <div class="thumb"><div class="pg"><i class="h"></i><i class="b"></i><i class="w1"></i><i class="w3"></i><i class="w2"></i><i class="b"></i><i class="w1"></i><i class="w4"></i></div><span class="lb">Piano ottobre</span></div>
@@ -383,14 +383,13 @@ window.DIREZIONE_A = (function () {
         <div class="kv"><span>Spesa di oggi</span><b>${m.costoOggi} €</b></div>
       </div>
       <div class="dcard"><div class="nt"><span class="rb sm">${ic('i-pen')}</span></div><h5>Obiettivo del mese:</h5><p class="goal">${m.azienda.obiettivoMese}</p></div>
-      ${conDiario ? `<div class="dcard"><div class="nt"><span class="rb sm">${ic('i-ne')}</span></div><h5>Ultime voci del diario:</h5><div style="margin-top:10px">${ultime.map(x => `<div class="drow"><span>${esc(x.ora)}</span><div><b>${esc(m.byId[x.chi].nome)}</b> ${esc(x.testo)}</div></div>`).join('')}</div></div>` : ''}`;
+      <div class="dcard"><div class="nt"><span class="rb sm">${ic('i-ne')}</span></div><h5>Ultime voci del diario:</h5><div style="margin-top:10px">${ultime.map(x => `<div class="drow"><span>${esc(x.ora)}</span><div><b>${esc(m.byId[x.chi].nome)}</b> ${esc(x.testo)}</div></div>`).join('')}</div></div>`;
   }
   const pager = (m, idx, n) => `<span class="pager"><span class="rb olight" data-az="prec">${ic('i-left')}</span>${idx + 1} di ${n}<span class="rb olight" data-az="succ">${ic('i-right')}</span></span>`;
   function tendinaChiusa(m, opz) {
     const n = m.richiesteDi('attesa').length;
-    const pr = `<div class="a-mini" data-az="apri" data-pannello="richieste" role="button" aria-label="Apri le richieste da approvare">${ic('i-left', 'ch')}<span class="rb">${ic('i-bell')}</span><b>${n}</b><span>da approvare</span></div>`;
-    if (opz.riepilogo !== 'separato') return pr;
-    return pr + `<div class="a-mini rie" data-az="apri" data-pannello="riepilogo" role="button" aria-label="Apri il riepilogo">${ic('i-left', 'ch')}<span class="rb">${ic('i-wand')}</span><span>Riepilogo</span></div>`;
+    return `<div class="a-mini" data-az="apri" data-pannello="richieste" role="button" aria-label="Apri le richieste da approvare">${ic('i-left', 'ch')}<span class="rb">${ic('i-bell')}</span><b>${n}</b><span>da approvare</span></div>`
+      + `<div class="a-mini rie" data-az="apri" data-pannello="riepilogo" role="button" aria-label="Apri il riepilogo">${ic('i-left', 'ch')}<span class="rb">${ic('i-wand')}</span><span>Riepilogo</span></div>`;
   }
   function cardRichiestaCorrente(m, r, idx, n) {
     const chi = m.byId[r.chi];
@@ -405,20 +404,19 @@ window.DIREZIONE_A = (function () {
     const att = inAttesa(m);
     const idx = Math.min(opz.richiesta || 0, Math.max(0, att.length - 1));
     const r = att[idx];
-    const sep = opz.riepilogo === 'separato';
-    if (sep && opz.pannello === 'riepilogo') {
+    if (opz.pannello === 'riepilogo') {
       return `<div class="a-tend aperta" role="dialog" aria-label="Riepilogo di oggi">
         <div class="th"><span class="rb black">${ic('i-wand')}</span><h4>Riepilogo di oggi</h4><span class="rb olight sm" data-az="chiudi" title="Chiudi">${ic('i-right')}</span></div>
-        <div class="tb">${riepilogo(m, false, true)}<div class="qrow on" data-az="pannello" data-pannello="richieste"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-bell')}</span><div class="tx"><b>Da approvare</b><span>${att.length} richieste in attesa</span></div><span class="rb xs">${ic('i-chevr')}</span></div></div>
+        <div class="tb">${riepilogo(m)}<div class="qrow on" data-az="pannello" data-pannello="richieste"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-bell')}</span><div class="tx"><b>Da approvare</b><span>${att.length} richieste in attesa</span></div><span class="rb xs">${ic('i-chevr')}</span></div></div>
       </div>`;
     }
-    const coda = sep && att.length > 1 ? `<div class="sub"><h5>In coda</h5><span class="chip light">${att.length}</span></div>` + att.map((x, i) => { const c = m.byId[x.chi]; return `<div class="qrow${i === idx ? ' on' : ''}" data-az="vai" data-idx="${i}">${av(m, c, 'xs')}<div class="tx"><b>${esc(x.cosa)}</b><span>${esc(c.nome)} · ${esc(x.cliente)} · ${esc(x.ora)}</span></div><span class="rb xs">${ic('i-chevr')}</span></div>`; }).join('') : '';
+    const coda = att.length > 1 ? `<div class="sub"><h5>In coda</h5><span class="chip light">${att.length}</span></div>` + att.map((x, i) => { const c = m.byId[x.chi]; return `<div class="qrow${i === idx ? ' on' : ''}" data-az="vai" data-idx="${i}">${av(m, c, 'xs')}<div class="tx"><b>${esc(x.cosa)}</b><span>${esc(c.nome)} · ${esc(x.cliente)} · ${esc(x.ora)}</span></div><span class="rb xs">${ic('i-chevr')}</span></div>`; }).join('') : '';
     return `<div class="a-tend aperta" role="dialog" aria-label="Da approvare">
       <div class="th"><h4>Da approvare</h4><span class="chip lime">${att.length}</span><span class="rb olight sm" data-az="espandi" title="Apri la richiesta">${ic('i-expand')}</span><span class="rb olight sm" data-az="chiudi" title="Chiudi">${ic('i-right')}</span></div>
       <div class="tb">
         ${r ? cardRichiestaCorrente(m, r, idx, att.length) : `<div class="vuoto" style="margin:0;border-color:rgb(0 0 0/.16)">Niente da approvare</div>`}
         ${coda}
-        ${sep ? `<div class="qrow" data-az="pannello" data-pannello="riepilogo" style="margin-top:6px"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-wand')}</span><div class="tx"><b>Riepilogo di oggi</b><span>consegne, spesa, obiettivo, diario</span></div><span class="rb xs">${ic('i-chevr')}</span></div>` : riepilogo(m, true)}
+        <div class="qrow" data-az="pannello" data-pannello="riepilogo" style="margin-top:6px"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-wand')}</span><div class="tx"><b>Riepilogo di oggi</b><span>consegne, spesa, obiettivo, diario</span></div><span class="rb xs">${ic('i-chevr')}</span></div>
       </div>
     </div>`;
   }
@@ -568,13 +566,13 @@ window.DIREZIONE_A = (function () {
   }
 
   function render(m, opz) {
-    opz = Object.assign({ pagina: 'home', tendina: 'aperta', richiesta: 0, riepilogo: 'insieme', pannello: 'richieste', filtri: {}, ordine: 'vecchie' }, opz || {});
+    opz = Object.assign({ pagina: 'home', tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie' }, opz || {});
     return opz.pagina === 'richieste' ? richieste(m, opz) : home(m, opz);
   }
 
   /* Disegna e collega i clic: tendina, cambio pagina, filtri, decisioni. Ritorna lo stato. */
   function monta(radice, m, opz) {
-    const st = Object.assign({ pagina: 'home', tendina: 'aperta', richiesta: 0, riepilogo: 'insieme', pannello: 'richieste', filtri: {}, ordine: 'vecchie' }, opz || {});
+    const st = Object.assign({ pagina: 'home', tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie' }, opz || {});
     const n = () => m.richiesteDi('attesa').length;
     const tutto = () => { const y = window.scrollY; radice.innerHTML = render(m, st); window.scrollTo(0, y); };
     const soloTendina = () => { const t = radice.querySelector('#a-tendina'); if (t) t.innerHTML = tendina(m, st); else tutto(); };

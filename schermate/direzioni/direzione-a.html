@@ -5,10 +5,7 @@
 <meta name="viewport" content="width=1440">
 <title>Nova Studio Console</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600&display=swap">
-<style>html,body{margin:0;background:#000}#root{transform-origin:0 0}
-#prova{position:fixed;left:16px;bottom:16px;z-index:60;display:flex;align-items:center;gap:6px;height:44px;padding:0 6px 0 16px;border-radius:9999px;background:#2C2C2C;color:#9A9A9A;font:400 13px/1 Urbanist,sans-serif;box-shadow:0 10px 30px rgb(0 0 0/.5)}
-#prova button{appearance:none;border:0;height:32px;padding:0 14px;border-radius:9999px;background:transparent;color:#FCFCFC;font:400 13px/1 Urbanist,sans-serif;cursor:pointer}
-#prova button.on{background:#FCFCFC;color:#0A0A0A}</style>
+<style>html,body{margin:0;background:#000}#root{transform-origin:0 0}</style>
 </head>
 <body>
 <div class="dirA" id="root"></div>
@@ -16,24 +13,15 @@
 <script src="dati.js"></script>
 <script src="direzione-a.js"></script>
 <script>
-  // Parametri: ?n=11|40  ?tendina=chiusa|aperta|estesa  ?pagina=home|richieste  ?richiesta=0
+  // Parametri: ?n=11|40  ?tendina=chiusa|aperta|estesa  ?pannello=richieste|riepilogo  ?pagina=home|richieste  ?richiesta=0
   const q = new URLSearchParams(location.search);
   DGT_UI.iconeInserisci();
   DGT_UI.stile('css-a', DIREZIONE_A.css);
   const root = document.getElementById('root');
   const modello = DGT_DATI.modello(DGT_DATI.nDaUrl());
-  const stato = DIREZIONE_A.monta(root, modello, {
+  DIREZIONE_A.monta(root, modello, {
     pagina: q.get('pagina') || 'home', tendina: q.get('tendina') || 'aperta', richiesta: +(q.get('richiesta') || 0),
-    riepilogo: q.get('riepilogo') || 'insieme', pannello: q.get('pannello') || 'richieste' });
-  // Controllo di prova (fuori dal prodotto): Riepilogo insieme alla tendina delle richieste o separato. ?controlli=0 lo nasconde.
-  if (q.get('controlli') !== '0') {
-    const c = document.createElement('div'); c.id = 'prova';
-    c.innerHTML = '<span>Prova · Riepilogo</span><button type="button" data-r="insieme">insieme</button><button type="button" data-r="separato">separato</button>';
-    document.body.appendChild(c);
-    const agg = () => c.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.r === stato.riepilogo));
-    c.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; stato.riepilogo = b.dataset.r; stato.tendina = 'chiusa'; root.innerHTML = DIREZIONE_A.render(modello, stato); agg(); });
-    agg();
-  }
+    pannello: q.get('pannello') || 'richieste' });
   // Sotto i 1440 px la console si riduce in scala (la larghezza di progetto resta 1440).
   function scala() { const s = Math.min(1, document.documentElement.clientWidth / 1440); root.style.transform = s < 1 ? 'scale(' + s + ')' : ''; document.body.style.height = s < 1 ? (root.offsetHeight * s) + 'px' : ''; }
   window.addEventListener('resize', scala); new MutationObserver(scala).observe(root, { childList: true, subtree: true }); scala();

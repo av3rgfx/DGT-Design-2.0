@@ -153,12 +153,15 @@ direzione. Regole che valgono da qui in avanti:
    dipartimento. È l'unica idea che si porta da B; da C non si porta niente.
 4. **Un solo accento**: lime = attenzione del titolare (al lavoro, da approvare). Rosa `#F9A3A3` solo per errori e cali.
 5. **Testi corti**: titoli di attività entro due righe a 24 px, ruoli entro una riga a 13 px, pillole su una riga.
-6. **Il pannello del titolare è una tendina flottante** (richiesta dell'utente, 2026-09-04), sopra tutto, così la
-   home prende tutta la larghezza. Tre stati: **chiusa** (una pillola lime al bordo destro con campanella e numero
-   delle richieste; un clic la riapre), **aperta** (330 px: la richiesta corrente con apri, commenta, approva,
-   rifiuta e le frecce per scorrere; sotto, il Riepilogo di oggi), **estesa** (840 px: la richiesta per intero,
-   contenuto a sinistra, chi la propone, passi, costo e nota a destra, azioni in fondo e il collegamento a «Tutte le
-   richieste»). Si chiude con la freccia verso destra.
+6. **Il pannello del titolare sono due tendine flottanti** (richieste dell'utente, 2026-09-04), sopra tutto, così
+   la home prende tutta la larghezza. Da chiuse restano **due pillole** al bordo destro: lime «campanella · 2 · da
+   approvare» e bianca «bacchetta · Riepilogo». La tendina **Da approvare** (330 px) mostra la richiesta corrente
+   con apri, commenta, approva, rifiuta e le frecce, sotto la **coda** delle altre in attesa e in fondo la riga che
+   porta al Riepilogo; **estesa** (840 px) mostra la richiesta per intero: contenuto a sinistra, chi la propone,
+   passi, costo e nota a destra, azioni in fondo e il collegamento a «Tutte le richieste». La tendina **Riepilogo
+   di oggi** mostra consegne, spesa, obiettivo del mese e le ultime voci del diario, con in fondo la riga lime
+   che riporta alle richieste. Entrambe si chiudono con la freccia verso destra e sono aperte all'apertura della
+   home se c'è qualcosa da approvare.
 7. **Logo e titolo**: il logo del prodotto è l'acronimo **DGT** (Urbanist 600, 22 px, spaziatura .12em) in alto a
    sinistra; il titolo dell'azienda è in maiuscolo con la O normale (niente marchio al posto della O).
 8. **Pagina Richieste**: tutte le richieste dell'azienda, nella stessa cornice della home (barra in alto, titolo
@@ -173,7 +176,8 @@ Dopo la scelta l'utente ha chiesto: O normale nel titolo, logo = acronimo DGT, p
 (chiudibile verso destra, con icona e conteggio quando è chiuso, richiesta mostrata per intero quando si espande) e
 una pagina per le sole richieste dell'azienda. Tutto è in `direzione-a.js` (funzioni `tendinaChiusa`,
 `tendinaAperta`, `tendinaEstesa`, `richieste`) ed è cliccabile: `DIREZIONE_A.monta(radice, modello, opzioni)`.
-Parametri di `direzione-a.html`: `?n=11|40`, `?tendina=chiusa|aperta|estesa`, `?pagina=home|richieste`, `?richiesta=0`.
+Parametri di `direzione-a.html`: `?n=11|40`, `?tendina=chiusa|aperta|estesa`, `?pannello=richieste|riepilogo`,
+`?pagina=home|richieste`, `?richiesta=0`.
 Screenshot: `screenshot/a-tendina-chiusa.png`, `a-tendina-aperta.png`, `a-tendina-estesa.png`, `a-richieste.png`.
 Artefatto interattivo: https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
 
@@ -181,13 +185,12 @@ Artefatto interattivo: https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-f
 
 Risposte alle tre richieste successive dell'utente.
 
-1. **Riepilogo separato, da confrontare** (`?riepilogo=separato`, oppure il selettore di prova in basso a
-   sinistra nella pagina). Da chiuso ci sono **due pillole** al bordo destro: lime «campanella · 2 · da approvare»
-   e bianca «bacchetta · Riepilogo». Ognuna apre la propria tendina: quella delle richieste mostra la richiesta
-   corrente e la **coda** (le altre in attesa, cliccabili); quella del Riepilogo mostra consegne, spesa, obiettivo e
-   le ultime voci del diario. In fondo a ciascuna una riga porta all'altra. Con `insieme` (predefinito finché
-   l'utente non decide) resta la tendina unica: richiesta corrente sopra, Riepilogo sotto.
-   Screenshot: `a-separato-chiusa.png`, `a-separato-richieste.png`, `a-separato-riepilogo.png`.
+1. **Riepilogo separato**: mostrate le due alternative («insieme»: una tendina con richiesta sopra e Riepilogo
+   sotto; «separato»: due pillole e due tendine). **L'utente ha scelto «separato»**; l'opzione «insieme» e il
+   selettore di prova sono stati tolti. Da chiuso ci sono due pillole al bordo destro; la tendina delle richieste
+   mostra la richiesta corrente e la **coda** (le altre in attesa, cliccabili); quella del Riepilogo mostra
+   consegne, spesa, obiettivo e le ultime voci del diario; in fondo a ciascuna una riga porta all'altra.
+   Screenshot: `a-tendina-chiusa.png`, `a-tendina-aperta.png`, `a-riepilogo.png`, `a-tendina-estesa.png`.
 2. **Tendina aperta all'apertura della home**: confermato.
 3. **Pagina Richieste completa** («pieno controllo»): barra dei filtri per **stato, tipo, periodo, cliente e
    dipendente** (pillole, funzionanti, con riepilogo «N di M richieste · filtri attivi · Azzera»); sezione *Da
