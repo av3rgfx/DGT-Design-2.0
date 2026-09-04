@@ -24,10 +24,19 @@
    modificare (nome, ruolo, dipartimento, avatar), aperta dalla matita nella
    card, dalla riga compatta e dalla card «Aggiungi».
 
+   Versione 6 (2026-09-04, sessione successiva): la pagina del Dipendente,
+   aperta dalla freccia nell'intaglio della card e della riga compatta.
+   Testata (avatar grande, etichetta, azioni, quattro numeri a 30 giorni),
+   revisione di performance (card lime con proposta, evidenze, attese, rischi
+   e decisione del titolare; il dossier con le due versioni a confronto nella
+   tendina estesa), oggi, rendimento, soul prompt con le versioni, modello e
+   criterio di scelta, strumenti e connessioni, budget e permessi, colloquio.
+   La revisione è anche una richiesta al titolare (tipo `revisione`).
+
    API: DIREZIONE_A.render(m, opz) → HTML; DIREZIONE_A.monta(radice, m, opz)
-   disegna e collega i clic. opz = { pagina: 'home'|'richieste'|'dipartimento',
-   dip: 'svi'|'mkt'|'ven'|'amm', tendina: 'chiusa'|'aperta'|'estesa'|'dipendente',
-   richiesta: indice, pannello: 'richieste'|'riepilogo', editor: 'nuovo'|id }.
+   disegna e collega i clic. opz = { pagina: 'home'|'richieste'|'dipartimento'|'dipendente',
+   dip: 'svi'|'mkt'|'ven'|'amm', id: id del dipendente, tendina: 'chiusa'|'aperta'|'estesa'|'dipendente'|'confronto'|'dossier',
+   richiesta: indice, pannello: 'richieste'|'riepilogo', editor: 'nuovo'|id, confronto: 'a,b' }.
    ===================================================================== */
 window.DIREZIONE_A = (function () {
   const { ic, esc, prefissa, iconaDip } = window.DGT_UI;
@@ -352,6 +361,129 @@ window.DIREZIONE_A = (function () {
 .a-tend .azioni{display:flex;gap:8px;padding-top:2px;flex-wrap:wrap}
 .a-tend .azioni .pill{height:44px;cursor:pointer}
 .a-tend .azioni .pill.olight{color:var(--ink)}
+/* ===== pagina Dipendente (versione 6): testata, revisione di performance, rendimento, soul prompt, modello, strumenti, budget, colloquio ===== */
+.pill.ink{background:var(--ink);color:var(--white);border-color:transparent}
+.badge.flat{background:var(--pill-src);color:#E8E8E8}
+.a-title.lungo{font-size:36px;line-height:44px}
+.a-title.lunghissimo{font-size:30px;line-height:40px}
+.av.xl{width:96px;height:96px}
+.dtesta{display:grid;gap:20px;margin-top:-8px}
+.dtesta .ident{display:flex;align-items:flex-start;gap:22px;min-width:0}
+.dtesta .ident>.av{margin-top:8px}
+.dtesta .ident .tx{min-width:0;display:grid;gap:4px}
+.dtesta .ident .tx>b{font-weight:400;font-size:28px;line-height:34px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dtesta .ident .tx>span{font-size:14px;color:var(--t2);white-space:nowrap}
+.dtesta .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.dtesta .azioni{display:flex;gap:8px;margin-top:12px}
+.dtesta .azioni .pill{cursor:pointer}
+.dtesta .mans{font-size:17px;line-height:25px;color:#DADADA;max-width:66ch;margin:0}
+.dtesta .numeri{margin-left:0;gap:48px}
+.dtesta .k30{font-size:12px;color:var(--t2);margin-top:-8px}
+.rev{padding:22px 24px 20px;--behind:var(--black)}
+.rev .rhead{display:flex;gap:6px;flex-wrap:wrap;padding-right:130px}
+.rev .rtit{font-size:26px;line-height:32px;margin-top:14px;max-width:38ch;font-weight:400}
+.rev .rcols{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:28px;margin-top:20px}
+.rev .k{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:rgb(0 0 0/.6);display:block;margin-bottom:8px}
+.rev ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.rev li{display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:14px;line-height:19px;align-items:start}
+.rev li b{font-weight:500;white-space:nowrap;background:rgb(0 0 0/.1);border-radius:var(--r-pill);padding:0 8px;height:22px;display:inline-flex;align-items:center;font-size:12px}
+.rev li span{min-width:0}
+.rev li i{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:rgb(0 0 0/.1);vertical-align:-4px;margin-left:4px;cursor:pointer}
+.rev li i svg{width:10px;height:10px}
+.rev p{font-size:13px;line-height:18px;color:rgb(0 0 0/.7);margin:0}
+.rev .rdec{margin-top:22px;padding-top:16px;border-top:1px solid rgb(0 0 0/.12)}
+.rev .rdec .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rev .rdec .pill{height:48px;cursor:pointer}
+.rev .rdec .pill.olight{color:var(--ink)}
+.rev .rdec .link{margin-left:auto;font-size:14px;color:rgb(0 0 0/.7);display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.rev .rdec .link svg{width:14px;height:14px}
+.hrow.rev{grid-template-columns:90px 200px minmax(0,1fr) 110px 210px 32px;padding-right:8px}
+.hrow .tx .badge{height:16px;font-size:10px;padding:0 5px;vertical-align:middle}
+.oggi{display:grid;grid-template-columns:316px minmax(0,1fr);gap:16px;margin-top:24px;align-items:start}
+.hgroup .link{margin-left:auto;font-size:13px;color:var(--white);display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.hgroup .link svg{width:13px;height:13px}
+.crow.rend{grid-template-columns:40px minmax(0,1fr) 170px 150px 110px 32px}
+.crow .v .chip,.crow .eur .chip{height:24px;font-size:11px;font-weight:400}
+.crow.spenta{opacity:.55}
+.crow.add{background:transparent;border:1px dashed rgb(255 255 255/.25);color:var(--t2);font-size:14px;display:flex;justify-content:center;gap:10px;cursor:pointer}
+.crow.add .rb.xs{border-color:rgb(255 255 255/.25)}
+.prompt{display:grid;grid-template-columns:minmax(0,1fr) 490px;gap:16px;margin-top:24px;align-items:start}
+.pdoc{position:relative;background:var(--summary);color:var(--ink);border-radius:var(--r-card);padding:22px 24px 18px;--behind:var(--black)}
+.pdoc .nt .rb{border-color:rgb(255 255 255/.16);color:var(--white);background:transparent;cursor:pointer}
+.pdoc .lb{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--t2-light);margin-bottom:16px;padding-right:120px;min-width:0}
+.pdoc .lb span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pdoc p{font-size:17px;line-height:26px;color:#1E1E1E;margin:0 0 12px}
+.pdoc .kv{border-top:1px solid rgb(0 0 0/.1);padding-top:12px;margin-top:6px}
+.vlist{display:grid;gap:8px}
+.vrow{height:56px;border-radius:var(--r-pill);background:linear-gradient(180deg,var(--card-top),var(--card));display:flex;align-items:center;gap:12px;padding:0 8px 0 18px;min-width:0}
+.vrow>.v{font-weight:300;font-size:22px;width:36px;flex:none}
+.vrow .tx{flex:1;min-width:0;line-height:16px}
+.vrow .tx b{display:block;font-weight:500;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vrow .tx span{display:block;font-size:11px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vrow .chip{height:24px;font-size:11px;flex:none}
+.vrow .rb.xs{background:transparent;border-color:rgb(255 255 255/.16);flex:none;cursor:pointer}
+.vrow.on{background:var(--white);color:var(--ink)}
+.vrow.prop{background:var(--lime);color:var(--ink)}
+.vrow.on .tx span,.vrow.prop .tx span{color:rgb(0 0 0/.6)}
+.vrow.on .rb.xs,.vrow.prop .rb.xs{border-color:rgb(0 0 0/.16);color:var(--ink)}
+.cards.modelli .lead{height:236px;cursor:pointer}
+.lead.mod .role{white-space:normal;line-height:17px;height:34px;overflow:hidden}
+.lead .v{font-size:18px;font-weight:300;white-space:nowrap}
+.lead .v small{font-size:11px;color:var(--t2);margin-left:4px;font-weight:400}
+.lead.mod.on{background:var(--white);color:var(--ink)}
+.lead.mod.on .role,.lead.mod.on .k,.lead.mod.on .v small{color:var(--t2-light)}
+.lead.mod.on .ico{border-color:rgb(0 0 0/.14)}
+.task.regola{width:517px;min-height:236px}
+.task.regola .body{padding-top:16px}
+.task.regola .rtx{font-size:17px;line-height:25px;margin:0}
+.task.regola .rtx b{font-weight:500}
+.ripart{height:12px;border-radius:var(--r-pill);overflow:hidden;display:flex;background:rgb(255 255 255/.12);margin-top:2px}
+.ripart i{display:block;height:100%}
+.ripart i.rapido,.leg i.rapido{background:#6B6B6B}
+.ripart i.standard,.leg i.standard{background:var(--white)}
+.ripart i.esperto,.leg i.esperto{background:var(--lime)}
+.leg{display:flex;gap:14px;font-size:12px;color:var(--t2);margin-top:10px;align-items:center;white-space:nowrap}
+.leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.bp,.coll{display:grid;grid-template-columns:316px minmax(0,1fr);gap:16px;margin-top:24px;align-items:start}
+.task .tt small{font-size:14px;color:var(--t2)}
+.task.lime .tt small{color:rgb(0 0 0/.6)}
+.task.budget .prog,.task.esito .prog{margin-top:14px}
+.task.budget .meta,.task.esito .meta{margin-top:10px}
+.hrow.caso{grid-template-columns:40px minmax(0,1fr) 110px 64px 32px}
+.hrow.caso .ora{text-align:center}
+/* tendina estesa delle versioni: dossier della revisione o confronto fra due versioni */
+.a-tend.vers{max-height:980px}
+.a-tend.vers .tb{gap:12px}
+.who2{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--t2-light);min-width:0}
+.who2 b{color:var(--ink);font-weight:500;font-size:15px}
+.who2 .chip{height:24px;font-size:11px;margin-left:auto}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cmp .doc{background:var(--white);border-radius:var(--r-inner);padding:16px 18px;display:grid;gap:8px;align-content:start;min-width:0}
+.cmp .doc .lb{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--t2-light);min-width:0;margin-bottom:4px}
+.cmp .doc .lb .chip{height:24px;font-size:11px;flex:none}
+.cmp .doc .lb span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cmp .doc p{font-size:14px;line-height:21px;color:#1E1E1E;margin:0;padding:3px 8px;border-radius:10px}
+.cmp .doc p.add{background:var(--lime)}
+.cmp .doc p.del{background:var(--badge-red);color:var(--badge-red-ink);text-decoration:line-through}
+.cmp .doc p.chg{background:rgb(0 0 0/.045)}
+.cmp mark{border-radius:5px;padding:0 3px;background:var(--lime);color:var(--ink)}
+.cmp mark.del{background:var(--badge-red);color:var(--badge-red-ink);text-decoration:line-through}
+.cmp .doc .kv{border-top:1px solid rgb(0 0 0/.08);padding-top:10px;margin-top:4px}
+.ev3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.ev3 .dcard{padding:14px 16px}
+.ev3 .dcard h5{font-size:15px;line-height:20px;color:var(--t2-light);padding-right:0}
+.ev3 ul{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
+.ev3 li{display:grid;grid-template-columns:auto 1fr;gap:8px;font-size:12px;line-height:17px;color:#3E3E3E}
+.ev3 li b{font-weight:500;color:var(--ink);white-space:nowrap}
+.ev3 li span{min-width:0}
+.ev3 .nota{font-size:12px;line-height:17px;color:#3E3E3E;margin-top:10px}
+.a-tend.vers .azioni{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:4px 0 6px}
+.a-tend.vers .azioni .pill{height:44px;cursor:pointer}
+.a-tend.vers .azioni .link{margin-left:auto;color:var(--t2-light);font-size:14px;display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.a-tend.vers .azioni .link svg{width:14px;height:14px}
+.a-tend.vers .azioni.motivo .k{font-size:11px;color:var(--t2-light);text-transform:uppercase;letter-spacing:.06em;width:100%}
+.a-tend.vers .azioni.motivo input{flex:1;height:44px;border-radius:var(--r-pill);background:var(--white);border:1px solid transparent;padding:0 16px;font:400 14px/20px var(--font);color:var(--ink);outline:none;min-width:240px}
+.a-tend.vers .azioni.motivo input:focus{border-color:var(--ink)}
 `;
 
   const S = n => `<i></i>`.repeat(n);
@@ -364,14 +496,15 @@ window.DIREZIONE_A = (function () {
     const rest = lst.length - shown.length;
     return `<span class="pair">${shown.map(e => av(m, e, size)).join('')}${rest > 0 ? `<span class="more">+${rest}</span>` : ''}</span>`;
   };
-  const iconaTipo = { post: 'i-mega', documento: 'i-doc', lista: 'i-list', proposta: 'i-receipt' };
-  const nomeTipo = { post: 'Post', documento: 'Documento', lista: 'Lista', proposta: 'Proposta' };
+  const iconaTipo = { post: 'i-mega', documento: 'i-doc', lista: 'i-list', proposta: 'i-receipt', revisione: 'i-bolt' };
+  const nomeTipo = { post: 'Post', documento: 'Documento', lista: 'Lista', proposta: 'Proposta', revisione: 'Revisione' };
   const nomePeriodo = { oggi: 'Oggi', ieri: 'Ieri', settimana: 'Ultimi 7 giorni', mese: 'Ultimi 30 giorni', prima: 'Prima' };
   /* in attesa: le più vecchie prima */
   const inAttesa = m => m.richiesteDi('attesa').slice().sort((a, b) => (b.giorno - a.giorno) || (a.min - b.min));
 
   function chipStato(m, e) {
     const s = e.stato;
+    if (e.pausa) return `<span class="chip">${ic('i-pause')}In pausa</span>`;
     if (s === 'lavoro') return `<span class="chip lime">${ic('i-play')}Al lavoro</span>`;
     if (s === 'attesa') return `<span class="chip lime">${ic('i-bell')}Da approvare</span>`;
     if (s === 'errore') return `<span class="chip rosa">${ic('i-warn')}Errore</span>`;
@@ -437,7 +570,7 @@ window.DIREZIONE_A = (function () {
   function cardDipendente(m, e, anteprima) {
     return `<div class="ncard lead dip">
       ${av(m, e, '', anteprima ? (e.stato === 'libero' ? 'pianificato' : e.stato) : null, anteprima ? 'data-segue="1"' : '')}
-      <div class="nt"><span class="rb ghost" ${anteprima ? '' : `data-az="modifica" data-id="${e.id}"`} title="Modifica">${ic('i-pen')}</span><span class="rb ghost" title="Apri">${ic('i-ne')}</span></div>
+      <div class="nt"><span class="rb ghost" ${anteprima ? '' : `data-az="modifica" data-id="${e.id}"`} title="Modifica">${ic('i-pen')}</span><span class="rb ghost" ${anteprima ? '' : `data-az="pagina" data-pagina="dipendente" data-id="${e.id}"`} title="Apri">${ic('i-ne')}</span></div>
       <div class="name${e.nome ? '' : ' ruolo'}">${esc(m.etichetta(e))}</div>
       <div class="role">${esc(m.sotto(e, true))}</div>
       <div class="ft"><div><span class="k">Stato</span>${chipStato(m, e)}</div><div><span class="k">Oggi</span>${dots(livelloOggi(e))}</div></div>
@@ -445,7 +578,7 @@ window.DIREZIONE_A = (function () {
   }
   const cardAggiungi = (m, dip) => `<div class="ncard lead add" data-az="nuovo" data-dip="${dip || ''}"><span class="rb ghost">${ic('i-plus')}</span>Aggiungi un dipendente${dip ? `<br>a ${esc(m.dipartimenti.find(d => d.id === dip).nome)}` : ''}</div>`;
   function rigaDipendente(m, e) {
-    return `<div class="erow${e.stato === 'lavoro' ? ' lav' : ''}">${av(m, e)}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e, true))}</span></div>${e.stato === 'lavoro' ? `<span class="chip onlime"><span>${esc(e.att.titolo)}</span></span>` : chipStato(m, e)}<span class="rb xs" data-az="modifica" data-id="${e.id}" title="Modifica">${ic('i-pen')}</span><span class="rb xs" title="Apri">${ic('i-ne')}</span></div>`;
+    return `<div class="erow${e.stato === 'lavoro' ? ' lav' : ''}">${av(m, e)}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e, true))}</span></div>${e.stato === 'lavoro' ? `<span class="chip onlime"><span>${esc(e.att.titolo)}</span></span>` : chipStato(m, e)}<span class="rb xs" data-az="modifica" data-id="${e.id}" title="Modifica">${ic('i-pen')}</span><span class="rb xs" data-az="pagina" data-pagina="dipendente" data-id="${e.id}" title="Apri">${ic('i-ne')}</span></div>`;
   }
   function barraAgenda(m) {
     const fatti = m.agenda.filter(a => a.stato === 'fatto').slice(-1);
@@ -515,6 +648,7 @@ window.DIREZIONE_A = (function () {
     const idx = Math.min(opz.richiesta || 0, att.length - 1);
     const r = att[idx];
     const chi = m.byId[r.chi];
+    if (r.tipo === 'revisione') { const rv = m.revisioneDi(r); if (rv) return tendinaVersioni(m, Object.assign({}, opz, { confronto: { id: r.chi, a: rv.da, b: rv.a, rev: rv, richiesta: r } })); }
     const doc = r.tipo === 'post'
       ? `<div class="lb"><span class="chip light">${ic('i-mega')}LinkedIn · bozza</span>${esc(r.cliente)}</div><div class="tx">${esc(r.testo)}</div><div class="img">${ic('i-doc')}${esc(r.allegato)}</div>`
       : `<div class="lb"><span class="chip light">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]}</span>${esc(r.cliente)} · ${esc(r.allegato)}</div><div class="tx mono">${esc(r.testo)}</div>`;
@@ -569,6 +703,7 @@ window.DIREZIONE_A = (function () {
   }
   function tendina(m, opz) {
     if (opz.tendina === 'dipendente' && opz.modifica) return tendinaDipendente(m, opz);
+    if (opz.tendina === 'confronto' && opz.confronto) return tendinaVersioni(m, opz);
     if (opz.tendina === 'chiusa') return tendinaChiusa(m, opz);
     if (opz.tendina === 'estesa') return tendinaEstesa(m, opz);
     return tendinaAperta(m, opz);
@@ -576,13 +711,17 @@ window.DIREZIONE_A = (function () {
 
   /* ---------- cornice comune ---------- */
   function cornice(m, opz, titolo, stats, railAttivo, corpo, nuovo) {
+    /* dal dipendente si torna al suo dipartimento; dalle altre pagine alla home */
+    const e = opz.pagina === 'dipendente' ? m.byId[opz.id] : null;
+    const indietro = e ? `data-az="pagina" data-pagina="dipartimento" data-dip="${e.dip}"` : opz.pagina !== 'home' ? 'data-az="pagina" data-pagina="home"' : '';
+    const lungo = e ? (titolo.length > 20 ? ' lunghissimo' : titolo.length > 12 ? ' lungo' : '') : '';
     return `<div class="a-app" role="figure" aria-label="Direzione A — ${esc(titolo)} (contenuto sintetico)">
       <span class="a-logo">DGT</span>
       ${barraAgenda(m)}
       <div class="a-tr"><span class="rb">${ic('i-bell')}<i class="dot"></i></span><span class="av persona">${esc(m.azienda.titolare.iniziali)}</span></div>
-      <span class="rb a-back" ${opz.pagina !== 'home' ? 'data-az="pagina" data-pagina="home"' : ''}>${ic('i-left')}</span>
+      <span class="rb a-back" ${indietro}>${ic('i-left')}</span>
       <div class="a-head">
-        <h3 class="a-title">${esc(titolo)}</h3>
+        <h3 class="a-title${lungo}">${esc(titolo)}</h3>
         ${nuovo ? `<span class="a-new"><i>${ic('i-plus')}</i>${nuovo}</span>` : ''}
         <div class="a-stats">${stats}</div>
         ${opz.pagina === 'dipartimento' ? `<span class="rb ghost impost" title="Impostazioni del dipartimento">${ic('i-sliders')}</span>` : ''}
@@ -648,7 +787,7 @@ window.DIREZIONE_A = (function () {
     const attivi = Object.keys(f).filter(k => f[k] && f[k] !== 'tutti').length;
     return `<div class="fbar">
       <div class="frow"><span class="k">Stato</span><div class="pills due">${p('stato', 'tutti', 'Tutte')}${p('stato', 'attesa', 'Da approvare')}${p('stato', 'approvata', 'Approvate')}${p('stato', 'modifiche', 'Con modifiche')}${p('stato', 'rifiutata', 'Rifiutate')}</div>
-        <span class="sep"></span><span class="k" style="width:auto">Tipo</span><div class="pills due">${p('tipo', 'tutti', 'Tutti')}${p('tipo', 'post', 'Post')}${p('tipo', 'documento', 'Documenti')}${p('tipo', 'lista', 'Liste')}${p('tipo', 'proposta', 'Proposte')}</div></div>
+        <span class="sep"></span><span class="k" style="width:auto">Tipo</span><div class="pills due">${p('tipo', 'tutti', 'Tutti')}${p('tipo', 'post', 'Post')}${p('tipo', 'documento', 'Documenti')}${p('tipo', 'lista', 'Liste')}${p('tipo', 'proposta', 'Proposte')}${p('tipo', 'revisione', 'Revisioni')}</div></div>
       <div class="frow"><span class="k">Periodo</span><div class="pills due">${p('periodo', 'tutti', 'Tutto')}${p('periodo', 'oggi', 'Oggi')}${p('periodo', 'ieri', 'Ieri')}${p('periodo', 'settimana', '7 giorni')}${p('periodo', 'mese', '30 giorni')}</div>
         <span class="sep"></span><span class="k" style="width:auto">Cliente</span><div class="pills">${p('cliente', 'tutti', 'Tutti')}${m.clienti.map(c => p('cliente', c, esc(c))).join('')}</div></div>
       <div class="frow"><span class="k">Dipartim.</span><div class="pills due">${p('dip', 'tutti', 'Tutti')}${m.dipartimenti.map(d => p('dip', d.id, esc(d.nome))).join('')}</div>
@@ -739,15 +878,303 @@ window.DIREZIONE_A = (function () {
     return cornice(m, opz, d.nome.toUpperCase(), stats, 'org', corpo, 'Nuovo obiettivo');
   }
 
+  /* ---------- pagina Dipendente (versione 6, 2026-09-04) ----------
+     Si apre dalla freccia nell'intaglio della card e della riga compatta. Un solo ordine per i due
+     pubblici: testata e revisione per il titolare, poi oggi, rendimento, soul prompt, modello,
+     strumenti, budget e permessi, colloquio per l'operatore. Dati in m.dossierDi(e). */
+  const eur = v => (Math.round(v * 10) / 10).toString().replace('.', ',') + ' €';
+  /* Badge del confronto con i 30 giorni precedenti: la freccia dice il verso, il colore se è un bene (`meglioSeSale`). */
+  const delta = (ora, prima, meglioSeSale, fmt) => {
+    if (prima === undefined || prima === null) return '';
+    const d = Math.round((ora - prima) * 10) / 10; if (!d) return `<span class="badge flat">=</span>`;
+    const bene = meglioSeSale ? d > 0 : d < 0;
+    return `<span class="badge ${bene ? 'up' : 'down'}">${ic(d > 0 ? 'i-up' : 'i-dn')}${fmt ? fmt(Math.abs(d)) : Math.abs(d)}</span>`;
+  };
+  function testataDipendente(m, e, d) {
+    const mo = d.metriche.ora, mp = d.metriche.prima;
+    const rev = d.revisioni.find(r => r.stato === 'attesa');
+    const md = m.MODELLI[d.modello.assegnato];
+    return `<section class="dtesta">
+      <div class="ident">
+        ${av(m, e, 'xl', e.pausa ? 'libero' : null, 'data-segue="1"')}
+        <div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))} · in produzione dal ${esc(d.dal)}</span>
+          <div class="chips">${chipStato(m, e)}${rev ? `<span class="chip lime">${ic('i-bolt')}Revisione in sospeso</span>` : ''}<span class="chip">${ic('i-doc')}Soul prompt v${d.prompt.corrente}</span><span class="chip">${ic(md.icona)}${esc(md.nome)}</span><span class="chip">${ic('i-target')}Colloquio ${d.colloquio.punteggio}</span></div>
+          <div class="azioni"><span class="pill sm" data-az="modifica" data-id="${e.id}">${ic('i-pen')}Modifica</span><span class="pill sm${e.pausa ? ' on' : ''}" data-az="pausa" data-id="${e.id}">${ic(e.pausa ? 'i-play' : 'i-pause')}${e.pausa ? 'Riattiva' : 'Metti in pausa'}</span><span class="pill sm" data-az="colloquio" data-id="${e.id}">${ic('i-target')}Ripeti il colloquio</span></div></div>
+      </div>
+      <p class="mans">${esc(d.mansione)}</p>
+      <div class="a-stats numeri">
+        <div class="stat"><b>${mo.task}</b><span>task completati</span>${delta(mo.task, mp.task, true)}</div>
+        <div class="stat"><b>${eur(mo.costo)}</b><span>per esito utile</span>${delta(mo.costo, mp.costo, false, eur)}</div>
+        <div class="stat"><b>${mo.corretti}%</b><span>corretti da un umano</span>${delta(mo.corretti, mp.corretti, false, v => v + ' pt')}</div>
+        <div class="stat"><b>${mo.respinte}%</b><span>proposte respinte</span>${delta(mo.respinte, mp.respinte, false, v => v + ' pt')}</div>
+      </div>
+      <span class="k30">Ultimi 30 giorni, confronto con i 30 precedenti · fonte: le richieste decise dal titolare</span>
+    </section>`;
+  }
+  /* La revisione in sospeso: card lime a tutta larghezza con proposta, evidenze, attese, rischi e la decisione. */
+  function cardRevisione(m, e, d, rv) {
+    const r = m.richieste.find(x => x.id === rv.richiesta);
+    const idx = r ? inAttesa(m).indexOf(r) : -1;
+    const rid = r ? r.id : '';
+    const daA = rv.tipo === 'prompt' ? `soul prompt v${rv.da} → v${rv.a}` : `modello ${m.MODELLI[rv.da].nome} → ${m.MODELLI[rv.a].nome}`;
+    const li = x => `<li><b>${esc(x.n)}</b><span>${esc(x.t)}${x.richiesta ? `<i data-az="pagina" data-pagina="richieste" data-chi="${e.id}" title="Apri le richieste di ${esc(m.etichetta(e))}">${ic('i-ne')}</i>` : ''}</span></li>`;
+    return `<div class="ncard lime rev">
+      <div class="nt"><span class="rb ghost">${ic('i-bell')}<i class="dot"></i></span><span class="rb ghost" data-az="dossier" data-idx="${idx}" data-id="${e.id}" title="Apri il dossier">${ic('i-expand')}</span></div>
+      <div class="rhead"><span class="chip onlime">${ic('i-bolt')}Revisione di performance</span><span class="chip onlime">${esc(daA)}</span><span class="chip onlime">proposta ${esc(rv.quando)}</span><span class="chip onlime">${ic('i-bell')}decide il titolare</span></div>
+      <h4 class="rtit">${esc(rv.titolo)}</h4>
+      <div class="rcols">
+        <div><span class="k">Perché</span><ul>${rv.perche.map(li).join('')}</ul></div>
+        <div><span class="k">Cosa ci aspettiamo</span><ul>${rv.attese.map(li).join('')}</ul></div>
+        <div><span class="k">Rischi</span><ul>${rv.rischi.map(t => `<li><span>${esc(t)}</span></li>`).join('')}</ul><span class="k" style="margin-top:14px">La prova</span><p>${rv.prova.esecuzioni} esecuzioni, circa ${rv.prova.costo} €, esito in ${rv.prova.giorni} giorni. La versione attuale resta in produzione finché il titolare non decide.</p></div>
+      </div>
+      <div class="rdec"><span class="k">Decisione del titolare</span>
+        <div class="row"><span class="pill ink" data-az="prova" data-id="${rid}">${ic('i-play')}Prova su ${rv.prova.esecuzioni} esecuzioni</span><span class="pill on" data-az="approva" data-id="${rid}">${ic('i-check')}Applica</span><span class="pill olight" data-az="modifiche" data-id="${rid}">${ic('i-pen')}Chiedi modifiche</span><span class="pill red" data-az="rifiuta-motivo" data-id="${rid}">${ic('i-x')}Rifiuta…</span><span class="link" data-az="dossier" data-idx="${idx}" data-id="${e.id}">Il dossier: ${rv.tipo === 'prompt' ? `v${rv.da} e v${rv.a}` : `${m.MODELLI[rv.da].nome} ed ${m.MODELLI[rv.a].nome}`} a confronto ${ic('i-ne')}</span></div>
+      </div>
+    </div>`;
+  }
+  function rigaRevisione(m, rv) {
+    const nomeMod = x => (m.MODELLI[x] || {}).nome || x;
+    const tipo = rv.tipo === 'prompt' ? `<span class="chip light">${ic('i-doc')}Prompt v${rv.da} → v${rv.a}</span>` : `<span class="chip light">${ic('i-bot')}Modello ${nomeMod(rv.da)} → ${nomeMod(rv.a)}</span>`;
+    const esito = { applicata: `<span class="chip lime">${ic('i-check')}Applicata</span>`, prova: `<span class="chip ink">${ic('i-play')}In prova</span>`, modifiche: `<span class="chip">${ic('i-pen')}Modifiche</span>`, rifiutata: `<span class="chip rosa">${ic('i-x')}Rifiutata</span>` }[rv.stato] || '';
+    const verso = rv.verso === 'su' ? `<span class="badge up">${ic('i-up')}</span> ` : rv.verso === 'giu' ? `<span class="badge down">${ic('i-dn')}</span> ` : '';
+    return `<div class="hrow rev"><span class="ora">${esc(rv.quando)}</span>${tipo}<div class="tx"><b>${esc(rv.titolo)}</b><span>${verso}${esc(rv.effetto || '')}</span></div>${esito}<span class="chi">${esc(rv.decisa || '')}</span><span class="rb xs">${ic('i-ne')}</span></div>`;
+  }
+  /* L'ultima esecuzione di chi non sta lavorando adesso: consegnata (da approvare) o conclusa (libero). */
+  function cardUltima(m, e) {
+    const a = e.att, att = e.stato === 'attesa';
+    return `<div class="ncard task ${att ? 'lime' : 'dark'}">
+      <div class="who">${av(m, e)}<div><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div></div>
+      <div class="nt"><span class="rb ghost">${ic('i-bell')}${att ? '<i class="dot"></i>' : ''}</span><span class="rb ghost">${ic('i-ne')}</span></div>
+      <div class="body"><span class="ico">${ic(iconaDip[e.dip])}</span><div><div class="tt">${esc(a.titolo)}</div><div class="meta"><b>${esc(a.cliente || '—')}</b><span>${att ? 'consegnato alle' : 'concluso'}</span><b>${esc(a.fine || '')}</b></div></div></div>
+      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${att ? `<span class="chip ink">${ic('i-bell')}Da approvare</span><span>aspetta il titolare</span>` : `<span class="chip">Libero</span><span>nessuna esecuzione in corso</span>`}${ic('i-chev')}</span><span class="rb ghost">${ic('i-chat')}</span><span class="rb black">${ic(att ? 'i-eye' : 'i-play')}</span></div></div>
+    </div>`;
+  }
+  function sezioneOggi(m, e) {
+    const oggi = m.richieste.filter(r => r.chi === e.id && r.giorno === 0).sort((a, b) => b.min - a.min);
+    const card = (e.stato === 'lavoro' || e.stato === 'errore' || e.stato === 'pianificato') ? cardEsecuzione(m, e, 0) : cardUltima(m, e);
+    return `<section>
+      <div class="shead"><h3>Oggi</h3><span class="cnt"><b>${oggi.length}</b><span>Richieste</span></span><span class="rb sm ghost">${ic('i-search')}</span>
+        <div class="filters"><span class="pill on">Oggi</span><span class="pill">Ieri</span><span class="pill">Questa settimana</span></div></div>
+      <div class="oggi"><div class="cards riga" style="margin:0">${card}</div><div class="hlist" style="margin-top:0">${oggi.length ? oggi.map(r => rigaStorico(m, r)).join('') : `<div class="vuoto" style="margin:0;height:56px">Nessuna richiesta oggi</div>`}</div></div>
+    </section>`;
+  }
+  function sezioneRendimento(m, e, d) {
+    const o = d.metriche.ora, p = d.metriche.prima;
+    const q = (n, t) => `${Math.round(100 * n / Math.max(1, t))}%`;
+    const riga = (icona, nome, sub, v1, v2, badge) => `<div class="crow rend"><span class="ico">${ic(icona)}</span><div class="tx"><b>${nome}</b><span>${sub}</span></div><span class="v">${v1}</span><span class="v">${v2}</span><span class="eur">${badge}</span><span class="rb xs">${ic('i-ne')}</span></div>`;
+    const decise = m.richieste.filter(r => r.chi === e.id && r.stato !== 'attesa').sort((a, b) => (a.giorno - b.giorno) || (b.min - a.min)).slice(0, 6);
+    return `<section>
+      <div class="shead"><h3>Rendimento</h3><span class="cnt"><b>${o.task}</b><span>Task in 30 giorni</span></span><span class="rb sm ghost">${ic('i-sliders')}</span><span class="rb sm ghost">${ic('i-down')}</span>
+        <div class="filters"><span class="pill on">Ultimi 30 giorni</span><span class="pill">Ultimi 90 giorni</span><span class="pill">Da inizio anno</span><span class="pill">Per cliente</span></div></div>
+      <div class="hlist" style="margin-top:24px">
+        ${riga('i-check', 'Approvate al primo colpo', 'consegne accettate senza modifiche', `${o.approvate}<small>${q(o.approvate, o.task)}</small>`, `${p.approvate}<small>nei 30 precedenti</small>`, delta(o.approvate, p.approvate, true))}
+        ${riga('i-pen', 'Corrette da un umano', 'il titolare ha chiesto modifiche', `${o.modifiche}<small>${q(o.modifiche, o.task)}</small>`, `${p.modifiche}<small>nei 30 precedenti</small>`, delta(o.modifiche, p.modifiche, false))}
+        ${riga('i-x', 'Respinte', 'rifiutate dal titolare', `${o.rifiutate}<small>${q(o.rifiutate, o.task)}</small>`, `${p.rifiutate}<small>nei 30 precedenti</small>`, delta(o.rifiutate, p.rifiutate, false))}
+        ${riga('i-euro', 'Spesa e costo per esito utile', 'spesa dei 30 giorni / consegne accettate, anche dopo modifiche', `${o.spesa} €<small>spesi</small>`, `${eur(o.costo)}<small>per esito · era ${eur(p.costo)}</small>`, delta(o.costo, p.costo, false, eur))}
+        ${riga('i-clock', 'Tempo medio per task', 'dall\'avvio alla consegna', `${o.tempo} min`, `${p.tempo} min<small>nei 30 precedenti</small>`, delta(o.tempo, p.tempo, false, v => v + ' min'))}
+      </div>
+      <div class="hgroup"><b>Le ultime richieste</b>decise dal titolare · la fonte dei numeri qui sopra<span class="link" data-az="pagina" data-pagina="richieste" data-chi="${e.id}">Tutte le richieste di ${esc(m.etichetta(e))} ${ic('i-ne')}</span></div>
+      <div class="hlist">${decise.length ? decise.map(r => rigaStorico(m, r)).join('') : `<div class="vuoto" style="margin:0;height:56px">Nessuna richiesta decisa</div>`}</div>
+    </section>`;
+  }
+  function rigaVersione(m, e, d, v) {
+    const cur = v.v === d.prompt.corrente, c = d.prompt.corrente;
+    const stato = v.proposta ? `<span class="chip lime">${ic('i-bolt')}Proposta</span>` : cur ? `<span class="chip ink">${ic('i-check')}Corrente</span>` : '';
+    const n = v.numeri;
+    const [a, b] = cur ? [Math.max(1, v.v - 1), v.v] : [Math.min(v.v, c), Math.max(v.v, c)];
+    return `<div class="vrow${cur ? ' on' : ''}${v.proposta ? ' prop' : ''}"><b class="v">v${v.v}</b><div class="tx"><b>${esc(v.nota)}</b><span>${esc(v.chi)} · ${esc(v.data)}${n ? ` · ${n.task} task${n.prova ? ' in prova' : ''} · ${n.corretti}% corretti · ${n.respinte}% respinte · ${eur(n.costo)}` : ''}</span></div>${stato}${a !== b ? `<span class="rb xs" data-az="confronta" data-id="${e.id}" data-a="${a}" data-b="${b}" title="Confronta v${a} e v${b}">${ic('i-expand')}</span>` : ''}</div>`;
+  }
+  function sezionePrompt(m, e, d) {
+    const cur = d.prompt.versioni.find(v => v.v === d.prompt.corrente) || d.prompt.versioni[0];
+    const prec = d.prompt.versioni.find(v => v.v === cur.v - 1);
+    return `<section>
+      <div class="shead"><h3>Mansione e soul prompt</h3><span class="cnt"><b>v${cur.v}</b><span>Corrente dal ${esc(cur.data)}</span></span><span class="rb sm ghost">${ic('i-search')}</span>
+        <div class="filters"><span class="pill on">Testo</span><span class="pill">Esempi allegati</span><span class="pill">Regole del dipartimento</span></div>
+        <div class="destra">${prec ? `<span class="pill" data-az="confronta" data-id="${e.id}" data-a="${prec.v}" data-b="${cur.v}">${ic('i-expand')}Confronta v${prec.v} e v${cur.v}</span>` : ''}</div></div>
+      <div class="prompt">
+        <div class="pdoc"><div class="nt"><span class="rb sm" title="Modifica">${ic('i-pen')}</span>${prec ? `<span class="rb sm" data-az="confronta" data-id="${e.id}" data-a="${prec.v}" data-b="${cur.v}" title="Confronta con la v${prec.v}">${ic('i-expand')}</span>` : ''}</div>
+          <div class="lb"><span class="chip ink">${ic('i-doc')}Soul prompt · v${cur.v}</span><span>${esc(cur.chi)} · ${esc(cur.data)} · ${esc(cur.nota)}</span></div>
+          ${cur.testo.map(p => `<p>${esc(p)}</p>`).join('')}
+          <div class="kv"><span>Con questa versione</span><b>${cur.numeri.task} task · ${cur.numeri.corretti}% corretti · ${cur.numeri.respinte}% respinte · ${eur(cur.numeri.costo)} per esito</b></div>
+        </div>
+        <div class="vlist">${d.prompt.versioni.map(v => rigaVersione(m, e, d, v)).join('')}</div>
+      </div>
+    </section>`;
+  }
+  function sezioneModello(m, e, d) {
+    const mo = d.modello, uso = mo.uso;
+    const tot = Object.values(uso).reduce((t, u) => t + u.esecuzioni, 0), costoTot = Object.values(uso).reduce((t, u) => t + u.costo, 0);
+    const cardMod = md => { const u = uso[md.id] || { esecuzioni: 0, costo: 0 }; const on = md.id === mo.assegnato; return `<div class="ncard lead mod${on ? ' on' : ''}" data-az="assegna" data-id="${e.id}" data-v="${md.id}" title="${on ? 'Assegnato' : 'Assegna ' + md.nome}"><span class="ico">${ic(md.icona)}</span><div class="nt"><span class="rb ghost">${ic(on ? 'i-check' : 'i-ne')}</span></div><div class="name md">${esc(md.nome)}</div><div class="role">${esc(md.desc)}</div><div class="ft"><div><span class="k">30 giorni</span><span class="v">${u.esecuzioni}<small>esecuzioni · ${Math.round(100 * u.esecuzioni / Math.max(1, tot))}%</small></span></div><div><span class="k">Costo</span><span class="v">${u.costo} €<small>${esc(md.costo.split(' ')[0])} l'una</small></span></div></div></div>`; };
+    return `<section>
+      <div class="shead"><h3>Modello</h3><span class="cnt"><b>${esc(m.MODELLI[mo.assegnato].nome)}</b><span>Assegnato</span></span><span class="rb sm ghost">${ic('i-sliders')}</span>
+        <div class="filters"><span class="pill${mo.automatica ? ' on' : ''}" data-az="auto" data-id="${e.id}" data-v="1">Scelta automatica</span><span class="pill${mo.automatica ? '' : ' on'}" data-az="auto" data-id="${e.id}" data-v="0">Solo il modello assegnato</span></div></div>
+      <div class="cards modelli">
+        ${Object.values(m.MODELLI).map(cardMod).join('')}
+        <div class="ncard task dark regola"><div class="who"><span class="ico">${ic('i-wand')}</span><div><b>Criterio di scelta automatica</b><span>${mo.automatica ? 'attivo: il modello cambia da solo secondo la regola' : 'spento: si usa solo il modello assegnato'}</span></div></div><div class="nt"><span class="rb ghost">${ic('i-pen')}</span></div>
+          <div class="body"><p class="rtx">${mo.regola}</p></div>
+          <div class="st"><span class="k">Ripartizione delle esecuzioni · 30 giorni</span><div class="ripart">${Object.values(m.MODELLI).map(md => `<i class="${md.id}" style="width:${100 * (uso[md.id] || { esecuzioni: 0 }).esecuzioni / Math.max(1, tot)}%" title="${md.nome}"></i>`).join('')}</div><div class="leg">${Object.values(m.MODELLI).map(md => `<span><i class="${md.id}"></i>${md.nome} ${(uso[md.id] || { esecuzioni: 0 }).esecuzioni}</span>`).join('')}<span style="margin-left:auto">${tot} esecuzioni · ${costoTot} €</span></div></div></div>
+      </div>
+    </section>`;
+  }
+  function sezioneStrumenti(m, e, d) {
+    const attivi = d.strumenti.filter(s => s.attivo).length;
+    return `<section>
+      <div class="shead"><h3>Strumenti e connessioni</h3><span class="cnt"><b>${attivi}</b><span>Attivi su ${d.strumenti.length}</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
+        <div class="filters"><span class="pill on">Tutti</span><span class="pill">Attivi</span><span class="pill">Spenti</span><span class="pill">Connessioni</span></div>
+        <div class="destra"><span class="pill">${ic('i-plus')}Aggiungi uno strumento</span></div></div>
+      <div class="cards regole">${d.strumenti.map(s => `<div class="ncard lead${s.attivo ? '' : ' spenta'}" data-az="strumento" data-id="${e.id}" data-v="${s.id}" title="${s.attivo ? 'Spegni' : 'Accendi'}"><span class="ico">${ic(s.icona)}</span><div class="nt"><span class="rb ghost">${ic('i-ne')}</span></div><div class="name md">${esc(s.nome)}</div><div class="role">${esc(s.desc)}</div><div class="ft"><div><span class="k">Ultimo uso</span><span class="sel">${esc(s.ultimo)}${ic('i-chev')}</span></div><div><span class="k">Stato</span>${s.attivo ? `<span class="chip lime">${ic('i-check')}Attivo</span>` : `<span class="chip">Spento</span>`}</div></div></div>`).join('')}</div>
+      <div class="hgroup"><b>Connessioni</b>${d.connessioni.length} · con l'ultimo uso</div>
+      <div class="hlist">${d.connessioni.map(c => `<div class="crow"><span class="ico">${ic('i-org')}</span><div class="tx"><b>${esc(c.nome)}</b><span>${esc(c.desc)}</span></div><span class="v">${c.stato === 'attiva' ? `<span class="chip lime">${ic('i-check')}Attiva</span>` : `<span class="chip rosa">${ic('i-warn')}Scaduta il ${esc(c.ultimo)}</span>`}</span><span class="v">${esc(c.ultimo)}<small>ultimo uso</small></span><span class="eur">${c.stato === 'attiva' ? '' : `<span class="chip ink">${ic('i-bolt')}Rinnova</span>`}</span><span class="rb xs">${ic('i-ne')}</span></div>`).join('')}</div>
+    </section>`;
+  }
+  function sezioneBudget(m, e, d) {
+    const b = d.budget, q = Math.min(100, Math.round(100 * b.speso / Math.max(1, b.mese))), oltre = b.oggi > b.giorno;
+    return `<section>
+      <div class="shead"><h3>Budget e permessi</h3><span class="cnt"><b>${b.speso} €</b><span>Spesi su ${b.mese} € al mese</span></span><span class="rb sm ghost">${ic('i-sliders')}</span>
+        <div class="filters"><span class="pill on">Settembre</span><span class="pill">Agosto</span><span class="pill">Da inizio anno</span></div></div>
+      <div class="bp">
+        <div class="ncard task ${oltre ? 'lime' : 'dark'} budget">
+          <div class="who"><span class="ico">${ic('i-euro')}</span><div><b>Budget del mese</b><span>${b.mese} €/mese · ${b.giorno} €/giorno</span></div></div>
+          <div class="nt"><span class="rb ghost">${ic('i-pen')}</span></div>
+          <div class="body"><div><div class="tt">${b.speso} € <small>di ${b.mese} €</small></div><div class="prog"><i style="width:${q}%"></i></div><div class="meta"><b>${q}%</b><span>speso</span><b>${Math.max(0, b.mese - b.speso)} €</b><span>per 26 giorni</span></div></div></div>
+          <div class="st"><span class="k">Oggi</span><div class="row"><span class="sel"><span>${b.oggi} € su ${b.giorno} €</span>${oltre ? `<span class="chip rosa">${ic('i-warn')}oltre il limite</span>` : `<span class="chip">${ic('i-check')}nel limite</span>`}${ic('i-chev')}</span><span class="rb ${oltre ? 'black' : 'ghost'}">${ic('i-bell')}${oltre ? '<i class="dot"></i>' : ''}</span></div></div>
+        </div>
+        <div class="hlist" style="margin-top:0">${d.permessi.map(p => `<div class="crow${p.attiva ? '' : ' spenta'}"><span class="ico">${ic(p.eccezione ? 'i-star' : 'i-bell')}</span><div class="tx"><b>${esc(p.nome)}</b><span>${esc(p.origine)}</span></div><span class="v">${esc(p.modo)}</span><span class="v">${p.eccezione ? `<span class="chip lime">${ic('i-star')}Eccezione</span>` : `<span class="chip">Regola generale</span>`}</span><span class="eur">${p.attiva ? `<span class="chip lime">${ic('i-check')}Attiva</span>` : `<span class="chip">Spenta</span>`}</span><span class="rb xs">${ic('i-ne')}</span></div>`).join('')}<div class="crow add" data-az="pagina" data-pagina="richieste"><span class="rb xs">${ic('i-plus')}</span>Aggiungi un'eccezione · le regole generali stanno in Richieste</div></div>
+      </div>
+    </section>`;
+  }
+  function sezioneColloquio(m, e, d) {
+    const c = d.colloquio, ok = c.casi.filter(x => x.esito === 'superato').length, sup = c.esito === 'superato';
+    const chipEs = x => x.esito === 'superato' ? `<span class="chip lime">${ic('i-check')}Superato</span>` : x.esito === 'parziale' ? `<span class="chip">${ic('i-pen')}Parziale</span>` : `<span class="chip rosa">${ic('i-x')}Fallito</span>`;
+    const ripeti = c.inCorso ? `<span class="pill lime">${ic('i-play')}Colloquio in corso · 0 di ${c.casi.length} casi</span>` : `<span class="pill" data-az="colloquio" data-id="${e.id}">${ic('i-target')}Ripeti il colloquio</span>`;
+    return `<section>
+      <div class="shead"><h3>Colloquio</h3><span class="cnt"><b>${c.punteggio}</b><span>Su 100 · soglia ${c.soglia}</span></span><span class="rb sm ghost">${ic('i-search')}</span>
+        <div class="filters"><span class="pill on">Ultimo colloquio</span><span class="pill">Tutti i casi</span><span class="pill">Solo falliti</span></div>
+        <div class="destra">${ripeti}</div></div>
+      <div class="coll">
+        <div class="ncard task ${sup ? 'gray' : 'lime'} esito">
+          <div class="who"><span class="ico">${ic('i-target')}</span><div><b>${sup ? 'Superato' : 'Non superato'} il ${esc(c.data)}</b><span>v${c.versione} · ${esc(m.MODELLI[c.modello].nome)} · ${esc(c.durata)} · ${c.costo} €</span></div></div>
+          <div class="nt"><span class="rb ghost">${ic('i-ne')}</span></div>
+          <div class="body"><div><div class="tt">${c.punteggio} <small>su 100</small></div><div class="prog"><i style="width:${c.punteggio}%"></i></div><div class="meta"><b>${ok} di ${c.casi.length}</b><span>casi superati</span><b>soglia ${c.soglia}</b></div></div></div>
+          <div class="st"><span class="k">Vale per</span><div class="row"><span class="sel"><span class="chip ink">${ic('i-doc')}v${c.versione}</span><span>${c.versione === d.prompt.corrente ? 'la versione corrente' : 'una versione precedente: da ripetere'}</span>${ic('i-chev')}</span><span class="rb black" data-az="colloquio" data-id="${e.id}" title="Ripeti il colloquio">${ic('i-play')}</span></div></div>
+        </div>
+        <div class="hlist" style="margin-top:0">${c.casi.map((x, i) => `<div class="hrow caso"><span class="ora">${i + 1}</span><div class="tx"><b>${esc(x.nome)}</b><span>atteso: ${esc(x.atteso)}</span></div>${chipEs(x)}<span class="eur">${x.punteggio}</span><span class="rb xs">${ic('i-ne')}</span></div>`).join('')}</div>
+      </div>
+      <div class="hgroup"><b>Colloqui precedenti</b>${c.storico.length} · uno per versione o modello</div>
+      <div class="hlist">${c.storico.map(s => `<div class="crow"><span class="ico">${ic('i-target')}</span><div class="tx"><b>${esc(s.data)} · prompt v${s.versione}</b><span>${esc(m.MODELLI[s.modello].nome)}</span></div><span class="v">${s.punteggio}<small>su 100</small></span><span class="v">${s.esito === 'superato' ? `<span class="chip lime">${ic('i-check')}Superato</span>` : `<span class="chip rosa">${ic('i-x')}Non superato</span>`}</span><span class="eur"></span><span class="rb xs">${ic('i-ne')}</span></div>`).join('')}</div>
+    </section>`;
+  }
+  function dipendente(m, opz) {
+    const e = m.byId[opz.id] || m.dipendenti[0];
+    const d = m.dossierDi(e);
+    const att = inAttesa(m).filter(r => r.chi === e.id);
+    const oggiN = m.richieste.filter(r => r.chi === e.id && r.giorno === 0).length + (e.stato === 'lavoro' || e.stato === 'errore' ? 1 : 0);
+    const stats = `<div class="stat"><b>${oggiN}</b><span>task oggi</span></div>
+      <div class="stat"><b>${att.length}</b><span>da approvare</span>${att.length ? `<span class="badge down">${ic('i-bell')}${att.length}</span>` : ''}</div>
+      <div class="stat"><b>${e.att.costo || 0} €</b><span>spesi oggi</span></div>`;
+    const rev = d.revisioni.find(r => r.stato === 'attesa');
+    const passate = d.revisioni.filter(r => r.stato !== 'attesa');
+    const corpo = `
+      ${testataDipendente(m, e, d)}
+      <section>
+        <div class="shead"><h3>Revisione di performance</h3><span class="cnt"><b>${rev ? 1 : 0}</b><span>In sospeso</span></span><span class="rb sm ghost">${ic('i-search')}</span>
+          <div class="filters"><span class="pill on">Tutte</span><span class="pill">Soul prompt</span><span class="pill">Modello</span></div></div>
+        ${rev ? `<div class="cards" style="display:block">${cardRevisione(m, e, d, rev)}</div>` : `<div class="vuoto">Nessuna revisione in sospeso: il sistema ne propone una quando i numeri dei 30 giorni peggiorano rispetto ai 30 precedenti</div>`}
+        ${passate.length ? `<div class="hgroup"><b>Revisioni passate</b>${passate.length} · chi ha deciso, quando, con quale effetto misurato</div><div class="hlist">${passate.map(r => rigaRevisione(m, r)).join('')}</div>` : ''}
+      </section>
+      ${sezioneOggi(m, e)}
+      ${sezioneRendimento(m, e, d)}
+      ${sezionePrompt(m, e, d)}
+      ${sezioneModello(m, e, d)}
+      ${sezioneStrumenti(m, e, d)}
+      ${sezioneBudget(m, e, d)}
+      ${sezioneColloquio(m, e, d)}`;
+    return cornice(m, opz, m.etichetta(e).toUpperCase(), stats, 'org', corpo, '');
+  }
+
+  /* ---------- tendina estesa delle versioni: dossier di una revisione, o confronto fra due versioni ---------- */
+  /* Differenze fra due elenchi (LCS): ops '=' | '-' | '+'. */
+  function lcs(a, b) {
+    const n = a.length, k = b.length, T = Array.from({ length: n + 1 }, () => new Array(k + 1).fill(0));
+    for (let i = n - 1; i >= 0; i--) for (let j = k - 1; j >= 0; j--) T[i][j] = a[i] === b[j] ? T[i + 1][j + 1] + 1 : Math.max(T[i + 1][j], T[i][j + 1]);
+    const ops = []; let i = 0, j = 0;
+    while (i < n && j < k) { if (a[i] === b[j]) { ops.push(['=', a[i]]); i++; j++; } else if (T[i + 1][j] >= T[i][j + 1]) { ops.push(['-', a[i]]); i++; } else { ops.push(['+', b[j]]); j++; } }
+    while (i < n) ops.push(['-', a[i++]]); while (j < k) ops.push(['+', b[j++]]);
+    return ops;
+  }
+  /* Differenze per parola dentro un paragrafo cambiato: parole tolte a sinistra (rosa), aggiunte a destra (lime). */
+  function parole(a, b) {
+    const L = [], R = [];
+    /* le parole cambiate contigue stanno in un solo segno */
+    const metti = (arr, cls, w) => { const u = arr[arr.length - 1]; if (u && u.cls === cls) u.w.push(w); else arr.push({ cls, w: [w] }); };
+    lcs(a.split(' '), b.split(' ')).forEach(o => { if (o[0] === '=') { metti(L, '', o[1]); metti(R, '', o[1]); } else if (o[0] === '-') metti(L, 'del', o[1]); else metti(R, 'add', o[1]); });
+    const testo = arr => arr.map(x => x.cls ? `<mark class="${x.cls}">${esc(x.w.join(' '))}</mark>` : esc(x.w.join(' '))).join(' ');
+    return [testo(L), testo(R)];
+  }
+  /* Due colonne di paragrafi: uguali, cambiati (differenze per parola), tolti, aggiunti. */
+  function differenze(A, B) {
+    const ops = lcs(A, B), L = [], R = [];
+    let i = 0;
+    while (i < ops.length) {
+      if (ops[i][0] === '=') { L.push(`<p>${esc(ops[i][1])}</p>`); R.push(`<p>${esc(ops[i][1])}</p>`); i++; continue; }
+      const del = [], add = [];
+      while (i < ops.length && ops[i][0] !== '=') { (ops[i][0] === '-' ? del : add).push(ops[i][1]); i++; }
+      const k = Math.min(del.length, add.length);
+      for (let j = 0; j < k; j++) { const [l, r] = parole(del[j], add[j]); L.push(`<p class="chg">${l}</p>`); R.push(`<p class="chg">${r}</p>`); }
+      del.slice(k).forEach(t => L.push(`<p class="del">${esc(t)}</p>`)); add.slice(k).forEach(t => R.push(`<p class="add">${esc(t)}</p>`));
+    }
+    return [L.join(''), R.join('')];
+  }
+  function tendinaVersioni(m, opz) {
+    const c = opz.confronto, e = m.byId[c.id], d = m.dossierDi(e), rv = c.rev, r = c.richiesta;
+    let colA, colB, titolo;
+    if (rv && rv.tipo === 'modello') {
+      const ma = m.MODELLI[rv.da], mb = m.MODELLI[rv.a];
+      const col = (md, tag, testo) => { const u = d.modello.uso[md.id] || { esecuzioni: 0, costo: 0 }; return `<div class="doc"><div class="lb"><span class="chip ${tag}">${ic(md.icona)}${esc(md.nome)}</span><span>${testo}</span></div><p>${esc(md.desc)}.</p><p>${esc(md.costo)}.</p><div class="kv"><span>Esecuzioni in 30 giorni</span><b>${u.esecuzioni}</b></div><div class="kv"><span>Costo in 30 giorni</span><b>${u.costo} €</b></div></div>`; };
+      colA = col(ma, 'ink', 'assegnato oggi'); colB = col(mb, 'lime', 'proposto');
+      titolo = `Modello: ${ma.nome} → ${mb.nome}`;
+    } else {
+      const va = d.prompt.versioni.find(v => v.v === c.a) || d.prompt.versioni[0], vb = d.prompt.versioni.find(v => v.v === c.b) || va;
+      const [L, R] = differenze(va.testo, vb.testo);
+      const capo = (v, testo, tag) => `<div class="lb"><span class="chip ${tag}">${ic('i-doc')}v${v.v}</span><span>${esc(v.chi)} · ${esc(v.data)} · ${esc(v.nota)}</span></div>${testo}${v.numeri ? `<div class="kv"><span>${v.numeri.task} task${v.numeri.prova ? ' in prova' : ''}</span><b>${v.numeri.corretti}% corretti · ${v.numeri.respinte}% respinte · ${eur(v.numeri.costo)} per esito</b></div>` : ''}`;
+      const tag = v => v.proposta ? 'lime' : v.v === d.prompt.corrente ? 'ink' : 'light';
+      colA = `<div class="doc">${capo(va, L, tag(va))}</div>`; colB = `<div class="doc">${capo(vb, R, tag(vb))}</div>`;
+      titolo = `Soul prompt: v${va.v} e v${vb.v} a confronto`;
+    }
+    const li = x => `<li><b>${esc(x.n)}</b><span>${esc(x.t)}</span></li>`;
+    const ev = rv ? `<div class="ev3">
+        <div class="dcard"><h5>Perché</h5><ul>${rv.perche.map(li).join('')}</ul></div>
+        <div class="dcard"><h5>Cosa ci aspettiamo</h5><ul>${rv.attese.map(li).join('')}</ul></div>
+        <div class="dcard"><h5>Rischi</h5><ul>${rv.rischi.map(t => `<li><span>${esc(t)}</span></li>`).join('')}</ul><p class="nota">La prova: ${rv.prova.esecuzioni} esecuzioni, circa ${rv.prova.costo} €, esito in ${rv.prova.giorni} giorni.</p></div>
+      </div>` : '';
+    const pagina = `<span class="link" data-az="pagina" data-pagina="dipendente" data-id="${e.id}">La pagina di ${esc(m.etichetta(e))} ${ic('i-ne')}</span>`;
+    const azioni = rv && rv.stato === 'attesa' && r
+      ? (opz.motivo
+        ? `<div class="azioni motivo"><span class="k">Motivo del rifiuto, obbligatorio: resta nella cronologia delle revisioni</span><input type="text" data-campo="motivo" placeholder="Es. il limite di 800 battute non vale per i casi cliente" maxlength="120"><span class="pill red" data-az="rifiuta-conferma" data-id="${r.id}">${ic('i-x')}Conferma il rifiuto</span><span class="pill olight" data-az="rifiuta-annulla">Annulla</span></div>`
+        : `<div class="azioni"><span class="pill ink" data-az="prova" data-id="${r.id}">${ic('i-play')}Prova su ${rv.prova.esecuzioni} esecuzioni</span><span class="pill lime" data-az="approva" data-id="${r.id}">${ic('i-check')}Applica</span><span class="pill olight" data-az="modifiche" data-id="${r.id}">${ic('i-pen')}Chiedi modifiche</span><span class="pill red" data-az="rifiuta-motivo" data-id="${r.id}">${ic('i-x')}Rifiuta…</span>${opz.pagina === 'dipendente' ? '' : pagina}</div>`)
+      : `<div class="azioni"><span class="pill olight" data-az="chiudi">Chiudi</span>${rv && rv.decisa ? `<span class="chip light">${esc(rv.decisa)}${rv.motivo ? ' · «' + esc(rv.motivo) + '»' : ''}</span>` : ''}${opz.pagina === 'dipendente' ? '' : pagina}</div>`;
+    const att = inAttesa(m);
+    const pag = r ? pager(m, att.indexOf(r), att.length) : '';
+    return `<div class="a-tend estesa vers" role="dialog" aria-label="${esc(titolo)}">
+      <div class="th"><span class="rb olight sm" data-az="${r ? 'riduci' : 'chiudi'}" title="${r ? 'Riduci' : 'Chiudi'}">${ic('i-left')}</span><span class="rb black">${ic(rv ? 'i-bolt' : 'i-doc')}</span><h4>${esc(titolo)}</h4>${rv && rv.stato === 'attesa' ? `<span class="chip lime">${ic('i-bell')}decide il titolare</span>` : ''}${pag}<span class="rb olight sm" data-az="chiudi" title="Chiudi">${ic('i-right')}</span></div>
+      <div class="tb"><div class="who2">${av(m, e, 's')}<b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span>${rv ? `<span class="chip light">${rv.tipo === 'prompt' ? 'Revisione del soul prompt' : 'Revisione del modello'} · proposta ${esc(rv.quando)}</span>` : `<span class="chip light">Confronto fra versioni</span>`}</div>
+        <div class="cmp">${colA}${colB}</div>${ev}${azioni}</div>
+    </div>`;
+  }
+
   function render(m, opz) {
-    opz = Object.assign({ pagina: 'home', dip: 'svi', tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null }, opz || {});
-    return opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : home(m, opz);
+    opz = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, confronto: null, motivo: false }, opz || {});
+    return opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : opz.pagina === 'dipendente' ? dipendente(m, opz) : home(m, opz);
   }
 
   /* Disegna e collega i clic: tendina, cambio pagina, filtri, decisioni. Ritorna lo stato. */
   function monta(radice, m, opz) {
-    const st = Object.assign({ pagina: 'home', dip: 'svi', tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, editor: null }, opz || {});
+    const st = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, editor: null, confronto: null, motivo: false }, opz || {});
     const n = () => m.richiesteDi('attesa').length;
+    /* parametri di avvio della pagina del dipendente: ?tendina=dossier (la revisione in sospeso del dipendente, estesa) e ?confronto=a,b (due versioni del prompt) */
+    const idxRevisione = id => inAttesa(m).findIndex(r => r.tipo === 'revisione' && r.chi === id);
+    if (st.tendina === 'dossier') { const i = idxRevisione(st.id); st.tendina = i >= 0 ? 'estesa' : 'aperta'; if (i >= 0) st.richiesta = i; }
+    if (typeof st.confronto === 'string') { const [a, b] = st.confronto.split(',').map(Number); st.confronto = { id: st.id, a, b }; st.tendina = 'confronto'; }
     const vivi = () => window.DGT_AVATAR.anima(radice);
     const tutto = () => { const y = window.scrollY; radice.innerHTML = render(m, st); vivi(); window.scrollTo(0, y); };
     const soloTendina = () => { const t = radice.querySelector('#a-tendina'); if (t) { t.innerHTML = tendina(m, st); vivi(); } else tutto(); };
@@ -773,9 +1200,11 @@ window.DIREZIONE_A = (function () {
       if (st.modifica.id) m.aggiorna(st.modifica.id, dati); else m.aggiungi(dati);
       chiudiEditor(); tutto();
     };
-    const decidi = (id, stato, commento) => {
+    const decidi = (id, stato, commento, esitoRevisione) => {
       const r = m.richieste.find(x => x.id === id); if (!r) return;
       r.stato = stato; r.decisa = m.azienda.ora; r.giorno = 0; r.min = 10 * 60 + 42; if (commento) r.commento = commento;
+      if (r.tipo === 'revisione') m.decidiRevisione(r, esitoRevisione || (stato === 'approvata' ? 'applicata' : stato), commento);
+      st.motivo = false;
       if (st.richiesta >= n()) st.richiesta = Math.max(0, n() - 1);
       if (!n() && st.tendina === 'estesa') st.tendina = 'aperta';
       tutto();
@@ -783,13 +1212,17 @@ window.DIREZIONE_A = (function () {
     tutto();
     if (st.editor) apriEditor(st.editor === 'nuovo' ? 0 : +st.editor);
     radice.addEventListener('input', ev => {
-      const inp = ev.target.closest('input[data-campo]'); if (!inp || !st.modifica) return;
+      const inp = ev.target.closest('input[data-campo]'); if (!inp || !st.modifica || inp.dataset.campo === 'motivo') return;
       const k = inp.dataset.campo, b = st.modifica.bozza;
       if (k === 'ruolo' && b.seme && b.seme.indexOf(b.ruolo) === 0) b.seme = null;   // il seme seguiva il ruolo: torna a seguirlo
       b[k] = inp.value; inp.style.borderColor = '';
       aggiornaAnteprima();
     });
-    radice.addEventListener('keydown', ev => { if (ev.key === 'Enter' && st.modifica && ev.target.closest('input[data-campo]')) { ev.preventDefault(); salva(); } if (ev.key === 'Escape' && st.modifica) { chiudiEditor(); soloTendina(); } });
+    radice.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter' && ev.target.closest('input[data-campo="motivo"]')) { ev.preventDefault(); const b = radice.querySelector('[data-az="rifiuta-conferma"]'); if (b) b.click(); return; }
+      if (ev.key === 'Enter' && st.modifica && ev.target.closest('input[data-campo]')) { ev.preventDefault(); salva(); }
+      if (ev.key === 'Escape' && st.modifica) { chiudiEditor(); soloTendina(); }
+    });
     radice.addEventListener('click', ev => {
       const el = ev.target.closest('[data-az]'); if (!el || !radice.contains(el)) return;
       const az = el.dataset.az;
@@ -798,23 +1231,35 @@ window.DIREZIONE_A = (function () {
       else if (az === 'bozza') { const k = el.dataset.k, v = el.dataset.v; st.modifica.bozza[k] = (k === 'seme' && v === dipendenteBozza(m, st.modifica).ruolo) ? null : v; if (k === 'dip') soloTendina(); else aggiornaAnteprima(); }
       else if (az === 'salva') { salva(); }
       else if (az === 'annulla') { chiudiEditor(); soloTendina(); }
-      else if (az === 'chiudi') { st.tendina = 'chiusa'; soloTendina(); }
+      else if (az === 'chiudi') { st.tendina = st.tendina === 'confronto' ? (st.tendinaPrima === 'confronto' ? 'chiusa' : st.tendinaPrima || 'chiusa') : 'chiusa'; st.motivo = false; soloTendina(); }
       else if (az === 'apri') { st.tendina = 'aperta'; if (el.dataset.pannello) st.pannello = el.dataset.pannello; soloTendina(); }
       else if (az === 'pannello') { st.pannello = el.dataset.pannello; soloTendina(); }
       else if (az === 'espandi') { st.tendina = 'estesa'; soloTendina(); }
-      else if (az === 'riduci') { st.tendina = 'aperta'; soloTendina(); }
+      else if (az === 'riduci') { st.tendina = 'aperta'; st.motivo = false; soloTendina(); }
       else if (az === 'prec') { if (n()) st.richiesta = (st.richiesta - 1 + n()) % n(); soloTendina(); }
       else if (az === 'succ') { if (n()) st.richiesta = (st.richiesta + 1) % n(); soloTendina(); }
       else if (az === 'vai') { st.richiesta = +el.dataset.idx; soloTendina(); }
       else if (az === 'richiesta') { if (ev.target.closest('[data-az="approva"],[data-az="rifiuta"]')) return; st.richiesta = +el.dataset.idx; st.tendina = 'estesa'; st.pannello = 'richieste'; soloTendina(); }
-      else if (az === 'pagina') { st.pagina = el.dataset.pagina; if (el.dataset.dip) { st.dip = el.dataset.dip; if (st.pagina === 'richieste') st.filtri = { dip: el.dataset.dip }; } tutto(); window.scrollTo(0, 0); }
+      else if (az === 'pagina') { ev.stopPropagation(); st.pagina = el.dataset.pagina; if (el.dataset.dip) { st.dip = el.dataset.dip; if (st.pagina === 'richieste') st.filtri = { dip: el.dataset.dip }; } if (el.dataset.id) st.id = +el.dataset.id; if (el.dataset.chi) st.filtri = { chi: el.dataset.chi }; if (st.tendina === 'confronto' || st.tendina === 'estesa') st.tendina = 'aperta'; st.motivo = false; tutto(); window.scrollTo(0, 0); }
       else if (az === 'filtro') { const k = el.dataset.k, v = el.dataset.v; st.filtri[k] = (st.filtri[k] === v || v === 'tutti') ? undefined : v; tutto(); }
       else if (az === 'azzera') { st.filtri = {}; tutto(); }
       else if (az === 'ordina') { st.ordine = el.dataset.v; tutto(); }
       else if (az === 'approva') { ev.stopPropagation(); decidi(el.dataset.id, 'approvata'); }
-      else if (az === 'rifiuta') { ev.stopPropagation(); decidi(el.dataset.id, 'rifiutata', 'Rifiutata dal titolare'); }
+      else if (az === 'rifiuta') { ev.stopPropagation(); const r = m.richieste.find(x => x.id === el.dataset.id); if (r && r.tipo === 'revisione') { const i = inAttesa(m).indexOf(r); if (i >= 0) { st.richiesta = i; st.tendina = 'estesa'; st.pannello = 'richieste'; st.motivo = true; soloTendina(); } return; } decidi(el.dataset.id, 'rifiutata', 'Rifiutata dal titolare'); }
       else if (az === 'modifiche') { decidi(el.dataset.id, 'modifiche', 'Modifiche chieste dal titolare'); }
-      else if (az === 'approva-tutte') { inAttesa(m).forEach(r => { r.stato = 'approvata'; r.decisa = m.azienda.ora; r.giorno = 0; r.min = 10 * 60 + 42; }); st.richiesta = 0; if (st.tendina === 'estesa') st.tendina = 'aperta'; tutto(); }
+      else if (az === 'approva-tutte') { inAttesa(m).forEach(r => { r.stato = 'approvata'; r.decisa = m.azienda.ora; r.giorno = 0; r.min = 10 * 60 + 42; if (r.tipo === 'revisione') m.decidiRevisione(r, 'applicata'); }); st.richiesta = 0; if (st.tendina === 'estesa') st.tendina = 'aperta'; tutto(); }
+      /* ---- pagina del dipendente ---- */
+      else if (az === 'pausa') { const e = m.byId[+el.dataset.id]; if (e) { e.pausa = !e.pausa; tutto(); } }
+      else if (az === 'colloquio') { const e = m.byId[+el.dataset.id]; if (e) { m.dossierDi(e).colloquio.inCorso = true; tutto(); } }
+      else if (az === 'assegna') { const e = m.byId[+el.dataset.id]; if (e) { m.dossierDi(e).modello.assegnato = el.dataset.v; tutto(); } }
+      else if (az === 'auto') { const e = m.byId[+el.dataset.id]; if (e) { m.dossierDi(e).modello.automatica = el.dataset.v === '1'; tutto(); } }
+      else if (az === 'strumento') { const e = m.byId[+el.dataset.id]; const s = e && m.dossierDi(e).strumenti.find(x => x.id === el.dataset.v); if (s) { s.attivo = !s.attivo; tutto(); } }
+      else if (az === 'confronta') { st.confronto = { id: +el.dataset.id, a: +el.dataset.a, b: +el.dataset.b }; if (st.tendina !== 'confronto') st.tendinaPrima = st.tendina; st.tendina = 'confronto'; soloTendina(); }
+      else if (az === 'dossier') { const i = +el.dataset.idx >= 0 ? +el.dataset.idx : idxRevisione(+el.dataset.id); if (i >= 0) { st.richiesta = i; st.tendina = 'estesa'; st.pannello = 'richieste'; st.motivo = false; } soloTendina(); }
+      else if (az === 'prova') { decidi(el.dataset.id, 'approvata', 'Prova su 20 esecuzioni', 'prova'); }
+      else if (az === 'rifiuta-motivo') { const r = m.richieste.find(x => x.id === el.dataset.id); const i = r ? inAttesa(m).indexOf(r) : -1; if (i >= 0) { st.richiesta = i; st.tendina = 'estesa'; st.pannello = 'richieste'; st.motivo = true; soloTendina(); const inp = radice.querySelector('input[data-campo="motivo"]'); if (inp) inp.focus(); } }
+      else if (az === 'rifiuta-annulla') { st.motivo = false; soloTendina(); }
+      else if (az === 'rifiuta-conferma') { const inp = radice.querySelector('input[data-campo="motivo"]'); const v = inp ? inp.value.trim() : ''; if (!v) { if (inp) { inp.focus(); inp.style.borderColor = 'var(--hangup)'; } return; } decidi(el.dataset.id, 'rifiutata', v, 'rifiutata'); }
     });
     return st;
   }

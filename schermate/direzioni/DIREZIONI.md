@@ -5,12 +5,13 @@ un'azienda DGT con quattro dipartimenti e undici dipendenti AI, tre dei quali al
 Tre direzioni sulla stessa schermata, prova di scala a quaranta dipendenti, direzione scelta.
 
 - Confronto interattivo (tab A/B/C, selettore 11/40): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
-- Direzione A cliccabile (tendine, pagine Richieste e Dipartimento, dipendenti con avatar ed editor): https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
+- Direzione A cliccabile (tendine, pagine Richieste, Dipartimento e Dipendente, avatar ed editor): https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
 - Sorgenti: `direzione-a.html`, `direzione-b.html`, `direzione-c.html` (aggiungere `?n=40` per la prova di scala),
   `confronto.html` (la stessa pagina dell'artefatto, con gli script separati).
 - Avatar dei dipendenti, le due famiglie a confronto (kit e orbe): https://claude.ai/code/artifact/4bc0c3ee-d1a0-41dc-a6d9-ef4f2b8360bd
 - Screenshot a 1440 px in `screenshot/` (`a-11.png` … `c-40.png`, `a-dipendente-nuovo.png`, `a-dipendente-modifica.png`,
-  `a-11-avatar-kit.png`, `avatar-confronto.png`).
+  `a-11-avatar-kit.png`, `avatar-confronto.png`, `avatar-orbe-pellicola.png`; la pagina del dipendente: `a-dipendente.png`,
+  `a-dipendente-ruolo.png`, `a-dipendente-dossier.png`, `a-dipendente-confronto.png`).
 
 ## 1. Studio del prodotto
 
@@ -186,6 +187,12 @@ direzione. Regole che valgono da qui in avanti:
 11. **Creazione e modifica del dipendente in una tendina**, con la stessa forma delle tendine del titolare: anteprima
     della card, ruolo, nome facoltativo, dipartimento a pillole, scelta dell'avatar fra sei varianti, Crea/Salva e
     Annulla. Si apre dalla matita nell'intaglio della card, dalla riga compatta e dalla card «Aggiungi».
+12. **La pagina del Dipendente** (versione 6) nella stessa cornice, un solo ordine per i due pubblici: prima ciò che
+    legge il titolare (testata con i quattro numeri a 30 giorni, revisione di performance), poi ciò che configura
+    l'operatore (oggi, rendimento, soul prompt con versioni e confronto, modello e criterio, strumenti e connessioni,
+    budget e permessi, colloquio). **Una revisione di performance è una richiesta al titolare** come le altre: ha un
+    dossier con evidenze, stime e rischi, quattro decisioni (prova, applica, chiedi modifiche, rifiuta con motivo) e
+    una cronologia con l'effetto misurato. Le richieste decise dal titolare sono la fonte di «corretti» e «respinte».
 
 ### Versione 2 della direzione A (2026-09-04)
 
@@ -298,7 +305,7 @@ orbe**, in attesa della scelta dell'utente.
 | Forma | silhouette del generatore del kit: poligoni, gocce, fiori, fagioli; una per ruolo | tutte sfere morbide: superellisse da tonda a «squircle», rapporto e inclinazione leggeri, un solo rigonfiamento; il corpo occupa i 4/5 del disco |
 | Cosa distingue un dipendente | la silhouette, la pupilla, il segno distintivo | gli occhi (tondi, pillola alta, pillola larga; distanza e altezza), l'inclinazione, la rotondità |
 | Colori | palette: disco chiaro, corpo nero, occhi bianchi, lime e rosa per gli stati | uguali, con gli occhi **gialli** `#FCDC64` da approvare (lime resta per il lavoro), più un riflesso bianco appena accennato (11 %) in alto a sinistra e un gradiente fra i neri della palette |
-| Stati | working, alert, error, idle, dormant del kit | lavoro: occhi lime e un arco che orbita · da approvare: occhi grandi lime e due onde che si allargano · errore: occhi a X rosa e un tremito ogni tanto · pianificato: occhi bianchi · libero: palpebre socchiuse, respiro lento |
+| Stati | working, alert, error, idle, dormant del kit | lavoro: occhi lime e squash e stretch · da approvare: occhi grandi gialli e un saltello · errore: occhi a X rosa e un tremito ogni tanto · pianificato: occhi bianchi · libero: palpebre socchiuse, respiro lento. Nessun segno fuori dal corpo (l'arco che orbitava e le onde sono stati tolti nella versione 5c) |
 | Moto | un rAF, solo le card al lavoro e l'anteprima | **animazioni CSS su tutti gli avatar**, fase e periodo dal seme (nessuno in sincrono): respiro del corpo, deriva dello sguardo, battito delle palpebre, dondolio, più il moto proprio di ogni stato (tabella sotto); niente rAF; con `prefers-reduced-motion` tutto fermo |
 | Sguardo | anteprima dell'editor con il motore del kit | anteprima dell'editor: gli occhi seguono il puntatore |
 | Determinismo | stesso seme → stessa forma | stesso seme → stessi parametri (mulberry32 dal FNV-1a del seme, come il kit) |
@@ -310,8 +317,8 @@ primi valori a 10–12 unità erano 3 px a 72 px e non si vedevano; ora:
 
 | Stato | Che cosa fa l'orbe |
 |---|---|
-| lavoro | due battute di squash e stretch (1,14 × 0,88 ↔ 0,92 × 1,10, ±8°) poi una pausa, ciclo ≈ 4,3 s; lo sguardo scandisce da sinistra a destra (±16) nella stessa battuta; due archi spessi che orbitano in 3,6 s |
-| attesa | ogni 5,5 s un saltello (−28 in alto, poi un rimbalzo) con una scrollata del corpo (±14°); **occhi gialli** `#FCDC64` (terza richiesta dell'utente; il giallo è il terzo punto di interesse della palette) più grandi; due onde spesse che partono con il saltello e si allargano fino al bordo del disco |
+| lavoro | due battute di squash e stretch (1,14 × 0,88 ↔ 0,92 × 1,10, ±8°) poi una pausa, ciclo ≈ 4,3 s; lo sguardo scandisce da sinistra a destra (±16) nella stessa battuta |
+| attesa | ogni 5,5 s un saltello (−28 in alto, poi un rimbalzo) con una scrollata del corpo (±14°); **occhi gialli** `#FCDC64` (terza richiesta dell'utente; il giallo è il terzo punto di interesse della palette) più grandi |
 | errore | ogni 6 s un tremito (±16 con ±6°); il corpo resta un poco afflosciato (1,08 × 0,90, abbassato); gli occhi a X lampeggiano ogni 2,6 s |
 | pianificato | il corpo scorre piano da un lato all'altro (±18, ±8°, ciclo ≈ 8 s) come chi aspetta; ogni ≈ 11 s lo sguardo va in alto a destra «a guardare l'orologio» e torna |
 | libero | respiro profondo e lento (1,12 × 0,88 ↔ 0,96 × 1,04, ciclo ≈ 7,5 s), l'orbe si abbassa fino a 16; palpebre socchiuse; una «z» bianca ogni 3,5 s che sale dal volto verso l'alto a destra e svanisce |
@@ -321,9 +328,77 @@ ogni 6–10 s. Fase e periodo restano dal seme. La prima versione aveva cicli di
 frequenti, e i cicli sono stati allungati con pause (terza versione). Pellicola di sei secondi per stato (animazioni
 messe in pausa a sei istanti): `screenshot/avatar-orbe-pellicola.png`.
 
-Deciso a fine sessione (da fare nella prossima): **si tolgono i segni animati dietro l'avatar**, cioè l'arco che
-orbita al lavoro e le onde da approvare; le animazioni dell'avatar stesso (corpo, occhi, sguardo, battito, moti di
-stato) restano. Dettagli e brief della pagina del dipendente in `PROSSIMA-SESSIONE.md`.
+
+### Versione 6: la pagina del Dipendente (2026-09-04, sessione successiva)
+
+Brief dell'utente: «configurare un agente e capire se sta lavorando bene»; pubblico l'operatore, con una vista
+sintetica leggibile anche dal titolare; contenuto: identità e mansione, soul prompt con cronologia e confronto fra
+versioni, modello e criterio di scelta automatica, strumenti e connessioni, budget e permessi, eval («colloquio»),
+metriche (task completati, costo per esito utile, quanto spesso un umano corregge, quante proposte respinte); la parte
+più importante è la **revisione di performance**, che «deve sembrare una decisione gestionale seria, con evidenze, non
+una notifica». Struttura costruita (variante A della proposta, con le quattro aggiunte: le richieste come fonte delle
+metriche, la revisione come richiesta al titolare, pausa e «ripeti il colloquio», un solo ordine per i due pubblici):
+
+| # | Sezione | Che cosa c'è |
+|---|---|---|
+| 0 | Cornice | titolo = etichetta in maiuscolo (36 px oltre 12 caratteri, 30 oltre 20), i tre numeri di oggi del dipendente (task oggi, da approvare, spesi oggi), indietro → il suo dipartimento, rail con l'organizzazione attiva. Niente pillola «Nuovo …»: le azioni stanno nella testata |
+| 1 | Testata | avatar 96 che segue il puntatore; etichetta 28 e «ruolo · dipartimento · in produzione dal»; chip di stato, «Revisione in sospeso», «Soul prompt v7», modello, «Colloquio 91»; pillole **Modifica** (tendina Dipendente), **Metti in pausa / Riattiva**, **Ripeti il colloquio**; la mansione in una frase; i **quattro numeri a 30 giorni** (task completati, € per esito utile, corretti da un umano %, proposte respinte %) con il badge del confronto con i 30 precedenti (la freccia dice il verso, il colore se è un bene); la riga «fonte: le richieste decise dal titolare» |
+| 2 | Revisione di performance | quando ce n'è una in sospeso, **card lime a tutta larghezza** con intaglio (campanella, apri il dossier): chip (tipo, da → a, proposta quando, «decide il titolare»); titolo della proposta a 26 px; tre colonne **Perché** (evidenze: numero in pillola + frase, con il collegamento alla richiesta citata), **Cosa ci aspettiamo** (stime dalla prova), **Rischi** + **La prova** (esecuzioni, costo, giorni); riga «Decisione del titolare»: **Prova su 20 esecuzioni** (nera), **Applica** (bianca), **Chiedi modifiche**, **Rifiuta…** (rosa, motivo obbligatorio) e il link al dossier. Sotto, **Revisioni passate**: quando, tipo, titolo, effetto misurato con badge, esito, chi ha deciso |
+| 3 | Oggi | la card esecuzione (o l'ultima consegna: da approvare / conclusa) e le richieste di oggi come righe dello storico |
+| 4 | Rendimento | cinque righe (approvate al primo colpo, corrette da un umano, respinte, spesa e costo per esito utile, tempo medio) con il valore dei 30 giorni precedenti e il badge; «Le ultime richieste decise dal titolare, la fonte dei numeri» e il link a Richieste filtrate sul dipendente |
+| 5 | Mansione e soul prompt | il documento chiaro (`#F4F4F4`, r28, intaglio con matita e confronta) con la versione corrente, chi e quando, i paragrafi, i numeri di quella versione; a destra le **versioni** come righe (proposta = lime, corrente = bianca; nota, chi, data, task, % corretti, % respinte, € per esito) con «confronta» per ciascuna; pillola «Confronta v6 e v7» |
+| 6 | Modello | tre card (Rapido, Standard, Esperto: descrizione, esecuzioni a 30 giorni, costo; l'assegnato è bianco; clic per assegnare) e la card del **criterio di scelta automatica** scritto come regola, con la ripartizione delle esecuzioni a pillola e la legenda; pillole «Scelta automatica / Solo il modello assegnato» |
+| 7 | Strumenti e connessioni | card come le regole di approvazione (ultimo uso, chip attivo/spento; clic accende o spegne) e le connessioni come righe (stato, ultimo uso, «Rinnova» se scaduta) |
+| 8 | Budget e permessi | card budget (speso su mensile, barra a pillola, rimanente; oggi su limite del giorno: **lime con «oltre il limite»** se sforato) e i permessi come righe: le regole generali con le **eccezioni** del dipendente, più «Aggiungi un'eccezione» |
+| 9 | Colloquio | card esito (punteggio su 100, barra, casi superati, soglia, «vale per v7»), i casi come righe (caso, atteso, esito, punteggio), i colloqui precedenti per versione o modello; «Ripeti il colloquio» (poi «in corso · 0 di 12 casi») |
+
+**La tendina estesa delle versioni** (`tendinaVersioni`, 840 px, fino a 980 di altezza se lo schermo lo permette) è
+il dossier: due colonne bianche con le due versioni e le **differenze per paragrafo e per parola** (aggiunte in lime,
+tolte in rosa barrato, paragrafi cambiati su fondo grigio), i numeri di ciascuna versione, tre card chiare Perché /
+Cosa ci aspettiamo / Rischi e le decisioni; con «Rifiuta…» compare il campo del motivo (obbligatorio: senza, il bordo
+diventa rosso e non si rifiuta; Invio conferma). Per una revisione del **modello** le due colonne sono i due modelli
+(descrizione, costo per esecuzione, esecuzioni e costo a 30 giorni). La stessa tendina serve al confronto libero fra
+due versioni (`?confronto=6,7`), senza evidenze e con «Chiudi».
+
+**La revisione è una richiesta al titolare**: in `dati.js` le due revisioni in sospeso (`rv1`: Nora, prompt v7 → v8;
+`rv2`: Social media manager, modello Standard → Esperto) sono richieste di tipo `revisione` (icona fulmine) con
+`revisione` = id nel dossier: stanno nella coda della tendina «Da approvare» (ora 4), nella pagina Richieste (filtro
+«Revisioni») e nello storico; dalla tendina estesa si apre il dossier. Le decisioni valgono ovunque: **Prova** =
+approvata con nota «Prova su 20 esecuzioni» e stato «In prova»; **Applica** = la versione proposta diventa corrente
+(o il modello assegnato); **Chiedi modifiche**; **Rifiuta** con motivo, che resta nella cronologia. La X rapida della
+coda su una revisione apre il dossier con il campo del motivo invece di rifiutare al volo.
+
+**Dati** (`dati.js`, `m.dossierDi(e)`): dossier scritto a mano per Nora (8 versioni del prompt, 12 casi di colloquio,
+4 revisioni) e per il Social media manager (revisione del modello con la prova di luglio); generato dal seme del ruolo
+per gli altri nove, per i 40 e per i dipendenti creati nell'editor (prompt per dipartimento, 8 casi, una revisione
+passata). I numeri a 30 giorni sono coerenti fra loro (corretti = con modifiche / task; costo per esito utile = spesa /
+consegne accettate anche dopo modifiche) e con le richieste del dipendente nel modello (r12 «Troppo lungo: massimo
+800 battute» è la prima evidenza della revisione di Nora; r7 e r13 quelle del Social media manager). Modelli come
+livelli neutri di DGT (**Rapido**, **Standard**, **Esperto**): nessun marchio di terzi. `m.decidiRevisione(r, esito,
+motivo)` applica la decisione al dossier.
+
+**Interazioni**: freccia nell'intaglio della card e della riga compatta → pagina (`?pagina=dipendente&id=4`);
+Modifica → tendina Dipendente; pausa (chip «In pausa», avatar a riposo); Ripeti il colloquio; assegna un modello;
+scelta automatica sì/no; accendi/spegni uno strumento; confronta due versioni; apri il dossier; le quattro decisioni;
+il link alle richieste del dipendente (Richieste filtrate su di lui); indietro → dipartimento. Prova cliccata con
+Playwright, 27 passi: apertura dalla card, dossier con differenze, rifiuto bloccato senza motivo e poi con motivo in
+cronologia, coda che scende, pausa e riattivazione, colloquio in corso, confronto v6/v7, assegnazione di Esperto,
+strumento spento, Richieste filtrate, prova su 20 dal Social media manager, applicazione dalla tendina della home
+(v8 corrente), pagina a 40, pagina di un dipendente appena creato, riga compatta → pagina, indietro → dipartimento;
+nessun errore in console. Screenshot: `a-dipendente.png` (Nora), `a-dipendente-ruolo.png` (Social media manager,
+senza nome), `a-dipendente-dossier.png` (il dossier v7 → v8), `a-dipendente-confronto.png` (v6 e v7).
+
+### Versione 5c: niente segni dietro l'avatar (2026-09-04, sessione successiva)
+
+Richiesta dell'utente: «togliere le animazioni dietro gli avatar, le animazioni degli avatar non le devi toccare».
+Tolti da `avatar-orbe.js` i due segni animati **dietro il corpo**: l'arco che orbitava al lavoro (`.giro`, keyframe
+`av-giro`) e le due onde che si allargavano da approvare (`.onda`, `av-onda`), con il loro CSS. Restano intatte tutte
+le animazioni dell'avatar stesso: respiro, dondolio, deriva dello sguardo, battito delle palpebre e i moti di stato del
+corpo e degli occhi della tabella sopra; le «z» del sonno stanno sopra il volto, non dietro, e restano. Lo stato «al
+lavoro» si legge ora solo dagli occhi lime e dallo squash e stretch, «da approvare» dagli occhi gialli e dal saltello.
+Il kit (`?avatar=kit`) non è toccato. Pellicola rifatta (`screenshot/avatar-orbe-pellicola.png`), screenshot della
+Console e del confronto rigenerati. Prova con Playwright: 37 orbi nella home, nessun nodo `.giro`/`.onda`, i corpi
+cambiano trasformazione fra due fotogrammi, nessun errore in console.
 
 Pagina di confronto `confronto-avatar.html` (artefatto: https://claude.ai/code/artifact/4bc0c3ee-d1a0-41dc-a6d9-ef4f2b8360bd):
 undici ruoli per cinque stati, le card dei dipendenti, le card al lavoro (animate), le righe compatte, misure e fondi,
@@ -335,9 +410,9 @@ segue il puntatore, creazione e scelta del seme funzionano, nessun errore in con
 
 | File | Ruolo |
 |---|---|
-| `dati.js` | modello sintetico (11 e 40) condiviso |
+| `dati.js` | modello sintetico (11 e 40) condiviso; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`) e le richieste di tipo `revisione` |
 | `comune.js` | sprite di icone di DGT, prefisso CSS, utilità |
-| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica); cliccabile |
+| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni; cliccabile |
 | `avatar/avatar-dgt.js` | involucro degli avatar nel linguaggio della Console (colori, stati, simboli statici, animazione); `usa('orbe'|'kit')` sceglie la famiglia |
 | `avatar/avatar-orbe.js` | la famiglia «orbe» (versione 5b): sfere morbide dal seme, animazioni CSS, sguardo che segue il puntatore |
 | `confronto-avatar.html` | le due famiglie a confronto nelle viste della Console |
