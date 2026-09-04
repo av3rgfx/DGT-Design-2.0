@@ -10,10 +10,12 @@
 <body>
 <div class="dirA" id="root"></div>
 <script src="comune.js"></script>
+<script src="avatar/avatar-motore.js"></script>
+<script src="avatar/avatar-dgt.js"></script>
 <script src="dati.js"></script>
 <script src="direzione-a.js"></script>
 <script>
-  // Parametri: ?n=11|40  ?tendina=chiusa|aperta|estesa  ?pannello=richieste|riepilogo  ?pagina=home|richieste|dipartimento  ?dip=svi|mkt|ven|amm  ?richiesta=0
+  // Parametri: ?n=11|40  ?tendina=chiusa|aperta|estesa  ?pannello=richieste|riepilogo  ?pagina=home|richieste|dipartimento  ?dip=svi|mkt|ven|amm  ?richiesta=0  ?editor=nuovo|<id dipendente>
   const q = new URLSearchParams(location.search);
   DGT_UI.iconeInserisci();
   DGT_UI.stile('css-a', DIREZIONE_A.css);
@@ -21,7 +23,7 @@
   const modello = DGT_DATI.modello(DGT_DATI.nDaUrl());
   DIREZIONE_A.monta(root, modello, {
     pagina: q.get('pagina') || 'home', dip: q.get('dip') || 'svi', tendina: q.get('tendina') || 'aperta', richiesta: +(q.get('richiesta') || 0),
-    pannello: q.get('pannello') || 'richieste' });
+    pannello: q.get('pannello') || 'richieste', editor: q.get('editor') });
   // Sotto i 1440 px la console si riduce in scala (la larghezza di progetto resta 1440).
   function scala() { const s = Math.min(1, document.documentElement.clientWidth / 1440); root.style.transform = s < 1 ? 'scale(' + s + ')' : ''; document.body.style.height = s < 1 ? (root.offsetHeight * s) + 'px' : ''; }
   window.addEventListener('resize', scala); new MutationObserver(scala).observe(root, { childList: true, subtree: true }); scala();

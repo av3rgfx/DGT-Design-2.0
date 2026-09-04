@@ -36,28 +36,32 @@ window.DGT_DATI = (function () {
     libero:      { nome: 'Libero',       breve: 'Libero' },
   };
 
+  /* Di base un dipendente NON ha un nome (2026-09-04): l'etichetta principale è il
+     ruolo e sotto il dipartimento. Il nome è facoltativo, lo dà il titolare alla
+     creazione o dopo (qui Nora, Kim e Rea). `seme` è facoltativo: il seme
+     dell'avatar, di default il ruolo (vedi avatar/avatar-dgt.js). */
   const base = [
-    { id: 1,  nome: 'Leo',  ruolo: 'Sviluppatore full-stack', dip: 'svi', stato: 'lavoro',
+    { id: 1,  ruolo: 'Sviluppatore full-stack', dip: 'svi', stato: 'lavoro',
       att: { titolo: 'Checkout e-commerce', cliente: 'Bianchi & Co.', da: '09:40', passo: [3, 7], costo: 38, prossimo: 'Pagamento con carta' } },
-    { id: 2,  nome: 'Ada',  ruolo: 'Tester QA',                dip: 'svi', stato: 'pianificato',
+    { id: 2,  ruolo: 'Tester QA',                dip: 'svi', stato: 'pianificato',
       att: { titolo: 'Test di regressione', cliente: 'Zenith', quando: '15:00', costo: 0 } },
     { id: 3,  nome: 'Kim',  ruolo: 'DevOps',                   dip: 'svi', stato: 'errore',
       att: { titolo: 'Deploy in staging', cliente: 'Zenith', da: '08:55', errore: 'Chiavi di accesso scadute', costo: 4 } },
     { id: 4,  nome: 'Nora', ruolo: 'Copywriter',               dip: 'mkt', stato: 'lavoro',
       att: { titolo: 'Post LinkedIn 5 di 12', cliente: 'Rossi Srl', da: '10:20', passo: [2, 4], costo: 12, prossimo: 'Bozza e immagine' } },
-    { id: 5,  nome: 'Ivo',  ruolo: 'Social media manager',     dip: 'mkt', stato: 'attesa',
+    { id: 5,  ruolo: 'Social media manager',     dip: 'mkt', stato: 'attesa',
       att: { titolo: 'Piano editoriale ottobre', cliente: 'Madira Ink', da: '09:06', fine: '09:48', costo: 9 } },
-    { id: 6,  nome: 'Mia',  ruolo: 'Specialista SEO',          dip: 'mkt', stato: 'libero',
+    { id: 6,  ruolo: 'Specialista SEO',          dip: 'mkt', stato: 'libero',
       att: { titolo: 'Audit SEO', cliente: 'Metamorfosi', fine: 'ieri 18:10', costo: 0 } },
-    { id: 7,  nome: 'Sam',  ruolo: 'Ricerca lead',             dip: 'ven', stato: 'lavoro',
+    { id: 7,  ruolo: 'Ricerca lead',             dip: 'ven', stato: 'lavoro',
       att: { titolo: '200 lead e-commerce in Lombardia', cliente: 'Nova Studio', da: '08:30', passo: [5, 6], costo: 61, prossimo: 'Verifica email' } },
-    { id: 8,  nome: 'Zoe',  ruolo: 'Proposte commerciali',     dip: 'ven', stato: 'libero',
+    { id: 8,  ruolo: 'Proposte commerciali',     dip: 'ven', stato: 'libero',
       att: { titolo: 'Proposta 20.000 €', cliente: 'Metamorfosi', fine: 'ieri 17:30', costo: 0 } },
-    { id: 9,  nome: 'Ugo',  ruolo: 'Follow-up clienti',        dip: 'ven', stato: 'pianificato',
+    { id: 9,  ruolo: 'Follow-up clienti',        dip: 'ven', stato: 'pianificato',
       att: { titolo: 'Follow-up settimanale', cliente: '14 clienti', quando: '17:00', costo: 0 } },
     { id: 10, nome: 'Rea',  ruolo: 'Fatturazione',             dip: 'amm', stato: 'libero',
       att: { titolo: 'Fatture di agosto', cliente: 'Nova Studio', fine: 'ieri 16:00', costo: 0 } },
-    { id: 11, nome: 'Teo',  ruolo: 'Report al titolare',       dip: 'amm', stato: 'pianificato',
+    { id: 11, ruolo: 'Report al titolare',       dip: 'amm', stato: 'pianificato',
       att: { titolo: 'Report giornaliero', cliente: 'Nova Studio', quando: '18:00', costo: 0 } },
   ];
 
@@ -176,14 +180,15 @@ window.DGT_DATI = (function () {
     dipartimenti.forEach((d, di) => {
       for (let i = 0; i < 10; i++) {
         const stato = (di === 0 && i === 9) ? 'errore' : (di === 2 && i === 9) ? 'attesa' : statiPerDip[i];
-        const nome = NOMI[(di * 10 + i) % NOMI.length];
+        const nome = (di * 10 + i) % 7 === 3 ? NOMI[(di * 10 + i) % NOMI.length] : undefined;   // un nome ogni sette: gli altri sono senza
         const att = { titolo: TITOLI[d.id][i], cliente: CLIENTI[(di * 3 + i) % CLIENTI.length], costo: 0 };
         if (stato === 'lavoro') { att.da = ['08:30','09:40','10:20','09:05','09:52','10:35'][(di + i) % 6]; att.passo = PASSI[k++ % PASSI.length]; att.costo = 8 + ((di * 7 + i * 13) % 60); att.prossimo = 'Prossimo passo'; }
         else if (stato === 'attesa') { att.da = '09:06'; att.fine = ['09:48','10:05','10:30'][(di + i) % 3]; att.costo = 5 + ((di + i) % 9); }
         else if (stato === 'pianificato') { att.quando = ['15:00','17:00','18:00','16:30'][(di + i) % 4]; }
         else if (stato === 'errore') { att.da = '08:55'; att.errore = 'Chiavi di accesso scadute'; att.costo = 4; }
         else { att.fine = 'ieri'; }
-        dipendenti.push({ id: id++, nome, ruolo: RUOLI[d.id][i], dip: d.id, stato, att });
+        const e = { id: id++, ruolo: RUOLI[d.id][i], dip: d.id, stato, att }; if (nome) e.nome = nome;
+        dipendenti.push(e);
       }
     });
     const attesa = dipendenti.filter(e => e.stato === 'attesa');
@@ -234,15 +239,25 @@ window.DGT_DATI = (function () {
 
   function modello(n) {
     const m = n >= 40 ? modello40() : { dipendenti: base, approvazioni: approvazioni11, richieste: richieste11, diario: diario11, agenda: agenda11, obiettivi: obiettivi11 };
-    const byId = Object.fromEntries(m.dipendenti.map(e => [e.id, e]));
-    const perDip = Object.fromEntries(dipartimenti.map(d => [d.id, m.dipendenti.filter(e => e.dip === d.id)]));
+    let byId = Object.fromEntries(m.dipendenti.map(e => [e.id, e]));
     const conta = s => m.dipendenti.filter(e => e.stato === s).length;
     const costoOggi = m.dipendenti.reduce((t, e) => t + (e.att.costo || 0), 0);
-    const iniziali = e => e.nome.slice(0, 2).toUpperCase();
-    return {
+    const dipDi = e => dipartimenti.find(d => d.id === e.dip);
+    /* Etichetta principale e riga sotto: senza nome il ruolo e il dipartimento,
+       con il nome la forma piena (nome, poi «ruolo · dipartimento»). */
+    const etichetta = e => e.nome || e.ruolo;
+    const sotto = (e, breve) => { const d = dipDi(e); const nd = d ? (breve ? d.breve : d.nome) : ''; return e.nome ? e.ruolo + (nd ? ' · ' + nd : '') : nd; };
+    const semeDi = e => e.seme || e.ruolo;
+    const iniziali = e => etichetta(e).slice(0, 2).toUpperCase();
+    const out = {
       azienda, dipartimenti, STATI, n: m.dipendenti.length,
-      dipendenti: m.dipendenti, byId, perDip, approvazioni: m.approvazioni, richieste: m.richieste, diario: m.diario, agenda: m.agenda,
+      dipendenti: m.dipendenti, byId, perDip: {}, approvazioni: m.approvazioni, richieste: m.richieste, diario: m.diario, agenda: m.agenda,
       obiettivi: m.obiettivi,
+      etichetta, sotto, semeDi,
+      /* Mutazioni dell'organico (editor del dipendente): ritornano il dipendente. */
+      aggiungi: dati => { const id = Math.max(0, ...m.dipendenti.map(e => e.id)) + 1; const e = { id, ruolo: dati.ruolo || 'Nuovo dipendente', dip: dati.dip || dipartimenti[0].id, stato: 'libero', att: { titolo: 'Nessuna esecuzione', cliente: '', costo: 0, fine: '' } }; if (dati.nome) e.nome = dati.nome; if (dati.seme && dati.seme !== e.ruolo) e.seme = dati.seme; m.dipendenti.push(e); out.ricalcola(); return e; },
+      aggiorna: (id, dati) => { const e = out.byId[id]; if (!e) return null; if ('nome' in dati) { if (dati.nome) e.nome = dati.nome; else delete e.nome; } if (dati.ruolo) e.ruolo = dati.ruolo; if (dati.dip) e.dip = dati.dip; if ('seme' in dati) { if (dati.seme && dati.seme !== e.ruolo) e.seme = dati.seme; else delete e.seme; } out.ricalcola(); return e; },
+      ricalcola: () => { byId = out.byId = Object.fromEntries(m.dipendenti.map(e => [e.id, e])); out.perDip = Object.fromEntries(dipartimenti.map(d => [d.id, m.dipendenti.filter(e => e.dip === d.id)])); out.n = m.dipendenti.length; out.alLavoro = m.dipendenti.filter(e => e.stato === 'lavoro'); },
       obiettiviDi: dip => m.obiettivi.filter(o => o.dip === dip),
       richiesteDi: st => m.richieste.filter(r => r.stato === st),
       periodoDi: r => r.giorno === 0 ? 'oggi' : r.giorno === 1 ? 'ieri' : r.giorno <= 7 ? 'settimana' : r.giorno <= 31 ? 'mese' : 'prima',
@@ -252,7 +267,7 @@ window.DGT_DATI = (function () {
         if (!f) return true;
         const per = r.giorno === 0 ? 'oggi' : r.giorno === 1 ? 'ieri' : r.giorno <= 7 ? 'settimana' : r.giorno <= 31 ? 'mese' : 'prima';
         const okPer = !f.periodo || f.periodo === 'tutti' || f.periodo === per || (f.periodo === 'settimana' && r.giorno <= 7) || (f.periodo === 'mese' && r.giorno <= 31);
-        const okQ = !f.q || (r.cosa + ' ' + r.cliente + ' ' + byId[r.chi].nome).toLowerCase().includes(f.q.toLowerCase());
+        const okQ = !f.q || (r.cosa + ' ' + r.cliente + ' ' + etichetta(byId[r.chi])).toLowerCase().includes(f.q.toLowerCase());
         return (!f.stato || f.stato === 'tutti' || r.stato === f.stato) && (!f.tipo || f.tipo === 'tutti' || r.tipo === f.tipo)
           && (!f.chi || f.chi === 'tutti' || r.chi === +f.chi) && (!f.dip || f.dip === 'tutti' || byId[r.chi].dip === f.dip)
           && (!f.cliente || f.cliente === 'tutti' || r.cliente === f.cliente) && okPer && okQ;
@@ -263,11 +278,11 @@ window.DGT_DATI = (function () {
         { id: 'g3', nome: 'Liste di lead', desc: 'Liste e ricerche senza invio', modo: 'Automatica sotto 20 €', attiva: true, icona: 'i-list' },
         { id: 'g4', nome: 'Spese sopra 50 €', desc: 'Qualsiasi consegna che costa più di 50 €', modo: 'Sempre da approvare', attiva: false, icona: 'i-euro' },
       ],
-      alLavoro: m.dipendenti.filter(e => e.stato === 'lavoro'),
-      conta, costoOggi, iniziali,
-      avatarClasse: e => 'a' + (((e.id - 1) % 6) + 1),
-      dipDi: e => dipartimenti.find(d => d.id === e.dip),
+      alLavoro: [],
+      conta, costoOggi, iniziali, dipDi,
     };
+    out.ricalcola();
+    return out;
   }
 
   function nDaUrl() {

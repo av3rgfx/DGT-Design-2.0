@@ -122,7 +122,7 @@ td .btn.xs{color:var(--blu);border-color:var(--bd)}
     else if (e.stato === 'pianificato') { quando = `alle ${esc(a.quando)}`; passo = `<span class="mut">in coda</span>`; azione = `<span class="btn xs">Avvia ora</span>`; }
     else { att = `<span class="mut">ultima: ${esc(a.titolo)}</span>`; quando = `<span class="mut">${esc(a.fine)}</span>`; passo = `<span class="mut">—</span>`; azione = `<span class="btn xs">Assegna</span>`; }
     return `<tr class="${e.stato === 'lavoro' ? 'lav' : ''}">
-      <td><div class="who"><i>${m.iniziali(e)}</i><b>${esc(e.nome)} <span>· ${esc(e.ruolo)}</span></b></div></td>
+      <td><div class="who"><i>${m.iniziali(e)}</i><b>${esc(m.etichetta(e))} <span>· ${esc(e.ruolo)}</span></b></div></td>
       <td>${stato(m, e)}</td>
       <td>${att}<span class="mut"> · ${esc(a.cliente)}</span></td>
       <td class="mut">${quando}</td>
@@ -191,11 +191,11 @@ td .btn.xs{color:var(--blu);border-color:var(--bd)}
           <div class="b-aside">
             <div class="card">
               <div class="h">Da approvare <span>${m.approvazioni.length}</span><span class="btn xs">Vedi tutte</span></div>
-              ${m.approvazioni.slice(0, 4).map(a => { const e = m.byId[a.chi]; return `<div class="apr"><div class="t"><b>${esc(a.cosa)}</b><span>${esc(a.ora)}</span></div><div class="m">${esc(e.nome)} · ${esc(e.ruolo)} · ${esc(a.cliente)}</div><div class="bts"><span class="btn xs ok">${ic('i-check')}Approva</span><span class="btn xs">Rivedi</span><span class="btn xs">Commenta</span></div></div>`; }).join('')}
+              ${m.approvazioni.slice(0, 4).map(a => { const e = m.byId[a.chi]; return `<div class="apr"><div class="t"><b>${esc(a.cosa)}</b><span>${esc(a.ora)}</span></div><div class="m">${esc(m.etichetta(e))} · ${esc(e.ruolo)} · ${esc(a.cliente)}</div><div class="bts"><span class="btn xs ok">${ic('i-check')}Approva</span><span class="btn xs">Rivedi</span><span class="btn xs">Commenta</span></div></div>`; }).join('')}
             </div>
             <div class="card">
               <div class="h">Registro di oggi <span>${m.diario.length} eventi</span><span class="btn xs">Tutto</span></div>
-              <div class="log">${m.diario.slice().reverse().map(x => { const e = m.byId[x.chi]; return `<div class="e ${x.tipo}"><span>${esc(x.ora)}</span><div><b>${esc(e.nome)}</b> ${esc(x.testo)}</div></div>`; }).join('')}</div>
+              <div class="log">${m.diario.slice().reverse().map(x => { const e = m.byId[x.chi]; return `<div class="e ${x.tipo}"><span>${esc(x.ora)}</span><div><b>${esc(m.etichetta(e))}</b> ${esc(x.testo)}</div></div>`; }).join('')}</div>
             </div>
           </div>
         </div>
