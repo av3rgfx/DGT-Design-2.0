@@ -27,10 +27,15 @@
         DGT_AVATAR.anima(radice) → avvia gli avatar [data-anima] dentro radice
         DGT_AVATAR.semi(ruolo, n) → n semi candidati per l'editor
         DGT_AVATAR.statoKit(stato) → id di stato del kit
+        DGT_AVATAR.usa('kit'|'orbe') → sceglie la famiglia di avatar; 'orbe' è la
+        variante pulita e dinamica (avatar-orbe.js), 'kit' le forme del kit.
    ===================================================================== */
 window.DGT_AVATAR = (function () {
   const M = window.DGT_AVATAR_MOTORE;
   const SVGNS = 'http://www.w3.org/2000/svg';
+  let STILE = 'kit';
+  const orbe = () => STILE === 'orbe' && window.DGT_AVATAR_ORBE;
+  const usa = s => { STILE = s === 'orbe' && window.DGT_AVATAR_ORBE ? 'orbe' : 'kit'; return STILE; };
 
   const STATO_KIT = { lavoro: 'working', attesa: 'alert', errore: 'error', pianificato: 'idle', libero: 'dormant' };
   const CORPO = '#0A0A0A';
@@ -99,6 +104,7 @@ window.DGT_AVATAR = (function () {
   }
   /** Markup da mettere dentro <span class="av">: un <svg> che riusa il simbolo. */
   function html(seme, stato) {
+    if (orbe()) return window.DGT_AVATAR_ORBE.html(seme, stato);
     const id = simbolo(seme, stato);
     /* il <use> di un simbolo si posiziona a (0,0) del viewBox esterno: qui parte da 0 */
     return `<svg class="ava" viewBox="0 0 ${CORNICE * 2} ${CORNICE * 2}" aria-hidden="true" focusable="false" data-seme="${String(seme || '').replace(/"/g, '&quot;')}" data-stato="${stato}"><use href="#${id}"/></svg>`;
@@ -147,6 +153,7 @@ window.DGT_AVATAR = (function () {
   let seguo = false;
   /** Sostituisce il <use> con nodi vivi negli avatar [data-anima] e li anima. */
   function anima(radice) {
+    if (orbe()) return window.DGT_AVATAR_ORBE.anima(radice);
     if (ridotto || typeof document === 'undefined') return;
     radice.querySelectorAll('.av[data-anima] svg, .av[data-segue] svg').forEach(svg => {
       if (svg.dataset.vivo) return;
@@ -172,5 +179,5 @@ window.DGT_AVATAR = (function () {
   /** Semi candidati per l'editor: il ruolo e cinque varianti numerate. */
   const semi = (ruolo, n) => Array.from({ length: n || 6 }, (_, i) => i ? `${ruolo} ·${i + 1}` : ruolo);
 
-  return { html, anima, semi, statoKit, simbolo, STATO_KIT, VOLTO, CORPO, FUORI, CORNICE };
+  return { html, anima, semi, statoKit, simbolo, usa, stile: () => STILE, STATO_KIT, VOLTO, CORPO, FUORI, CORNICE };
 })();

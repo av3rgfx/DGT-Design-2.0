@@ -156,6 +156,7 @@ h1,h2,h3,p{margin:0;font-weight:400}
 <script src="comune.js"></script>
 <script src="avatar/avatar-motore.js"></script>
 <script src="avatar/avatar-dgt.js"></script>
+<script src="avatar/avatar-orbe.js"></script>
 <script src="dati.js"></script>
 <script src="direzione-a.js"></script>
 <script src="direzione-b.js"></script>
@@ -186,6 +187,7 @@ h1,h2,h3,p{margin:0;font-weight:400}
   const SVG = { su: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5 6.5 12 13 4.5"/></svg>', giu: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m4 4 8 8M12 4l-8 8"/></svg>' };
 
   DGT_UI.iconeInserisci();
+  DGT_AVATAR.usa(new URLSearchParams(location.search).get('avatar') || 'orbe');
   ['A', 'B', 'C'].forEach(k => DGT_UI.stile('css-' + k, DIR[k].css));
 
   const stato = { dir: 'A', n: 11 };

@@ -102,7 +102,7 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 | Rail | 4 cerchi 48 a sinistra: elenco (attivo, bianco), organizzazione, chat, calendario |
 | Intestazione di sezione | titolo 28, conteggio sottolineato (numero 20 + parola 13), cerchi cerca e filtri 46, pillole filtro |
 | Card lead | 260×204, r28, `#262626→#1C1C1C`; avatar 48 in alto a sinistra; intaglio con freccia; nome 26; ruolo 13; "Fonte" + pillole `#3A3A3A` 26; etichetta di interesse + contenitore nero con 5 punti 13 |
-| Avatar del dipendente AI | disco 48 (40, 36, 32, 28, 26; 68 nella richiesta corrente) `#E4E4E4`; dentro la forma generata dal seme (ruolo, o seme scelto): corpo `#0A0A0A`, pupille `#FCFCFC`, lime `#B8FC64` per pupille e segni quando serve il titolare (al lavoro, da approvare), rosa `#F9A3A3` per gli occhi a X dell'errore, anelli e «z» in nero sottile; statico (fotogramma fisso) tranne le card al lavoro e l'anteprima dell'editor; aria-hidden. Le persone (titolare) tengono le iniziali su disco bianco |
+| Avatar del dipendente AI | disco 48 (40, 36, 32, 28, 26; 68 nella richiesta corrente) `#E4E4E4`; dentro la forma generata dal seme (ruolo, o seme scelto): corpo `#0A0A0A`, occhi `#FCFCFC`, lime `#B8FC64` per occhi e segni quando serve il titolare (al lavoro, da approvare), rosa `#F9A3A3` per gli occhi a X dell'errore, anelli e archi fuori dal corpo in nero sottile; aria-hidden. Due famiglie: **orbe** (predefinita, da confermare): sfere morbide che respirano, battono le palpebre e seguono lo sguardo, animazioni CSS su tutti gli avatar; **kit**: le silhouette del generatore del kit, statiche tranne le card al lavoro. Le persone (titolare) tengono le iniziali su disco bianco |
 | Tendina Dipendente | 330, `#F4F4F4`, r28 a sinistra; intaglio con più/matita e titolo 22; anteprima della card; campi a pillola bianca 48 (Ruolo, Nome facoltativo) con etichetta 11 maiuscola; dipartimento a pillole 36 (scelta = nera); sei cerchi 36 per l'avatar (scelto con anello nero); azioni «Crea dipendente»/«Salva» lime 44 e «Annulla» |
 | Card attività | 336×262, lime / `#4D4D4D` / scura; striscia con avatar 48, nome 15/500, ruolo 12; intaglio con campanella (punto rosso) e freccia; cerchio contornato 64 con icona; titolo 26; riga meta (coppia di avatar, data 500, "alle"); "Stato" 11; selettore a pillola 48 (bianca su lime, nera su grigio/scuro) con avatar, testo e chevron; mail vuota; video nero |
 | Videochiamata | 240 di altezza, gradiente grigio-caldo, avatar grande, controlli in vetro + rosso, espandi e chiudi |
@@ -169,8 +169,10 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     sotto sta il dipartimento; il nome è facoltativo (creazione o modifica) e quando c'è torna la forma piena (nome
     26 px, sotto «ruolo · dipartimento»). La card dipendente è alta 240 px nei due casi. Vale in tutte le viste.
 11. Avatar generati al posto delle iniziali: deterministici dal seme (ruolo, o seme scelto), nel linguaggio del
-    sistema (disco chiaro, corpo nero, pupille bianche; lime solo se serve il titolare; rosa per l'errore); statici
-    tranne dove il moto ha senso (card al lavoro, anteprima dell'editor). Il titolare tiene le iniziali.
+    sistema (disco chiaro, corpo nero, occhi bianchi; lime solo se serve il titolare; rosa per l'errore). Due
+    famiglie, con la stessa API: «orbe» (predefinita, da confermare: sfere morbide, animazioni CSS su tutti gli
+    avatar, sguardo che segue il puntatore nell'editor) e «kit» (le silhouette del kit, statiche tranne le card al
+    lavoro). Il titolare tiene le iniziali.
 12. Creazione e modifica del dipendente in una tendina «Dipendente» (anteprima, ruolo, nome facoltativo,
     dipartimento, avatar a scelta fra sei), aperta dalla matita nell'intaglio della card, dalla riga compatta e
     dalla card «Aggiungi». Niente finestre generiche.
@@ -184,6 +186,7 @@ dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegn
 
 - Confronto delle tre direzioni (artefatto): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
 - Direzione A cliccabile, tendine, pagine Richieste e Dipartimento, dipendenti con avatar ed editor (artefatto): https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
+- Avatar dei dipendenti, le due famiglie a confronto (artefatto): https://claude.ai/code/artifact/4bc0c3ee-d1a0-41dc-a6d9-ef4f2b8360bd
 - PR #3 verso `main` con schermate e documenti (unita): https://github.com/av3rgfx/DGT-Design-2.0/pull/3
 - Branch dei dipendenti AI (versione 5 della direzione A): `claude/console-ai-employees-feebdx`
 

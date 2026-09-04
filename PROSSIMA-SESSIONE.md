@@ -14,6 +14,8 @@ sul branch indicato sotto.
   stesso URL).
 - Artefatto del confronto A/B/C (selettore 11/40): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
   (`node build-unico.js confronto.html /percorso/confronto.html`).
+- Artefatto delle due famiglie di avatar a confronto (kit e orbe): https://claude.ai/code/artifact/4bc0c3ee-d1a0-41dc-a6d9-ef4f2b8360bd
+  (`node build-unico.js confronto-avatar.html /percorso/avatar.html`).
 - Artefatto dello specimen del sistema: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b
 - Documento unico: `SYSTEM-DESIGN.md` (sezione 10, regole 1–12). Studio e versioni della direzione A:
   `schermate/direzioni/DIREZIONI.md` (sezione 4, «Versione 5» per i dipendenti).
@@ -35,6 +37,10 @@ sul branch indicato sotto.
     allegato dall'utente, rivisitati sul sistema di design, deterministici, interattivi solo dove ha senso. La proposta
     fatta prima di costruire (card a due forme con altezza unica 240 px, tendina «Dipendente», disco chiaro + corpo
     nero + lime solo per il titolare) è quella realizzata.
+11. **2026-09-04, subito dopo**: «avatar più clean (forme più simili) e più dinamici, stile Grok AI: fammi una
+    variante». Fatta la famiglia **«orbe»** (sfere morbide, animazioni CSS, sguardo che segue il puntatore), messa
+    come predefinita accanto a quella del kit (`?avatar=kit`), con la pagina di confronto. **Scelta dell'utente in
+    sospeso**: tenere l'orbe, tornare al kit, o correggere l'orbe (occhi, riflesso, quanto moto).
 
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi; contenuti sintetici di DGT; documenti in italiano.
 
@@ -43,7 +49,9 @@ Vincolo che vale sempre: nessun logo, foto o marchio di terzi; contenuti sinteti
 1. Leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezione 10) e `schermate/direzioni/DIREZIONI.md` (sezioni 1 e 4).
 2. Aprire `schermate/direzioni/direzione-a.html` (e `?n=40`, `?editor=nuovo`, `?editor=4`): è la base di codice.
    Modello dati in `dati.js` (`etichetta`, `sotto`, `semeDi`, `aggiungi`, `aggiorna`), icone e utilità in
-   `comune.js`, componenti in `direzione-a.js` (`cardDipendente`, `tendinaDipendente`, `av`), avatar in `avatar/`.
+   `comune.js`, componenti in `direzione-a.js` (`cardDipendente`, `tendinaDipendente`, `av`), avatar in `avatar/`
+   (due famiglie: `avatar-orbe.js` predefinita, il kit con `?avatar=kit`; confronto in `confronto-avatar.html`).
+   Se l'utente sceglie una famiglia, togliere l'altra dal predefinito e, se vuole, dal codice.
 3. Pagine fatte nella direzione A: home, Richieste, Dipartimento, tendina Dipendente. Prossime schermate possibili:
    il **dipendente** (profilo: esecuzioni, costi, configurazione; oggi la freccia nell'intaglio della card è inerte
    perché la pagina non esiste), l'**esecuzione** (passi, log, output), le **approvazioni da mobile**, i **costi**
@@ -69,7 +77,11 @@ Vincolo che vale sempre: nessun logo, foto o marchio di terzi; contenuti sinteti
   ha viewBox `0 0 268 268`, il simbolo `-134 -134 268 268`. Gli avatar vivi (animati) sostituiscono il `<use>` con i
   nodi e rimettono il viewBox centrato.
 - Gli screenshot usano `reducedMotion: 'reduce'`, quindi gli avatar sono al fotogramma fisso e le catture sono
-  ripetibili; la prova cliccata (Playwright con `no-preference`) verifica che le tre card al lavoro si muovano.
+  ripetibili; la prova cliccata (Playwright con `no-preference`) verifica che gli avatar si muovano.
+- La famiglia «orbe» anima con sole animazioni CSS (`transform-box:fill-box` sui gruppi SVG, fase e periodo come
+  custom property dal seme): nessun ticker, e `@media (prefers-reduced-motion)` le spegne tutte.
+- Il CSS di `.av` vive dentro `.dirA .a-app`: fuori dalla cornice della Console (pagine di prova) il disco va
+  ridichiarato, o gli avatar restano senza disco.
 - `DGT_UI.prefissa(css, '.dirA')` prefissa ogni selettore; nelle griglie con testo `nowrap` servono `minmax(0,1fr)` e
   `min-width:0`.
 

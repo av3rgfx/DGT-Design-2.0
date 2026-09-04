@@ -8,7 +8,9 @@ Tre direzioni sulla stessa schermata, prova di scala a quaranta dipendenti, dire
 - Direzione A cliccabile (tendine, pagine Richieste e Dipartimento, dipendenti con avatar ed editor): https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
 - Sorgenti: `direzione-a.html`, `direzione-b.html`, `direzione-c.html` (aggiungere `?n=40` per la prova di scala),
   `confronto.html` (la stessa pagina dell'artefatto, con gli script separati).
-- Screenshot a 1440 px in `screenshot/` (`a-11.png` … `c-40.png`, `a-dipendente-nuovo.png`, `a-dipendente-modifica.png`).
+- Avatar dei dipendenti, le due famiglie a confronto (kit e orbe): https://claude.ai/code/artifact/4bc0c3ee-d1a0-41dc-a6d9-ef4f2b8360bd
+- Screenshot a 1440 px in `screenshot/` (`a-11.png` … `c-40.png`, `a-dipendente-nuovo.png`, `a-dipendente-modifica.png`,
+  `a-11-avatar-kit.png`, `avatar-confronto.png`).
 
 ## 1. Studio del prodotto
 
@@ -282,6 +284,31 @@ Tre richieste dell'utente, nell'ordine, con la proposta accettata prima di costr
    ruolo vuoto bloccato, Esc, dipartimento preimpostato dalla pagina Dipartimento, tre avatar vivi nelle card al
    lavoro: tutto senza errori in console.
 
+### Versione 5b: la variante «orbe» degli avatar (2026-09-04, richiesta successiva)
+
+Dopo la versione 5 l'utente ha chiesto avatar **più puliti** (le forme del kit erano una diversa per ruolo: troppo
+diverse fra loro) e **più dinamici**, «nello stile degli avatar di Grok AI». Interpretazione presa: l'orbe della
+modalità voce di Grok, una sfera morbida e monocroma che respira e segue lo sguardo, con il volto ridotto a due
+occhi. Ne è nata una **seconda famiglia**, «orbe» (`avatar/avatar-orbe.js`), accanto a quella del kit, che resta
+disponibile: si sceglie con `DGT_AVATAR.usa('orbe'|'kit')`, nelle pagine con `?avatar=orbe|kit`. **Predefinita:
+orbe**, in attesa della scelta dell'utente.
+
+| | Kit (versione 5) | Orbe (versione 5b) |
+|---|---|---|
+| Forma | silhouette del generatore del kit: poligoni, gocce, fiori, fagioli; una per ruolo | tutte sfere morbide: superellisse da tonda a «squircle», rapporto e inclinazione leggeri, un solo rigonfiamento; il corpo occupa i 4/5 del disco |
+| Cosa distingue un dipendente | la silhouette, la pupilla, il segno distintivo | gli occhi (tondi, pillola alta, pillola larga; distanza e altezza), l'inclinazione, la rotondità |
+| Colori | palette: disco chiaro, corpo nero, occhi bianchi, lime e rosa per gli stati | uguali, più un riflesso bianco appena accennato (11 %) in alto a sinistra e un gradiente fra i neri della palette |
+| Stati | working, alert, error, idle, dormant del kit | lavoro: occhi lime e un arco che orbita · da approvare: occhi grandi lime e due onde che si allargano · errore: occhi a X rosa e un tremito ogni tanto · pianificato: occhi bianchi · libero: palpebre socchiuse, respiro lento |
+| Moto | un rAF, solo le card al lavoro e l'anteprima | **animazioni CSS su tutti gli avatar**, fase e periodo dal seme (nessuno in sincrono): respiro del corpo, deriva dello sguardo, battito delle palpebre, dondolio; niente rAF; con `prefers-reduced-motion` tutto fermo |
+| Sguardo | anteprima dell'editor con il motore del kit | anteprima dell'editor: gli occhi seguono il puntatore |
+| Determinismo | stesso seme → stessa forma | stesso seme → stessi parametri (mulberry32 dal FNV-1a del seme, come il kit) |
+
+Pagina di confronto `confronto-avatar.html` (artefatto: https://claude.ai/code/artifact/4bc0c3ee-d1a0-41dc-a6d9-ef4f2b8360bd):
+undici ruoli per cinque stati, le card dei dipendenti, le card al lavoro (animate), le righe compatte, misure e fondi,
+per entrambe le famiglie. Screenshot: `avatar-confronto.png`, `a-11.png` (orbe), `a-11-avatar-kit.png` (kit).
+Prova con Playwright: 41 orbi in pagina, il corpo respira (la trasformazione cambia fra due fotogrammi), l'anteprima
+segue il puntatore, creazione e scelta del seme funzionano, nessun errore in console.
+
 ## 5. File
 
 | File | Ruolo |
@@ -289,7 +316,9 @@ Tre richieste dell'utente, nell'ordine, con la proposta accettata prima di costr
 | `dati.js` | modello sintetico (11 e 40) condiviso |
 | `comune.js` | sprite di icone di DGT, prefisso CSS, utilità |
 | `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica); cliccabile |
-| `avatar/avatar-dgt.js` | involucro degli avatar nel linguaggio della Console (colori, stati, simboli statici, animazione) |
+| `avatar/avatar-dgt.js` | involucro degli avatar nel linguaggio della Console (colori, stati, simboli statici, animazione); `usa('orbe'|'kit')` sceglie la famiglia |
+| `avatar/avatar-orbe.js` | la famiglia «orbe» (versione 5b): sfere morbide dal seme, animazioni CSS, sguardo che segue il puntatore |
+| `confronto-avatar.html` | le due famiglie a confronto nelle viste della Console |
 | `avatar/avatar-motore.js` | motore del kit impacchettato (generato da `build-motore.js`, non si modifica a mano) |
 | `avatar/vendor-avatars/` | sorgenti del motore del kit, verbatim |
 | `direzione-b.js` / `.html` | Registro operativo |
