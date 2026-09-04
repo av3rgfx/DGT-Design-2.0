@@ -1,6 +1,8 @@
 # Prossima sessione — passaggio di consegne
 
-Stato al 2026-09-04, fine della sessione che ha applicato il sistema di design alla prima schermata reale.
+Stato al 2026-09-04, fine della sessione che ha applicato il sistema di design alle prime schermate reali
+(home, Richieste, Dipartimento) nella direzione A · Console. La sessione è stata chiusa dall'utente perché il
+contesto era diventato troppo lungo: tutto è committato e pushato, la PR è indicata sotto.
 
 ## Stato
 
@@ -69,6 +71,52 @@ Vincolo che vale sempre: nessun logo, foto o marchio di terzi; contenuti sinteti
   prima i commenti CSS (un commento davanti a un selettore lo faceva saltare).
 - Nelle griglie e nei flex con testo `nowrap` servono `minmax(0,1fr)` e `min-width:0`, altrimenti le card sfondano.
 - La pagina di confronto usa classi con prefisso `p-` per non collidere con quelle delle schermate.
+
+## Prossima sessione: i dipendenti (richiesta dell'utente a fine sessione)
+
+Tre cose da sistemare sui dipendenti AI, nell'ordine:
+
+1. **Niente nomi di base.** Oggi ogni dipendente ha un nome («Leo») e sotto il ruolo. L'utente non vuole i nomi
+   di default: l'etichetta principale deve essere il **ruolo** («Sviluppatore full-stack») e sotto il
+   dipartimento. Il nome è facoltativo: si può dare **alla creazione o dopo**, modificando il dipendente; quando
+   c'è, la card torna com'è adesso (nome grande, ruolo sotto). La regola vale in tutte le viste: card, righe
+   compatte, tendine, richieste, diario, barra agenda, filtri, pagina Dipartimento.
+   Dove intervenire: in `dati.js` il campo `nome` diventa facoltativo (aggiungere un'etichetta derivata, per
+   esempio `etichetta(e) = e.nome || e.ruolo`, e usarla al posto di `e.nome` in `direzione-a.js`); le iniziali
+   (`iniziali`) e le classi avatar (`avatarClasse`) vanno ripensate con gli avatar del punto 3.
+2. **Modifica del dipendente** (creazione e post-creazione): nome, ruolo, dipartimento, avatar. Nel linguaggio
+   della Console (tendina o card con intaglio, pillole e cerchi), niente finestre generiche.
+3. **Avatar al posto delle iniziali.** L'utente allegherà un **kit di generatore deterministico di avatar
+   interattivi**; va **rivisitato per combaciare con il sistema di design** (nero, lime, cerchi, tratti leggeri,
+   nessun colore fuori palette), mantenendo il generatore deterministico (stesso seme → stesso avatar). Sostituire
+   `.av` con iniziali su gradiente in tutte le viste (card, pair impilati, tendine, righe, diario).
+
+Prima di costruire, proporre in poche righe come cambia la card del dipendente nei due casi (senza nome / con
+nome) e come si adattano gli avatar; poi procedere, catturare gli screenshot, aggiornare i documenti, fare commit
+e push.
+
+### Prompt di avvio per la prossima sessione
+
+```
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md (soprattutto la sezione «Prossima sessione: i dipendenti»).
+Lavoriamo nella direzione A · Console (schermate/direzioni/direzione-a.js, dati.js, comune.js): non cambiare
+la cornice, i componenti o i colori del sistema di design.
+
+Obiettivo di questa sessione: i dipendenti AI.
+1. Di base un dipendente non ha un nome: l'etichetta principale è il ruolo (es. «Sviluppatore full-stack»)
+   e sotto il dipartimento. Il nome è facoltativo e si dà alla creazione o dopo, modificando il dipendente:
+   quando c'è, torna la forma attuale (nome grande, ruolo sotto). Applica la regola a tutte le viste.
+2. Aggiungi la modifica del dipendente (creazione e post-creazione): nome, ruolo, dipartimento, avatar, nel
+   linguaggio della Console (tendina o card con intaglio), niente finestre generiche.
+3. Sostituisci le iniziali su gradiente con gli avatar generati dal kit che allego: rivisitalo perché combaci
+   con il sistema di design (nero, lime, cerchi, tratti leggeri, nessun colore fuori palette), mantenendo il
+   generatore deterministico (stesso seme → stesso avatar); interattivi solo dove ha senso.
+
+Prima di costruire proponimi in poche righe come cambia la card del dipendente nei due casi (senza nome /
+con nome) e come intendi adattare gli avatar; poi procedi. Cattura gli screenshot con
+design-system/tools/screenshot-page.js, ricostruisci l'artefatto con schermate/direzioni/build-unico.js,
+aggiorna DIREZIONI.md, SYSTEM-DESIGN.md e PROSSIMA-SESSIONE.md, fai commit e push sul branch che ti indico.
+```
 
 ## Possibili prossimi passi (non decisi dall'utente)
 
