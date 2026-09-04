@@ -321,6 +321,10 @@ ogni 6–10 s. Fase e periodo restano dal seme. La prima versione aveva cicli di
 frequenti, e i cicli sono stati allungati con pause (terza versione). Pellicola di sei secondi per stato (animazioni
 messe in pausa a sei istanti): `screenshot/avatar-orbe-pellicola.png`.
 
+Deciso a fine sessione (da fare nella prossima): **si tolgono i segni animati dietro l'avatar**, cioè l'arco che
+orbita al lavoro e le onde da approvare; le animazioni dell'avatar stesso (corpo, occhi, sguardo, battito, moti di
+stato) restano. Dettagli e brief della pagina del dipendente in `PROSSIMA-SESSIONE.md`.
+
 Pagina di confronto `confronto-avatar.html` (artefatto: https://claude.ai/code/artifact/4bc0c3ee-d1a0-41dc-a6d9-ef4f2b8360bd):
 undici ruoli per cinque stati, le card dei dipendenti, le card al lavoro (animate), le righe compatte, misure e fondi,
 per entrambe le famiglie. Screenshot: `avatar-confronto.png`, `a-11.png` (orbe), `a-11-avatar-kit.png` (kit).
