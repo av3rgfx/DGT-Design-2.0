@@ -39,8 +39,11 @@ sul branch indicato sotto.
     nero + lime solo per il titolare) è quella realizzata.
 11. **2026-09-04, subito dopo**: «avatar più clean (forme più simili) e più dinamici, stile Grok AI: fammi una
     variante». Fatta la famiglia **«orbe»** (sfere morbide, animazioni CSS, sguardo che segue il puntatore), messa
-    come predefinita accanto a quella del kit (`?avatar=kit`), con la pagina di confronto. **Scelta dell'utente in
-    sospeso**: tenere l'orbe, tornare al kit, o correggere l'orbe (occhi, riflesso, quanto moto).
+    come predefinita accanto a quella del kit (`?avatar=kit`), con la pagina di confronto.
+12. **«Teniamo l'orbe, ma occhi un po' più grandi»** e animazioni di stato più visibili, «magari animando anche
+    l'avatar stesso»: fatto. Occhi più grandi e un moto del corpo per ogni stato (squash al lavoro, saltello da
+    approvare, tremito in errore, scorrimento da pianificato, respiro profondo con «z» da libero); pellicola in
+    `screenshot/avatar-orbe-pellicola.png`. L'orbe è la famiglia scelta; il kit resta nel codice dietro `?avatar=kit`.
 
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi; contenuti sintetici di DGT; documenti in italiano.
 
@@ -50,8 +53,9 @@ Vincolo che vale sempre: nessun logo, foto o marchio di terzi; contenuti sinteti
 2. Aprire `schermate/direzioni/direzione-a.html` (e `?n=40`, `?editor=nuovo`, `?editor=4`): è la base di codice.
    Modello dati in `dati.js` (`etichetta`, `sotto`, `semeDi`, `aggiungi`, `aggiorna`), icone e utilità in
    `comune.js`, componenti in `direzione-a.js` (`cardDipendente`, `tendinaDipendente`, `av`), avatar in `avatar/`
-   (due famiglie: `avatar-orbe.js` predefinita, il kit con `?avatar=kit`; confronto in `confronto-avatar.html`).
-   Se l'utente sceglie una famiglia, togliere l'altra dal predefinito e, se vuole, dal codice.
+   (due famiglie: `avatar-orbe.js`, scelta dall'utente e predefinita; il kit resta con `?avatar=kit`; confronto in
+   `confronto-avatar.html`). Le ampiezze delle animazioni dell'orbe sono in unità del viewBox (250 = il disco):
+   sotto le 15 unità non si vedono.
 3. Pagine fatte nella direzione A: home, Richieste, Dipartimento, tendina Dipendente. Prossime schermate possibili:
    il **dipendente** (profilo: esecuzioni, costi, configurazione; oggi la freccia nell'intaglio della card è inerte
    perché la pagina non esiste), l'**esecuzione** (passi, log, output), le **approvazioni da mobile**, i **costi**

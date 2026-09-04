@@ -299,9 +299,26 @@ orbe**, in attesa della scelta dell'utente.
 | Cosa distingue un dipendente | la silhouette, la pupilla, il segno distintivo | gli occhi (tondi, pillola alta, pillola larga; distanza e altezza), l'inclinazione, la rotondità |
 | Colori | palette: disco chiaro, corpo nero, occhi bianchi, lime e rosa per gli stati | uguali, più un riflesso bianco appena accennato (11 %) in alto a sinistra e un gradiente fra i neri della palette |
 | Stati | working, alert, error, idle, dormant del kit | lavoro: occhi lime e un arco che orbita · da approvare: occhi grandi lime e due onde che si allargano · errore: occhi a X rosa e un tremito ogni tanto · pianificato: occhi bianchi · libero: palpebre socchiuse, respiro lento |
-| Moto | un rAF, solo le card al lavoro e l'anteprima | **animazioni CSS su tutti gli avatar**, fase e periodo dal seme (nessuno in sincrono): respiro del corpo, deriva dello sguardo, battito delle palpebre, dondolio; niente rAF; con `prefers-reduced-motion` tutto fermo |
+| Moto | un rAF, solo le card al lavoro e l'anteprima | **animazioni CSS su tutti gli avatar**, fase e periodo dal seme (nessuno in sincrono): respiro del corpo, deriva dello sguardo, battito delle palpebre, dondolio, più il moto proprio di ogni stato (tabella sotto); niente rAF; con `prefers-reduced-motion` tutto fermo |
 | Sguardo | anteprima dell'editor con il motore del kit | anteprima dell'editor: gli occhi seguono il puntatore |
 | Determinismo | stesso seme → stessa forma | stesso seme → stessi parametri (mulberry32 dal FNV-1a del seme, come il kit) |
+
+**Scelta dell'utente: l'orbe**, con due correzioni fatte subito dopo: **occhi più grandi** (tondi 27, pillola 20×40,
+larga 34×22 in unità del viewBox, prima 21, 16×32, 27×18) e **animazioni di stato molto più visibili**, che muovono il
+corpo stesso e non solo i segni intorno. Le ampiezze sono in unità del viewBox (250 = tutto il disco), per cui i
+primi valori a 10–12 unità erano 3 px a 72 px e non si vedevano; ora:
+
+| Stato | Che cosa fa l'orbe |
+|---|---|
+| lavoro | squash e stretch ritmico (1,14 × 0,88 ↔ 0,92 × 1,10) con inclinazione ±9°, periodo ≈ 2 s; lo sguardo scandisce da sinistra a destra (±16); due archi spessi che orbitano in 1,9 s |
+| attesa | ogni 2 s un saltello (−28 in alto, poi un rimbalzo) con una scrollata del corpo (±14°); occhi più grandi lime; due onde spesse che si allargano fino al bordo del disco |
+| errore | ogni 2,4 s un tremito (±16 con ±6°); il corpo resta un poco afflosciato (1,08 × 0,90, abbassato); gli occhi a X lampeggiano ogni 1,2 s |
+| pianificato | il corpo scorre da un lato all'altro (±18, ±8°) come chi aspetta; lo sguardo va in alto a destra «a guardare l'orologio» e torna |
+| libero | respiro profondo e lento (1,12 × 0,88 ↔ 0,96 × 1,04), l'orbe si abbassa fino a 16; palpebre socchiuse; due «z» bianche che salgono dal volto verso l'alto a destra e svaniscono |
+
+Sempre, per tutti: respiro di base (4,5 %), dondolio (−7), deriva dello sguardo (±9), battito delle palpebre. Fase e
+periodo restano dal seme. Pellicola di un ciclo per stato (animazioni messe in pausa a sei istanti):
+`screenshot/avatar-orbe-pellicola.png`.
 
 Pagina di confronto `confronto-avatar.html` (artefatto: https://claude.ai/code/artifact/4bc0c3ee-d1a0-41dc-a6d9-ef4f2b8360bd):
 undici ruoli per cinque stati, le card dei dipendenti, le card al lavoro (animate), le righe compatte, misure e fondi,

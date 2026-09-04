@@ -17,10 +17,19 @@
      titolare (al lavoro, da approvare); rosa per gli occhi a X dell'errore;
      anelli e archi fuori dal corpo in nero sottile.
    - Dinamica: animazioni CSS deterministiche (fase e periodo dal seme) su
-     tutti gli avatar, non solo su quelli al lavoro: respiro del corpo,
-     deriva dello sguardo, battito delle palpebre, dondolio; al lavoro un
-     arco che orbita; da approvare due onde che si allargano; in errore un
-     tremito ogni tanto; libero: palpebre socchiuse e respiro lento.
+     tutti gli avatar, e per ogni stato si muove il corpo stesso (seconda
+     versione, chiesta dall'utente perché la prima si vedeva poco):
+       lavoro       squash e stretch ritmico con inclinazione, sguardo che
+                    scandisce a destra e a sinistra, due archi che orbitano;
+       attesa       saltello con scossa ogni due secondi, occhi grandi, onde
+                    che si allargano fino al bordo del disco;
+       errore       tremito frequente con il corpo un poco afflosciato, gli
+                    occhi a X che lampeggiano;
+       pianificato  dondolio da un lato all'altro, sguardo che va in alto a
+                    destra «a guardare l'orologio» e torna;
+       libero       respiro profondo e lento, l'orbe si abbassa, palpebre
+                    socchiuse, due «z» che salgono e svaniscono.
+     Sempre: respiro, deriva dello sguardo, battito delle palpebre.
      Nessun requestAnimationFrame. Con prefers-reduced-motion niente si muove.
    - L'anteprima dell'editor (.av[data-segue]) segue il puntatore con gli occhi.
 
@@ -49,7 +58,7 @@ window.DGT_AVATAR_ORBE = (function () {
       rot: (rng() - 0.5) * 16,              // inclinazione in gradi
       bump: 0.02 + rng() * 0.05, bumpA: rng() * Math.PI * 2,
       occhi,
-      dist: 24 + rng() * 12,                // mezza distanza fra gli occhi
+      dist: 27 + rng() * 12,                // mezza distanza fra gli occhi
       alt: -12 + rng() * 12,                // altezza degli occhi (negativo = più in alto)
       fase: rng() * 10, periodo: 3.1 + rng() * 1.1, battito: 3.8 + rng() * 2.6,
     };
@@ -79,10 +88,10 @@ window.DGT_AVATAR_ORBE = (function () {
   /** Gli occhi per tipo e stato: larghezza, altezza, raggio. */
   function occhi(p, stato) {
     let w, h;
-    if (p.occhi === 'tondo') { w = 21; h = 21; } else if (p.occhi === 'pillola') { w = 16; h = 32; } else { w = 27; h = 18; }
-    if (stato === 'attesa') { w *= 1.2; h *= 1.2; }
-    if (stato === 'lavoro') { h *= 0.9; }
-    if (stato === 'libero') { h = Math.max(4, h * 0.3); }
+    if (p.occhi === 'tondo') { w = 27; h = 27; } else if (p.occhi === 'pillola') { w = 20; h = 40; } else { w = 34; h = 22; }
+    if (stato === 'attesa') { w *= 1.25; h *= 1.25; }
+    if (stato === 'lavoro') { h *= 0.85; }
+    if (stato === 'libero') { h = Math.max(5, h * 0.25); }
     return { w, h, rx: Math.min(w, h) / 2 };
   }
 
@@ -95,41 +104,77 @@ window.DGT_AVATAR_ORBE = (function () {
     const o = occhi(p, stato);
     const y = p.alt;
     const occhio = x => stato === 'errore'
-      ? `<g class="occhio" transform="translate(${r2(x)} ${r2(y)})"><rect x="-14" y="-3.5" width="28" height="7" rx="3.5" fill="${volto}" transform="rotate(45)"/><rect x="-14" y="-3.5" width="28" height="7" rx="3.5" fill="${volto}" transform="rotate(-45)"/></g>`
+      ? `<g class="occhio" transform="translate(${r2(x)} ${r2(y)})"><rect x="-17" y="-4.5" width="34" height="9" rx="4.5" fill="${volto}" transform="rotate(45)"/><rect x="-17" y="-4.5" width="34" height="9" rx="4.5" fill="${volto}" transform="rotate(-45)"/></g>`
       : `<rect class="occhio" x="${r2(x - o.w / 2)}" y="${r2(y - o.h / 2)}" width="${r2(o.w)}" height="${r2(o.h)}" rx="${r2(o.rx)}" fill="${volto}"/>`;
+    /* i segni dello stato fuori dal corpo: archi che orbitano, onde, «z» */
     const decoro = stato === 'lavoro'
-      ? `<circle class="giro" r="112" fill="none" stroke="${TRATTO}" stroke-width="4" stroke-linecap="round" stroke-dasharray="46 660" opacity=".55"/>`
+      ? `<circle class="giro" r="113" fill="none" stroke="${TRATTO}" stroke-width="6" stroke-linecap="round" stroke-dasharray="60 295" opacity=".7"/>`
       : stato === 'attesa'
-        ? `<circle class="onda" r="104" fill="none" stroke="${TRATTO}" stroke-width="3" opacity=".5"/><circle class="onda due" r="104" fill="none" stroke="${TRATTO}" stroke-width="3" opacity=".5"/>`
+        ? `<circle class="onda" r="104" fill="none" stroke="${TRATTO}" stroke-width="5" opacity=".7"/><circle class="onda due" r="104" fill="none" stroke="${TRATTO}" stroke-width="5" opacity=".7"/>`
         : '';
+    /* le «z» del sonno stanno SOPRA il corpo, bianche: partono dal volto e salgono verso l'alto a destra */
+    const zeta = stato === 'libero'
+      ? `<text class="zeta" x="30" y="-12" font-family="Urbanist, sans-serif" font-weight="600" font-size="38" fill="#FCFCFC">z</text><text class="zeta due" x="30" y="-12" font-family="Urbanist, sans-serif" font-weight="600" font-size="38" fill="#FCFCFC">z</text>`
+      : '';
     const vars = `--p:${r2(p.periodo * (stato === 'libero' ? 1.6 : stato === 'lavoro' ? 0.75 : 1))}s;--d:-${r2(p.fase)}s;--b:${r2(p.battito)}s`;
     return `<svg class="ava orbe ${stato}" viewBox="${VIEWBOX}" aria-hidden="true" focusable="false" style="${vars}" data-seme="${String(seme || '').replace(/"/g, '&quot;')}" data-stato="${stato}">`
       + `<g class="tutto"><g class="scossa">${decoro}`
       + `<g class="corpo"><path d="${contorno(p)}" fill="url(#${CORPO_ID})"/><ellipse cx="-30" cy="-40" rx="27" ry="15" transform="rotate(-28 -30 -40)" fill="#FCFCFC" opacity=".11"/></g>`
-      + `<g class="mira"><g class="occhi">${occhio(-p.dist)}${occhio(p.dist)}</g></g>`
+      + `<g class="mira"><g class="occhi">${occhio(-p.dist)}${occhio(p.dist)}</g></g>${zeta}`
       + `</g></g></svg>`;
   }
 
   /* ---------- foglio di stile e gradiente, una volta per pagina ---------- */
   const CSS = `
 .ava.orbe{overflow:visible}
-.ava.orbe .tutto{transform-box:fill-box;transform-origin:center;animation:av-dondolo calc(var(--p,3.4s)*1.7) ease-in-out infinite;animation-delay:var(--d,0s)}
-.ava.orbe .corpo{transform-box:fill-box;transform-origin:center;animation:av-respiro var(--p,3.4s) ease-in-out infinite;animation-delay:var(--d,0s)}
-.ava.orbe .occhi{transform-box:fill-box;transform-origin:center;animation:av-sguardo calc(var(--p,3.4s)*2.4) ease-in-out infinite;animation-delay:var(--d,0s)}
-.ava.orbe .occhio{transform-box:fill-box;transform-origin:center;animation:av-battito var(--b,5s) ease-in-out infinite;animation-delay:var(--d,0s)}
-.ava.orbe.libero .occhio,.ava.orbe.errore .occhio{animation:none}
+.ava.orbe .tutto,.ava.orbe .scossa,.ava.orbe .corpo,.ava.orbe .occhi,.ava.orbe .occhio,.ava.orbe .giro,.ava.orbe .onda,.ava.orbe .zeta{transform-box:fill-box;transform-origin:center}
+/* base, per tutti: dondolio, respiro, deriva dello sguardo, battito */
+.ava.orbe .tutto{animation:av-dondolo calc(var(--p,3.4s)*1.7) ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe .corpo{animation:av-respiro var(--p,3.4s) ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe .occhi{animation:av-sguardo calc(var(--p,3.4s)*2.4) ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe .occhio{animation:av-battito var(--b,5s) ease-in-out infinite;animation-delay:var(--d,0s)}
 .ava.orbe .mira{transform:translate(var(--gx,0px),var(--gy,0px));transition:transform .28s cubic-bezier(.2,.8,.2,1)}
-.ava.orbe .giro{transform-box:fill-box;transform-origin:center;animation:av-giro 2.6s linear infinite;animation-delay:var(--d,0s)}
-.ava.orbe .onda{transform-box:fill-box;transform-origin:center;animation:av-onda 1.9s ease-out infinite}
-.ava.orbe .onda.due{animation-delay:-.95s}
-.ava.orbe.errore .scossa{transform-box:fill-box;transform-origin:center;animation:av-tremito 3.2s ease-in-out infinite;animation-delay:var(--d,0s)}
-@keyframes av-respiro{0%,100%{transform:scale(1,1)}50%{transform:scale(1.03,.97)}}
-@keyframes av-dondolo{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-@keyframes av-sguardo{0%,100%{transform:translate(0,0)}28%{transform:translate(6px,-3px)}55%{transform:translate(-5px,2px)}80%{transform:translate(2px,4px)}}
-@keyframes av-battito{0%,91%,100%{transform:scaleY(1)}94%{transform:scaleY(.12)}97%{transform:scaleY(1)}}
+/* al lavoro: squash e stretch con inclinazione, sguardo che scandisce, due archi che orbitano */
+.ava.orbe.lavoro .corpo{animation:av-lavoro calc(var(--p,3.4s)*.55) ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe.lavoro .occhi{animation:av-scansione calc(var(--p,3.4s)*.9) ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe .giro{animation:av-giro 1.9s linear infinite;animation-delay:var(--d,0s)}
+/* da approvare: saltello con scossa, onde fino al bordo */
+.ava.orbe.attesa .tutto{animation:av-richiamo 2s ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe.attesa .corpo{animation:av-scrollata 2s ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe .onda{animation:av-onda 2s ease-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe .onda.due{animation-delay:calc(var(--d,0s) - 1s)}
+/* errore: tremito frequente, corpo afflosciato, X che lampeggiano */
+.ava.orbe.errore .scossa{animation:av-tremito 2.4s ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe.errore .corpo{animation:av-affloscio calc(var(--p,3.4s)*.8) ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe.errore .occhio{animation:av-lampeggio 1.2s ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe.errore .occhi{animation:none}
+/* pianificato: dondola da un lato all'altro e guarda l'orologio */
+.ava.orbe.pianificato .corpo{animation:av-dondolio var(--p,3.4s) ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe.pianificato .occhi{animation:av-orologio calc(var(--p,3.4s)*1.5) ease-in-out infinite;animation-delay:var(--d,0s)}
+/* libero: respiro profondo, si abbassa, «z» che salgono */
+.ava.orbe.libero .tutto{animation:av-sonno var(--p,3.4s) ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe.libero .corpo{animation:av-respirone var(--p,3.4s) ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe.libero .occhio,.ava.orbe.libero .occhi{animation:none}
+.ava.orbe .zeta{opacity:0;animation:av-zeta 3.2s ease-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe .zeta.due{animation-delay:calc(var(--d,0s) - 1.6s)}
+@keyframes av-respiro{0%,100%{transform:scale(1,1)}50%{transform:scale(1.045,.955)}}
+@keyframes av-dondolo{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes av-sguardo{0%,100%{transform:translate(0,0)}28%{transform:translate(9px,-5px)}55%{transform:translate(-8px,3px)}80%{transform:translate(3px,6px)}}
+@keyframes av-battito{0%,91%,100%{transform:scaleY(1)}94%{transform:scaleY(.1)}97%{transform:scaleY(1)}}
+@keyframes av-lavoro{0%,100%{transform:scale(1,1) rotate(-9deg)}25%{transform:scale(1.14,.88) rotate(0)}50%{transform:scale(.92,1.1) rotate(9deg)}75%{transform:scale(1.1,.9) rotate(0)}}
+@keyframes av-scansione{0%,100%{transform:translate(-16px,0)}50%{transform:translate(16px,0)}}
 @keyframes av-giro{to{transform:rotate(360deg)}}
-@keyframes av-onda{0%{transform:scale(1);opacity:.55}100%{transform:scale(1.32);opacity:0}}
-@keyframes av-tremito{0%,88%,100%{transform:translateX(0)}90%{transform:translateX(-3px)}93%{transform:translateX(3px)}96%{transform:translateX(-2px)}}
+@keyframes av-richiamo{0%,55%,100%{transform:translateY(0) scale(1)}62%{transform:translateY(-28px) scale(1.1)}70%{transform:translateY(2px) scale(1.06,.92)}78%{transform:translateY(-14px) scale(1.04)}86%{transform:translateY(0) scale(1)}}
+@keyframes av-scrollata{0%,55%,100%{transform:rotate(0)}60%{transform:rotate(-14deg)}66%{transform:rotate(14deg)}72%{transform:rotate(-9deg)}78%{transform:rotate(5deg)}84%{transform:rotate(0)}}
+@keyframes av-onda{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.5);opacity:0}}
+@keyframes av-tremito{0%,66%,100%{transform:translateX(0) rotate(0)}70%{transform:translateX(-16px) rotate(-6deg)}74%{transform:translateX(16px) rotate(6deg)}78%{transform:translateX(-13px) rotate(-4deg)}82%{transform:translateX(13px) rotate(4deg)}86%{transform:translateX(-7px) rotate(0)}90%{transform:translateX(0)}}
+@keyframes av-affloscio{0%,100%{transform:scale(1.08,.9) translateY(6px)}50%{transform:scale(1.03,.95) translateY(3px)}}
+@keyframes av-lampeggio{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes av-dondolio{0%,100%{transform:translateX(-18px) rotate(-8deg)}50%{transform:translateX(18px) rotate(8deg)}}
+@keyframes av-orologio{0%,40%,100%{transform:translate(0,0)}50%,80%{transform:translate(16px,-13px)}}
+@keyframes av-sonno{0%,100%{transform:translateY(4px)}50%{transform:translateY(16px)}}
+@keyframes av-respirone{0%,100%{transform:scale(.96,1.04)}50%{transform:scale(1.12,.88)}}
+@keyframes av-zeta{0%{transform:translate(0,0) scale(.5);opacity:0}25%{opacity:.95}100%{transform:translate(34px,-70px) scale(1.3);opacity:0}}
 @media (prefers-reduced-motion:reduce){.ava.orbe *{animation:none!important;transition:none!important}}
 `;
   let pronto = false;
