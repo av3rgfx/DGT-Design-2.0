@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1440">
+<title>Avatar dei dipendenti</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600&display=swap">
+<style>
+html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.v-wrap{width:1440px;margin:0 auto;padding:40px 64px 80px;box-sizing:border-box;display:grid;gap:40px}
+.v-hd{display:grid;gap:8px}
+.v-hd h1{margin:0;font-weight:400;font-size:46px;line-height:56px;letter-spacing:.02em}
+.v-hd p{margin:0;color:#9A9A9A;font-size:18px;line-height:26px;max-width:70ch}
+.v-sec{display:grid;gap:18px}
+.v-sec h2{margin:0;font-weight:400;font-size:28px;line-height:34px;display:flex;align-items:center;gap:14px}
+.v-sec h2 .chip{display:inline-flex;align-items:center;height:28px;padding:0 12px;border-radius:9999px;background:#3A3A3A;color:#E8E8E8;font-size:13px}
+.v-sec h2 .chip.lime{background:#B8FC64;color:#0A0A0A}
+.v-due{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.v-col{min-width:0}
+.v-col h3{margin:0 0 12px;font-weight:400;font-size:20px;line-height:26px;color:#DADADA}
+.v-g{display:grid;grid-template-columns:170px repeat(5,60px);gap:6px 10px;align-items:center;font-size:14px}
+.v-g .k{color:#9A9A9A;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+.v-g .av{width:48px;height:48px}
+/* il disco dell'avatar fuori dalla cornice della Console (stesse regole di .av in direzione-a.js) */
+.v-g .av,.v-fondo .av{border-radius:50%;background:#E4E4E4;overflow:hidden;display:grid;place-items:center;border:2px solid transparent;flex:none}
+.v-g .av svg,.v-fondo .av svg{width:100%;height:100%;display:block}
+.v-note{color:#9A9A9A;font-size:14px;line-height:20px;max-width:80ch}
+.v-note b{color:#FCFCFC;font-weight:500}
+/* i componenti veri della Console, ritagliati dalla home */
+.dirA .a-app.v-solo{min-height:0;width:auto;padding:0;overflow:visible}
+.dirA .a-app.v-solo .cards{margin-top:0}
+.dirA .a-app.v-solo .elenco{margin-top:0;grid-template-columns:repeat(2,1fr)}
+.v-fondi{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.v-fondo{display:inline-flex;align-items:center;gap:12px;padding:14px 18px;border-radius:28px;font-size:14px}
+.v-fondo.scuro{background:linear-gradient(180deg,#262626,#1C1C1C)}
+.v-fondo.lime{background:#B8FC64;color:#0A0A0A}
+.v-fondo.chiaro{background:#F4F4F4;color:#0A0A0A}
+.v-fondo .av{width:48px;height:48px}.v-fondo .av.lg{width:68px;height:68px}.v-fondo .av.s{width:36px;height:36px}.v-fondo .av.xs{width:28px;height:28px}
+.v-fondo .pair{display:inline-flex}.v-fondo .pair .av{border:2px solid #FCFCFC}.v-fondo .pair .av+.av{margin-left:-10px}
+</style>
+</head>
+<body>
+<div class="v-wrap">
+  <div class="v-hd">
+    <h1>Avatar dei dipendenti</h1>
+    <p>Due famiglie a confronto nelle stesse viste della Console. <b>Kit</b>: le silhouette del generatore del kit, una forma diversa per ruolo. <b>Orbe</b>: la variante pulita, tutte sfere morbide che respirano, sbattono le palpebre e seguono lo sguardo. Stesso seme, stesso avatar in entrambe.</p>
+  </div>
+
+  <section class="v-sec">
+    <h2>Undici ruoli, cinque stati <span class="chip">48 px</span></h2>
+    <div class="v-due">
+      <div class="v-col"><h3>Kit</h3><div class="v-g" id="g-kit"></div></div>
+      <div class="v-col"><h3>Orbe</h3><div class="v-g" id="g-orbe"></div></div>
+    </div>
+    <p class="v-note">Colori solo dalla palette in entrambe: disco chiaro, corpo nero, occhi bianchi; <b>lime</b> quando serve il titolare (al lavoro, da approvare); <b>rosa</b> per gli occhi a X dell'errore; anelli e archi fuori dal corpo in nero sottile. Nell'orbe il corpo ha un riflesso appena accennato e gli stati si leggono anche dal moto: arco che orbita al lavoro, onde da approvare, tremito in errore, palpebre socchiuse da libero.</p>
+  </section>
+
+  <section class="v-sec">
+    <h2>Le card dei dipendenti <span class="chip">home · 11</span></h2>
+    <div class="v-due">
+      <div class="v-col"><h3>Kit</h3><div id="c-kit"></div></div>
+      <div class="v-col"><h3>Orbe</h3><div id="c-orbe"></div></div>
+    </div>
+  </section>
+
+  <section class="v-sec">
+    <h2>Le card al lavoro adesso <span class="chip lime">animate</span></h2>
+    <div class="v-due">
+      <div class="v-col"><h3>Kit</h3><div id="l-kit"></div></div>
+      <div class="v-col"><h3>Orbe</h3><div id="l-orbe"></div></div>
+    </div>
+  </section>
+
+  <section class="v-sec">
+    <h2>Righe compatte <span class="chip">oltre i sedici</span></h2>
+    <div class="v-due">
+      <div class="v-col"><h3>Kit</h3><div id="r-kit"></div></div>
+      <div class="v-col"><h3>Orbe</h3><div id="r-orbe"></div></div>
+    </div>
+  </section>
+
+  <section class="v-sec">
+    <h2>Misure e fondi</h2>
+    <div class="v-due">
+      <div class="v-col"><h3>Kit</h3><div class="v-fondi" id="f-kit"></div></div>
+      <div class="v-col"><h3>Orbe</h3><div class="v-fondi" id="f-orbe"></div></div>
+    </div>
+  </section>
+</div>
+<script src="comune.js"></script>
+<script src="avatar/avatar-motore.js"></script>
+<script src="avatar/avatar-dgt.js"></script>
+<script src="avatar/avatar-orbe.js"></script>
+<script src="dati.js"></script>
+<script src="direzione-a.js"></script>
+<script>
+  DGT_UI.iconeInserisci();
+  DGT_UI.stile('css-a', DIREZIONE_A.css);
+  const RUOLI = ['Sviluppatore full-stack', 'Tester QA', 'DevOps', 'Copywriter', 'Social media manager', 'Specialista SEO', 'Ricerca lead', 'Proposte commerciali', 'Follow-up clienti', 'Fatturazione', 'Report al titolare'];
+  const STATI = ['lavoro', 'attesa', 'errore', 'pianificato', 'libero'];
+  const av = (seme, stato, cls) => `<span class="av${cls ? ' ' + cls : ''}">${DGT_AVATAR.html(seme, stato)}</span>`;
+  function griglia(id) {
+    document.getElementById(id).innerHTML = '<span class="k">ruolo (seme)</span>' + STATI.map(s => `<span class="k">${s}</span>`).join('')
+      + RUOLI.map(r => `<span>${r}</span>` + STATI.map(s => av(r, s)).join('')).join('');
+  }
+  /* ritaglia dalla home vera le sezioni che servono */
+  function pezzi(stile) {
+    DGT_AVATAR.usa(stile);
+    const m = DGT_DATI.modello(11);
+    const tmp = document.createElement('div'); tmp.className = 'dirA';
+    tmp.innerHTML = DIREZIONE_A.render(m, { tendina: 'chiusa' });
+    const cards = tmp.querySelector('.cards.dipendenti'); cards.querySelector('.lead.add').remove();
+    [...cards.children].slice(5).forEach(n => n.remove());
+    const lav = tmp.querySelector('.cards.riga');
+    const m40 = DGT_DATI.modello(40);
+    const tmp40 = document.createElement('div'); tmp40.className = 'dirA';
+    tmp40.innerHTML = DIREZIONE_A.render(m40, { tendina: 'chiusa' });
+    const righe = tmp40.querySelector('.elenco'); [...righe.children].slice(6).forEach(n => n.remove());
+    const solo = html => `<div class="dirA"><div class="a-app v-solo">${html}</div></div>`;
+    document.getElementById('c-' + stile).innerHTML = solo(cards.outerHTML);
+    document.getElementById('l-' + stile).innerHTML = solo(lav.outerHTML);
+    document.getElementById('r-' + stile).innerHTML = solo(righe.outerHTML);
+    document.getElementById('f-' + stile).innerHTML =
+      `<div class="v-fondo scuro">${av('Copywriter', 'attesa', 'lg')}${av('Copywriter', 'lavoro')}${av('Copywriter', 'lavoro', 's')}${av('Copywriter', 'lavoro', 'xs')}<span class="pair">${av('DevOps', 'errore', 'xs')}${av('Tester QA', 'pianificato', 'xs')}${av('Ricerca lead', 'lavoro', 'xs')}</span></div>`
+      + `<div class="v-fondo lime">${av('Copywriter', 'lavoro')} su lime</div>`
+      + `<div class="v-fondo chiaro">${av('Social media manager', 'attesa')}${av('Ricerca lead', 'libero', 'xs')} su chiaro</div>`
+      + `<div class="v-fondo scuro">${DGT_AVATAR.semi('Sviluppatore full-stack').map(s => av(s, 'pianificato', 's')).join('')} i sei semi dell'editor</div>`;
+    griglia('g-' + stile);
+    DGT_AVATAR.anima(document.getElementById('c-' + stile));
+    DGT_AVATAR.anima(document.getElementById('l-' + stile));
+  }
+  pezzi('kit');
+  pezzi('orbe');
+</script>
+</body>
+</html>

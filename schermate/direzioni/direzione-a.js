@@ -16,10 +16,18 @@
    dipendenti, obiettivi con avanzamento, richieste in attesa, spesa del mese
    per cliente), raggiungibile dalle card dei dipartimenti nella home.
 
+   Versione 5 (stessa data): i dipendenti AI. Di base un dipendente non ha un
+   nome: etichetta principale = ruolo (22 px, due righe) e sotto il
+   dipartimento; con il nome torna la forma piena (nome 26 px, «ruolo ·
+   dipartimento»). Avatar generati (avatar/avatar-dgt.js) al posto delle
+   iniziali su gradiente, in tutte le viste. Tendina «Dipendente» per creare e
+   modificare (nome, ruolo, dipartimento, avatar), aperta dalla matita nella
+   card, dalla riga compatta e dalla card «Aggiungi».
+
    API: DIREZIONE_A.render(m, opz) → HTML; DIREZIONE_A.monta(radice, m, opz)
    disegna e collega i clic. opz = { pagina: 'home'|'richieste'|'dipartimento',
-   dip: 'svi'|'mkt'|'ven'|'amm', tendina: 'chiusa'|'aperta'|'estesa',
-   richiesta: indice, pannello: 'richieste'|'riepilogo' }.
+   dip: 'svi'|'mkt'|'ven'|'amm', tendina: 'chiusa'|'aperta'|'estesa'|'dipendente',
+   richiesta: indice, pannello: 'richieste'|'riepilogo', editor: 'nuovo'|id }.
    ===================================================================== */
 window.DIREZIONE_A = (function () {
   const { ic, esc, prefissa, iconaDip } = window.DGT_UI;
@@ -48,11 +56,12 @@ window.DIREZIONE_A = (function () {
 .rb.glass{background:rgb(255 255 255/.22);border-color:rgb(255 255 255/.25);color:var(--white);backdrop-filter:blur(6px)}
 .rb.olight{background:transparent;border-color:rgb(0 0 0/.14);color:var(--ink)}
 .rb .dot{position:absolute;top:11px;right:12px;width:8px;height:8px;border-radius:50%;background:var(--red)}
-.av{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-weight:500;font-size:15px;color:#2A2A2A;flex:none;border:2px solid transparent}
-.av.a1{background:linear-gradient(135deg,#F7D9C4,#E7B49A)}.av.a2{background:linear-gradient(135deg,#D8E9F7,#A9C7E3)}.av.a3{background:linear-gradient(135deg,#E9DFF7,#C6B4E8)}
-.av.a4{background:linear-gradient(135deg,#D9F0D3,#A8D7A2)}.av.a5{background:linear-gradient(135deg,#F9E5C4,#EAC48A)}.av.a6{background:linear-gradient(135deg,#F7D2DA,#E4A5B4)}
-.av.s{width:36px;height:36px;font-size:12px}.av.xs{width:28px;height:28px;font-size:10px}
+/* avatar del dipendente AI: disco chiaro con la forma generata (avatar/avatar-dgt.js); .persona = iniziali del titolare */
+.av{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--docs);overflow:hidden;font-weight:500;font-size:15px;color:var(--ink);flex:none;border:2px solid transparent}
+.av.persona{background:var(--white)}
+.av.s{width:36px;height:36px;font-size:12px}.av.xs{width:28px;height:28px;font-size:10px}.av.lg{width:68px;height:68px}
 .av svg{width:14px;height:14px}
+.av svg.ava{width:100%;height:100%}
 .pair{display:inline-flex;align-items:center}
 .pair .av{border:2px solid var(--white)}.pair .av+.av,.pair .av+.more{margin-left:-10px}
 .pair .more{height:28px;padding:0 9px;border-radius:var(--r-pill);background:var(--ink);color:var(--white);font-size:11px;display:inline-flex;align-items:center;border:2px solid var(--white)}
@@ -90,7 +99,7 @@ window.DIREZIONE_A = (function () {
 .nt::before{left:-22px;top:0}.nt::after{right:0;bottom:-22px}
 .ncard .who{display:flex;align-items:center;gap:14px;padding:16px 16px 0}
 .ncard .who div{min-width:0}
-.ncard .who div>b{display:block;font-weight:500;font-size:15px;line-height:20px}
+.ncard .who div>b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-weight:500;font-size:15px;line-height:20px}
 .ncard .who div>span{display:block;font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ncard.lime .who div>span{color:rgb(0 0 0/.6)}.ncard.gray .who div>span{color:#CFCFCF}
 /* card dipartimento, dipendente e regola (forma della card lead) */
@@ -103,6 +112,14 @@ window.DIREZIONE_A = (function () {
 .lead .ft{display:flex;justify-content:space-between;align-items:flex-end;margin-top:16px;gap:8px}
 .lead .k{font-size:11px;color:var(--t2);display:block;margin-bottom:6px;white-space:nowrap}
 .lead.spenta{opacity:.55}
+/* card dipendente: senza nome il ruolo su due righe a 22 px e sotto il dipartimento; con il nome la forma piena. Stessa altezza nei due casi, piede in basso. */
+.cards.dipendenti .lead{height:240px}
+.lead.dip{display:flex;flex-direction:column}
+.lead.dip .name{margin-top:16px}
+.lead.dip .name.ruolo{font-size:22px;line-height:26px;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;max-height:52px}
+.lead .role{line-height:18px}
+.lead.dip .ft{margin-top:auto}
+.lead.add[data-az]{cursor:pointer}
 /* card attività (esecuzione in corso) e card richiesta */
 .task{width:316px;min-height:262px;display:grid;grid-template-rows:auto 1fr auto;grid-template-columns:minmax(0,1fr);flex:none}
 .task>*{min-width:0}
@@ -199,7 +216,7 @@ window.DIREZIONE_A = (function () {
 .cards.riga::-webkit-scrollbar{display:none}
 .vuoto{margin-top:24px;height:96px;border-radius:var(--r-card);border:1px dashed rgb(255 255 255/.2);display:flex;align-items:center;justify-content:center;color:var(--t2);font-size:15px}
 /* elenco compatto dei dipendenti (oltre 16) */
-.elenco{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:24px}
+.elenco{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:24px}
 .erow{height:56px;border-radius:var(--r-pill);background:linear-gradient(180deg,var(--card-top),var(--card));display:flex;align-items:center;gap:10px;padding:0 6px 0 8px;min-width:0}
 .erow .av{width:40px;height:40px;font-size:13px}
 .erow .tx{flex:1;min-width:0;line-height:16px}
@@ -208,6 +225,7 @@ window.DIREZIONE_A = (function () {
 .erow .chip{height:24px;font-size:11px;max-width:150px}.erow .chip span{overflow:hidden;text-overflow:ellipsis}
 .erow .rb.xs{background:transparent;border-color:rgb(255 255 255/.16)}
 .erow.lav{background:var(--lime);color:var(--ink)}.erow.lav .tx span{color:rgb(0 0 0/.6)}.erow.lav .rb.xs{border-color:rgb(0 0 0/.16);color:var(--ink)}
+.erow.add{background:transparent;border:1px dashed rgb(255 255 255/.25);color:var(--t2);font-size:14px;justify-content:center;cursor:pointer}.erow.add .rb.xs{border-color:rgb(255 255 255/.25)}
 /* ===== pagina Richieste: barra dei filtri, storico, regole ===== */
 .fbar{display:grid;gap:10px;margin-top:-8px;padding-right:220px}
 .frow{display:flex;align-items:center;gap:8px;min-width:0}
@@ -258,7 +276,7 @@ window.DIREZIONE_A = (function () {
 .appr .top .chip{background:rgb(0 0 0/.35);color:var(--white);height:28px;padding:0 12px}
 .appr .top .r{display:flex;gap:6px}
 .appr .top .r .rb{width:36px;height:36px}.appr .top .r .rb svg{width:14px;height:14px}
-.appr .face{position:absolute;left:50%;top:50px;transform:translateX(-50%);width:68px;height:68px;border-radius:50%;display:grid;place-items:center;font-size:24px;color:#3A2A22;border:0}
+.appr .face{position:absolute;left:50%;top:50px;transform:translateX(-50%);border:0}
 .appr .cap{position:absolute;left:14px;right:14px;top:126px;text-align:center;font-size:13px;line-height:17px;color:#EDEDED;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .appr .cap b{display:block;font-weight:500;font-size:15px;color:var(--white);overflow:hidden;text-overflow:ellipsis}
 .appr .ctl{position:absolute;left:0;right:0;bottom:12px;display:flex;justify-content:center;gap:8px}
@@ -314,11 +332,32 @@ window.DIREZIONE_A = (function () {
 .rx .azioni .link svg{width:14px;height:14px}
 .pager{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--t2-light);white-space:nowrap}
 .pager .rb{width:32px;height:32px}.pager .rb svg{width:13px;height:13px}
+/* ===== tendina Dipendente: creazione e modifica nel linguaggio della Console ===== */
+.a-tend.dip .tb{gap:14px}
+.a-tend.dip .th h4{font-size:22px}
+.anteprima{display:grid;place-items:center;padding:2px 0 0}
+.anteprima .nt .rb{border-color:rgb(0 0 0/.14);color:var(--ink)}
+.campo{display:grid;gap:6px}
+.campo .k{font-size:11px;color:var(--t2-light);text-transform:uppercase;letter-spacing:.06em;padding-left:6px;display:flex;justify-content:space-between}
+.campo .k i{font-style:normal;text-transform:none;letter-spacing:0;color:#8A8A8A}
+.campo input{height:48px;border-radius:var(--r-pill);background:var(--white);border:1px solid transparent;padding:0 18px;font:400 15px/20px var(--font);color:var(--ink);width:100%;outline:none;-webkit-font-smoothing:antialiased}
+.campo input:focus{border-color:var(--ink)}
+.campo input::placeholder{color:#A7A7A7}
+.campo .pills{display:flex;flex-wrap:wrap;gap:6px}
+.campo .pill{height:36px;padding:0 14px;font-size:13px;border-color:rgb(0 0 0/.14);color:var(--ink);cursor:pointer}
+.campo .pill.on{background:var(--ink);color:var(--white);border-color:transparent}
+.scelte{display:flex;gap:6px;flex-wrap:wrap;padding-left:2px}
+.scelte .av{cursor:pointer;border:2px solid transparent}
+.scelte .av.on{border-color:var(--ink)}
+.a-tend .azioni{display:flex;gap:8px;padding-top:2px;flex-wrap:wrap}
+.a-tend .azioni .pill{height:44px;cursor:pointer}
+.a-tend .azioni .pill.olight{color:var(--ink)}
 `;
 
   const S = n => `<i></i>`.repeat(n);
   const dots = lv => `<span class="dots l${lv}">${S(5)}</span>`;
-  const av = (m, e, size) => `<span class="av ${m.avatarClasse(e)}${size ? ' ' + size : ''}">${m.iniziali(e)}</span>`;
+  /* Avatar generato dal seme (ruolo o seme scelto) nello stato del dipendente; `stato` lo forza (es. la richiesta che aspetta), `extra` aggiunge attributi (data-anima, data-segue). */
+  const av = (m, e, size, stato, extra) => `<span class="av${size ? ' ' + size : ''}"${extra ? ' ' + extra : ''}>${window.DGT_AVATAR.html(m.semeDi(e), stato || e.stato)}</span>`;
   const pair = (m, ids, size, max) => {
     const lst = ids.map(id => m.byId[id]).filter(Boolean);
     const shown = max ? lst.slice(0, max) : lst;
@@ -350,7 +389,7 @@ window.DIREZIONE_A = (function () {
     const tono = pend ? 'lime' : (i % 2 ? 'dark' : 'gray');
     const d = m.dipDi(e);
     return `<div class="ncard task ${tono}">
-      <div class="who">${av(m, e)}<div><b>${esc(e.nome)}</b><span>${esc(e.ruolo)} · ${esc(d.nome)}</span></div></div>
+      <div class="who">${av(m, e, '', null, 'data-anima="1"')}<div><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div></div>
       <div class="nt"><span class="rb ghost">${ic('i-bell')}${pend ? '<i class="dot"></i>' : ''}</span><span class="rb ghost">${ic('i-ne')}</span></div>
       <div class="body"><span class="ico">${ic(iconaDip[e.dip])}</span><div><div class="tt">${esc(e.att.titolo)}</div><div class="meta"><b>${esc(e.att.cliente)}</b><span>da</span><b>${esc(e.att.da)}</b></div></div></div>
       <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${av(m, e, 's')}<span>Passo ${e.att.passo[0]} di ${e.att.passo[1]}</span>${ic('i-chev')}</span><span class="rb ghost">${ic('i-chat')}</span><span class="rb black">${ic('i-eye')}</span></div></div>
@@ -358,14 +397,13 @@ window.DIREZIONE_A = (function () {
   }
   function cardEsecuzione(m, e, i) {
     if (e.stato === 'lavoro') return cardAttivita(m, e, i);
-    const d = m.dipDi(e);
     const a = e.att;
     const err = e.stato === 'errore';
     const tono = err ? 'gray' : 'dark';
     const meta = err ? `<b>${esc(a.cliente)}</b><span>fallito alle</span><b>${esc(a.da)}</b>` : `<b>${esc(a.cliente)}</b><span>parte alle</span><b>${esc(a.quando)}</b>`;
     const sel = err ? `<span class="chip rosa">${ic('i-warn')}Errore</span><span>${esc(a.errore)}</span>` : `<span class="chip">${ic('i-clock')}${esc(a.quando)}</span><span>In coda</span>`;
     return `<div class="ncard task ${tono}">
-      <div class="who">${av(m, e)}<div><b>${esc(e.nome)}</b><span>${esc(e.ruolo)} · ${esc(d.nome)}</span></div></div>
+      <div class="who">${av(m, e)}<div><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div></div>
       <div class="nt"><span class="rb ghost">${ic('i-bell')}${err ? '<i class="dot"></i>' : ''}</span><span class="rb ghost">${ic('i-ne')}</span></div>
       <div class="body"><span class="ico">${ic(err ? 'i-warn' : iconaDip[e.dip])}</span><div><div class="tt">${esc(a.titolo)}</div><div class="meta">${meta}</div></div></div>
       <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${sel}${ic('i-chev')}</span><span class="rb ghost">${ic('i-chat')}</span><span class="rb black" title="${err ? 'Riprova' : 'Avvia ora'}">${ic('i-play')}</span></div></div>
@@ -395,19 +433,19 @@ window.DIREZIONE_A = (function () {
       <div class="ft"><div><span class="k">Dipendenti</span>${pair(m, lst.map(e => e.id), 'xs', 4)}</div><div><span class="k">Carico</span>${dots(lv)}</div></div>
     </div>`;
   }
-  function cardDipendente(m, e) {
-    const d = m.dipDi(e);
-    return `<div class="ncard lead">
-      ${av(m, e)}
-      <div class="nt"><span class="rb ghost">${ic('i-ne')}</span></div>
-      <div class="name">${esc(e.nome)}</div>
-      <div class="role">${esc(e.ruolo)} · ${esc(d.breve)}</div>
+  /* Card dipendente nelle due forme: senza nome (ruolo grande su due righe, sotto il dipartimento) e con nome (nome grande, sotto «ruolo · dipartimento»). `anteprima` = dentro l'editor, senza azioni. */
+  function cardDipendente(m, e, anteprima) {
+    return `<div class="ncard lead dip">
+      ${av(m, e, '', anteprima ? (e.stato === 'libero' ? 'pianificato' : e.stato) : null, anteprima ? 'data-segue="1"' : '')}
+      <div class="nt"><span class="rb ghost" ${anteprima ? '' : `data-az="modifica" data-id="${e.id}"`} title="Modifica">${ic('i-pen')}</span><span class="rb ghost" title="Apri">${ic('i-ne')}</span></div>
+      <div class="name${e.nome ? '' : ' ruolo'}">${esc(m.etichetta(e))}</div>
+      <div class="role">${esc(m.sotto(e, true))}</div>
       <div class="ft"><div><span class="k">Stato</span>${chipStato(m, e)}</div><div><span class="k">Oggi</span>${dots(livelloOggi(e))}</div></div>
     </div>`;
   }
+  const cardAggiungi = (m, dip) => `<div class="ncard lead add" data-az="nuovo" data-dip="${dip || ''}"><span class="rb ghost">${ic('i-plus')}</span>Aggiungi un dipendente${dip ? `<br>a ${esc(m.dipartimenti.find(d => d.id === dip).nome)}` : ''}</div>`;
   function rigaDipendente(m, e) {
-    const d = m.dipDi(e);
-    return `<div class="erow${e.stato === 'lavoro' ? ' lav' : ''}">${av(m, e)}<div class="tx"><b>${esc(e.nome)}</b><span>${esc(e.ruolo)} · ${esc(d.breve)}</span></div>${e.stato === 'lavoro' ? `<span class="chip onlime"><span>${esc(e.att.titolo)}</span></span>` : chipStato(m, e)}<span class="rb xs">${ic('i-ne')}</span></div>`;
+    return `<div class="erow${e.stato === 'lavoro' ? ' lav' : ''}">${av(m, e)}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e, true))}</span></div>${e.stato === 'lavoro' ? `<span class="chip onlime"><span>${esc(e.att.titolo)}</span></span>` : chipStato(m, e)}<span class="rb xs" data-az="modifica" data-id="${e.id}" title="Modifica">${ic('i-pen')}</span><span class="rb xs" title="Apri">${ic('i-ne')}</span></div>`;
   }
   function barraAgenda(m) {
     const fatti = m.agenda.filter(a => a.stato === 'fatto').slice(-1);
@@ -434,7 +472,7 @@ window.DIREZIONE_A = (function () {
         <div class="kv"><span>Spesa di oggi</span><b>${m.costoOggi} €</b></div>
       </div>
       <div class="dcard"><div class="nt"><span class="rb sm">${ic('i-pen')}</span></div><h5>Obiettivo del mese:</h5><p class="goal">${m.azienda.obiettivoMese}</p></div>
-      <div class="dcard"><div class="nt"><span class="rb sm">${ic('i-ne')}</span></div><h5>Ultime voci del diario:</h5><div style="margin-top:10px">${ultime.map(x => `<div class="drow"><span>${esc(x.ora)}</span><div><b>${esc(m.byId[x.chi].nome)}</b> ${esc(x.testo)}</div></div>`).join('')}</div></div>`;
+      <div class="dcard"><div class="nt"><span class="rb sm">${ic('i-ne')}</span></div><h5>Ultime voci del diario:</h5><div style="margin-top:10px">${ultime.map(x => `<div class="drow"><span>${esc(x.ora)}</span><div><b>${esc(m.etichetta(m.byId[x.chi]))}</b> ${esc(x.testo)}</div></div>`).join('')}</div></div>`;
   }
   const pager = (m, idx, n) => `<span class="pager"><span class="rb olight" data-az="prec">${ic('i-left')}</span>${idx + 1} di ${n}<span class="rb olight" data-az="succ">${ic('i-right')}</span></span>`;
   function tendinaChiusa(m, opz) {
@@ -446,8 +484,8 @@ window.DIREZIONE_A = (function () {
     const chi = m.byId[r.chi];
     return `<div class="appr">
       <div class="top"><span class="chip">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]} · ${esc(r.ora)}</span><span class="r"><span class="rb glass" data-az="prec">${ic('i-left')}</span><span class="rb glass" data-az="succ">${ic('i-right')}</span></span></div>
-      <span class="face av ${m.avatarClasse(chi)}">${m.iniziali(chi)}</span>
-      <div class="cap"><b>${esc(r.cosa)}</b>${esc(chi.nome)} · ${esc(r.cliente)} · ${idx + 1} di ${n}</div>
+      ${av(m, chi, 'lg face', 'attesa')}
+      <div class="cap"><b>${esc(r.cosa)}</b>${esc(m.etichetta(chi))} · ${esc(r.cliente)} · ${idx + 1} di ${n}</div>
       <div class="ctl"><span class="rb glass" data-az="espandi" title="Apri">${ic('i-eye')}</span><span class="rb glass" title="Commenta">${ic('i-chat')}</span><span class="rb lime" data-az="approva" data-id="${r.id}" title="Approva">${ic('i-check')}</span><span class="rb red" data-az="rifiuta" data-id="${r.id}" title="Rifiuta">${ic('i-x')}</span></div>
     </div>`;
   }
@@ -461,7 +499,7 @@ window.DIREZIONE_A = (function () {
         <div class="tb">${riepilogo(m)}<div class="qrow on" data-az="pannello" data-pannello="richieste"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-bell')}</span><div class="tx"><b>Da approvare</b><span>${att.length} richieste in attesa</span></div><span class="rb xs">${ic('i-chevr')}</span></div></div>
       </div>`;
     }
-    const coda = att.length > 1 ? `<div class="sub"><h5>In coda</h5><span class="chip light">${att.length}</span></div>` + att.map((x, i) => { const c = m.byId[x.chi]; return `<div class="qrow${i === idx ? ' on' : ''}" data-az="vai" data-idx="${i}">${av(m, c, 'xs')}<div class="tx"><b>${esc(x.cosa)}</b><span>${esc(c.nome)} · ${esc(x.cliente)} · ${esc(x.ora)}</span></div><span class="rb xs">${ic('i-chevr')}</span></div>`; }).join('') : '';
+    const coda = att.length > 1 ? `<div class="sub"><h5>In coda</h5><span class="chip light">${att.length}</span></div>` + att.map((x, i) => { const c = m.byId[x.chi]; return `<div class="qrow${i === idx ? ' on' : ''}" data-az="vai" data-idx="${i}">${av(m, c, 'xs')}<div class="tx"><b>${esc(x.cosa)}</b><span>${esc(m.etichetta(c))} · ${esc(x.cliente)} · ${esc(x.ora)}</span></div><span class="rb xs">${ic('i-chevr')}</span></div>`; }).join('') : '';
     return `<div class="a-tend aperta" role="dialog" aria-label="Da approvare">
       <div class="th"><h4>Da approvare</h4><span class="chip lime">${att.length}</span><span class="rb olight sm" data-az="espandi" title="Apri la richiesta">${ic('i-expand')}</span><span class="rb olight sm" data-az="chiudi" title="Chiudi">${ic('i-right')}</span></div>
       <div class="tb">
@@ -477,7 +515,6 @@ window.DIREZIONE_A = (function () {
     const idx = Math.min(opz.richiesta || 0, att.length - 1);
     const r = att[idx];
     const chi = m.byId[r.chi];
-    const d = m.dipDi(chi);
     const doc = r.tipo === 'post'
       ? `<div class="lb"><span class="chip light">${ic('i-mega')}LinkedIn · bozza</span>${esc(r.cliente)}</div><div class="tx">${esc(r.testo)}</div><div class="img">${ic('i-doc')}${esc(r.allegato)}</div>`
       : `<div class="lb"><span class="chip light">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]}</span>${esc(r.cliente)} · ${esc(r.allegato)}</div><div class="tx mono">${esc(r.testo)}</div>`;
@@ -486,7 +523,7 @@ window.DIREZIONE_A = (function () {
       <div class="tb"><div class="rx">
         <div class="doc">${doc}</div>
         <div class="det">
-          <div class="dcard"><h5>Chi la propone</h5><div class="who">${av(m, chi)}<div><b>${esc(chi.nome)}</b><span>${esc(chi.ruolo)} · ${esc(d.nome)}</span></div></div>
+          <div class="dcard"><h5>Chi la propone</h5><div class="who">${av(m, chi)}<div><b>${esc(m.etichetta(chi))}</b><span>${esc(m.sotto(chi))}</span></div></div>
             <div class="kv"><span>Consegnata alle</span><b>${esc(r.ora)}</b></div><div class="kv"><span>Costo della consegna</span><b>${r.costo} €</b></div>
             <div class="passi">${r.passi.map(p => `<span class="chip light">${ic('i-check')}${esc(p)}</span>`).join('')}</div></div>
           <div class="dcard"><h5>Nota del dipendente</h5><p class="nota">${esc(r.nota)}</p></div>
@@ -495,7 +532,43 @@ window.DIREZIONE_A = (function () {
       </div></div>
     </div>`;
   }
+  /* ---------- tendina Dipendente: creazione e modifica ---------- */
+  /* opz.modifica = { id?: dipendente esistente, bozza: { nome, ruolo, dip, seme|null } }.
+     Il dipendente «di prova» dell'anteprima: la bozza sopra il dipendente vero (o uno nuovo, libero). */
+  function dipendenteBozza(m, mod) {
+    const base = mod.id ? m.byId[mod.id] : { id: 0, stato: 'libero', att: { titolo: 'Nessuna esecuzione', costo: 0 } };
+    const b = mod.bozza;
+    const e = Object.assign({}, base, { ruolo: (b.ruolo || '').trim() || (mod.id ? base.ruolo : 'Nuovo dipendente'), dip: b.dip || base.dip || m.dipartimenti[0].id });
+    if ((b.nome || '').trim()) e.nome = b.nome.trim(); else delete e.nome;
+    if (b.seme) e.seme = b.seme; else delete e.seme;
+    return e;
+  }
+  const anteprimaDipendente = (m, mod) => `<div class="anteprima">${cardDipendente(m, dipendenteBozza(m, mod), true)}</div>`;
+  function scelteAvatar(m, mod) {
+    const e = dipendenteBozza(m, mod);
+    const semi = window.DGT_AVATAR.semi(e.ruolo, 6);
+    const scelto = e.seme || e.ruolo;
+    return `<div class="scelte">${semi.map(sm => `<span class="av s${sm === scelto ? ' on' : ''}" data-az="bozza" data-k="seme" data-v="${esc(sm)}" title="${sm === e.ruolo ? 'Avatar del ruolo' : 'Variante'}">${window.DGT_AVATAR.html(sm, 'pianificato')}</span>`).join('')}</div>`;
+  }
+  function tendinaDipendente(m, opz) {
+    const mod = opz.modifica;
+    const b = mod.bozza;
+    const nuovo = !mod.id;
+    const dipSel = b.dip || (mod.id ? m.byId[mod.id].dip : m.dipartimenti[0].id);
+    return `<div class="a-tend aperta dip" role="dialog" aria-label="${nuovo ? 'Nuovo dipendente' : 'Modifica dipendente'}">
+      <div class="th"><span class="rb black">${ic(nuovo ? 'i-plus' : 'i-pen')}</span><h4>${nuovo ? 'Nuovo dipendente' : 'Modifica dipendente'}</h4><span class="rb olight sm" data-az="annulla" title="Chiudi senza salvare">${ic('i-right')}</span></div>
+      <div class="tb">
+        <div id="a-anteprima">${anteprimaDipendente(m, mod)}</div>
+        <div class="campo"><span class="k">Ruolo</span><input type="text" data-campo="ruolo" value="${esc(b.ruolo || '')}" placeholder="Es. Sviluppatore full-stack" maxlength="40" ${nuovo ? 'autofocus' : ''}></div>
+        <div class="campo"><span class="k">Nome <i>facoltativo: senza nome si vede il ruolo</i></span><input type="text" data-campo="nome" value="${esc(b.nome || '')}" placeholder="Nessun nome" maxlength="24"></div>
+        <div class="campo"><span class="k">Dipartimento</span><div class="pills">${m.dipartimenti.map(d => `<span class="pill${d.id === dipSel ? ' on' : ''}" data-az="bozza" data-k="dip" data-v="${d.id}">${ic(iconaDip[d.id])}${esc(d.nome)}</span>`).join('')}</div></div>
+        <div class="campo"><span class="k">Avatar <i>dal ruolo, o una variante</i></span><div id="a-scelte">${scelteAvatar(m, mod)}</div></div>
+        <div class="azioni"><span class="pill lime" data-az="salva">${ic('i-check')}${nuovo ? 'Crea dipendente' : 'Salva'}</span><span class="pill olight" data-az="annulla">Annulla</span></div>
+      </div>
+    </div>`;
+  }
   function tendina(m, opz) {
+    if (opz.tendina === 'dipendente' && opz.modifica) return tendinaDipendente(m, opz);
     if (opz.tendina === 'chiusa') return tendinaChiusa(m, opz);
     if (opz.tendina === 'estesa') return tendinaEstesa(m, opz);
     return tendinaAperta(m, opz);
@@ -506,7 +579,7 @@ window.DIREZIONE_A = (function () {
     return `<div class="a-app" role="figure" aria-label="Direzione A — ${esc(titolo)} (contenuto sintetico)">
       <span class="a-logo">DGT</span>
       ${barraAgenda(m)}
-      <div class="a-tr"><span class="rb">${ic('i-bell')}<i class="dot"></i></span><span class="av a2">${esc(m.azienda.titolare.iniziali)}</span></div>
+      <div class="a-tr"><span class="rb">${ic('i-bell')}<i class="dot"></i></span><span class="av persona">${esc(m.azienda.titolare.iniziali)}</span></div>
       <span class="rb a-back" ${opz.pagina !== 'home' ? 'data-az="pagina" data-pagina="home"' : ''}>${ic('i-left')}</span>
       <div class="a-head">
         <h3 class="a-title">${esc(titolo)}</h3>
@@ -547,7 +620,7 @@ window.DIREZIONE_A = (function () {
       <section>
         <div class="shead"><h3>Dipendenti</h3><span class="cnt"><b>${m.n}</b><span>Dipendenti</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span><span class="rb sm ${compatto ? 'ghost' : 'white'}">${ic('i-grid')}</span><span class="rb sm ${compatto ? 'white' : 'ghost'}">${ic('i-rows')}</span>
           <div class="filters"><span class="pill on">Tutti</span>${m.dipartimenti.map(d => `<span class="pill">${esc(d.nome)}</span>`).join('')}</div></div>
-        ${compatto ? `<div class="elenco">${m.dipendenti.map(e => rigaDipendente(m, e)).join('')}</div>` : `<div class="cards">${m.dipendenti.map(e => cardDipendente(m, e)).join('')}</div>`}
+        ${compatto ? `<div class="elenco">${m.dipendenti.map(e => rigaDipendente(m, e)).join('')}<div class="erow add" data-az="nuovo"><span class="rb xs">${ic('i-plus')}</span>Aggiungi un dipendente</div></div>` : `<div class="cards dipendenti">${m.dipendenti.map(e => cardDipendente(m, e)).join('')}${cardAggiungi(m)}</div>`}
       </section>`;
     return cornice(m, opz, m.azienda.titolo, stats, 'home', corpo, 'Nuovo obiettivo');
   }
@@ -555,10 +628,9 @@ window.DIREZIONE_A = (function () {
   /* ---------- pagina Richieste ---------- */
   function cardRichiesta(m, r, i) {
     const chi = m.byId[r.chi];
-    const d = m.dipDi(chi);
     const idx = inAttesa(m).indexOf(r);
     return `<div class="ncard task lime" data-az="richiesta" data-idx="${idx}">
-      <div class="who">${av(m, chi)}<div><b>${esc(chi.nome)}</b><span>${esc(chi.ruolo)} · ${esc(d.nome)}</span></div></div>
+      <div class="who">${av(m, chi)}<div><b>${esc(m.etichetta(chi))}</b><span>${esc(m.sotto(chi))}</span></div></div>
       <div class="nt"><span class="rb ghost">${ic('i-ne')}</span></div>
       <div class="body"><span class="ico">${ic(iconaTipo[r.tipo])}</span><div><div class="tt">${esc(r.cosa)}</div><div class="meta"><b>${esc(r.cliente)}</b><span>·</span><b>${esc(r.ora)}</b></div></div></div>
       <div class="st"><span class="k">Decidi</span><div class="row"><span class="sel"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic(iconaTipo[r.tipo])}</span><span>${r.costo} € · ${r.passi.length} passi · ${esc(r.ora)}</span>${ic('i-chev')}</span><span class="rb black" data-az="approva" data-id="${r.id}" title="Approva">${ic('i-check')}</span><span class="rb red" data-az="rifiuta" data-id="${r.id}" title="Rifiuta">${ic('i-x')}</span></div></div>
@@ -568,7 +640,7 @@ window.DIREZIONE_A = (function () {
     const chi = m.byId[r.chi];
     const decisa = r.stato === 'attesa' ? `in attesa da ${esc(r.ora)}` : r.regola ? `regola · <b>${esc(r.regola)}</b>` : `<b>${esc(m.azienda.titolare.iniziali)}</b> · ${esc(r.decisa)}${r.commento ? ' · «' + esc(r.commento) + '»' : ''}`;
     const idx = r.stato === 'attesa' ? inAttesa(m).indexOf(r) : -1;
-    return `<div class="hrow ${r.stato}" ${idx >= 0 ? `data-az="richiesta" data-idx="${idx}"` : ''}><span class="ora">${esc(r.ora)}</span>${av(m, chi)}<div class="tx"><b>${esc(r.cosa)}</b><span>${esc(chi.nome)} · ${esc(r.cliente)}</span></div><span class="chip light">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]}</span>${chipEsito(r)}<span class="chi">${decisa}</span><span class="eur">${r.costo} €</span><span class="rb xs">${ic('i-ne')}</span></div>`;
+    return `<div class="hrow ${r.stato}" ${idx >= 0 ? `data-az="richiesta" data-idx="${idx}"` : ''}><span class="ora">${esc(r.ora)}</span>${av(m, chi)}<div class="tx"><b>${esc(r.cosa)}</b><span>${esc(m.etichetta(chi))} · ${esc(r.cliente)}</span></div><span class="chip light">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]}</span>${chipEsito(r)}<span class="chi">${decisa}</span><span class="eur">${r.costo} €</span><span class="rb xs">${ic('i-ne')}</span></div>`;
   }
   function barraFiltri(m, f, tot, filtrate) {
     const p = (k, v, testo, extra) => `<span class="pill sm${(f[k] || 'tutti') === String(v) ? ' on' : ''}" data-az="filtro" data-k="${k}" data-v="${esc(String(v))}">${extra || ''}${testo}</span>`;
@@ -580,7 +652,7 @@ window.DIREZIONE_A = (function () {
       <div class="frow"><span class="k">Periodo</span><div class="pills due">${p('periodo', 'tutti', 'Tutto')}${p('periodo', 'oggi', 'Oggi')}${p('periodo', 'ieri', 'Ieri')}${p('periodo', 'settimana', '7 giorni')}${p('periodo', 'mese', '30 giorni')}</div>
         <span class="sep"></span><span class="k" style="width:auto">Cliente</span><div class="pills">${p('cliente', 'tutti', 'Tutti')}${m.clienti.map(c => p('cliente', c, esc(c))).join('')}</div></div>
       <div class="frow"><span class="k">Dipartim.</span><div class="pills due">${p('dip', 'tutti', 'Tutti')}${m.dipartimenti.map(d => p('dip', d.id, esc(d.nome))).join('')}</div>
-        <span class="sep"></span><span class="k" style="width:auto">Dipendente</span><div class="pills">${p('chi', 'tutti', 'Tutti')}${conRichieste.filter(e => !f.dip || f.dip === 'tutti' || e.dip === f.dip).map(e => p('chi', e.id, esc(e.nome), av(m, e, 'xs'))).join('')}</div></div>
+        <span class="sep"></span><span class="k" style="width:auto">Dipendente</span><div class="pills">${p('chi', 'tutti', 'Tutti')}${conRichieste.filter(e => !f.dip || f.dip === 'tutti' || e.dip === f.dip).map(e => p('chi', e.id, esc(m.etichetta(e)), av(m, e, 'xs'))).join('')}</div></div>
       <div class="fsum"><span><b>${filtrate}</b> di ${tot} richieste</span>${attivi ? `<span>· ${attivi} filtr${attivi === 1 ? 'o attivo' : 'i attivi'}</span><span class="pill" data-az="azzera">${ic('i-x')}Azzera</span>` : `<span>· nessun filtro</span>`}</div>
     </div>`;
   }
@@ -647,7 +719,7 @@ window.DIREZIONE_A = (function () {
       <section>
         <div class="shead"><h3>Dipendenti</h3><span class="cnt"><b>${lst.length}</b><span>Dipendenti</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
           <div class="filters"><span class="pill on">Tutti</span><span class="pill">Al lavoro</span><span class="pill">Liberi</span><span class="pill">Con errori</span></div></div>
-        <div class="cards">${lst.map(e => cardDipendente(m, e)).join('')}<div class="ncard lead add"><span class="rb ghost">${ic('i-plus')}</span>Aggiungi un dipendente<br>a ${esc(d.nome)}</div></div>
+        <div class="cards dipendenti">${lst.map(e => cardDipendente(m, e)).join('')}${cardAggiungi(m, d.id)}</div>
       </section>
       <section>
         <div class="shead"><h3>Obiettivi</h3><span class="cnt"><b>${ob.length}</b><span>Obiettivi</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
@@ -668,16 +740,39 @@ window.DIREZIONE_A = (function () {
   }
 
   function render(m, opz) {
-    opz = Object.assign({ pagina: 'home', dip: 'svi', tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie' }, opz || {});
+    opz = Object.assign({ pagina: 'home', dip: 'svi', tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null }, opz || {});
     return opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : home(m, opz);
   }
 
   /* Disegna e collega i clic: tendina, cambio pagina, filtri, decisioni. Ritorna lo stato. */
   function monta(radice, m, opz) {
-    const st = Object.assign({ pagina: 'home', dip: 'svi', tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie' }, opz || {});
+    const st = Object.assign({ pagina: 'home', dip: 'svi', tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, editor: null }, opz || {});
     const n = () => m.richiesteDi('attesa').length;
-    const tutto = () => { const y = window.scrollY; radice.innerHTML = render(m, st); window.scrollTo(0, y); };
-    const soloTendina = () => { const t = radice.querySelector('#a-tendina'); if (t) t.innerHTML = tendina(m, st); else tutto(); };
+    const vivi = () => window.DGT_AVATAR.anima(radice);
+    const tutto = () => { const y = window.scrollY; radice.innerHTML = render(m, st); vivi(); window.scrollTo(0, y); };
+    const soloTendina = () => { const t = radice.querySelector('#a-tendina'); if (t) { t.innerHTML = tendina(m, st); vivi(); } else tutto(); };
+    /* editor del dipendente: apre sopra la tendina corrente e la ricorda per il ritorno */
+    const apriEditor = (id, dip) => {
+      const e = id ? m.byId[id] : null;
+      st.modifica = { id: e ? e.id : 0, bozza: e ? { nome: e.nome || '', ruolo: e.ruolo, dip: e.dip, seme: e.seme || null } : { nome: '', ruolo: '', dip: dip || (st.pagina === 'dipartimento' ? st.dip : m.dipartimenti[0].id), seme: null } };
+      if (st.tendina !== 'dipendente') st.tendinaPrima = st.tendina;
+      st.tendina = 'dipendente';
+      soloTendina();
+      const inp = radice.querySelector('.a-tend.dip input[data-campo="ruolo"]'); if (inp && !e) inp.focus();
+    };
+    const chiudiEditor = () => { st.modifica = null; st.tendina = st.tendinaPrima || 'chiusa'; };
+    const aggiornaAnteprima = () => {
+      const a = radice.querySelector('#a-anteprima'), sc = radice.querySelector('#a-scelte');
+      if (a) { a.innerHTML = anteprimaDipendente(m, st.modifica); } if (sc) sc.innerHTML = scelteAvatar(m, st.modifica);
+      vivi();
+    };
+    const salva = () => {
+      const b = st.modifica.bozza;
+      if (!(b.ruolo || '').trim()) { const inp = radice.querySelector('.a-tend.dip input[data-campo="ruolo"]'); if (inp) { inp.focus(); inp.style.borderColor = 'var(--hangup)'; } return; }
+      const dati = { nome: (b.nome || '').trim(), ruolo: b.ruolo.trim(), dip: b.dip, seme: b.seme && b.seme !== b.ruolo.trim() ? b.seme : '' };
+      if (st.modifica.id) m.aggiorna(st.modifica.id, dati); else m.aggiungi(dati);
+      chiudiEditor(); tutto();
+    };
     const decidi = (id, stato, commento) => {
       const r = m.richieste.find(x => x.id === id); if (!r) return;
       r.stato = stato; r.decisa = m.azienda.ora; r.giorno = 0; r.min = 10 * 60 + 42; if (commento) r.commento = commento;
@@ -686,10 +781,24 @@ window.DIREZIONE_A = (function () {
       tutto();
     };
     tutto();
+    if (st.editor) apriEditor(st.editor === 'nuovo' ? 0 : +st.editor);
+    radice.addEventListener('input', ev => {
+      const inp = ev.target.closest('input[data-campo]'); if (!inp || !st.modifica) return;
+      const k = inp.dataset.campo, b = st.modifica.bozza;
+      if (k === 'ruolo' && b.seme && b.seme.indexOf(b.ruolo) === 0) b.seme = null;   // il seme seguiva il ruolo: torna a seguirlo
+      b[k] = inp.value; inp.style.borderColor = '';
+      aggiornaAnteprima();
+    });
+    radice.addEventListener('keydown', ev => { if (ev.key === 'Enter' && st.modifica && ev.target.closest('input[data-campo]')) { ev.preventDefault(); salva(); } if (ev.key === 'Escape' && st.modifica) { chiudiEditor(); soloTendina(); } });
     radice.addEventListener('click', ev => {
       const el = ev.target.closest('[data-az]'); if (!el || !radice.contains(el)) return;
       const az = el.dataset.az;
-      if (az === 'chiudi') { st.tendina = 'chiusa'; soloTendina(); }
+      if (az === 'modifica') { ev.stopPropagation(); apriEditor(+el.dataset.id); }
+      else if (az === 'nuovo') { apriEditor(0, el.dataset.dip || ''); }
+      else if (az === 'bozza') { const k = el.dataset.k, v = el.dataset.v; st.modifica.bozza[k] = (k === 'seme' && v === dipendenteBozza(m, st.modifica).ruolo) ? null : v; if (k === 'dip') soloTendina(); else aggiornaAnteprima(); }
+      else if (az === 'salva') { salva(); }
+      else if (az === 'annulla') { chiudiEditor(); soloTendina(); }
+      else if (az === 'chiudi') { st.tendina = 'chiusa'; soloTendina(); }
       else if (az === 'apri') { st.tendina = 'aperta'; if (el.dataset.pannello) st.pannello = el.dataset.pannello; soloTendina(); }
       else if (az === 'pannello') { st.pannello = el.dataset.pannello; soloTendina(); }
       else if (az === 'espandi') { st.tendina = 'estesa'; soloTendina(); }

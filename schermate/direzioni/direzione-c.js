@@ -106,7 +106,7 @@ window.DIREZIONE_C = (function () {
     else if (e.stato === 'attesa') tag = `<span class="tag">${ic('i-bell')}approva</span>`;
     else if (e.stato === 'pianificato') tag = `<span class="tag">${ic('i-clock')}${esc(a.quando)}</span>`;
     const bub = e.stato === 'lavoro' ? `<div class="bub"><b>${esc(a.titolo)}</b><span>${esc(a.cliente)} · passo ${a.passo[0]} di ${a.passo[1]}</span><i><b style="width:${Math.round(100 * a.passo[0] / a.passo[1])}%"></b></i></div>` : '';
-    return `<div class="desk ${e.stato}"><span class="av">${m.iniziali(e)}${tag}</span><span class="nm">${esc(e.nome)}</span>${compatto ? '' : `<span class="rl">${esc(e.ruolo)}</span>`}${bub}</div>`;
+    return `<div class="desk ${e.stato}"><span class="av">${m.iniziali(e)}${tag}</span><span class="nm">${esc(m.etichetta(e))}</span>${compatto ? '' : `<span class="rl">${esc(e.ruolo)}</span>`}${bub}</div>`;
   }
   function stanza(m, d, compatto) {
     const lst = m.perDip[d.id];
@@ -136,11 +136,11 @@ window.DIREZIONE_C = (function () {
         <div class="diary">
           <div class="dcard">
             <h3>In attesa di te <span>${m.approvazioni.length}</span></h3>
-            ${m.approvazioni.slice(0, 3).map(a => { const e = m.byId[a.chi]; const d = m.dipDi(e); return `<div class="ap" style="${varsDip(d)}"><div class="t"><i>${m.iniziali(e)}</i><div style="min-width:0"><b>${esc(a.cosa)}</b><span>${esc(e.nome)} · ${esc(a.cliente)} · ${esc(a.ora)}</span></div></div><div class="bts"><span class="cbtn ok">${ic('i-check')}Approva</span><span class="cbtn g">Rivedi</span></div></div>`; }).join('')}
+            ${m.approvazioni.slice(0, 3).map(a => { const e = m.byId[a.chi]; const d = m.dipDi(e); return `<div class="ap" style="${varsDip(d)}"><div class="t"><i>${m.iniziali(e)}</i><div style="min-width:0"><b>${esc(a.cosa)}</b><span>${esc(m.etichetta(e))} · ${esc(a.cliente)} · ${esc(a.ora)}</span></div></div><div class="bts"><span class="cbtn ok">${ic('i-check')}Approva</span><span class="cbtn g">Rivedi</span></div></div>`; }).join('')}
           </div>
           <div class="dcard">
             <h3>Diario di oggi <span>${m.diario.length} voci</span></h3>
-            <div class="feed">${feed.map((x, i) => { const e = m.byId[x.chi]; const d = m.dipDi(e); return `${i === 0 ? '<div class="hdr">Ultima ora</div>' : ''}${x.ora < '10:00' && (i === 0 || feed[i - 1].ora >= '10:00') ? '<div class="hdr">Stamattina</div>' : ''}<div class="e ${x.tipo}" style="${varsDip(d)}"><span>${esc(x.ora)}</span><i>${m.iniziali(e)}</i><div><b>${esc(e.nome)}</b> ${esc(x.testo)}</div></div>`; }).join('')}</div>
+            <div class="feed">${feed.map((x, i) => { const e = m.byId[x.chi]; const d = m.dipDi(e); return `${i === 0 ? '<div class="hdr">Ultima ora</div>' : ''}${x.ora < '10:00' && (i === 0 || feed[i - 1].ora >= '10:00') ? '<div class="hdr">Stamattina</div>' : ''}<div class="e ${x.tipo}" style="${varsDip(d)}"><span>${esc(x.ora)}</span><i>${m.iniziali(e)}</i><div><b>${esc(m.etichetta(e))}</b> ${esc(x.testo)}</div></div>`; }).join('')}</div>
           </div>
         </div>
       </div>

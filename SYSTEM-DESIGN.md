@@ -16,8 +16,8 @@ Il design di DGT è la **copia fedele** di due riferimenti scelti dall'utente
 | Interfaccia "AI Agent Battlecard" (editor a nodi) | `design-system/reference/riferimento-02-ui.jpg` | Rail di tessere, titolo con percorso e tag, tab a pillola, canvas puntinato, nodi con riflesso, nodo selezionato verde, connettori luminosi, barra chat |
 
 **Vincolo fisso**: non si copiano logo, foto o marchi di terzi. Marchio DGT al posto del logo,
-avatar con iniziali al posto delle foto, icona video di DGT al posto di Google Meet. Contenuti
-sintetici, in italiano.
+avatar generati per i dipendenti AI e iniziali per le persone al posto delle foto, icona video di
+DGT al posto di Google Meet. Contenuti sintetici, in italiano.
 
 ## 2. Dove sta cosa
 
@@ -30,6 +30,7 @@ sintetici, in italiano.
 | `design-system/tools/` | `screenshot.js` (cattura desktop/mobile), `fetch-fonts.py` (Urbanist locale per gli ambienti senza Google Fonts), `wcag.py` (utilità di contrasto, non è una regola). |
 | `design-system/archive/` | Varianti precedenti (A e B). **Non fanno testo.** |
 | `schermate/direzioni/` | Prime schermate reali: tre direzioni per la vista principale, prova a 40, direzione scelta (`DIREZIONI.md`). |
+| `schermate/direzioni/avatar/` | Avatar dei dipendenti AI: motore del kit (verbatim in `vendor-avatars/`, impacchettato in `avatar-motore.js`) e involucro `avatar-dgt.js` con colori, stati e animazione della Console. |
 | `PRODUCT.md`, `CLAUDE.md` | Contesto di prodotto e istruzioni per le sessioni. |
 | `PROSSIMA-SESSIONE.md` | Passaggio di consegne: stato, decisioni, come riprendere. |
 
@@ -101,6 +102,8 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 | Rail | 4 cerchi 48 a sinistra: elenco (attivo, bianco), organizzazione, chat, calendario |
 | Intestazione di sezione | titolo 28, conteggio sottolineato (numero 20 + parola 13), cerchi cerca e filtri 46, pillole filtro |
 | Card lead | 260×204, r28, `#262626→#1C1C1C`; avatar 48 in alto a sinistra; intaglio con freccia; nome 26; ruolo 13; "Fonte" + pillole `#3A3A3A` 26; etichetta di interesse + contenitore nero con 5 punti 13 |
+| Avatar del dipendente AI | disco 48 (40, 36, 32, 28, 26; 68 nella richiesta corrente) `#E4E4E4`; dentro la forma generata dal seme (ruolo, o seme scelto): corpo `#0A0A0A`, occhi `#FCFCFC`, lime `#B8FC64` per occhi e segni quando serve il titolare (al lavoro, da approvare), rosa `#F9A3A3` per gli occhi a X dell'errore, anelli e archi fuori dal corpo in nero sottile; aria-hidden. Due famiglie: **orbe** (scelta dall'utente): sfere morbide con occhi grandi (lime al lavoro, gialli `#FCDC64` da approvare, rosa a X in errore, bianchi altrimenti) che respirano, battono le palpebre e seguono lo sguardo, animazioni CSS su tutti gli avatar e un moto proprio per stato con cicli lunghi e pause (squash al lavoro, saltello ogni 5,5 s da approvare, tremito ogni 6 s in errore, scorrimento da pianificato, respiro profondo con «z» da libero); **kit**: le silhouette del generatore del kit, statiche tranne le card al lavoro, tenute con `?avatar=kit`. Le persone (titolare) tengono le iniziali su disco bianco |
+| Tendina Dipendente | 330, `#F4F4F4`, r28 a sinistra; intaglio con più/matita e titolo 22; anteprima della card; campi a pillola bianca 48 (Ruolo, Nome facoltativo) con etichetta 11 maiuscola; dipartimento a pillole 36 (scelta = nera); sei cerchi 36 per l'avatar (scelto con anello nero); azioni «Crea dipendente»/«Salva» lime 44 e «Annulla» |
 | Card attività | 336×262, lime / `#4D4D4D` / scura; striscia con avatar 48, nome 15/500, ruolo 12; intaglio con campanella (punto rosso) e freccia; cerchio contornato 64 con icona; titolo 26; riga meta (coppia di avatar, data 500, "alle"); "Stato" 11; selettore a pillola 48 (bianca su lime, nera su grigio/scuro) con avatar, testo e chevron; mail vuota; video nero |
 | Videochiamata | 240 di altezza, gradiente grigio-caldo, avatar grande, controlli in vetro + rosso, espandi e chiudi |
 | Riepilogo | `#F4F4F4`, r28; cerchio nero con bacchetta, "Riepilogo" 26, freccia vuota; colonna orari 12 con badge rotondi 22 (lime "mi piace", rosa "stella") e linea `#C8C8C8`; card Documenti `#E4E4E4` r22 con intaglio per il download e due miniature 118 (`#D2D2D2`, foglio bianco, etichetta `#A7A7A7`); card Obiettivo con matita, testo 13/19 con parti in 500 (lime su mobile) |
@@ -162,17 +165,30 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
    Dipendenti (+ card «Aggiungi») · Obiettivi (card con barra di avanzamento a pillola; lime = in ritardo) · Da
    approvare dal dipartimento · Spesa del mese per cliente. Ogni pagina interna ripete la cornice: barra in alto,
    titolo con numeri, rail, sezioni con intestazione e pillole, tendine del titolare.
+10. Il dipendente AI non ha un nome di base: l'etichetta principale è il ruolo (nella card a 22 px su due righe) e
+    sotto sta il dipartimento; il nome è facoltativo (creazione o modifica) e quando c'è torna la forma piena (nome
+    26 px, sotto «ruolo · dipartimento»). La card dipendente è alta 240 px nei due casi. Vale in tutte le viste.
+11. Avatar generati al posto delle iniziali: deterministici dal seme (ruolo, o seme scelto), nel linguaggio del
+    sistema (disco chiaro, corpo nero, occhi bianchi; lime solo se serve il titolare; rosa per l'errore). Due
+    famiglie, con la stessa API: «orbe» (scelta dall'utente: sfere morbide con occhi grandi, animazioni CSS su tutti
+    gli avatar con un moto proprio per stato, sguardo che segue il puntatore nell'editor) e «kit» (le silhouette del
+    kit, statiche tranne le card al lavoro, con `?avatar=kit`). Il titolare tiene le iniziali.
+12. Creazione e modifica del dipendente in una tendina «Dipendente» (anteprima, ruolo, nome facoltativo,
+    dipartimento, avatar a scelta fra sei), aperta dalla matita nell'intaglio della card, dalla riga compatta e
+    dalla card «Aggiungi». Niente finestre generiche.
 
 Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in
 `schermate/direzioni/DIREZIONI.md`, sezione 1. Sorgenti in `schermate/direzioni/` (`dati.js`, `comune.js`,
-`direzione-a.js`).
+`direzione-a.js`, `avatar/`). Dettaglio della versione 5 (dipendenti, editor, avatar) in `DIREZIONI.md`, sezione 4.
 
 ## 11. Collegamenti
 
 - Confronto delle tre direzioni (artefatto): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
-- Direzione A cliccabile, tendine, pagine Richieste e Dipartimento (artefatto): https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
-- PR #3 verso `main` con schermate e documenti: https://github.com/av3rgfx/DGT-Design-2.0/pull/3
+- Direzione A cliccabile, tendine, pagine Richieste e Dipartimento, dipendenti con avatar ed editor (artefatto): https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
+- Avatar dei dipendenti, le due famiglie a confronto (artefatto): https://claude.ai/code/artifact/4bc0c3ee-d1a0-41dc-a6d9-ef4f2b8360bd
+- PR #3 verso `main` con schermate e documenti (unita): https://github.com/av3rgfx/DGT-Design-2.0/pull/3
+- Branch dei dipendenti AI (versione 5 della direzione A): `claude/console-ai-employees-feebdx`
 
 - Artefatto pubblicato: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b
 - Branch di lavoro: `claude/dgt-design-system-fz5r1g`, PR #1 verso `main`: https://github.com/av3rgfx/DGT-Design-2.0/pull/1
