@@ -7,6 +7,9 @@ Stato al 2026-09-04, fine della sessione che ha applicato il sistema di design a
 - Branch: `claude/dgt-design-directions-iv0ntf` (da `main`, che contiene il sistema di design della PR #1).
 - Artefatto del confronto (tab A/B/C, selettore 11/40): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
   (si aggiorna ricostruendo il file unico con `schermate/direzioni/build-unico.js` e ripubblicandolo).
+- Artefatto della direzione A cliccabile (tendina a tre stati, pagina Richieste):
+  https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
+  (`node build-unico.js direzione-a.html /tmp/a.html` e ripubblicare dallo stesso percorso).
 - Artefatto dello specimen del sistema: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b
 - Documento unico: `SYSTEM-DESIGN.md` (sezione 10: direzione scelta e regole). Studio delle direzioni:
   `schermate/direzioni/DIREZIONI.md`.
@@ -22,6 +25,10 @@ Stato al 2026-09-04, fine della sessione che ha applicato il sistema di design a
    (4 dipartimenti, 11 dipendenti, 3 al lavoro), solo la A fedele ai riferimenti, guadagni/perdite per ognuna,
    consiglio su quale regge a 40. Scelta fatta in questa sessione: **direzione A · Console**. Le schermate
    successive vanno generate solo dentro la A.
+7. **2026-09-04, dopo la scelta**: "prendiamo la A ma va migliorata": O normale nel titolo dell'azienda, logo del
+   prodotto = acronimo DGT, pannello Da approvare + Riepilogo come popup sopra tutto (chiudibile verso destra, con
+   icona e conteggio da chiuso, richiesta per intero quando si espande), e in seguito una pagina per le sole
+   richieste dell'azienda. Fatto: tendina a tre stati e prima versione della pagina Richieste (da confermare).
 
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi; contenuti sintetici di DGT; documenti in italiano.
 
@@ -30,9 +37,12 @@ Vincolo che vale sempre: nessun logo, foto o marchio di terzi; contenuti sinteti
 1. Leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezione 10) e `schermate/direzioni/DIREZIONI.md` (sezioni 1 e 4).
 2. Aprire `schermate/direzioni/direzione-a.html` (e `?n=40`): è la base di codice delle prossime schermate.
    Il modello dati è `dati.js`, le icone e le utilità sono in `comune.js`, i componenti in `direzione-a.js`.
-3. Prossima schermata prevista: il **dipartimento** (Sviluppo: 3 dipendenti, esecuzioni, obiettivi, costi), poi
-   dipendente, esecuzione, approvazioni da mobile, costi. Stessa cornice della Console: barra in alto, riga con
-   titolo e numeri, rail, sezioni con intestazione e pillole, pannello del titolare a destra.
+3. Prima cosa da fare: raccogliere il riscontro dell'utente sulla tendina (tre stati) e sulla prima versione della
+   pagina Richieste (domande aperte in fondo al messaggio finale della sessione: Riepilogo nella stessa tendina o
+   in una seconda; tendina aperta o chiusa all'apertura della home; cosa deve contenere la pagina Richieste oltre
+   alle tre sezioni). Poi il **dipartimento** (Sviluppo: 3 dipendenti, esecuzioni, obiettivi, costi), dipendente,
+   esecuzione, approvazioni da mobile, costi. Stessa cornice della Console: barra in alto, riga con titolo e numeri,
+   rail, sezioni con intestazione e pillole, tendina del titolare.
 
 ## Strumenti (`design-system/tools/`)
 

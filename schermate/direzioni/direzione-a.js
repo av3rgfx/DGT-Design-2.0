@@ -1,9 +1,19 @@
 /* =====================================================================
-   Direzione A — «Console». Copia del sistema di design (case study nero/lime,
-   Urbanist, pillole e cerchi, card con intaglio, barra agenda, Riepilogo chiaro)
-   applicata alla vista principale dell'azienda.
-   Unità di scala: il dipartimento (card) e la barra delle esecuzioni; i
-   dipendenti passano da griglia di card a elenco di pillole oltre i 16.
+   Direzione A — «Console». Il sistema di design (case study nero/lime,
+   Urbanist, pillole e cerchi, card con intaglio, barra agenda, pannello
+   chiaro) applicato alla vista principale dell'azienda e alla pagina Richieste.
+
+   Versione 2 (2026-09-04, richieste dell'utente):
+   - titolo dell'azienda con la O normale; logo del prodotto = acronimo DGT;
+   - il pannello del titolare (Da approvare + Riepilogo) è una tendina
+     flottante sopra tutto, con tre stati: chiusa (icona + conteggio al bordo
+     destro), aperta (richiesta corrente + Riepilogo), estesa (la richiesta
+     mostrata per intero); la home prende tutta la larghezza;
+   - pagina Richieste (tutte le richieste dell'azienda).
+
+   API: DIREZIONE_A.render(m, opz) → HTML; DIREZIONE_A.monta(radice, m, opz)
+   disegna e collega i clic. opz = { pagina: 'home'|'richieste',
+   tendina: 'chiusa'|'aperta'|'estesa', richiesta: indice }.
    ===================================================================== */
 window.DIREZIONE_A = (function () {
   const { ic, esc, prefissa, iconaDip } = window.DGT_UI;
@@ -18,6 +28,7 @@ window.DIREZIONE_A = (function () {
 .a-app *{box-sizing:border-box}
 .a-app h3,.a-app h4,.a-app h5,.a-app p{margin:0;font-weight:400}
 .a-app svg{display:block}
+.a-app [data-az]{cursor:pointer}
 /* primitive del sistema */
 .rb{width:48px;height:48px;border-radius:50%;background:var(--round);border:1px solid rgb(255 255 255/.14);display:grid;place-items:center;color:var(--white);flex:none;position:relative}
 .rb svg{width:18px;height:18px}
@@ -29,6 +40,7 @@ window.DIREZIONE_A = (function () {
 .rb.black{background:var(--ink);color:var(--white);border-color:transparent}
 .rb.red{background:var(--hangup);color:var(--white);border-color:transparent}
 .rb.glass{background:rgb(255 255 255/.22);border-color:rgb(255 255 255/.25);color:var(--white);backdrop-filter:blur(6px)}
+.rb.olight{background:transparent;border-color:rgb(0 0 0/.14);color:var(--ink)}
 .rb .dot{position:absolute;top:11px;right:12px;width:8px;height:8px;border-radius:50%;background:var(--red)}
 .av{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-weight:500;font-size:15px;color:#2A2A2A;flex:none;border:2px solid transparent}
 .av.a1{background:linear-gradient(135deg,#F7D9C4,#E7B49A)}.av.a2{background:linear-gradient(135deg,#D8E9F7,#A9C7E3)}.av.a3{background:linear-gradient(135deg,#E9DFF7,#C6B4E8)}
@@ -39,10 +51,16 @@ window.DIREZIONE_A = (function () {
 .pair .more{height:28px;padding:0 9px;border-radius:var(--r-pill);background:var(--ink);color:var(--white);font-size:11px;display:inline-flex;align-items:center;border:2px solid var(--white)}
 .pill{display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 20px;border-radius:var(--r-pill);border:1px solid rgb(255 255 255/.14);background:transparent;color:var(--white);font-size:15px;white-space:nowrap;flex:none}
 .pill.on{background:var(--white);color:var(--ink);border-color:transparent}
+.pill.lime{background:var(--lime);color:var(--ink);border-color:transparent}
+.pill.red{background:var(--hangup);color:var(--white);border-color:transparent}
+.pill.olight{border-color:rgb(0 0 0/.14);color:var(--ink)}
+.pill svg{width:16px;height:16px}
 .chip{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:var(--r-pill);background:var(--pill-src);color:#E8E8E8;font-size:12px;white-space:nowrap}
 .chip.lime{background:var(--lime);color:var(--ink)}
 .chip.rosa{background:var(--badge-red);color:var(--badge-red-ink)}
 .chip.onlime{background:rgb(0 0 0/.12);color:var(--ink)}
+.chip.light{background:#D9D9D9;color:#3A3A3A}
+.chip.ink{background:var(--ink);color:var(--white)}
 .chip svg{width:11px;height:11px}
 .dots{display:inline-flex;gap:5px;align-items:center;height:30px;padding:0 8px;border-radius:var(--r-pill);background:var(--dots-box)}
 .dots i{width:13px;height:13px;border-radius:50%;background:var(--d-off);display:block}
@@ -62,27 +80,29 @@ window.DIREZIONE_A = (function () {
 .nt::before,.nt::after{content:"";position:absolute;width:22px;height:22px;background:radial-gradient(circle at 0 100%,transparent 21.5px,var(--behind) 22px)}
 .nt::before{left:-22px;top:0}.nt::after{right:0;bottom:-22px}
 .ncard .who{display:flex;align-items:center;gap:14px;padding:16px 16px 0}
+.ncard .who div{min-width:0}
 .ncard .who div>b{display:block;font-weight:500;font-size:15px;line-height:20px}
-.ncard .who div>span{display:block;font-size:12px;color:var(--t2)}
+.ncard .who div>span{display:block;font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ncard.lime .who div>span{color:rgb(0 0 0/.6)}.ncard.gray .who div>span{color:#CFCFCF}
 /* card dipartimento e dipendente (forma della card lead) */
-.lead{width:240px;height:204px;padding:20px;flex:none}
+.lead{width:249px;height:204px;padding:20px;flex:none}
 .lead .ico{width:48px;height:48px;border-radius:50%;border:1px solid rgb(255 255 255/.16);display:grid;place-items:center}
 .lead .ico svg{width:20px;height:20px}
 .lead .name{font-size:26px;line-height:30px;margin-top:22px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:4px}
 .lead .role{font-size:13px;color:var(--t2);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lead .ft{display:flex;justify-content:space-between;align-items:flex-end;margin-top:16px;gap:8px}
 .lead .k{font-size:11px;color:var(--t2);display:block;margin-bottom:6px;white-space:nowrap}
-/* card attività (esecuzione in corso) */
-.task{width:325px;min-height:262px;display:grid;grid-template-rows:auto 1fr auto;grid-template-columns:minmax(0,1fr);flex:none}
+/* card attività (esecuzione in corso) e card richiesta */
+.task{width:316px;min-height:262px;display:grid;grid-template-rows:auto 1fr auto;grid-template-columns:minmax(0,1fr);flex:none}
 .task>*{min-width:0}
+.task .who{padding-right:120px}
 .task .body{display:flex;align-items:center;gap:16px;padding:26px 20px 0}
 .task .body>div{min-width:0;flex:1}
 .task .ico{width:64px;height:64px;border-radius:50%;border:1px solid rgb(255 255 255/.16);display:grid;place-items:center;flex:none}
 .task.lime .ico{border-color:rgb(0 0 0/.14)}
 .task .ico svg{width:26px;height:26px}
 .task .tt{font-size:24px;line-height:28px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.task .meta{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:14px;white-space:nowrap}
+.task .meta{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:14px;white-space:nowrap;overflow:hidden}
 .task .meta span{color:var(--t2)}.task.lime .meta span{color:rgb(0 0 0/.6)}.task.gray .meta span{color:#D0D0D0}
 .task .meta b{font-weight:500}
 .task .st{padding:18px 16px 16px}
@@ -95,9 +115,9 @@ window.DIREZIONE_A = (function () {
 .task.lime .sel{background:var(--white);color:var(--ink)}
 .task.gray .sel,.task.dark .sel{background:var(--ink);color:var(--white)}
 .task.lime .st .rb.ghost{border-color:rgb(0 0 0/.16);color:var(--ink)}
+.task .sel .chip{height:24px;font-size:11px;flex:none}
 /* impaginazione della console */
-.a-logo{position:absolute;left:34px;top:44px;width:32px;height:32px;color:var(--white)}
-.a-logo svg{width:32px;height:32px}
+.a-logo{position:absolute;left:28px;top:40px;height:40px;display:flex;align-items:center;font-weight:600;font-size:22px;letter-spacing:.12em;color:var(--white)}
 .a-sched{position:absolute;left:102px;top:28px;right:158px;height:64px;border-radius:var(--r-pill);background:var(--white);color:var(--ink);display:flex;align-items:center;gap:14px;padding:6px 6px 6px 22px}
 .a-sched .t{font-size:18px;white-space:nowrap}
 .a-sched .cal{display:flex;align-items:center;gap:10px;height:44px;padding:0 20px 0 6px;border-radius:var(--r-pill);border:1px solid rgb(0 0 0/.14);font-size:14px;white-space:nowrap}
@@ -122,8 +142,7 @@ window.DIREZIONE_A = (function () {
 .a-tr{position:absolute;right:26px;top:36px;display:flex;gap:10px;align-items:center}
 .a-back{position:absolute;left:26px;top:128px}
 .a-head{position:absolute;left:102px;top:112px;right:26px;display:flex;align-items:center;gap:40px}
-.a-title{font-size:46px;line-height:56px;letter-spacing:.02em;display:flex;align-items:center;white-space:nowrap}
-.a-title svg{width:44px;height:44px;margin:0 -3px 0 -2px;color:var(--lime)}
+.a-title{font-size:46px;line-height:56px;letter-spacing:.02em;white-space:nowrap}
 .a-new{height:52px;padding:0 24px 0 6px;border-radius:var(--r-pill);background:var(--white);color:var(--ink);display:flex;align-items:center;gap:14px;font-size:14px;white-space:nowrap;flex:none}
 .a-new i{width:40px;height:40px;border-radius:50%;background:#EDEDED;display:grid;place-items:center}
 .a-new svg{width:16px;height:16px}
@@ -133,7 +152,7 @@ window.DIREZIONE_A = (function () {
 .stat span{font-size:19px;color:var(--t2);line-height:32px}
 .stat .badge{position:absolute;right:0;top:4px}
 .a-rail{position:absolute;left:26px;top:260px;display:grid;gap:12px}
-.a-main{position:relative;margin:232px 0 0 102px;width:1008px;display:grid;grid-template-columns:minmax(0,1fr);gap:40px}
+.a-main{position:relative;margin:232px 0 0 102px;width:1312px;display:grid;grid-template-columns:minmax(0,1fr);gap:40px}
 .a-main>section{min-width:0}
 .shead{display:flex;align-items:center;gap:14px;white-space:nowrap;height:46px}
 .shead h3{font-size:28px;line-height:34px;margin-right:22px}
@@ -142,39 +161,47 @@ window.DIREZIONE_A = (function () {
 .shead .rb.sm{width:46px;height:46px}
 .shead .filters{display:flex;gap:8px;margin-left:8px;overflow:hidden;mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent)}
 .cards{display:flex;gap:16px;margin-top:24px;flex-wrap:wrap}
-.cards.riga{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:-102px;padding-right:1008px;mask-image:linear-gradient(90deg,#000 1008px,transparent 1104px)}
+.cards.riga{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:-26px;padding-right:26px}
 .cards.riga::-webkit-scrollbar{display:none}
+.vuoto{margin-top:24px;height:96px;border-radius:var(--r-card);border:1px dashed rgb(255 255 255/.2);display:flex;align-items:center;justify-content:center;color:var(--t2);font-size:15px}
 /* elenco compatto dei dipendenti (oltre 16) */
-.elenco{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:24px}
+.elenco{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:24px}
 .erow{height:56px;border-radius:var(--r-pill);background:linear-gradient(180deg,var(--card-top),var(--card));display:flex;align-items:center;gap:10px;padding:0 6px 0 8px;min-width:0}
 .erow .av{width:40px;height:40px;font-size:13px}
 .erow .tx{flex:1;min-width:0;line-height:16px}
 .erow .tx b{display:block;font-weight:500;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .erow .tx span{display:block;font-size:11px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.erow .chip{height:24px;font-size:11px}
+.erow .chip{height:24px;font-size:11px;max-width:150px}.erow .chip span{overflow:hidden;text-overflow:ellipsis}
 .erow .rb.xs{background:transparent;border-color:rgb(255 255 255/.16)}
 .erow.lav{background:var(--lime);color:var(--ink)}.erow.lav .tx span{color:rgb(0 0 0/.6)}.erow.lav .rb.xs{border-color:rgb(0 0 0/.16);color:var(--ink)}
-/* pannello a destra: Da approvare + Riepilogo */
-.a-overlay{position:absolute;right:0;top:436px;width:314px;display:grid;gap:10px;--behind:var(--summary)}
-.appr{position:relative;height:240px;border-radius:var(--r-card) 0 0 var(--r-card);background:radial-gradient(120% 90% at 60% 30%,#8E8E86,#5C5C57 55%,#3D3D3A);overflow:hidden;color:var(--white)}
-.appr .top{position:absolute;left:14px;right:14px;top:14px;display:flex;justify-content:space-between;align-items:center}
-.appr .top .r{display:flex;gap:8px}
+/* ===== tendina del titolare: chiusa / aperta / estesa ===== */
+.a-mini{position:fixed;right:0;top:240px;z-index:30;height:56px;padding:0 20px 0 12px;border-radius:var(--r-pill) 0 0 var(--r-pill);background:var(--lime);color:var(--ink);display:flex;align-items:center;gap:10px;box-shadow:0 20px 50px rgb(0 0 0/.6);font-size:14px;white-space:nowrap}
+.a-mini .rb{width:36px;height:36px;background:var(--ink);color:var(--white);border-color:transparent}
+.a-mini .rb svg{width:15px;height:15px}
+.a-mini b{font-weight:500;font-size:22px;line-height:1}
+.a-mini svg.ch{width:14px;height:14px;opacity:.7}
+.a-tend{position:fixed;right:0;top:112px;height:calc(100vh - 136px);max-height:764px;width:330px;z-index:30;background:var(--summary);color:var(--ink);border-radius:var(--r-card) 0 0 var(--r-card);box-shadow:0 30px 80px rgb(0 0 0/.7);display:grid;grid-template-rows:auto 1fr;grid-template-columns:minmax(0,1fr);--behind:var(--summary)}
+.a-tend>*{min-width:0}
+.a-tend.estesa{width:840px}
+.a-tend .th{display:flex;align-items:center;gap:10px;padding:14px 14px 0 14px}
+.a-tend .th h4{font-size:26px;line-height:30px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.a-tend .th .chip{height:28px;font-size:13px}
+.a-tend .tb{overflow:auto;padding:12px 14px 18px 14px;display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-content:start;scrollbar-width:thin}
+.a-tend .tb>*{margin-right:0}
+/* richiesta corrente (forma della videochiamata) */
+.appr{position:relative;height:240px;border-radius:var(--r-inner);background:radial-gradient(120% 90% at 60% 30%,#8E8E86,#5C5C57 55%,#3D3D3A);overflow:hidden;color:var(--white)}
+.appr .top{position:absolute;left:12px;right:12px;top:12px;display:flex;justify-content:space-between;align-items:center}
 .appr .top .chip{background:rgb(0 0 0/.35);color:var(--white);height:28px;padding:0 12px}
-.appr .face{position:absolute;left:50%;top:54px;transform:translateX(-50%);width:68px;height:68px;border-radius:50%;display:grid;place-items:center;font-size:26px;color:#3A2A22;border:0}
-.appr .cap{position:absolute;left:14px;right:14px;top:130px;text-align:center;font-size:13px;line-height:17px;color:#EDEDED;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.appr .cap b{display:block;font-weight:500;font-size:15px;color:var(--white)}
-.appr .ctl{position:absolute;left:0;right:0;bottom:14px;display:flex;justify-content:center;gap:8px}
-.summary{position:relative;background:var(--summary);color:var(--ink);border-radius:var(--r-card) 0 0 var(--r-card);padding:14px 0 18px 14px;display:grid;grid-template-columns:44px 1fr;gap:10px}
-.summary .h{grid-column:1/3;display:flex;align-items:center;gap:16px;padding-right:14px}
-.summary .h h4{font-size:26px;flex:1}
-.summary .h .rb.ghost{border-color:rgb(0 0 0/.14);color:var(--ink)}
-.summary .tline{display:grid;gap:12px;position:relative;padding-top:12px;font-size:12px;align-content:start}
-.summary .tline .m{display:grid;gap:6px;justify-items:start}
-.summary .tline .m i{width:22px;height:22px;border-radius:50%;display:grid;place-items:center}
-.summary .tline .m i svg{width:11px;height:11px}
-.summary .tline::before{content:"";position:absolute;left:10px;top:60px;bottom:0;width:1px;background:#C8C8C8}
-.summary .stack{display:grid;gap:10px}
-.dcard{position:relative;border-radius:var(--r-inner);background:var(--docs);padding:16px}
+.appr .top .r{display:flex;gap:6px}
+.appr .top .r .rb{width:36px;height:36px}.appr .top .r .rb svg{width:14px;height:14px}
+.appr .face{position:absolute;left:50%;top:50px;transform:translateX(-50%);width:68px;height:68px;border-radius:50%;display:grid;place-items:center;font-size:24px;color:#3A2A22;border:0}
+.appr .cap{position:absolute;left:14px;right:14px;top:126px;text-align:center;font-size:13px;line-height:17px;color:#EDEDED;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.appr .cap b{display:block;font-weight:500;font-size:15px;color:var(--white);overflow:hidden;text-overflow:ellipsis}
+.appr .ctl{position:absolute;left:0;right:0;bottom:12px;display:flex;justify-content:center;gap:8px}
+.a-tend .sub{display:flex;align-items:center;gap:12px;padding:8px 0 0}
+.a-tend .sub h5{font-size:18px;line-height:24px;flex:1}
+.a-tend .sub .rb{width:36px;height:36px}.a-tend .sub .rb svg{width:14px;height:14px}
+.dcard{position:relative;border-radius:var(--r-inner);background:var(--docs);padding:16px;margin-right:0}
 .dcard h5{font-size:18px;line-height:24px;padding-right:52px}
 .dcard .nt{padding:0 0 10px 10px;border-bottom-left-radius:var(--r-inner)}
 .dcard .nt::before,.dcard .nt::after{width:16px;height:16px;background:radial-gradient(circle at 0 100%,transparent 15.5px,var(--behind) 16px)}
@@ -189,12 +216,34 @@ window.DIREZIONE_A = (function () {
 .thumb .lb{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);height:22px;padding:0 10px;border-radius:var(--r-pill);background:var(--thumb-pill);color:#fff;font-size:11px;display:flex;align-items:center;white-space:nowrap}
 .goal{font-size:13px;line-height:19px;color:#3E3E3E;margin-top:12px;padding-right:20px}
 .goal b{font-weight:500;color:var(--ink)}
-.summary .kv{display:flex;justify-content:space-between;font-size:12px;color:#6B6B6B;margin-top:10px}
-.summary .kv b{font-weight:500;color:var(--ink)}
+.kv{display:flex;justify-content:space-between;font-size:12px;color:#6B6B6B;margin-top:10px;gap:10px}
+.kv b{font-weight:500;color:var(--ink);text-align:right}
+/* richiesta estesa */
+.rx{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px}
+.rx .doc{background:var(--white);border-radius:var(--r-inner);padding:20px 22px 22px;display:grid;gap:14px;align-content:start}
+.rx .doc .lb{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t2-light)}
+.rx .doc .lb .chip{height:24px;font-size:11px}
+.rx .doc .tx{font-size:16px;line-height:24px;color:#1E1E1E;white-space:pre-line}
+.rx .doc .tx.mono{font-size:14px;line-height:22px}
+.rx .doc .img{height:150px;border-radius:14px;background:#E4E4E4;display:grid;place-items:center;color:#8A8A8A;font-size:12px;gap:6px}
+.rx .doc .img svg{width:22px;height:22px;color:#8A8A8A}
+.rx .det{display:grid;gap:10px;align-content:start}
+.rx .det .dcard{padding:14px 16px}
+.rx .det .dcard h5{font-size:15px;line-height:20px;padding-right:0;color:var(--t2-light)}
+.rx .det .who{display:flex;align-items:center;gap:12px;padding:0;margin-top:10px}
+.rx .det .who b{display:block;font-weight:500;font-size:15px}.rx .det .who span{display:block;font-size:12px;color:var(--t2-light)}
+.rx .det .passi{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.rx .det .nota{font-size:13px;line-height:19px;color:#3E3E3E;margin-top:8px}
+.rx .azioni{grid-column:1/3;display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:4px 0 6px}
+.rx .azioni .pill{height:48px}
+.rx .azioni .link{margin-left:auto;color:var(--t2-light);font-size:14px;display:inline-flex;align-items:center;gap:8px}
+.rx .azioni .link svg{width:14px;height:14px}
+.pager{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--t2-light);white-space:nowrap}
+.pager .rb{width:32px;height:32px}.pager .rb svg{width:13px;height:13px}
 `;
 
-  const S = (n) => `<i></i>`.repeat(n);
-  const dots = (lv, extra) => `<span class="dots l${lv}${extra ? ' ' + extra : ''}">${S(5)}</span>`;
+  const S = n => `<i></i>`.repeat(n);
+  const dots = lv => `<span class="dots l${lv}">${S(5)}</span>`;
   const av = (m, e, size) => `<span class="av ${m.avatarClasse(e)}${size ? ' ' + size : ''}">${m.iniziali(e)}</span>`;
   const pair = (m, ids, size, max) => {
     const lst = ids.map(id => m.byId[id]).filter(Boolean);
@@ -202,10 +251,8 @@ window.DIREZIONE_A = (function () {
     const rest = lst.length - shown.length;
     return `<span class="pair">${shown.map(e => av(m, e, size)).join('')}${rest > 0 ? `<span class="more">+${rest}</span>` : ''}</span>`;
   };
-  const titolo = (t) => {
-    const i = t.indexOf('O');
-    return i < 0 ? esc(t) : esc(t.slice(0, i)) + ic('i-mark') + esc(t.slice(i + 1));
-  };
+  const iconaTipo = { post: 'i-mega', documento: 'i-doc', lista: 'i-list', proposta: 'i-receipt' };
+  const nomeTipo = { post: 'Post', documento: 'Documento', lista: 'Lista', proposta: 'Proposta' };
 
   function chipStato(m, e) {
     const s = e.stato;
@@ -217,6 +264,7 @@ window.DIREZIONE_A = (function () {
   }
   const livelloOggi = e => ({ lavoro: e.att.da <= '09:00' ? 5 : 4, attesa: 3, errore: 1, pianificato: 0, libero: 0 })[e.stato];
 
+  /* ---------- pezzi della home ---------- */
   function cardAttivita(m, e, i) {
     const pend = m.approvazioni.some(a => a.chi === e.id);
     const tono = pend ? 'lime' : (i % 2 ? 'dark' : 'gray');
@@ -228,7 +276,6 @@ window.DIREZIONE_A = (function () {
       <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${av(m, e, 's')}<span>Passo ${e.att.passo[0]} di ${e.att.passo[1]}</span>${ic('i-chev')}</span><span class="rb ghost">${ic('i-chat')}</span><span class="rb black">${ic('i-eye')}</span></div></div>
     </div>`;
   }
-
   function cardDipartimento(m, d) {
     const lst = m.perDip[d.id];
     const lav = lst.filter(e => e.stato === 'lavoro').length;
@@ -243,7 +290,6 @@ window.DIREZIONE_A = (function () {
       <div class="ft"><div><span class="k">Dipendenti</span>${pair(m, lst.map(e => e.id), 'xs', 4)}</div><div><span class="k">Carico</span>${dots(lv)}</div></div>
     </div>`;
   }
-
   function cardDipendente(m, e) {
     const d = m.dipDi(e);
     return `<div class="ncard lead">
@@ -254,18 +300,15 @@ window.DIREZIONE_A = (function () {
       <div class="ft"><div><span class="k">Stato</span>${chipStato(m, e)}</div><div><span class="k">Oggi</span>${dots(livelloOggi(e))}</div></div>
     </div>`;
   }
-
   function rigaDipendente(m, e) {
     const d = m.dipDi(e);
-    return `<div class="erow${e.stato === 'lavoro' ? ' lav' : ''}">${av(m, e)}<div class="tx"><b>${esc(e.nome)}</b><span>${esc(e.ruolo)} · ${esc(d.breve)}</span></div>${e.stato === 'lavoro' ? `<span class="chip onlime">${esc(e.att.titolo)}</span>` : chipStato(m, e)}<span class="rb xs">${ic('i-ne')}</span></div>`;
+    return `<div class="erow${e.stato === 'lavoro' ? ' lav' : ''}">${av(m, e)}<div class="tx"><b>${esc(e.nome)}</b><span>${esc(e.ruolo)} · ${esc(d.breve)}</span></div>${e.stato === 'lavoro' ? `<span class="chip onlime"><span>${esc(e.att.titolo)}</span></span>` : chipStato(m, e)}<span class="rb xs">${ic('i-ne')}</span></div>`;
   }
-
   function barraAgenda(m) {
-    // Stessa densità del riferimento: l'ultima esecuzione finita, il segmento in corso, le prossime due.
     const fatti = m.agenda.filter(a => a.stato === 'fatto').slice(-1);
-    const vivo = m.agenda.filter(a => a.stato === 'in corso');
-    const prossimi = m.agenda.filter(a => a.stato === 'pianificato').slice(0, 2);
-    const ev = [...fatti, ...vivo, ...prossimi].map(a => {
+    const live = m.agenda.filter(a => a.stato === 'in corso');
+    const piani = m.agenda.filter(a => a.stato === 'pianificato').slice(0, 2);
+    const ev = [...fatti, ...live, ...piani].map(a => {
       if (a.stato === 'in corso') return `<div class="live"><span class="now"><b>${esc(m.azienda.ora)}</b><i></i></span><span class="lbl">${a.chi.length} al lavoro</span>${pair(m, a.chi, 'xs', 3)}<span class="rb">${ic('i-play')}</span></div>`;
       if (a.stato === 'fatto') return `<span class="ev">${pair(m, a.chi, 's', m.n > 16 ? 1 : 2)}${esc(a.durata)}${m.n > 16 ? '' : `<span class="rb xs">${ic('i-ne')}</span>`}</span>`;
       return `<span class="sep"></span><span class="tm">${esc(a.ora)}</span><span class="ev plan" style="padding-right:12px">${pair(m, a.chi, 's', m.n > 16 ? 1 : 2)}</span>`;
@@ -273,73 +316,182 @@ window.DIREZIONE_A = (function () {
     return `<div class="a-sched"><span class="t">Oggi in azienda</span><span class="cal"><i>${ic('i-cal')}</i>${esc(m.azienda.data)}</span><div class="tl">${ev}</div><span class="rb go">${ic('i-ne')}</span></div>`;
   }
 
-  function pannello(m) {
-    const ap = m.approvazioni[0];
-    const chi = m.byId[ap.chi];
-    const tl = m.diario.filter(x => x.tipo === 'approvazione' || x.tipo === 'errore').slice(-2).reverse();
-    return `<div class="a-overlay">
-      <div class="appr">
-        <div class="top"><span class="chip">${ic('i-bell')}Da approvare · ${m.approvazioni.length}</span><span class="r"><span class="rb glass sm">${ic('i-expand')}</span><span class="rb glass sm">${ic('i-x')}</span></span></div>
-        <span class="face av ${m.avatarClasse(chi)}">${m.iniziali(chi)}</span>
-        <div class="cap"><b>${esc(ap.cosa)}</b>${esc(chi.nome)} · ${esc(ap.cliente)} · ${esc(ap.ora)}</div>
-        <div class="ctl"><span class="rb glass">${ic('i-eye')}</span><span class="rb glass">${ic('i-chat')}</span><span class="rb lime">${ic('i-check')}</span><span class="rb red">${ic('i-x')}</span></div>
-      </div>
-      <div class="summary">
-        <div class="h"><span class="rb black">${ic('i-wand')}</span><h4>Riepilogo</h4><span class="rb ghost">${ic('i-ne')}</span></div>
-        <div class="tline">${tl.map((x, i) => `<div class="m"${i ? ' style="margin-top:150px"' : ''}><span>${esc(x.ora)}</span><i style="background:${x.tipo === 'errore' ? 'var(--badge-red)' : 'var(--lime)'};color:var(--ink)">${ic(x.tipo === 'errore' ? 'i-warn' : 'i-star')}</i></div>`).join('')}</div>
-        <div class="stack">
-          <div class="dcard"><div class="nt"><span class="rb sm">${ic('i-down')}</span></div><h5>Consegne di oggi:</h5>
-            <div class="thumbs">
-              <div class="thumb"><div class="pg"><i class="h"></i><i class="w1"></i><i class="w2"></i><i class="b"></i><i class="w3"></i><i class="w1"></i><i class="w4"></i><i class="b"></i><i class="w2"></i></div><span class="lb">Post 4 di 12</span></div>
-              <div class="thumb"><div class="pg"><i class="h"></i><i class="b"></i><i class="w1"></i><i class="w3"></i><i class="w2"></i><i class="b"></i><i class="w1"></i><i class="w4"></i></div><span class="lb">Piano ottobre</span></div>
-            </div>
-            <div class="kv"><span>Spesa di oggi</span><b>${m.costoOggi} €</b></div>
-          </div>
-          <div class="dcard"><div class="nt"><span class="rb sm">${ic('i-pen')}</span></div><h5>Obiettivo del mese:</h5><p class="goal">${m.azienda.obiettivoMese}</p></div>
+  /* ---------- tendina del titolare ---------- */
+  function riepilogo(m) {
+    const consegne = m.richiesteDi('approvata').length;
+    return `<div class="sub"><span class="rb black">${ic('i-wand')}</span><h5>Riepilogo di oggi</h5><span class="rb olight">${ic('i-ne')}</span></div>
+      <div class="dcard"><div class="nt"><span class="rb sm">${ic('i-down')}</span></div><h5>Consegne:</h5>
+        <div class="thumbs">
+          <div class="thumb"><div class="pg"><i class="h"></i><i class="w1"></i><i class="w2"></i><i class="b"></i><i class="w3"></i><i class="w1"></i><i class="w4"></i><i class="b"></i><i class="w2"></i></div><span class="lb">Post 4 di 12</span></div>
+          <div class="thumb"><div class="pg"><i class="h"></i><i class="b"></i><i class="w1"></i><i class="w3"></i><i class="w2"></i><i class="b"></i><i class="w1"></i><i class="w4"></i></div><span class="lb">Piano ottobre</span></div>
         </div>
+        <div class="kv"><span>Approvate oggi</span><b>${consegne}</b></div>
+        <div class="kv"><span>Spesa di oggi</span><b>${m.costoOggi} €</b></div>
+      </div>
+      <div class="dcard"><div class="nt"><span class="rb sm">${ic('i-pen')}</span></div><h5>Obiettivo del mese:</h5><p class="goal">${m.azienda.obiettivoMese}</p></div>`;
+  }
+  function pager(m, idx, n) {
+    return `<span class="pager"><span class="rb olight" data-az="prec">${ic('i-left')}</span>${idx + 1} di ${n}<span class="rb olight" data-az="succ">${ic('i-right')}</span></span>`;
+  }
+  function tendinaChiusa(m) {
+    const n = m.richiesteDi('attesa').length;
+    return `<div class="a-mini" data-az="apri" role="button" aria-label="Apri le richieste da approvare">${ic('i-left', 'ch')}<span class="rb">${ic('i-bell')}</span><b>${n}</b><span>da approvare</span></div>`;
+  }
+  function tendinaAperta(m, idx) {
+    const att = m.richiesteDi('attesa');
+    const r = att[idx] || att[0];
+    const chi = r ? m.byId[r.chi] : null;
+    return `<div class="a-tend aperta" role="dialog" aria-label="Da approvare">
+      <div class="th"><h4>Da approvare</h4><span class="chip lime">${ic('i-bell')}${att.length}</span><span class="rb olight sm" data-az="espandi" title="Apri la richiesta">${ic('i-expand')}</span><span class="rb olight sm" data-az="chiudi" title="Chiudi">${ic('i-right')}</span></div>
+      <div class="tb">
+        ${r ? `<div class="appr">
+          <div class="top"><span class="chip">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]} · ${esc(r.ora)}</span><span class="r"><span class="rb glass" data-az="prec">${ic('i-left')}</span><span class="rb glass" data-az="succ">${ic('i-right')}</span></span></div>
+          <span class="face av ${m.avatarClasse(chi)}">${m.iniziali(chi)}</span>
+          <div class="cap"><b>${esc(r.cosa)}</b>${esc(chi.nome)} · ${esc(r.cliente)} · ${idx + 1} di ${att.length}</div>
+          <div class="ctl"><span class="rb glass" data-az="espandi" title="Apri">${ic('i-eye')}</span><span class="rb glass" title="Commenta">${ic('i-chat')}</span><span class="rb lime" title="Approva">${ic('i-check')}</span><span class="rb red" title="Rifiuta">${ic('i-x')}</span></div>
+        </div>` : `<div class="vuoto" style="margin:0;border-color:rgb(0 0 0/.16)">Niente da approvare</div>`}
+        ${riepilogo(m)}
       </div>
     </div>`;
   }
+  function tendinaEstesa(m, idx) {
+    const att = m.richiesteDi('attesa');
+    const r = att[idx] || att[0];
+    const chi = m.byId[r.chi];
+    const d = m.dipDi(chi);
+    const doc = r.tipo === 'post'
+      ? `<div class="lb"><span class="chip light">${ic('i-mega')}LinkedIn · bozza</span>${esc(r.cliente)}</div><div class="tx">${esc(r.testo)}</div><div class="img">${ic('i-doc')}${esc(r.allegato)}</div>`
+      : `<div class="lb"><span class="chip light">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]}</span>${esc(r.cliente)} · ${esc(r.allegato)}</div><div class="tx mono">${esc(r.testo)}</div>`;
+    return `<div class="a-tend estesa" role="dialog" aria-label="Richiesta">
+      <div class="th"><span class="rb olight sm" data-az="riduci" title="Riduci">${ic('i-left')}</span><span class="rb black">${ic(iconaTipo[r.tipo])}</span><h4>${esc(r.cosa)}</h4>${pager(m, idx, att.length)}<span class="rb olight sm" data-az="chiudi" title="Chiudi">${ic('i-right')}</span></div>
+      <div class="tb"><div class="rx">
+        <div class="doc">${doc}</div>
+        <div class="det">
+          <div class="dcard"><h5>Chi la propone</h5><div class="who">${av(m, chi)}<div><b>${esc(chi.nome)}</b><span>${esc(chi.ruolo)} · ${esc(d.nome)}</span></div></div>
+            <div class="kv"><span>Consegnata alle</span><b>${esc(r.ora)}</b></div><div class="kv"><span>Costo della consegna</span><b>${r.costo} €</b></div>
+            <div class="passi">${r.passi.map(p => `<span class="chip light">${ic('i-check')}${esc(p)}</span>`).join('')}</div></div>
+          <div class="dcard"><h5>Nota del dipendente</h5><p class="nota">${esc(r.nota)}</p></div>
+        </div>
+        <div class="azioni"><span class="pill lime">${ic('i-check')}Approva</span><span class="pill olight">${ic('i-pen')}Chiedi modifiche</span><span class="pill olight">${ic('i-chat')}Commenta</span><span class="pill red">${ic('i-x')}Rifiuta</span><span class="link" data-az="pagina" data-pagina="richieste">Tutte le richieste ${ic('i-ne')}</span></div>
+      </div></div>
+    </div>`;
+  }
+  function tendina(m, opz) {
+    if (opz.tendina === 'chiusa') return tendinaChiusa(m);
+    if (opz.tendina === 'estesa') return tendinaEstesa(m, opz.richiesta || 0);
+    return tendinaAperta(m, opz.richiesta || 0);
+  }
 
-  function render(m) {
-    const lav = m.alLavoro.slice().sort((a, b) => (m.approvazioni.some(x => x.chi === b.id) ? 1 : 0) - (m.approvazioni.some(x => x.chi === a.id) ? 1 : 0));
-    const compatto = m.n > 16;
-    const consegne = m.diario.filter(x => x.tipo === 'approvazione').length;
-    return `<div class="a-app" role="figure" aria-label="Direzione A — Console (contenuto sintetico)">
-      <span class="a-logo">${ic('i-logo')}</span>
+  /* ---------- cornice comune ---------- */
+  function cornice(m, opz, titolo, stats, railAttivo, corpo) {
+    return `<div class="a-app" role="figure" aria-label="Direzione A — ${esc(titolo)} (contenuto sintetico)">
+      <span class="a-logo">DGT</span>
       ${barraAgenda(m)}
       <div class="a-tr"><span class="rb">${ic('i-bell')}<i class="dot"></i></span><span class="av a2">${esc(m.azienda.titolare.iniziali)}</span></div>
-      <span class="rb a-back">${ic('i-left')}</span>
+      <span class="rb a-back" ${opz.pagina === 'richieste' ? 'data-az="pagina" data-pagina="home"' : ''}>${ic('i-left')}</span>
       <div class="a-head">
-        <h3 class="a-title">${titolo(m.azienda.titolo)}</h3>
-        <span class="a-new"><i>${ic('i-plus')}</i>Nuovo obiettivo</span>
-        <div class="a-stats">
-          <div class="stat"><b>${lav.length}</b><span>al lavoro</span><span class="badge up">${ic('i-up')}1</span></div>
-          <div class="stat"><b>${m.approvazioni.length}</b><span>da approvare</span><span class="badge down">${ic('i-bell')}${Math.min(2, m.approvazioni.length)}</span></div>
-          <div class="stat"><b>${m.costoOggi} €</b><span>spesi oggi</span><span class="badge down">${ic('i-dn')}12%</span></div>
-        </div>
+        <h3 class="a-title">${esc(titolo)}</h3>
+        ${opz.pagina === 'richieste' ? '' : `<span class="a-new"><i>${ic('i-plus')}</i>Nuovo obiettivo</span>`}
+        <div class="a-stats">${stats}</div>
       </div>
-      <div class="a-rail"><span class="rb white">${ic('i-list')}</span><span class="rb">${ic('i-org')}</span><span class="rb">${ic('i-chat')}</span><span class="rb">${ic('i-cal')}</span></div>
-      <div class="a-main">
-        <section>
-          <div class="shead"><h3>Al lavoro adesso</h3><span class="cnt"><b>${lav.length}</b><span>Esecuzioni</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
-            <div class="filters"><span class="pill on">Tutte</span><span class="pill">🔥 Da approvare</span><span class="pill">In corso</span><span class="pill">Pianificate</span><span class="pill">Errori</span></div></div>
-          <div class="cards riga">${lav.map((e, i) => cardAttivita(m, e, i)).join('')}</div>
-        </section>
-        <section>
-          <div class="shead"><h3>Dipartimenti</h3><span class="cnt"><b>${m.dipartimenti.length}</b><span>Dipartimenti</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
-            <div class="filters"><span class="pill on">Tutti</span><span class="pill">Al lavoro</span><span class="pill">Con approvazioni</span><span class="pill">Con errori</span></div></div>
-          <div class="cards">${m.dipartimenti.map(d => cardDipartimento(m, d)).join('')}</div>
-        </section>
-        <section>
-          <div class="shead"><h3>Dipendenti</h3><span class="cnt"><b>${m.n}</b><span>Dipendenti</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span><span class="rb sm ${compatto ? 'ghost' : 'white'}">${ic('i-grid')}</span><span class="rb sm ${compatto ? 'white' : 'ghost'}">${ic('i-rows')}</span>
-            <div class="filters"><span class="pill on">Tutti</span>${m.dipartimenti.map(d => `<span class="pill">${esc(d.nome)}</span>`).join('')}</div></div>
-          ${compatto ? `<div class="elenco">${m.dipendenti.map(e => rigaDipendente(m, e)).join('')}</div>` : `<div class="cards">${m.dipendenti.map(e => cardDipendente(m, e)).join('')}</div>`}
-        </section>
+      <div class="a-rail">
+        <span class="rb ${railAttivo === 'home' ? 'white' : ''}" data-az="pagina" data-pagina="home">${ic('i-list')}</span>
+        <span class="rb">${ic('i-org')}</span>
+        <span class="rb ${railAttivo === 'richieste' ? 'white' : ''}" data-az="pagina" data-pagina="richieste">${ic('i-bell')}</span>
+        <span class="rb">${ic('i-chat')}</span>
+        <span class="rb">${ic('i-cal')}</span>
       </div>
-      ${pannello(m)}
+      <div class="a-main">${corpo}</div>
+      <div id="a-tendina">${tendina(m, opz)}</div>
     </div>`;
   }
 
-  return { id: 'A', nome: 'Console', css: prefissa(css, '.dirA'), render };
+  function home(m, opz) {
+    const lav = m.alLavoro.slice().sort((a, b) => (m.approvazioni.some(x => x.chi === b.id) ? 1 : 0) - (m.approvazioni.some(x => x.chi === a.id) ? 1 : 0));
+    const compatto = m.n > 16;
+    const att = m.richiesteDi('attesa').length;
+    const stats = `<div class="stat"><b>${lav.length}</b><span>al lavoro</span><span class="badge up">${ic('i-up')}1</span></div>
+      <div class="stat"><b>${att}</b><span>da approvare</span><span class="badge down">${ic('i-bell')}${Math.min(2, att)}</span></div>
+      <div class="stat"><b>${m.costoOggi} €</b><span>spesi oggi</span><span class="badge down">${ic('i-dn')}12%</span></div>`;
+    const corpo = `
+      <section>
+        <div class="shead"><h3>Al lavoro adesso</h3><span class="cnt"><b>${lav.length}</b><span>Esecuzioni</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
+          <div class="filters"><span class="pill on">Tutte</span><span class="pill">🔥 Da approvare</span><span class="pill">In corso</span><span class="pill">Pianificate</span><span class="pill">Errori</span></div></div>
+        <div class="cards riga">${lav.map((e, i) => cardAttivita(m, e, i)).join('')}</div>
+      </section>
+      <section>
+        <div class="shead"><h3>Dipartimenti</h3><span class="cnt"><b>${m.dipartimenti.length}</b><span>Dipartimenti</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
+          <div class="filters"><span class="pill on">Tutti</span><span class="pill">Al lavoro</span><span class="pill">Con approvazioni</span><span class="pill">Con errori</span></div></div>
+        <div class="cards">${m.dipartimenti.map(d => cardDipartimento(m, d)).join('')}</div>
+      </section>
+      <section>
+        <div class="shead"><h3>Dipendenti</h3><span class="cnt"><b>${m.n}</b><span>Dipendenti</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span><span class="rb sm ${compatto ? 'ghost' : 'white'}">${ic('i-grid')}</span><span class="rb sm ${compatto ? 'white' : 'ghost'}">${ic('i-rows')}</span>
+          <div class="filters"><span class="pill on">Tutti</span>${m.dipartimenti.map(d => `<span class="pill">${esc(d.nome)}</span>`).join('')}</div></div>
+        ${compatto ? `<div class="elenco">${m.dipendenti.map(e => rigaDipendente(m, e)).join('')}</div>` : `<div class="cards">${m.dipendenti.map(e => cardDipendente(m, e)).join('')}</div>`}
+      </section>`;
+    return cornice(m, opz, m.azienda.titolo, stats, 'home', corpo);
+  }
+
+  /* ---------- pagina Richieste ---------- */
+  function cardRichiesta(m, r, i) {
+    const chi = m.byId[r.chi];
+    const d = m.dipDi(chi);
+    const tono = r.stato === 'attesa' ? 'lime' : (i % 2 ? 'dark' : 'gray');
+    let esito = '';
+    if (r.stato === 'attesa') esito = `<span class="sel"><span class="chip ink">${nomeTipo[r.tipo]}</span><span>alle ${esc(r.ora)}</span>${ic('i-chev')}</span><span class="rb black" title="Approva">${ic('i-check')}</span><span class="rb red" title="Rifiuta">${ic('i-x')}</span>`;
+    else if (r.stato === 'approvata') esito = `<span class="sel"><span class="chip lime">${ic('i-check')}Approvata</span><span>${esc(r.decisa)} · ${esc(m.azienda.titolare.iniziali)}</span>${ic('i-chev')}</span><span class="rb ghost">${ic('i-eye')}</span>`;
+    else if (r.stato === 'modifiche') esito = `<span class="sel"><span class="chip">${ic('i-pen')}Modifiche</span><span>${esc(r.commento)}</span>${ic('i-chev')}</span><span class="rb ghost">${ic('i-eye')}</span>`;
+    else esito = `<span class="sel"><span class="chip rosa">${ic('i-x')}Rifiutata</span><span>${esc(r.commento)}</span>${ic('i-chev')}</span><span class="rb ghost">${ic('i-eye')}</span>`;
+    const idx = r.stato === 'attesa' ? m.richiesteDi('attesa').indexOf(r) : -1;
+    return `<div class="ncard task ${tono}" ${idx >= 0 ? `data-az="richiesta" data-idx="${idx}"` : ''}>
+      <div class="who">${av(m, chi)}<div><b>${esc(chi.nome)}</b><span>${esc(chi.ruolo)} · ${esc(d.nome)}</span></div></div>
+      <div class="nt"><span class="rb ghost">${ic('i-ne')}</span></div>
+      <div class="body"><span class="ico">${ic(iconaTipo[r.tipo])}</span><div><div class="tt">${esc(r.cosa)}</div><div class="meta"><b>${esc(r.cliente)}</b><span>·</span><b>${esc(r.ora)}</b></div></div></div>
+      <div class="st"><span class="k">${r.stato === 'attesa' ? 'Decidi' : 'Esito'}</span><div class="row">${esito}</div></div>
+    </div>`;
+  }
+  function richieste(m, opz) {
+    const att = m.richiesteDi('attesa'), appr = m.richiesteDi('approvata'), rif = [...m.richiesteDi('modifiche'), ...m.richiesteDi('rifiutata')];
+    const stats = `<div class="stat"><b>${att.length}</b><span>da approvare</span><span class="badge down">${ic('i-bell')}${Math.min(2, att.length)}</span></div>
+      <div class="stat"><b>${appr.length}</b><span>approvate</span><span class="badge up">${ic('i-up')}${appr.length}</span></div>
+      <div class="stat"><b>${rif.length}</b><span>da rifare</span><span class="badge down">${ic('i-dn')}${rif.length}</span></div>`;
+    const sez = (titolo, lst, filtri, vuoto) => `<section>
+      <div class="shead"><h3>${titolo}</h3><span class="cnt"><b>${lst.length}</b><span>Richieste</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
+        <div class="filters">${filtri.map((f, i) => `<span class="pill${i ? '' : ' on'}">${f}</span>`).join('')}</div></div>
+      ${lst.length ? `<div class="cards">${lst.map((r, i) => cardRichiesta(m, r, i)).join('')}</div>` : `<div class="vuoto">${vuoto}</div>`}
+    </section>`;
+    const corpo = sez('Da approvare', att, ['Tutte', '🔥 Più vecchie', 'Post', 'Documenti', 'Liste', 'Proposte'], 'Niente da approvare')
+      + sez('Approvate', appr, ['Oggi', 'Ieri', 'Questa settimana', 'Tutte'], 'Nessuna approvazione oggi')
+      + sez('Con modifiche o rifiutate', rif, ['Tutte', 'Con modifiche', 'Rifiutate'], 'Niente da rifare');
+    return cornice(m, opz, 'RICHIESTE', stats, 'richieste', corpo);
+  }
+
+  function render(m, opz) {
+    opz = Object.assign({ pagina: 'home', tendina: 'aperta', richiesta: 0 }, opz || {});
+    return opz.pagina === 'richieste' ? richieste(m, opz) : home(m, opz);
+  }
+
+  /* Disegna e collega i clic (tendina e cambio pagina). Ritorna lo stato. */
+  function monta(radice, m, opz) {
+    const st = Object.assign({ pagina: 'home', tendina: 'aperta', richiesta: 0 }, opz || {});
+    const n = () => m.richiesteDi('attesa').length;
+    const tutto = () => { radice.innerHTML = render(m, st); };
+    const soloTendina = () => { const t = radice.querySelector('#a-tendina'); if (t) t.innerHTML = tendina(m, st); else tutto(); };
+    tutto();
+    radice.addEventListener('click', ev => {
+      const el = ev.target.closest('[data-az]'); if (!el || !radice.contains(el)) return;
+      const az = el.dataset.az;
+      if (az === 'chiudi') { st.tendina = 'chiusa'; soloTendina(); }
+      else if (az === 'apri') { st.tendina = 'aperta'; soloTendina(); }
+      else if (az === 'espandi') { st.tendina = 'estesa'; soloTendina(); }
+      else if (az === 'riduci') { st.tendina = 'aperta'; soloTendina(); }
+      else if (az === 'prec') { st.richiesta = (st.richiesta - 1 + n()) % n(); soloTendina(); }
+      else if (az === 'succ') { st.richiesta = (st.richiesta + 1) % n(); soloTendina(); }
+      else if (az === 'richiesta') { st.richiesta = +el.dataset.idx; st.tendina = 'estesa'; soloTendina(); }
+      else if (az === 'pagina') { st.pagina = el.dataset.pagina; tutto(); window.scrollTo(0, 0); }
+    });
+    return st;
+  }
+
+  return { id: 'A', nome: 'Console', css: prefissa(css, '.dirA'), render, monta };
 })();

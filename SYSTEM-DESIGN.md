@@ -150,7 +150,11 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
 3. Oltre sedici elementi ogni elenco ha una vista compatta a pillole (3 per riga) e il filtro predefinito è il dipartimento.
 4. Un solo accento: lime = attenzione del titolare (al lavoro, da approvare); rosa solo per errori e cali.
 5. Testi corti: titoli entro due righe a 24 px, ruoli in una riga a 13 px, pillole su una riga.
-6. Il pannello destro è del titolare: un'approvazione alla volta (apri, commenta, approva, rifiuta) e il Riepilogo.
+6. Il pannello del titolare è una tendina flottante sopra tutto, con tre stati: chiusa (pillola lime al bordo destro
+   con campanella e numero delle richieste), aperta (richiesta corrente + Riepilogo), estesa (la richiesta per intero
+   con le azioni). Si chiude verso destra; la home prende tutta la larghezza.
+7. Logo del prodotto = acronimo DGT in alto a sinistra; titolo dell'azienda in maiuscolo con la O normale.
+8. Pagina Richieste nella stessa cornice: Da approvare · Approvate · Con modifiche o rifiutate.
 
 Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in
@@ -160,6 +164,7 @@ dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegn
 ## 11. Collegamenti
 
 - Confronto delle tre direzioni (artefatto): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
+- Direzione A cliccabile, tendina e pagina Richieste (artefatto): https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
 
 - Artefatto pubblicato: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b
 - Branch di lavoro: `claude/dgt-design-system-fz5r1g`, PR #1 verso `main`: https://github.com/av3rgfx/DGT-Design-2.0/pull/1

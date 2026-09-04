@@ -68,6 +68,31 @@ window.DGT_DATI = (function () {
     { id: 'ap2', chi: 5, cosa: 'Piano editoriale ottobre', cliente: 'Madira Ink', ora: '09:48', tipo: 'documento' },
   ];
 
+  /* Richieste al titolare: le due in attesa sono le stesse di approvazioni11.
+     tipo: post | documento | lista | proposta. stato: attesa | approvata | modifiche | rifiutata. */
+  const richieste11 = [
+    { id: 'ap1', chi: 4, cosa: 'Post LinkedIn 4 di 12', cliente: 'Rossi Srl', ora: '10:12', tipo: 'post', stato: 'attesa', costo: 3,
+      passi: ['Brief letto', 'Bozza', 'Revisione del tono', 'Immagine'],
+      nota: 'Quarto post della serie sul checkout: tono informale come nel brief, 800 battute, una domanda in chiusura. L\'immagine è la mock-up del carrello approvata la settimana scorsa.',
+      testo: 'Il carrello abbandonato non è un problema di prezzo. Nel 70% dei casi è un problema di attrito: un campo in più, una spedizione che compare solo alla fine, un pagamento che chiede di registrarsi.\n\nPer un nostro cliente abbiamo tolto tre passaggi dal checkout. Risultato in trenta giorni: +18% di ordini completati, stesso traffico.\n\nQuanti passaggi ha oggi il vostro checkout?',
+      allegato: 'Immagine: mock-up del carrello (1200×1200)' },
+    { id: 'ap2', chi: 5, cosa: 'Piano editoriale ottobre', cliente: 'Madira Ink', ora: '09:48', tipo: 'documento', stato: 'attesa', costo: 9,
+      passi: ['Analisi di settembre', 'Temi', 'Calendario', 'Bozze dei titoli'],
+      nota: 'Dodici post, quattro reel e due newsletter, sui tre temi che a settembre hanno funzionato meglio (dietro le quinte, casi cliente, consigli pratici). Le date evitano le festività e il lancio del 14.',
+      testo: 'Settimana 1 · Dietro le quinte: come nasce un\'etichetta (post, reel)\nSettimana 2 · Caso cliente: Lumen Caffè, il rebranding in 20 giorni (post ×2, newsletter)\nSettimana 3 · Tre errori nei file di stampa (post ×3, reel)\nSettimana 4 · Lancio catalogo autunno (post ×4, reel ×2, newsletter)',
+      allegato: 'Documento: 4 pagine' },
+    { id: 'r3', chi: 7, cosa: 'Lista di 120 lead verificati', cliente: 'Nova Studio', ora: '09:20', tipo: 'lista', stato: 'approvata', decisa: '09:35', costo: 14,
+      passi: ['Ricerca', 'Verifica email', 'Deduplica'], nota: 'Prima metà della lista: 120 e-commerce lombardi con e-mail verificata.', testo: '120 righe · azienda, sito, e-mail, telefono, fatturato stimato', allegato: 'Foglio: 120 righe' },
+    { id: 'r4', chi: 8, cosa: 'Proposta 20.000 € per Metamorfosi', cliente: 'Metamorfosi', ora: 'ieri 17:30', tipo: 'proposta', stato: 'approvata', decisa: 'ieri 18:05', costo: 11,
+      passi: ['Brief', 'Stima', 'Documento'], nota: 'Sito vetrina + e-commerce, tre mesi, tre rate.', testo: 'Sito vetrina, e-commerce con 80 prodotti, formazione. 20.000 € in tre rate.', allegato: 'Documento: 6 pagine' },
+    { id: 'r5', chi: 1, cosa: 'Struttura delle pagine e-commerce', cliente: 'Bianchi & Co.', ora: 'ieri 16:10', tipo: 'documento', stato: 'approvata', decisa: 'ieri 16:40', costo: 6,
+      passi: ['Catalogo', 'Alberatura', 'Wireframe'], nota: 'Alberatura a tre livelli, 14 template.', testo: 'Home, categoria, prodotto, carrello, checkout in 3 passi, area riservata.', allegato: 'Documento: 3 pagine' },
+    { id: 'r6', chi: 6, cosa: 'Audit SEO', cliente: 'Metamorfosi', ora: 'ieri 18:10', tipo: 'documento', stato: 'modifiche', decisa: 'ieri 18:30', costo: 8,
+      passi: ['Scansione', 'Analisi', 'Report'], nota: 'Il titolare ha chiesto le priorità per pagina.', testo: '38 pagine analizzate, 12 con problemi di titolo, 5 senza descrizione.', allegato: 'Documento: 9 pagine', commento: 'Aggiungi le priorità per pagina e una stima dell\'effort.' },
+    { id: 'r7', chi: 5, cosa: 'Bozza newsletter di settembre', cliente: 'Madira Ink', ora: 'ieri 15:20', tipo: 'post', stato: 'rifiutata', decisa: 'ieri 15:50', costo: 4,
+      passi: ['Brief', 'Bozza'], nota: 'Prima bozza.', testo: 'Settembre è il mese dei nuovi inizi…', allegato: 'Testo: 1.200 battute', commento: 'Fuori tono: troppo generica, ripartire dai casi cliente.' },
+  ];
+
   /* Diario del giorno (in ordine di tempo). */
   const diario11 = [
     { ora: '08:30', chi: 7, testo: 'ha iniziato «200 lead e-commerce in Lombardia»', tipo: 'inizio' },
@@ -132,6 +157,13 @@ window.DGT_DATI = (function () {
     const lav = dipendenti.filter(e => e.stato === 'lavoro');
     approvazioni.unshift({ id: 'apx1', chi: lav[0].id, cosa: 'Consegna parziale 1', cliente: lav[0].att.cliente, ora: '10:12', tipo: 'post' });
     approvazioni.push({ id: 'apx2', chi: lav[4].id, cosa: 'Consegna parziale 2', cliente: lav[4].att.cliente, ora: '09:31', tipo: 'documento' });
+    const NOTE = ['Consegna secondo il brief.', 'Prima versione completa, pronta per la revisione.', 'Rispetta i vincoli di lunghezza e tono.'];
+    const TIPI = ['post', 'documento', 'lista', 'proposta'];
+    const richieste = approvazioni.map((a, i) => ({ ...a, stato: 'attesa', costo: 3 + (i % 7), passi: ['Brief', 'Bozza', 'Revisione'], nota: NOTE[i % 3], testo: 'Contenuto della consegna «' + a.cosa + '» per ' + a.cliente + '.', allegato: 'Documento: ' + (2 + i) + ' pagine', tipo: TIPI[i % 4] }));
+    dipendenti.filter(e => e.stato === 'libero').slice(0, 10).forEach((e, i) => {
+      const st = i < 6 ? 'approvata' : i < 8 ? 'modifiche' : 'rifiutata';
+      richieste.push({ id: 'st' + i, chi: e.id, cosa: e.att.titolo, cliente: e.att.cliente, ora: i < 4 ? '0' + (8 + i) + ':' + (10 + i * 7) : 'ieri', tipo: TIPI[i % 4], stato: st, decisa: i < 4 ? '09:' + (20 + i * 5) : 'ieri', costo: 4 + i, passi: ['Brief', 'Bozza', 'Revisione'], nota: NOTE[i % 3], testo: 'Contenuto della consegna «' + e.att.titolo + '».', allegato: 'Documento: 3 pagine', commento: st === 'modifiche' ? 'Aggiungi le priorità.' : st === 'rifiutata' ? 'Fuori brief, ripartire.' : '' });
+    });
     const diario = [];
     lav.slice(0, 6).forEach((e, i) => diario.push({ ora: e.att.da, chi: e.id, testo: 'ha iniziato «' + e.att.titolo + '»', tipo: 'inizio' }));
     attesa.slice(0, 3).forEach(e => diario.push({ ora: e.att.fine, chi: e.id, testo: 'ha consegnato «' + e.att.titolo + '» e chiede approvazione', tipo: 'approvazione' }));
@@ -145,11 +177,11 @@ window.DGT_DATI = (function () {
       { ora: '17:00', chi: dipendenti.filter(e => e.stato === 'pianificato' && e.att.quando === '17:00').map(e => e.id), stato: 'pianificato' },
       { ora: '18:00', chi: dipendenti.filter(e => e.stato === 'pianificato' && e.att.quando === '18:00').map(e => e.id), stato: 'pianificato' },
     ];
-    return { dipendenti, approvazioni, diario, agenda };
+    return { dipendenti, approvazioni, richieste, diario, agenda };
   }
 
   function modello(n) {
-    const m = n >= 40 ? modello40() : { dipendenti: base, approvazioni: approvazioni11, diario: diario11, agenda: agenda11 };
+    const m = n >= 40 ? modello40() : { dipendenti: base, approvazioni: approvazioni11, richieste: richieste11, diario: diario11, agenda: agenda11 };
     const byId = Object.fromEntries(m.dipendenti.map(e => [e.id, e]));
     const perDip = Object.fromEntries(dipartimenti.map(d => [d.id, m.dipendenti.filter(e => e.dip === d.id)]));
     const conta = s => m.dipendenti.filter(e => e.stato === s).length;
@@ -157,7 +189,8 @@ window.DGT_DATI = (function () {
     const iniziali = e => e.nome.slice(0, 2).toUpperCase();
     return {
       azienda, dipartimenti, STATI, n: m.dipendenti.length,
-      dipendenti: m.dipendenti, byId, perDip, approvazioni: m.approvazioni, diario: m.diario, agenda: m.agenda,
+      dipendenti: m.dipendenti, byId, perDip, approvazioni: m.approvazioni, richieste: m.richieste, diario: m.diario, agenda: m.agenda,
+      richiesteDi: st => m.richieste.filter(r => r.stato === st),
       alLavoro: m.dipendenti.filter(e => e.stato === 'lavoro'),
       conta, costoOggi, iniziali,
       avatarClasse: e => 'a' + (((e.id - 1) % 6) + 1),

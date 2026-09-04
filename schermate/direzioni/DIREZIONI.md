@@ -5,6 +5,7 @@ un'azienda DGT con quattro dipartimenti e undici dipendenti AI, tre dei quali al
 Tre direzioni sulla stessa schermata, prova di scala a quaranta dipendenti, direzione scelta.
 
 - Confronto interattivo (tab A/B/C, selettore 11/40): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
+- Direzione A, versione 2, cliccabile (tendina a tre stati e pagina Richieste): https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
 - Sorgenti: `direzione-a.html`, `direzione-b.html`, `direzione-c.html` (aggiungere `?n=40` per la prova di scala),
   `confronto.html` (la stessa pagina dell'artefatto, con gli script separati).
 - Screenshot a 1440 px in `screenshot/` (`a-11.png` … `c-40.png`).
@@ -152,8 +153,28 @@ direzione. Regole che valgono da qui in avanti:
    dipartimento. È l'unica idea che si porta da B; da C non si porta niente.
 4. **Un solo accento**: lime = attenzione del titolare (al lavoro, da approvare). Rosa `#F9A3A3` solo per errori e cali.
 5. **Testi corti**: titoli di attività entro due righe a 24 px, ruoli entro una riga a 13 px, pillole su una riga.
-6. **Il pannello destro è del titolare**: un'approvazione alla volta con apri, commenta, approva, rifiuta; sotto il
-   Riepilogo con consegne, spesa e obiettivo.
+6. **Il pannello del titolare è una tendina flottante** (richiesta dell'utente, 2026-09-04), sopra tutto, così la
+   home prende tutta la larghezza. Tre stati: **chiusa** (una pillola lime al bordo destro con campanella e numero
+   delle richieste; un clic la riapre), **aperta** (330 px: la richiesta corrente con apri, commenta, approva,
+   rifiuta e le frecce per scorrere; sotto, il Riepilogo di oggi), **estesa** (840 px: la richiesta per intero,
+   contenuto a sinistra, chi la propone, passi, costo e nota a destra, azioni in fondo e il collegamento a «Tutte le
+   richieste»). Si chiude con la freccia verso destra.
+7. **Logo e titolo**: il logo del prodotto è l'acronimo **DGT** (Urbanist 600, 22 px, spaziatura .12em) in alto a
+   sinistra; il titolo dell'azienda è in maiuscolo con la O normale (niente marchio al posto della O).
+8. **Pagina Richieste**: tutte le richieste dell'azienda, nella stessa cornice della home (barra in alto, titolo
+   RICHIESTE con tre numeri, rail con la campanella attiva). Tre sezioni: *Da approvare* (card lime con approva e
+   rifiuta), *Approvate* (esito con ora e iniziali di chi ha deciso), *Con modifiche o rifiutate* (esito con il
+   commento). Un clic su una card da approvare apre la tendina estesa su quella richiesta.
+
+### Versione 2 della direzione A (2026-09-04)
+
+Dopo la scelta l'utente ha chiesto: O normale nel titolo, logo = acronimo DGT, pannello del titolare a popup
+(chiudibile verso destra, con icona e conteggio quando è chiuso, richiesta mostrata per intero quando si espande) e
+una pagina per le sole richieste dell'azienda. Tutto è in `direzione-a.js` (funzioni `tendinaChiusa`,
+`tendinaAperta`, `tendinaEstesa`, `richieste`) ed è cliccabile: `DIREZIONE_A.monta(radice, modello, opzioni)`.
+Parametri di `direzione-a.html`: `?n=11|40`, `?tendina=chiusa|aperta|estesa`, `?pagina=home|richieste`, `?richiesta=0`.
+Screenshot: `screenshot/a-tendina-chiusa.png`, `a-tendina-aperta.png`, `a-tendina-estesa.png`, `a-richieste.png`.
+Artefatto interattivo: https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
 
 ## 5. File
 
@@ -161,11 +182,11 @@ direzione. Regole che valgono da qui in avanti:
 |---|---|
 | `dati.js` | modello sintetico (11 e 40) condiviso |
 | `comune.js` | sprite di icone di DGT, prefisso CSS, utilità |
-| `direzione-a.js` / `.html` | Console (direzione scelta) |
+| `direzione-a.js` / `.html` | Console (direzione scelta): home con tendina a tre stati e pagina Richieste, cliccabile |
 | `direzione-b.js` / `.html` | Registro operativo |
 | `direzione-c.js` / `.html` | Mappa viva |
 | `confronto.html` | pagina di confronto con tab e selettore 11/40 |
-| `build-unico.js` | genera il file unico per l'artefatto |
+| `build-unico.js` | genera il file unico per l'artefatto (`node build-unico.js direzione-a.html out.html`) |
 | `screenshot/` | catture a 1440 px |
 
 Per gli screenshot: `design-system/tools/screenshot-page.js` (vedi `design-system/tools/README.md`).
