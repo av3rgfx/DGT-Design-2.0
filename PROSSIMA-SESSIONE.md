@@ -5,8 +5,11 @@ sugli avatar orbe senza segni dietro (versione 5c). Tutto è committato e pushat
 
 ## Stato
 
-- Branch: `claude/avatar-orbe-employee-page-3nhqmk` (da `main`, che contiene le PR #1, #3 e #4). Nessuna PR aperta a fine
-  sessione: aprirla verso `main` quando l'utente lo chiede.
+- Branch: `claude/avatar-orbe-employee-page-3nhqmk` (da `main`, che contiene le PR #1, #3 e #4). A fine sessione è
+  aperta la **PR #5** verso `main` (https://github.com/av3rgfx/DGT-Design-2.0/pull/5): se all'avvio della prossima
+  sessione risulta già unita, ripartire da `main` con un branch nuovo; se è ancora aperta, continuare sullo stesso branch
+  e la PR si aggiorna da sola.
+- I tre artefatti qui sotto sono stati ripubblicati a fine sessione e corrispondono al commit `0745f0a`.
 - Artefatto della direzione A cliccabile (home, tendine, Richieste, Dipartimento, editor del dipendente, avatar, pagina
   del Dipendente con la revisione di performance): https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
   (si aggiorna con `node schermate/direzioni/build-unico.js direzione-a.html /percorso/a.html` e ripubblicando allo
@@ -52,7 +55,7 @@ Esperto); contenuti sintetici di DGT; documenti in italiano.
 ## Come riprendere
 
 1. Leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezione 10) e `schermate/direzioni/DIREZIONI.md` (sezioni 1 e 4, in
-   particolare «Versione 6»).
+   particolare «Versione 6»). Controllare lo stato della PR #5 (vedi «Stato»).
 2. Aprire `schermate/direzioni/direzione-a.html`: `?pagina=dipendente&id=4` (Nora, con la revisione del prompt in
    sospeso), `&id=5` (Social media manager, revisione del modello), `&tendina=dossier` (il dossier esteso),
    `&confronto=6,7` (due versioni a confronto), `?n=40&pagina=dipendente&id=17` (dossier generato). Modello dati in
