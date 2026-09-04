@@ -1,7 +1,7 @@
 # Prossima sessione — passaggio di consegne
 
-Stato al 2026-09-04, fine della sessione sull'**orbe senza disco** (versione 7 della direzione A · Console: le pelli)
-e sulla **pagina dell'Esecuzione** (versione 8). Tutto è committato e pushato sul branch indicato sotto.
+Stato al 2026-09-04, fine della sessione sull'**orbe senza disco** (versione 7 della direzione A · Console: le pelli;
+7b: perla, corpi tondi, moti fluidi) e sulla **pagina dell'Esecuzione** (versione 8). Tutto è committato e pushato sul branch indicato sotto.
 
 ## Stato
 
@@ -15,8 +15,10 @@ e sulla **pagina dell'Esecuzione** (versione 8). Tutto è committato e pushato s
   (si aggiorna con `node schermate/direzioni/build-unico.js direzione-a.html /percorso/a.html` e ripubblicando allo
   stesso URL).
 - Artefatto delle **pelli dell'orbe** (le quattro soluzioni senza disco a confronto su tutti i fondi della Console, con
-  il selettore che cambia la pelle in tutta la pagina): https://claude.ai/code/artifact/a196c232-35ce-4bf0-ae6c-e472ca0c87f3
-  (`node build-unico.js avatar-pelli.html /percorso/pelli.html`).
+  il selettore che cambia la pelle in tutta la pagina): https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569
+  (`node build-unico.js avatar-pelli.html /percorso/pelli.html`; è un URL nuovo: il primo,
+  https://claude.ai/code/artifact/a196c232-35ce-4bf0-ae6c-e472ca0c87f3, tiene la prima versione con «chiaro» e non si
+  aggiorna senza rileggere per intero la copia salvata dallo strumento).
 - Artefatto delle due famiglie di avatar a confronto (kit e orbe, con la pelle chiara): https://claude.ai/code/artifact/4bc0c3ee-d1a0-41dc-a6d9-ef4f2b8360bd
   (`node build-unico.js confronto-avatar.html /percorso/avatar.html`).
 - Artefatto del confronto A/B/C (selettore 11/40): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
@@ -25,7 +27,8 @@ e sulla **pagina dell'Esecuzione** (versione 8). Tutto è committato e pushato s
 - Artefatto dello specimen del sistema: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b
 - Documento unico: `SYSTEM-DESIGN.md` (sezione 10, regole 1–15; sezione 6 con le righe «Avatar del dipendente AI»
   riscritta senza disco e «Pagina Esecuzione»). Studio e versioni della direzione A: `schermate/direzioni/DIREZIONI.md`
-  (sezione 4: regole 13 e 14, «Versione 7» per le pelli, «Versione 8» per la pagina dell'Esecuzione).
+  (sezione 4: regole 13 e 14, «Versione 7» per le pelli, «Versione 7b» per perla, tondi e moti fluidi, «Versione 8»
+  per la pagina dell'Esecuzione).
 
 ## Decisioni dell'utente (in ordine)
 
@@ -58,6 +61,12 @@ e sulla **pagina dell'Esecuzione** (versione 8). Tutto è committato e pushato s
     `PELLI` in `avatar-orbe.js` e la riga `DGT_AVATAR.pelle(q.get('pelle') || 'chiaro')` in `direzione-a.html`.
 15. **Lavoro 2**: la pagina dell'Esecuzione (passi, log, output) dall'«occhio» delle card al lavoro; struttura proposta
     e costruita nella stessa sessione (versione 8). **Da confermare dall'utente.**
+16. **Seconda tornata sull'avatar**: «Chiaro non va bene. Poi vorrei renderli tondi e meno ovali. E le animazioni non
+    mi piacciono, sono scadenti e poco fluide». Fatto (versione 7b): pelle **perla** predefinita (nero lucido con
+    riflesso, luce riflessa, orlo e bagliore, un solo colore su ogni fondo), **corpi tondi** (cerchi; via superellisse,
+    inclinazione, rigonfiamento, squash e stretch), **moti continui** (via i keyframe CSS; un solo
+    `requestAnimationFrame` per pagina con funzioni del tempo: respiro, galleggiamento, sguardo con proiezione sferica,
+    palpebre con easing, un moto quieto per stato). **Da confermare dall'utente** insieme alla pagina Esecuzione.
 
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto); contenuti sintetici di DGT; documenti in italiano.
@@ -66,19 +75,23 @@ Esperto); contenuti sintetici di DGT; documenti in italiano.
 
 1. Leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezione 10) e `schermate/direzioni/DIREZIONI.md` (sezioni 1 e 4, in
    particolare «Versione 7» e «Versione 8»). Controllare se questo branch è stato unito (vedi «Stato»).
-2. Aprire `schermate/direzioni/direzione-a.html`: la home con gli orbi senza disco; `?pelle=perla|grigio|alone|disco`
+2. Aprire `schermate/direzioni/direzione-a.html`: la home con gli orbi perla tondi in moto; `?pelle=grigio|chiaro|alone|disco`
    per le altre pelli; `?pagina=esecuzione&id=4` (Nora al lavoro, passo 2 di 4), `&id=3` (Kim in errore: «Riprova il
    passo 3»), `&id=5` (Social media manager: consegnato, «Apri la richiesta»), `&id=2` (Tester QA pianificata: «Avvia
    ora»), `?n=40&pagina=esecuzione&id=1` (esecuzione generata, al lavoro); `avatar-pelli.html` per il confronto delle pelli.
    Modello dati in `dati.js` (`ESEC11`, `esecuzioneGenerata`, `esecuzioneDi`), pagina in `direzione-a.js`
    (`esecuzione`, `testataEsecuzione`, `barraPassi`, `rigaPasso`, `rigaLog`, `cardOutput`, `riepilogoEsecuzione`;
    azioni in `monta`: `esecAzione`, `inviaNota`, filtro `filtro-log`), pelli in `avatar/avatar-orbe.js` (`PELLI`,
-   `pelle`, il CSS `[data-pelle=…]`) e l'inversione di contesto in `direzione-a.js` (le regole `… .av svg.orbe`).
-3. Raccogliere il giudizio dell'utente su tre cose: la **pelle** dell'orbe (chiaro, o un'altra), la **pagina
-   dell'Esecuzione**, la **pagina del Dipendente** (versione 6, mai giudicata). Punti aperti che possono uscire:
-   - con la pelle «chiaro» l'avatar **cambia colore** fra le card scure (chiaro) e le pillole bianche o lime (perla
-     nera): è la stessa logica dei pulsanti rotondi, ma se non piace la pelle «perla» ha un solo colore ovunque;
-   - a 26–28 px (coda, diario, storico) l'orbe chiaro è un puntino chiaro con due occhi: leggibile ma senza dettaglio;
+   `pelle`, il CSS `[data-pelle=…]`, il motore: `registra`, `posa`, `palpebra`, `ciclo`, `fermo`, `fotogramma`) e
+   l'inversione di contesto in `direzione-a.js` (le regole `… .av svg.orbe`, che contano solo per la pelle «chiaro»).
+3. Raccogliere il giudizio dell'utente su tre cose: l'**orbe perla tondo con i moti nuovi** (versione 7b), la
+   **pagina dell'Esecuzione**, la **pagina del Dipendente** (versione 6, mai giudicata). Punti aperti che possono
+   uscire:
+   - i moti sono volutamente **quieti** (respiro ±1,6 %, sguardo, palpebre, un gesto ogni 6–10 s per stato): se
+     l'utente li vuole più visibili si alzano le ampiezze in `posa()` (`amp`, `impulso`, i coefficienti di `gx/gy`),
+     senza toccare la struttura;
+   - a 26–28 px (coda, diario, storico) la perla si legge dagli occhi e dall'orlo di luce: è la più discreta delle
+     pelli; se serve più stacco, alzare `--av-bagliore` o `--av-orlo-w` nella pelle «perla»;
    - i **filtri delle sezioni Passi, Output e Costo** (Fatti / Da fare / Con strumenti; Da approvare / In corso /
      Approvate; Per passo / Per strumento) sono inerti come nelle altre pagine; quelli del Log funzionano;
    - «Sposta» (esecuzione pianificata), «Ripeti» (conclusa) e le frecce nell'intaglio delle righe dei passi e degli
@@ -103,9 +116,9 @@ Esperto); contenuti sintetici di DGT; documenti in italiano.
 - `fetch-fonts.py` — Urbanist locale per Chromium headless (`SSL_CERT_FILE=/root/.ccr/ca-bundle.crt python3 fetch-fonts.py /tmp/fonts.css`).
 - `schermate/direzioni/avatar/build-motore.js` — rigenera `avatar-motore.js` dai sorgenti del kit.
 - `schermate/direzioni/build-unico.js` — file unico per gli artefatti (incorpora anche gli script in `avatar/`).
-- Pellicola degli avatar: una pagina di prova con sei copie di un orbe per stato, `document.getAnimations()` in pausa
-  con `currentTime` a 0…5 s per colonna, uno screenshot solo (800×560). Lo script è stato tenuto fuori dal repository:
-  rifarlo in dieci righe se serve.
+- Pellicola degli avatar: una pagina di prova con sei copie di un orbe per stato, `DGT_AVATAR_ORBE.fermo(0)` e poi
+  `fotogramma(svg, t)` con t = 0…5 s per colonna, uno screenshot solo (800×560 a 2×). Lo script è stato tenuto fuori
+  dal repository: rifarlo in dieci righe se serve.
 - Prova cliccata: uno script Playwright (`reducedMotion: 'no-preference'`) che apre la Console, clicca le azioni e
   verifica il DOM e gli errori di console; anche questo fuori dal repository, da rifare al bisogno (le verifiche fatte
   sono elencate in `DIREZIONI.md`, «Versione 7» e «Versione 8»).
@@ -118,8 +131,13 @@ Esperto); contenuti sintetici di DGT; documenti in italiano.
   classico.
 - Gli screenshot usano `reducedMotion: 'reduce'`, quindi gli avatar sono al fotogramma fisso; la prova cliccata
   (Playwright con `no-preference`) verifica che si muovano e che ogni azione della pagina funzioni.
-- La famiglia «orbe» anima con sole animazioni CSS (`transform-box:fill-box`); con `prefers-reduced-motion` tutto fermo.
-  Non ha segni fuori dal corpo (niente `.giro` e `.onda`).
+- La famiglia «orbe» (dalla versione 7b) non ha più animazioni CSS: un solo `requestAnimationFrame` per pagina
+  (`ciclo`) chiama `posa(v, t)` per ogni orbe visibile e scrive gli attributi `transform` di `.tutto`, `.corpo` e dei
+  due `.occhio` (origine al centro del viewBox: scala e rotazione sono attorno al centro). Tutto è funzione continua
+  del tempo (`rumore` a tre armoniche, `impulso` sin², `liscia` smoothstep); fase e periodi dal seme. Gli orbi si
+  registrano da soli con un `MutationObserver` sul body (anche via `innerHTML`), si aggiornano solo nel viewport
+  (`IntersectionObserver`), si fermano con la scheda nascosta; con `prefers-reduced-motion` non si registrano e restano
+  nella posa di riposo del markup. `fermo(t)` / `riprendi()` / `fotogramma(svg, t)` servono agli screenshot.
 - **Le pelli dell'orbe sono solo variabili CSS** (`--av-corpo`, `--av-orlo`, `--av-orlo-w`, `--av-luce`,
   `--av-occhi-neutri`, `--av-bordo`, `--av-zeta`, `--av-alone`, `--av-fondo`, `--av-taglio`, `--av-scala`,
   `--av-anello-pelle`) dichiarate su `[data-pelle="…"]` ed ereditate: vale l'antenato più vicino, così una cella o una

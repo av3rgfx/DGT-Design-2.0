@@ -16,11 +16,11 @@
 <script src="dati.js"></script>
 <script src="direzione-a.js"></script>
 <script>
-  // Parametri: ?n=11|40  ?tendina=chiusa|aperta|estesa|dossier  ?pannello=richieste|riepilogo  ?pagina=home|richieste|dipartimento|dipendente|esecuzione  ?dip=svi|mkt|ven|amm  ?id=<id dipendente>  ?confronto=6,7  ?richiesta=0  ?editor=nuovo|<id dipendente>  ?avatar=orbe|kit  ?pelle=chiaro|perla|grigio|alone|disco
+  // Parametri: ?n=11|40  ?tendina=chiusa|aperta|estesa|dossier  ?pannello=richieste|riepilogo  ?pagina=home|richieste|dipartimento|dipendente|esecuzione  ?dip=svi|mkt|ven|amm  ?id=<id dipendente>  ?confronto=6,7  ?richiesta=0  ?editor=nuovo|<id dipendente>  ?avatar=orbe|kit  ?pelle=perla|grigio|chiaro|alone|disco
   const q = new URLSearchParams(location.search);
   DGT_UI.iconeInserisci();
   DGT_AVATAR.usa(q.get('avatar') || 'orbe');   // ?avatar=kit per le forme del kit
-  DGT_AVATAR.pelle(q.get('pelle') || 'chiaro');   // la pelle dell'orbe: chiaro (predefinita), perla, grigio, alone, disco
+  DGT_AVATAR.pelle(q.get('pelle') || 'perla');   // la pelle dell'orbe: perla (predefinita), grigio, chiaro, alone, disco
   DGT_UI.stile('css-a', DIREZIONE_A.css);
   const root = document.getElementById('root');
   const modello = DGT_DATI.modello(DGT_DATI.nDaUrl());

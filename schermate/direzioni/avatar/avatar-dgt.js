@@ -29,8 +29,8 @@
         DGT_AVATAR.statoKit(stato) → id di stato del kit
         DGT_AVATAR.usa('kit'|'orbe') → sceglie la famiglia di avatar; 'orbe' è la
         variante pulita e dinamica (avatar-orbe.js), 'kit' le forme del kit.
-        DGT_AVATAR.pelle('chiaro'|'perla'|'grigio'|'alone'|'disco') → la pelle
-        dell'orbe (dal 2026-09-04 senza disco; vedi avatar-orbe.js).
+        DGT_AVATAR.pelle('perla'|'grigio'|'chiaro'|'alone'|'disco') → la pelle
+        dell'orbe (dal 2026-09-04 senza disco, perla predefinita; vedi avatar-orbe.js).
    ===================================================================== */
 window.DGT_AVATAR = (function () {
   const M = window.DGT_AVATAR_MOTORE;

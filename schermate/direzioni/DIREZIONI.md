@@ -10,7 +10,7 @@ Tre direzioni sulla stessa schermata, prova di scala a quaranta dipendenti, dire
   `confronto.html` (la stessa pagina dell'artefatto, con gli script separati).
 - Avatar dei dipendenti, le due famiglie a confronto (kit e orbe): https://claude.ai/code/artifact/4bc0c3ee-d1a0-41dc-a6d9-ef4f2b8360bd
 - Le pelli dell'orbe senza disco, quattro soluzioni a confronto su tutti i fondi della Console (`avatar-pelli.html`):
-  https://claude.ai/code/artifact/a196c232-35ce-4bf0-ae6c-e472ca0c87f3
+  https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569
 - Screenshot a 1440 px in `screenshot/` (`a-11.png` … `c-40.png`, `a-dipendente-nuovo.png`, `a-dipendente-modifica.png`,
   `a-11-avatar-kit.png`, `avatar-confronto.png`, `avatar-orbe-pellicola.png`, `avatar-pelli.png`; la pagina del dipendente:
   `a-dipendente.png`, `a-dipendente-ruolo.png`, `a-dipendente-dossier.png`, `a-dipendente-confronto.png`; la pagina
@@ -184,11 +184,11 @@ direzione. Regole che valgono da qui in avanti:
    forma piena (nome grande, sotto «ruolo · dipartimento»). Vale in tutte le viste: card, righe compatte, striscia
    «chi» delle card esecuzione e richiesta, tendine, coda, diario, storico, filtri, agenda.
 10. **Avatar generati, non iniziali**: ogni dipendente AI ha un avatar deterministico dal seme (il ruolo, o un seme
-    scelto nell'editor), disegnato nel linguaggio del sistema e **senza disco** (versione 7): l'orbe chiaro `#E4E4E4`
-    con gli occhi neri sul nero e sulle card scure, perla nera con gli occhi bianchi sulle superfici chiare e lime;
-    occhi lime quando serve il titolare (al lavoro), gialli da approvare, rosa a X per l'errore. Con l'orbe tutti gli
-    avatar sono animati in CSS; il kit è statico tranne le card «Al lavoro adesso» e l'anteprima dell'editor. Il
-    titolare, che è una persona, tiene le iniziali su disco bianco.
+    scelto nell'editor), disegnato nel linguaggio del sistema e **senza disco** (versioni 7 e 7b): l'orbe perla
+    nera, un cerchio nero lucido con riflesso, luce riflessa e orlo di luce, lo stesso su ogni fondo; occhi bianchi,
+    lime quando serve il titolare (al lavoro), gialli da approvare, rosa a X per l'errore. Con l'orbe tutti gli
+    avatar sono in moto (un solo motore per pagina); il kit è statico tranne le card «Al lavoro adesso» e
+    l'anteprima dell'editor. Il titolare, che è una persona, tiene le iniziali su disco bianco.
 11. **Creazione e modifica del dipendente in una tendina**, con la stessa forma delle tendine del titolare: anteprima
     della card, ruolo, nome facoltativo, dipartimento a pillole, scelta dell'avatar fra sei varianti, Crea/Salva e
     Annulla. Si apre dalla matita nell'intaglio della card, dalla riga compatta e dalla card «Aggiungi».
@@ -198,10 +198,12 @@ direzione. Regole che valgono da qui in avanti:
     budget e permessi, colloquio). **Una revisione di performance è una richiesta al titolare** come le altre: ha un
     dossier con evidenze, stime e rischi, quattro decisioni (prova, applica, chiedi modifiche, rifiuta con motivo) e
     una cronologia con l'effetto misurato. Le richieste decise dal titolare sono la fonte di «corretti» e «respinte».
-13. **L'avatar è un avatar, non un'icona** (versione 7): niente disco né anello bianco dietro l'orbe; l'orbe cambia
-    pelle con la superficie (chiaro sul nero, perla nera sul chiaro e sul lime) come i pulsanti rotondi cambiano
-    colore, così si vede su ogni fondo senza contorni. Gli avatar impilati (coppie, tendine) si sovrappongono di
-    6 px senza anello. Le altre pelli (perla, grigio, alone, disco) restano dietro `?pelle=` per il confronto.
+13. **L'avatar è un avatar, non un'icona** (versioni 7 e 7b): niente disco né anello bianco dietro l'orbe; pelle
+    **perla nera** su ogni fondo, che si stacca dal nero per il volume (riflesso, luce riflessa, orlo di luce,
+    bagliore di pochi pixel), non per un contorno; **corpi tondi** (cerchi, niente ovali né squash e stretch) e
+    **moti continui** (un solo motore per pagina, funzioni del tempo senza scatti). Gli avatar impilati (coppie,
+    tendine) si sovrappongono di 6 px senza anello. Le altre pelli (grigio, chiaro, alone, disco) restano dietro
+    `?pelle=` per il confronto.
 14. **La pagina dell'Esecuzione** (versione 8) nella stessa cornice, aperta dall'«occhio» e dalla freccia delle card
     esecuzione: titolo = titolo dell'esecuzione, tre numeri (passi fatti, spesi, tempo); testata con avatar, chip,
     la frase «Adesso … Prossimo …», le azioni per stato (pausa, interrompi, scrivi; riprova; avvia ora; apri la
@@ -433,7 +435,7 @@ Diagnosi: il disco chiaro `#E4E4E4` con il corpo nero dentro ha la forma dei pul
 lo rafforza. Tolto il disco, il corpo nero sparisce sul nero della pagina e delle card scure. Quattro soluzioni,
 costruite come **pelli** dell'orbe (`avatar-orbe.js`: solo variabili CSS ereditate da `[data-pelle]`, il disegno
 non cambia; `DGT_AVATAR.pelle(nome)`, nelle pagine `?pelle=chiaro|perla|grigio|alone|disco`), confrontate nella
-pagina `avatar-pelli.html` (artefatto https://claude.ai/code/artifact/a196c232-35ce-4bf0-ae6c-e472ca0c87f3) su
+pagina `avatar-pelli.html` (artefatto https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569) su
 tutti i fondi della Console (nero, card scura, card grigia, card lime, pillola bianca, tendina chiara) per cinque
 stati, nelle misure (96 … 26 e impilati) e nelle viste vere (card al lavoro animate, barra «Oggi in azienda», card
 dei dipendenti, righe compatte con la tendina, testata del Dipendente), con «Prova nella Console» che cambia la
@@ -460,6 +462,48 @@ rifatti con la pelle chiara; `avatar-pelli.png` la pagina delle pelli. Prova con
 nessun disco dietro gli orbi, corpo chiaro sulla card scura e perla sulla card lime, occhi lime al lavoro, occhi neri
 da pianificato e libero, corpo che si muove fra due fotogrammi, anello degli impilati trasparente, `?pelle=disco`
 rimette il disco, il selettore della pagina delle pelli cambia la Console, nessun errore in console.
+
+### Versione 7b: perla, corpi tondi, moti fluidi (2026-09-04, stessa sessione, seconda tornata)
+
+Giudizio dell'utente sulla versione 7: «Chiaro non va bene. Poi vorrei renderli tondi e meno ovali. E le animazioni
+non mi piacciono, sono scadenti e poco fluide». Tre correzioni, tutte in `avatar-orbe.js` (sesta versione del file):
+
+1. **Pelle perla** predefinita: il nero lucido dell'orbe di riferimento, un solo colore su ogni fondo. Per vederlo sul
+   nero della Console il volume è più deciso: gradiente fra i neri della palette (`#7A7A7A` in alto a sinistra →
+   `#050505`), riflesso morbido in alto a sinistra (gradiente radiale, niente filtri), luce riflessa in basso, orlo di
+   luce lungo il bordo (4 unità, bianco `.85` → `.06` → `.34`) e un bagliore di 9 unità appena fuori dal corpo (un
+   anello di gradiente, non l'alone largo). La pelle «chiaro» resta nella pagina delle pelli come scartata; la Console
+   non la usa più (`?pelle=chiaro` la rimette per il confronto).
+2. **Corpi tondi**: il corpo è un `<circle>` di raggio 95–100 su 125, dal seme. Via la superellisse, il rapporto,
+   l'inclinazione e il rigonfiamento; via lo squash e stretch. Un dipendente si distingue dagli **occhi** (tondi,
+   pillola alta o pillola larga; distanza e altezza) e dalla posizione del riflesso.
+3. **Moti fluidi**: via tutti i keyframe CSS (saltelli, tremiti, scrollate, «z»). Un solo `requestAnimationFrame` per
+   pagina muove gli orbi con **funzioni continue del tempo**: seni, rumore periodico (tre armoniche) e finestre
+   morbide sin² per i gesti che si ripetono, così nessun movimento parte o finisce di scatto. Base per tutti: respiro
+   (scala uniforme ±1,6 %, 4,6–6,2 s dal seme), galleggiamento (±2), deriva dello sguardo con **proiezione sferica**
+   (l'occhio che va verso il bordo si stringe: è questo che dà volume alla sfera), battito delle palpebre con easing
+   (chiusura svelta, riapertura più lenta, ogni 2,8–7 s, a volte doppio). Per stato, un solo moto quieto:
+
+   | Stato | Che cosa fa l'orbe |
+   |---|---|
+   | lavoro | occhi lime; lo sguardo scandisce piano da un lato all'altro (3,4 s); respiro un poco più svelto |
+   | attesa | occhi gialli più grandi; ogni ~6 s si solleva di 7 e guarda in alto verso il titolare per 1,9 s, poi torna |
+   | errore | X rosa che pulsano piano (2,6 s); sta 4 più in basso e appena più piccolo; ogni ~7,5 s scuote la testa lentamente (±4,5°, due oscillazioni in 1,6 s) |
+   | pianificato | dondola da un lato all'altro (±5, ±2,5°, 7,2 s); ogni ~10 s guarda in alto a destra «l'orologio» per 2 s |
+   | libero | palpebre socchiuse (32 %), respiro profondo e lento (±2,6 %, ~7,5 s), sta 5 più in basso; niente «z» |
+
+   Ogni orbe che entra nella pagina si registra da solo (`MutationObserver`), anche dentro le tendine e dopo un
+   clic; si aggiornano solo quelli nel viewport (`IntersectionObserver`); con la scheda nascosta il motore si ferma;
+   con `prefers-reduced-motion` gli orbi restano nella posa di riposo (è quella degli screenshot). L'anteprima
+   dell'editor segue il puntatore con inseguimento morbido. `DGT_AVATAR_ORBE.fermo(t)`, `riprendi()` e
+   `fotogramma(svg, t)` fermano il motore a un istante: servono alla pellicola.
+
+Prova con Playwright (`reducedMotion: no-preference`), 22 verifiche: pelle predefinita perla, 39 orbi tutti registrati,
+corpo `<circle>`, occhi e corpo che cambiano fra due fotogrammi, **salto massimo per frame 0,17 unità** su dodici frame
+(continuità), nessun keyframe residuo, nessun disco, palpebre socchiuse da libero, pagina Esecuzione e orbi nuovi
+dopo un'azione registrati, anteprima che segue il puntatore, 94 orbi vivi a 40, `?pelle=disco`, kit intatto, pagina
+delle pelli (273 orbi, perla segnata, niente scorrimento), confronto kit/orbe, reduced motion fermo; nessun errore in
+console. Pellicola `screenshot/avatar-orbe-pellicola.png` (Copywriter, cinque stati a 0…5 s con `fotogramma`).
 
 ### Versione 8: la pagina dell'Esecuzione (2026-09-04, stessa sessione)
 
@@ -510,7 +554,7 @@ esecuzione generata a 40; nessun errore in console. Screenshot: `a-esecuzione.pn
 | `comune.js` | sprite di icone di DGT, prefisso CSS, utilità |
 | `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo); cliccabile |
 | `avatar/avatar-dgt.js` | involucro degli avatar nel linguaggio della Console (colori, stati, simboli statici, animazione); `usa('orbe'|'kit')` sceglie la famiglia |
-| `avatar/avatar-orbe.js` | la famiglia «orbe» (versioni 5b, 5c, 7): sfere morbide dal seme, animazioni CSS, sguardo che segue il puntatore; dalla versione 7 senza disco, con le pelli (`pelle('chiaro'|'perla'|'grigio'|'alone'|'disco')`, solo variabili CSS) |
+| `avatar/avatar-orbe.js` | la famiglia «orbe» (versioni 5b, 5c, 7, 7b): cerchi dal seme, un solo motore `requestAnimationFrame` con funzioni continue del tempo, sguardo che segue il puntatore; senza disco, con le pelli (`pelle('perla'|'grigio'|'chiaro'|'alone'|'disco')`, solo variabili CSS; perla predefinita); `fermo(t)`, `riprendi()`, `fotogramma(svg, t)` per gli screenshot |
 | `confronto-avatar.html` | le due famiglie a confronto nelle viste della Console |
 | `avatar-pelli.html` | le quattro pelli dell'orbe senza disco a confronto su tutti i fondi della Console, con il selettore che cambia la pelle |
 | `avatar/avatar-motore.js` | motore del kit impacchettato (generato da `build-motore.js`, non si modifica a mano) |

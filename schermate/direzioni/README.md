@@ -12,14 +12,14 @@ prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decision
   revisione in sospeso, con `&confronto=6,7` due versioni del prompt a confronto), `?pagina=esecuzione&id=4` (Nora al
   lavoro; `id=3` Kim in errore, `id=5` Social media manager da approvare, `id=2` Tester QA pianificata),
   `?tendina=chiusa|aperta|estesa`, `?pannello=richieste|riepilogo`, `?pagina=home|richieste`, `?richiesta=0`,
-  `?editor=nuovo|<id dipendente>`, `?avatar=orbe|kit`, `?pelle=chiaro|perla|grigio|alone|disco` (la pelle dell'orbe
-  senza disco; predefinita chiaro). Artefatto:
+  `?editor=nuovo|<id dipendente>`, `?avatar=orbe|kit`, `?pelle=perla|grigio|chiaro|alone|disco` (la pelle dell'orbe
+  senza disco; predefinita perla). Artefatto:
   https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
 - Avatar dei dipendenti AI in `avatar/`: `avatar-dgt.js` (involucro della Console, sceglie la famiglia con
   `usa('orbe'|'kit')` e la pelle con `pelle('chiaro'|…)`), `avatar-orbe.js` (la famiglia «orbe», predefinita, senza
   disco), `avatar-motore.js` (motore del kit impacchettato: rigenerare con `node avatar/build-motore.js` dopo aver
   toccato `avatar/vendor-avatars/`). Le due famiglie a confronto: `confronto-avatar.html`, artefatto
   https://claude.ai/code/artifact/4bc0c3ee-d1a0-41dc-a6d9-ef4f2b8360bd. Le pelli dell'orbe a confronto su tutti i
-  fondi della Console: `avatar-pelli.html`, artefatto https://claude.ai/code/artifact/a196c232-35ce-4bf0-ae6c-e472ca0c87f3
+  fondi della Console: `avatar-pelli.html`, artefatto https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569
 - File unico per l'artefatto: `node build-unico.js /percorso/confronto-unico.html`.
 - Screenshot: `LOCAL_FONT_CSS=/tmp/fonts.css node ../../design-system/tools/screenshot-page.js "direzione-a.html?n=40" out.png`.

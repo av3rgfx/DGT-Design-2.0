@@ -102,7 +102,7 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 | Rail | 4 cerchi 48 a sinistra: elenco (attivo, bianco), organizzazione, chat, calendario |
 | Intestazione di sezione | titolo 28, conteggio sottolineato (numero 20 + parola 13), cerchi cerca e filtri 46, pillole filtro |
 | Card lead | 260×204, r28, `#262626→#1C1C1C`; avatar 48 in alto a sinistra; intaglio con freccia; nome 26; ruolo 13; "Fonte" + pillole `#3A3A3A` 26; etichetta di interesse + contenitore nero con 5 punti 13 |
-| Avatar del dipendente AI | misure 48 (40, 36, 32, 28, 26; 68 nella richiesta corrente e nella testata dell'esecuzione; 96 nella pagina del Dipendente), **senza disco** dal 2026-09-04 (versione 7): la forma generata dal seme (ruolo, o seme scelto) occupa tutta la misura (l'orbe è disegnato al 115 % del riquadro, senza ritaglio né bordo). Pelle predefinita **chiaro**: corpo `#E4E4E4` con un orlo scuro sottile e un riflesso forte, occhi `#0A0A0A`; sulle superfici chiare e lime (card lime, pillole bianche, coda, barra agenda, tendine, documento del prompt, righe in attesa) il corpo si inverte in **perla nera** (gradiente fra i neri della palette, orlo di luce, riflesso 20 %) con gli occhi bianchi. Occhi di stato: lime `#B8FC64` al lavoro, gialli `#FCDC64` da approvare, rosa `#F9A3A3` a X in errore, con un contorno nero sottile sul corpo chiaro. Altre pelli per il confronto (`?pelle=`): perla (nero lucido ovunque), grigio (`#4D4D4D`), alone (nero con un alone di luce dietro), disco (la versione precedente). Due famiglie: **orbe** (scelta dall'utente): sfere morbide con occhi grandi che respirano, battono le palpebre e seguono lo sguardo, animazioni CSS su tutti gli avatar e un moto proprio per stato con cicli lunghi e pause (squash al lavoro, saltello ogni 5,5 s da approvare, tremito ogni 6 s in errore, scorrimento da pianificato, respiro profondo con «z» da libero); nessun segno animato dietro il corpo; **kit** (le silhouette del generatore, statiche tranne le card al lavoro, con il disco) con `?avatar=kit`. Gli avatar impilati si sovrappongono di 6 px senza anello. Le persone (titolare) tengono le iniziali su disco bianco; aria-hidden |
+| Avatar del dipendente AI | misure 48 (40, 36, 32, 28, 26; 68 nella richiesta corrente e nella testata dell'esecuzione; 96 nella pagina del Dipendente), **senza disco** dal 2026-09-04: l'orbe è disegnato al 115 % del riquadro, senza ritaglio né bordo. Pelle **perla** (versione 7b): corpo nero lucido, un cerchio di raggio 95–100 su 125 dal seme, gradiente fra i neri della palette (`#7A7A7A` → `#050505`), riflesso morbido in alto a sinistra (55 %), luce riflessa in basso (22 %), orlo di luce lungo il bordo (4, bianco `.85` → `.06` → `.34`) e un bagliore di 9 unità fuori dal corpo (60 %); lo stesso su ogni fondo, nero, grigio, lime o bianco. Occhi dal seme (tondi 27, pillola 20×40, larga 34×22; distanza e altezza): bianchi `#FCFCFC`, lime `#B8FC64` al lavoro, gialli `#FCDC64` e più grandi da approvare, rosa `#F9A3A3` a X in errore, socchiusi da libero. Moto: un solo `requestAnimationFrame` per pagina, funzioni continue del tempo con fase dal seme: respiro (scala uniforme ±1,6 %, 4,6–6,2 s), galleggiamento (±2), deriva dello sguardo con proiezione sferica (l'occhio verso il bordo si stringe), battito delle palpebre con easing ogni 2,8–7 s; per stato: lo sguardo che scandisce (lavoro), un sollevamento con lo sguardo in alto ogni ~6 s (attesa), X che pulsano e una lenta scossa della testa ogni ~7 s (errore), dondolio lento e uno sguardo all'orologio ogni ~10 s (pianificato), respiro profondo e lento con le palpebre socchiuse (libero). Solo gli orbi nel viewport si aggiornano; con `prefers-reduced-motion` posa di riposo. Altre pelli per il confronto (`?pelle=`): grigio, chiaro (scartata), alone, disco. Famiglia **kit** (le silhouette del generatore, statiche tranne le card al lavoro, con il disco) con `?avatar=kit`. Gli avatar impilati si sovrappongono di 6 px senza anello. Le persone (titolare) tengono le iniziali su disco bianco; aria-hidden |
 | Pagina Dipendente | stessa cornice (titolo = etichetta in maiuscolo, 36 px oltre 12 caratteri; tre numeri di oggi); testata con avatar 96 che segue il puntatore, etichetta 28, «ruolo · dipartimento · in produzione dal», chip (stato, revisione in sospeso, prompt vN, modello, colloquio), pillole Modifica / Metti in pausa / Ripeti il colloquio a 40, mansione 17, quattro numeri 48/300 a 30 giorni con badge del confronto; sezioni con intestazione e pillole: revisione di performance, oggi, rendimento (righe 56 con due valori e badge), soul prompt (documento `#F4F4F4` r28 con intaglio, 17/26; versioni come righe 56: proposta lime, corrente bianca), modello (tre card lead 236 di altezza, l'assegnato bianco; card criterio 517 con ripartizione a pillola 12: grigio `#6B6B6B` / bianco / lime), strumenti (card come le regole), budget (card attività, lime se oltre il limite del giorno) e permessi (righe con chip «Regola generale» / «Eccezione» lime), colloquio (card grigia con punteggio e barra, righe dei casi) |
 | Pagina Esecuzione | stessa cornice (titolo = titolo dell'esecuzione in maiuscolo; tre numeri: passi fatti su totale, spesi con badge «oltre», tempo); testata: avatar 68 animato, etichetta 18 e «ruolo · dipartimento», chip (stato, passo n di N, modello, cliente, obiettivo), la frase «Adesso … Prossimo …» 17/25 con le parti in 500, pillole d'azione 40 (lime la principale: riprova, avvia ora, apri la richiesta), la **barra dei passi** = barra agenda 64 ferma nella testata: passi fatti come eventi bianchi 40 con il numero in cerchio nero 32 e la durata, passo in corso come segmento «adesso» `#A8E65D` con il marcatore dell'ora, passi da fare traslucidi con la stima, passo in errore rosa, pillola finale bianca con la stima di fine; Passi come righe 56 (cerchio 40 con spunta / play / avviso / numero; in corso lime, errore grigia, da fare al 60 %); Log come righe 48 (ora, chip del tipo: Passo chiaro, Strumento, Modello, Nota, Richiesta lime, Errore rosa, Titolare nera; costo) con i filtri contati e in fondo la **barra di scrittura** (pillola bianca 56 con avatar 36, campo 15, pulsante nero 40); Output come card lead 224 (icona del tipo; da approvare lime, bozza ed errore grigie, da fare spenta) e le consegne precedenti della serie come righe dello storico; Costo: card attività 517 scura (lime se oltre il limite) con finora su stimato, ripartizione per modello a pillola e legenda, oggi su limite del giorno; strumenti come righe (chiamate, Usato / Non usato / Errore, passi, costo) |
 | Card revisione di performance | `ncard.lime` a tutta larghezza, padding 22/24, intaglio con campanella (punto rosso) e «apri»; chip `onlime`; titolo 26/32 entro 38 caratteri per riga; tre colonne 1,25 / 1 / 1 con etichetta 11 maiuscola, evidenze come elenco (numero in pillola `rgb(0 0 0/.1)` 22 + frase 14/19, cerchietto con freccia verso la richiesta), paragrafi 13/18; riga «Decisione del titolare» separata da una linea `.12`: pillole 48 nera (prova), bianca (applica), vuota scura (modifiche), rossa (rifiuta…), link al dossier a destra |
@@ -173,11 +173,11 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     sotto sta il dipartimento; il nome è facoltativo (creazione o modifica) e quando c'è torna la forma piena (nome
     26 px, sotto «ruolo · dipartimento»). La card dipendente è alta 240 px nei due casi. Vale in tutte le viste.
 11. Avatar generati al posto delle iniziali: deterministici dal seme (ruolo, o seme scelto), nel linguaggio del
-    sistema (orbe chiaro con occhi neri sul nero, perla nera con occhi bianchi sul chiaro e sul lime; occhi lime se
-    serve il titolare, gialli da approvare, rosa per l'errore). Due famiglie, con la stessa API: «orbe» (scelta
-    dall'utente: sfere morbide con occhi grandi, animazioni CSS su tutti gli avatar con un moto proprio per stato,
-    sguardo che segue il puntatore nell'editor) e «kit» (le silhouette del kit, statiche tranne le card al lavoro,
-    con `?avatar=kit`). Il titolare tiene le iniziali.
+    sistema (orbe perla nera, lo stesso su ogni fondo; occhi bianchi, lime se serve il titolare, gialli da
+    approvare, rosa per l'errore). Due famiglie, con la stessa API: «orbe» (scelta dall'utente: sfere tonde con
+    occhi grandi, un solo motore che muove tutti gli avatar con funzioni continue del tempo e un moto quieto per
+    stato, sguardo che segue il puntatore nell'editor) e «kit» (le silhouette del kit, statiche tranne le card al
+    lavoro, con `?avatar=kit`). Il titolare tiene le iniziali.
 12. Creazione e modifica del dipendente in una tendina «Dipendente» (anteprima, ruolo, nome facoltativo,
     dipartimento, avatar a scelta fra sei), aperta dalla matita nell'intaglio della card, dalla riga compatta e
     dalla card «Aggiungi». Niente finestre generiche.
@@ -190,11 +190,14 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     chiedi modifiche, rifiuta con motivo obbligatorio) e cronologia con l'effetto misurato. Le richieste decise dal
     titolare sono la fonte di «corretti da un umano» e «proposte respinte». I modelli sono livelli neutri di DGT
     (Rapido, Standard, Esperto), non marchi di terzi.
-14. L'avatar è un avatar, non un'icona (2026-09-04, versione 7): niente disco né anello bianco dietro l'orbe. La
-    pelle predefinita è «chiaro»: corpo `#E4E4E4` con occhi neri sul nero e sulle card scure, che si inverte in perla
-    nera con occhi bianchi sulle superfici chiare e lime, come i pulsanti rotondi cambiano colore con il fondo. Gli
-    avatar impilati si sovrappongono di 6 px senza anello. Le altre pelli (perla, grigio, alone, disco) restano
-    dietro `?pelle=` per il confronto (`schermate/direzioni/avatar-pelli.html`).
+14. L'avatar è un avatar, non un'icona (2026-09-04, versioni 7 e 7b): niente disco né anello bianco dietro l'orbe.
+    La pelle è «perla»: nero lucido, lo stesso su ogni fondo, che si stacca dal nero per il volume (riflesso in
+    alto a sinistra, luce riflessa in basso, orlo di luce lungo il bordo, un bagliore di pochi pixel fuori dal
+    corpo). Il corpo è un cerchio: niente ovali, niente squash e stretch; un dipendente si distingue dagli occhi.
+    I moti sono continui: un solo `requestAnimationFrame` per pagina muove gli orbi visibili con funzioni del
+    tempo (respiro, galleggiamento, deriva dello sguardo con proiezione sferica, battito delle palpebre) e un solo
+    moto quieto per stato. Gli avatar impilati si sovrappongono di 6 px senza anello. Le altre pelli (grigio,
+    chiaro, alone, disco) restano dietro `?pelle=` per il confronto (`schermate/direzioni/avatar-pelli.html`).
 15. Pagina dell'Esecuzione nella stessa cornice, aperta dall'«occhio» e dalla freccia delle card esecuzione: titolo
     = titolo dell'esecuzione, tre numeri (passi fatti, spesi, tempo); testata con avatar, chip, la frase «Adesso …
     Prossimo …», le azioni per stato (pausa, interrompi, scrivi; riprova; avvia ora; apri la richiesta) e la barra
@@ -207,15 +210,15 @@ Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in
 `schermate/direzioni/DIREZIONI.md`, sezione 1. Sorgenti in `schermate/direzioni/` (`dati.js`, `comune.js`,
 `direzione-a.js`, `avatar/`). Dettaglio della versione 5 (dipendenti, editor, avatar), 5b/5c (orbe), 6 (pagina del
-Dipendente, revisione di performance), 7 (orbe senza disco, le pelli) e 8 (pagina dell'Esecuzione) in `DIREZIONI.md`,
-sezione 4.
+Dipendente, revisione di performance), 7 e 7b (orbe senza disco, le pelli; poi perla, corpi tondi e moti fluidi) e 8
+(pagina dell'Esecuzione) in `DIREZIONI.md`, sezione 4.
 
 ## 11. Collegamenti
 
 - Confronto delle tre direzioni (artefatto): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
 - Direzione A cliccabile, tendine, pagine Richieste, Dipartimento, Dipendente (revisione di performance) ed Esecuzione, avatar ed editor (artefatto): https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
 - Avatar dei dipendenti, le due famiglie a confronto (artefatto): https://claude.ai/code/artifact/4bc0c3ee-d1a0-41dc-a6d9-ef4f2b8360bd
-- Le pelli dell'orbe senza disco, quattro soluzioni a confronto (artefatto): https://claude.ai/code/artifact/a196c232-35ce-4bf0-ae6c-e472ca0c87f3
+- Le pelli dell'orbe senza disco, quattro soluzioni a confronto (artefatto): https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569
 - PR #3 verso `main` con schermate e documenti (unita): https://github.com/av3rgfx/DGT-Design-2.0/pull/3
 - Branch dei dipendenti AI (versione 5 della direzione A): `claude/console-ai-employees-feebdx`, PR #4 (unita)
 - Branch della pagina del Dipendente e degli avatar senza segni dietro (versioni 5c e 6): `claude/avatar-orbe-employee-page-3nhqmk`, PR #5 (unita)

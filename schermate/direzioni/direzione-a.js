@@ -38,7 +38,8 @@
    barra agenda del sistema), passi come righe, log con filtri e barra di
    scrittura, output come card, costo per modello e per strumento; azioni
    pausa, interrompi, riprova, avvia ora, nota del titolare. Dati in
-   m.esecuzioneDi(e). Avatar senza disco (avatar-orbe.js, pelli).
+   m.esecuzioneDi(e). Avatar senza disco (avatar-orbe.js, pelli); poi, su
+   giudizio dell'utente, pelle perla, corpi tondi e un motore di moto fluido.
 
    API: DIREZIONE_A.render(m, opz) → HTML; DIREZIONE_A.monta(radice, m, opz)
    disegna e collega i clic. opz = { pagina: 'home'|'richieste'|'dipartimento'|'dipendente'|'esecuzione',

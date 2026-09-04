@@ -67,7 +67,7 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
 <div class="v-wrap">
   <div class="v-hd">
     <h1>Le pelli dell'orbe</h1>
-    <p>Richiesta dell'utente: <b>«non un'icona animata: un avatar, senza quel contorno bianco»</b>. Il disco chiaro se ne va e l'orbe diventa un oggetto con volume, che riempie la casella. Sul nero della Console un corpo nero si vede poco: qui quattro soluzioni con la stessa forma, gli stessi occhi e gli stessi moti, su tutti i fondi e in tutte le misure della Console. La quinta colonna è la versione precedente, per confronto.</p>
+    <p>Richiesta dell'utente: <b>«non un'icona animata: un avatar, senza quel contorno bianco»</b>. Il disco chiaro se ne va e l'orbe diventa un oggetto con volume, che riempie la casella. Sul nero della Console un corpo nero si vede poco: qui quattro soluzioni con la stessa forma, gli stessi occhi e gli stessi moti, su tutti i fondi e in tutte le misure della Console. La quinta colonna è la versione precedente, per confronto. Seconda tornata: <b>«Chiaro non va bene»</b>, e i corpi devono essere tondi con moti fluidi: la scelta torna sulla <b>perla nera</b>, i corpi sono cerchi e un solo motore muove tutti gli orbi con funzioni continue del tempo.</p>
   </div>
 
   <section class="v-sec">
@@ -78,7 +78,7 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
   <section class="v-sec">
     <h2>Su tutti i fondi della Console <span class="chip">48 px · cinque stati</span></h2>
     <div class="v-tab" id="fondi"></div>
-    <p class="v-note">Fondi: il nero della pagina, la card scura <b>#262626 → #1C1C1C</b>, la card grigia <b>#4D4D4D</b>, la card lime, le pillole bianche (selettore di stato, coda, agenda) e le tendine chiare <b>#F4F4F4</b>. Con la pelle <b>chiaro</b> l'orbe si inverte da solo in perla nera sulle superfici chiare e lime.</p>
+    <p class="v-note">Fondi: il nero della pagina, la card scura <b>#262626 → #1C1C1C</b>, la card grigia <b>#4D4D4D</b>, la card lime, le pillole bianche (selettore di stato, coda, agenda) e le tendine chiare <b>#F4F4F4</b>. Con la pelle <b>perla</b> l'orbe è lo stesso su ogni fondo; con la pelle <b>chiaro</b> si inverte da solo in perla nera sulle superfici chiare e lime.</p>
   </section>
 
   <section class="v-sec">
@@ -111,14 +111,14 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
   DGT_UI.stile('css-a', DIREZIONE_A.css);
   DGT_AVATAR.usa('orbe');
   const q = new URLSearchParams(location.search);
-  DGT_AVATAR.pelle(q.get('pelle') || 'chiaro');
+  DGT_AVATAR.pelle(q.get('pelle') || 'perla');
   const PELLI = DGT_AVATAR_ORBE.PELLI;
   const STATI = ['lavoro', 'attesa', 'errore', 'pianificato', 'libero'];
   const av = (seme, stato, cls) => `<span class="av${cls ? ' ' + cls : ''}">${DGT_AVATAR.html(seme, stato)}</span>`;
   const PRO = {
-    perla: ['<b>Per</b> un solo colore di corpo ovunque; gli occhi colorati restano il segnale; è l\'orbe della modalità voce, nero lucido', '<i>Contro</i> sulle card scure si legge dal volume e dagli occhi, non dalla sagoma: a 26–28 px è la più discreta'],
+    perla: ['<b>Per</b> un solo colore di corpo ovunque; gli occhi colorati restano il segnale; è l\'orbe della modalità voce, nero lucido; il riflesso, la luce riflessa e l\'orlo la staccano dal nero', '<i>Contro</i> sulle card scure si legge dal volume e dagli occhi, non dalla sagoma: a 26–28 px è la più discreta'],
     grigio: ['<b>Per</b> si stacca da ogni fondo senza trucchi; un solo colore di corpo; il grigio è già nella palette (card, pillole)', '<i>Contro</i> sulla card grigia #4D4D4D si confonde; è la meno «viva»: sembra un robot di plastica'],
-    chiaro: ['<b>Per</b> la più visibile e la più «avatar» sul nero; è l\'orbe di riferimento (sfera chiara sul nero); sta con le pillole bianche della Console', '<i>Contro</i> due corpi (chiaro sul nero, nero sul chiaro): l\'avatar cambia colore fra card e pillola, come fanno i pulsanti rotondi; gli occhi di stato hanno un contorno nero'],
+    chiaro: ['<b>Per</b> la più visibile sul nero; sta con le pillole bianche della Console', '<i>Contro</i> scartata dall\'utente: due corpi (chiaro sul nero, nero sul chiaro), l\'avatar cambia colore fra card e pillola; gli occhi di stato hanno un contorno nero'],
     alone: ['<b>Per</b> il passo più piccolo dal disco: stesso corpo nero, il fondo resta nero, niente bordo netto', '<i>Contro</i> l\'alone è comunque un campo chiaro dietro l\'avatar: a 48 px torna a somigliare a un disco sfumato'],
     disco: ['<i>Contro</i> il disco chiaro con il corpo dentro ha la forma dei pulsanti rotondi bianchi della Console: sembra un\'icona', ''],
   };
