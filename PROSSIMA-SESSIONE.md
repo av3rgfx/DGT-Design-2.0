@@ -8,7 +8,7 @@ già decisi: vedi la sezione **«Prossima sessione: cosa fare»**.
 ## Stato
 
 - Branch: `claude/console-ai-employees-feebdx` (da `main`, che contiene le PR #1 e #3). PR aperta verso `main` a fine
-  sessione (titolo «Direzione A · Console: i dipendenti AI»).
+  sessione: **#4**, https://github.com/av3rgfx/DGT-Design-2.0/pull/4 («Direzione A · Console: i dipendenti AI»).
 - Artefatto della direzione A cliccabile (home, tendine, Richieste, Dipartimento, editor del dipendente, avatar):
   https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
   (si aggiorna con `node schermate/direzioni/build-unico.js direzione-a.html /percorso/a.html` e ripubblicando allo
