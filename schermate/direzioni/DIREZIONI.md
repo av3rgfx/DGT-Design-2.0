@@ -298,7 +298,7 @@ orbe**, in attesa della scelta dell'utente.
 | Forma | silhouette del generatore del kit: poligoni, gocce, fiori, fagioli; una per ruolo | tutte sfere morbide: superellisse da tonda a «squircle», rapporto e inclinazione leggeri, un solo rigonfiamento; il corpo occupa i 4/5 del disco |
 | Cosa distingue un dipendente | la silhouette, la pupilla, il segno distintivo | gli occhi (tondi, pillola alta, pillola larga; distanza e altezza), l'inclinazione, la rotondità |
 | Colori | palette: disco chiaro, corpo nero, occhi bianchi, lime e rosa per gli stati | uguali, con gli occhi **gialli** `#FCDC64` da approvare (lime resta per il lavoro), più un riflesso bianco appena accennato (11 %) in alto a sinistra e un gradiente fra i neri della palette |
-| Stati | working, alert, error, idle, dormant del kit | lavoro: occhi lime e un arco che orbita · da approvare: occhi grandi lime e due onde che si allargano · errore: occhi a X rosa e un tremito ogni tanto · pianificato: occhi bianchi · libero: palpebre socchiuse, respiro lento |
+| Stati | working, alert, error, idle, dormant del kit | lavoro: occhi lime e squash e stretch · da approvare: occhi grandi gialli e un saltello · errore: occhi a X rosa e un tremito ogni tanto · pianificato: occhi bianchi · libero: palpebre socchiuse, respiro lento. Nessun segno fuori dal corpo (l'arco che orbitava e le onde sono stati tolti nella versione 5c) |
 | Moto | un rAF, solo le card al lavoro e l'anteprima | **animazioni CSS su tutti gli avatar**, fase e periodo dal seme (nessuno in sincrono): respiro del corpo, deriva dello sguardo, battito delle palpebre, dondolio, più il moto proprio di ogni stato (tabella sotto); niente rAF; con `prefers-reduced-motion` tutto fermo |
 | Sguardo | anteprima dell'editor con il motore del kit | anteprima dell'editor: gli occhi seguono il puntatore |
 | Determinismo | stesso seme → stessa forma | stesso seme → stessi parametri (mulberry32 dal FNV-1a del seme, come il kit) |
@@ -310,8 +310,8 @@ primi valori a 10–12 unità erano 3 px a 72 px e non si vedevano; ora:
 
 | Stato | Che cosa fa l'orbe |
 |---|---|
-| lavoro | due battute di squash e stretch (1,14 × 0,88 ↔ 0,92 × 1,10, ±8°) poi una pausa, ciclo ≈ 4,3 s; lo sguardo scandisce da sinistra a destra (±16) nella stessa battuta; due archi spessi che orbitano in 3,6 s |
-| attesa | ogni 5,5 s un saltello (−28 in alto, poi un rimbalzo) con una scrollata del corpo (±14°); **occhi gialli** `#FCDC64` (terza richiesta dell'utente; il giallo è il terzo punto di interesse della palette) più grandi; due onde spesse che partono con il saltello e si allargano fino al bordo del disco |
+| lavoro | due battute di squash e stretch (1,14 × 0,88 ↔ 0,92 × 1,10, ±8°) poi una pausa, ciclo ≈ 4,3 s; lo sguardo scandisce da sinistra a destra (±16) nella stessa battuta |
+| attesa | ogni 5,5 s un saltello (−28 in alto, poi un rimbalzo) con una scrollata del corpo (±14°); **occhi gialli** `#FCDC64` (terza richiesta dell'utente; il giallo è il terzo punto di interesse della palette) più grandi |
 | errore | ogni 6 s un tremito (±16 con ±6°); il corpo resta un poco afflosciato (1,08 × 0,90, abbassato); gli occhi a X lampeggiano ogni 2,6 s |
 | pianificato | il corpo scorre piano da un lato all'altro (±18, ±8°, ciclo ≈ 8 s) come chi aspetta; ogni ≈ 11 s lo sguardo va in alto a destra «a guardare l'orologio» e torna |
 | libero | respiro profondo e lento (1,12 × 0,88 ↔ 0,96 × 1,04, ciclo ≈ 7,5 s), l'orbe si abbassa fino a 16; palpebre socchiuse; una «z» bianca ogni 3,5 s che sale dal volto verso l'alto a destra e svanisce |
@@ -321,9 +321,17 @@ ogni 6–10 s. Fase e periodo restano dal seme. La prima versione aveva cicli di
 frequenti, e i cicli sono stati allungati con pause (terza versione). Pellicola di sei secondi per stato (animazioni
 messe in pausa a sei istanti): `screenshot/avatar-orbe-pellicola.png`.
 
-Deciso a fine sessione (da fare nella prossima): **si tolgono i segni animati dietro l'avatar**, cioè l'arco che
-orbita al lavoro e le onde da approvare; le animazioni dell'avatar stesso (corpo, occhi, sguardo, battito, moti di
-stato) restano. Dettagli e brief della pagina del dipendente in `PROSSIMA-SESSIONE.md`.
+### Versione 5c: niente segni dietro l'avatar (2026-09-04, sessione successiva)
+
+Richiesta dell'utente: «togliere le animazioni dietro gli avatar, le animazioni degli avatar non le devi toccare».
+Tolti da `avatar-orbe.js` i due segni animati **dietro il corpo**: l'arco che orbitava al lavoro (`.giro`, keyframe
+`av-giro`) e le due onde che si allargavano da approvare (`.onda`, `av-onda`), con il loro CSS. Restano intatte tutte
+le animazioni dell'avatar stesso: respiro, dondolio, deriva dello sguardo, battito delle palpebre e i moti di stato del
+corpo e degli occhi della tabella sopra; le «z» del sonno stanno sopra il volto, non dietro, e restano. Lo stato «al
+lavoro» si legge ora solo dagli occhi lime e dallo squash e stretch, «da approvare» dagli occhi gialli e dal saltello.
+Il kit (`?avatar=kit`) non è toccato. Pellicola rifatta (`screenshot/avatar-orbe-pellicola.png`), screenshot della
+Console e del confronto rigenerati. Prova con Playwright: 37 orbi nella home, nessun nodo `.giro`/`.onda`, i corpi
+cambiano trasformazione fra due fotogrammi, nessun errore in console.
 
 Pagina di confronto `confronto-avatar.html` (artefatto: https://claude.ai/code/artifact/4bc0c3ee-d1a0-41dc-a6d9-ef4f2b8360bd):
 undici ruoli per cinque stati, le card dei dipendenti, le card al lavoro (animate), le righe compatte, misure e fondi,
