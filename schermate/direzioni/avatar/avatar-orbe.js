@@ -13,8 +13,9 @@
      rigonfiamento morbido, e gli occhi (tondi, a pillola alta o a pillola
      larga; distanza e altezza). Stesso seme → stesso avatar.
    - Colori solo dalla palette: disco chiaro (CSS di .av), corpo nero con un
-     riflesso bianco appena accennato, occhi bianchi; lime quando serve il
-     titolare (al lavoro, da approvare); rosa per gli occhi a X dell'errore;
+     riflesso bianco appena accennato, occhi bianchi; lime al lavoro, giallo
+     #FCDC64 da approvare (terza richiesta dell'utente), rosa per gli occhi a
+     X dell'errore;
      anelli e archi fuori dal corpo in nero sottile.
    - Dinamica: animazioni CSS deterministiche (fase e periodo dal seme) su
      tutti gli avatar, e per ogni stato si muove il corpo stesso (seconda
@@ -30,6 +31,9 @@
        libero       respiro profondo e lento, l'orbe si abbassa, palpebre
                     socchiuse, due «z» che salgono e svaniscono.
      Sempre: respiro, deriva dello sguardo, battito delle palpebre.
+     Terza versione: cicli più lunghi e con pause (chiesto dall'utente: «meno
+     frequenti»): il saltello ogni ~5,5 s, il tremito ogni 6 s, le «z» ogni
+     3,5 s, il battito ogni 6–10 s; i moti continui hanno periodi doppi.
      Nessun requestAnimationFrame. Con prefers-reduced-motion niente si muove.
    - L'anteprima dell'editor (.av[data-segue]) segue il puntatore con gli occhi.
 
@@ -42,7 +46,8 @@ window.DGT_AVATAR_ORBE = (function () {
   const CORNICE = 125, R = 100;
   const VIEWBOX = `${-CORNICE} ${-CORNICE} ${CORNICE * 2} ${CORNICE * 2}`;
   const CORPO_ID = 'av-orbe-corpo';
-  const VOLTO = { lavoro: '#B8FC64', attesa: '#B8FC64', errore: '#F9A3A3', pianificato: '#FCFCFC', libero: '#FCFCFC' };
+  /* occhi: lime al lavoro, giallo (il terzo punto di interesse della palette) da approvare, rosa in errore */
+  const VOLTO = { lavoro: '#B8FC64', attesa: '#FCDC64', errore: '#F9A3A3', pianificato: '#FCFCFC', libero: '#FCFCFC' };
   const TRATTO = '#0A0A0A';
   const r2 = M.r2;
 
@@ -116,7 +121,8 @@ window.DGT_AVATAR_ORBE = (function () {
     const zeta = stato === 'libero'
       ? `<text class="zeta" x="30" y="-12" font-family="Urbanist, sans-serif" font-weight="600" font-size="38" fill="#FCFCFC">z</text><text class="zeta due" x="30" y="-12" font-family="Urbanist, sans-serif" font-weight="600" font-size="38" fill="#FCFCFC">z</text>`
       : '';
-    const vars = `--p:${r2(p.periodo * (stato === 'libero' ? 1.6 : stato === 'lavoro' ? 0.75 : 1))}s;--d:-${r2(p.fase)}s;--b:${r2(p.battito)}s`;
+    /* --p periodo di base (5–6,7 s; più lento da libero), --b battito delle palpebre (6–10 s), --d fase dal seme */
+    const vars = `--p:${r2(p.periodo * (stato === 'libero' ? 2.2 : 1.6))}s;--d:-${r2(p.fase)}s;--b:${r2(p.battito * 1.6)}s`;
     return `<svg class="ava orbe ${stato}" viewBox="${VIEWBOX}" aria-hidden="true" focusable="false" style="${vars}" data-seme="${String(seme || '').replace(/"/g, '&quot;')}" data-stato="${stato}">`
       + `<g class="tutto"><g class="scossa">${decoro}`
       + `<g class="corpo"><path d="${contorno(p)}" fill="url(#${CORPO_ID})"/><ellipse cx="-30" cy="-40" rx="27" ry="15" transform="rotate(-28 -30 -40)" fill="#FCFCFC" opacity=".11"/></g>`
@@ -129,52 +135,52 @@ window.DGT_AVATAR_ORBE = (function () {
 .ava.orbe{overflow:visible}
 .ava.orbe .tutto,.ava.orbe .scossa,.ava.orbe .corpo,.ava.orbe .occhi,.ava.orbe .occhio,.ava.orbe .giro,.ava.orbe .onda,.ava.orbe .zeta{transform-box:fill-box;transform-origin:center}
 /* base, per tutti: dondolio, respiro, deriva dello sguardo, battito */
-.ava.orbe .tutto{animation:av-dondolo calc(var(--p,3.4s)*1.7) ease-in-out infinite;animation-delay:var(--d,0s)}
-.ava.orbe .corpo{animation:av-respiro var(--p,3.4s) ease-in-out infinite;animation-delay:var(--d,0s)}
-.ava.orbe .occhi{animation:av-sguardo calc(var(--p,3.4s)*2.4) ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe .tutto{animation:av-dondolo calc(var(--p,5.4s)*1.7) ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe .corpo{animation:av-respiro var(--p,5.4s) ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe .occhi{animation:av-sguardo calc(var(--p,5.4s)*2.2) ease-in-out infinite;animation-delay:var(--d,0s)}
 .ava.orbe .occhio{animation:av-battito var(--b,5s) ease-in-out infinite;animation-delay:var(--d,0s)}
 .ava.orbe .mira{transform:translate(var(--gx,0px),var(--gy,0px));transition:transform .28s cubic-bezier(.2,.8,.2,1)}
-/* al lavoro: squash e stretch con inclinazione, sguardo che scandisce, due archi che orbitano */
-.ava.orbe.lavoro .corpo{animation:av-lavoro calc(var(--p,3.4s)*.55) ease-in-out infinite;animation-delay:var(--d,0s)}
-.ava.orbe.lavoro .occhi{animation:av-scansione calc(var(--p,3.4s)*.9) ease-in-out infinite;animation-delay:var(--d,0s)}
-.ava.orbe .giro{animation:av-giro 1.9s linear infinite;animation-delay:var(--d,0s)}
-/* da approvare: saltello con scossa, onde fino al bordo */
-.ava.orbe.attesa .tutto{animation:av-richiamo 2s ease-in-out infinite;animation-delay:var(--d,0s)}
-.ava.orbe.attesa .corpo{animation:av-scrollata 2s ease-in-out infinite;animation-delay:var(--d,0s)}
-.ava.orbe .onda{animation:av-onda 2s ease-out infinite;animation-delay:var(--d,0s)}
-.ava.orbe .onda.due{animation-delay:calc(var(--d,0s) - 1s)}
-/* errore: tremito frequente, corpo afflosciato, X che lampeggiano */
-.ava.orbe.errore .scossa{animation:av-tremito 2.4s ease-in-out infinite;animation-delay:var(--d,0s)}
-.ava.orbe.errore .corpo{animation:av-affloscio calc(var(--p,3.4s)*.8) ease-in-out infinite;animation-delay:var(--d,0s)}
-.ava.orbe.errore .occhio{animation:av-lampeggio 1.2s ease-in-out infinite;animation-delay:var(--d,0s)}
+/* al lavoro: due battute di squash e stretch, poi una pausa; sguardo che scandisce; due archi che orbitano */
+.ava.orbe.lavoro .corpo{animation:av-lavoro calc(var(--p,5.4s)*.8) ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe.lavoro .occhi{animation:av-scansione calc(var(--p,5.4s)*.8) ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe .giro{animation:av-giro 3.6s linear infinite;animation-delay:var(--d,0s)}
+/* da approvare: ogni 5,5 s un saltello con scossa; le onde partono con il saltello */
+.ava.orbe.attesa .tutto{animation:av-richiamo 5.5s ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe.attesa .corpo{animation:av-scrollata 5.5s ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe .onda{animation:av-onda 5.5s ease-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe .onda.due{animation-delay:calc(var(--d,0s) - .5s)}
+/* errore: ogni 6 s un tremito; corpo afflosciato; X che lampeggiano piano */
+.ava.orbe.errore .scossa{animation:av-tremito 6s ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe.errore .corpo{animation:av-affloscio calc(var(--p,5.4s)*.8) ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe.errore .occhio{animation:av-lampeggio 2.6s ease-in-out infinite;animation-delay:var(--d,0s)}
 .ava.orbe.errore .occhi{animation:none}
-/* pianificato: dondola da un lato all'altro e guarda l'orologio */
-.ava.orbe.pianificato .corpo{animation:av-dondolio var(--p,3.4s) ease-in-out infinite;animation-delay:var(--d,0s)}
-.ava.orbe.pianificato .occhi{animation:av-orologio calc(var(--p,3.4s)*1.5) ease-in-out infinite;animation-delay:var(--d,0s)}
-/* libero: respiro profondo, si abbassa, «z» che salgono */
-.ava.orbe.libero .tutto{animation:av-sonno var(--p,3.4s) ease-in-out infinite;animation-delay:var(--d,0s)}
-.ava.orbe.libero .corpo{animation:av-respirone var(--p,3.4s) ease-in-out infinite;animation-delay:var(--d,0s)}
+/* pianificato: dondola piano da un lato all'altro e ogni tanto guarda l'orologio */
+.ava.orbe.pianificato .corpo{animation:av-dondolio calc(var(--p,5.4s)*1.5) ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe.pianificato .occhi{animation:av-orologio calc(var(--p,5.4s)*2) ease-in-out infinite;animation-delay:var(--d,0s)}
+/* libero: respiro profondo e lento, si abbassa, una «z» ogni 3,5 s */
+.ava.orbe.libero .tutto{animation:av-sonno var(--p,7.4s) ease-in-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe.libero .corpo{animation:av-respirone var(--p,7.4s) ease-in-out infinite;animation-delay:var(--d,0s)}
 .ava.orbe.libero .occhio,.ava.orbe.libero .occhi{animation:none}
-.ava.orbe .zeta{opacity:0;animation:av-zeta 3.2s ease-out infinite;animation-delay:var(--d,0s)}
-.ava.orbe .zeta.due{animation-delay:calc(var(--d,0s) - 1.6s)}
+.ava.orbe .zeta{opacity:0;animation:av-zeta 7s ease-out infinite;animation-delay:var(--d,0s)}
+.ava.orbe .zeta.due{animation-delay:calc(var(--d,0s) - 3.5s)}
 @keyframes av-respiro{0%,100%{transform:scale(1,1)}50%{transform:scale(1.045,.955)}}
 @keyframes av-dondolo{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 @keyframes av-sguardo{0%,100%{transform:translate(0,0)}28%{transform:translate(9px,-5px)}55%{transform:translate(-8px,3px)}80%{transform:translate(3px,6px)}}
 @keyframes av-battito{0%,91%,100%{transform:scaleY(1)}94%{transform:scaleY(.1)}97%{transform:scaleY(1)}}
-@keyframes av-lavoro{0%,100%{transform:scale(1,1) rotate(-9deg)}25%{transform:scale(1.14,.88) rotate(0)}50%{transform:scale(.92,1.1) rotate(9deg)}75%{transform:scale(1.1,.9) rotate(0)}}
-@keyframes av-scansione{0%,100%{transform:translate(-16px,0)}50%{transform:translate(16px,0)}}
+@keyframes av-lavoro{0%,60%,100%{transform:scale(1,1) rotate(0)}12%{transform:scale(1.14,.88) rotate(-8deg)}25%{transform:scale(.92,1.1) rotate(0)}37%{transform:scale(1.12,.9) rotate(8deg)}50%{transform:scale(.95,1.06) rotate(0)}}
+@keyframes av-scansione{0%,60%,100%{transform:translate(0,0)}15%{transform:translate(-16px,0)}45%{transform:translate(16px,0)}}
 @keyframes av-giro{to{transform:rotate(360deg)}}
-@keyframes av-richiamo{0%,55%,100%{transform:translateY(0) scale(1)}62%{transform:translateY(-28px) scale(1.1)}70%{transform:translateY(2px) scale(1.06,.92)}78%{transform:translateY(-14px) scale(1.04)}86%{transform:translateY(0) scale(1)}}
-@keyframes av-scrollata{0%,55%,100%{transform:rotate(0)}60%{transform:rotate(-14deg)}66%{transform:rotate(14deg)}72%{transform:rotate(-9deg)}78%{transform:rotate(5deg)}84%{transform:rotate(0)}}
-@keyframes av-onda{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.5);opacity:0}}
-@keyframes av-tremito{0%,66%,100%{transform:translateX(0) rotate(0)}70%{transform:translateX(-16px) rotate(-6deg)}74%{transform:translateX(16px) rotate(6deg)}78%{transform:translateX(-13px) rotate(-4deg)}82%{transform:translateX(13px) rotate(4deg)}86%{transform:translateX(-7px) rotate(0)}90%{transform:translateX(0)}}
+@keyframes av-richiamo{0%,78%,100%{transform:translateY(0) scale(1)}82%{transform:translateY(-28px) scale(1.1)}87%{transform:translateY(2px) scale(1.06,.92)}91%{transform:translateY(-14px) scale(1.04)}95%{transform:translateY(0) scale(1)}}
+@keyframes av-scrollata{0%,80%,100%{transform:rotate(0)}83%{transform:rotate(-14deg)}86%{transform:rotate(14deg)}89%{transform:rotate(-9deg)}92%{transform:rotate(5deg)}95%{transform:rotate(0)}}
+@keyframes av-onda{0%,80%{transform:scale(1);opacity:0}81%{transform:scale(1);opacity:.7}100%{transform:scale(1.5);opacity:0}}
+@keyframes av-tremito{0%,86%,100%{transform:translateX(0) rotate(0)}88%{transform:translateX(-16px) rotate(-6deg)}90%{transform:translateX(16px) rotate(6deg)}92%{transform:translateX(-13px) rotate(-4deg)}94%{transform:translateX(13px) rotate(4deg)}96%{transform:translateX(-7px) rotate(0)}98%{transform:translateX(0)}}
 @keyframes av-affloscio{0%,100%{transform:scale(1.08,.9) translateY(6px)}50%{transform:scale(1.03,.95) translateY(3px)}}
 @keyframes av-lampeggio{0%,100%{opacity:1}50%{opacity:.3}}
 @keyframes av-dondolio{0%,100%{transform:translateX(-18px) rotate(-8deg)}50%{transform:translateX(18px) rotate(8deg)}}
-@keyframes av-orologio{0%,40%,100%{transform:translate(0,0)}50%,80%{transform:translate(16px,-13px)}}
+@keyframes av-orologio{0%,55%,100%{transform:translate(0,0)}62%,85%{transform:translate(16px,-13px)}}
 @keyframes av-sonno{0%,100%{transform:translateY(4px)}50%{transform:translateY(16px)}}
 @keyframes av-respirone{0%,100%{transform:scale(.96,1.04)}50%{transform:scale(1.12,.88)}}
-@keyframes av-zeta{0%{transform:translate(0,0) scale(.5);opacity:0}25%{opacity:.95}100%{transform:translate(34px,-70px) scale(1.3);opacity:0}}
+@keyframes av-zeta{0%,55%{transform:translate(0,0) scale(.5);opacity:0}65%{opacity:.95}100%{transform:translate(34px,-70px) scale(1.3);opacity:0}}
 @media (prefers-reduced-motion:reduce){.ava.orbe *{animation:none!important;transition:none!important}}
 `;
   let pronto = false;

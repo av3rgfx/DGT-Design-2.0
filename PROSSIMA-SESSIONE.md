@@ -44,6 +44,9 @@ sul branch indicato sotto.
     l'avatar stesso»: fatto. Occhi più grandi e un moto del corpo per ogni stato (squash al lavoro, saltello da
     approvare, tremito in errore, scorrimento da pianificato, respiro profondo con «z» da libero); pellicola in
     `screenshot/avatar-orbe-pellicola.png`. L'orbe è la famiglia scelta; il kit resta nel codice dietro `?avatar=kit`.
+13. **«Animazioni meno frequenti, occhi dello stato attesa gialli»**: fatto. Cicli allungati con pause (saltello ogni
+    5,5 s, tremito ogni 6 s, «z» ogni 3,5 s, battito ogni 6–10 s, moti continui a periodo doppio) e occhi gialli
+    `#FCDC64` da approvare (il lime resta al lavoro).
 
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi; contenuti sintetici di DGT; documenti in italiano.
 
