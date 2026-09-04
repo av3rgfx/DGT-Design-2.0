@@ -171,7 +171,8 @@ dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegn
 ## 11. Collegamenti
 
 - Confronto delle tre direzioni (artefatto): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
-- Direzione A cliccabile, tendina e pagina Richieste (artefatto): https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
+- Direzione A cliccabile, tendine, pagine Richieste e Dipartimento (artefatto): https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
+- PR #3 verso `main` con schermate e documenti: https://github.com/av3rgfx/DGT-Design-2.0/pull/3
 
 - Artefatto pubblicato: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b
 - Branch di lavoro: `claude/dgt-design-system-fz5r1g`, PR #1 verso `main`: https://github.com/av3rgfx/DGT-Design-2.0/pull/1

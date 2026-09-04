@@ -7,6 +7,8 @@ contesto era diventato troppo lungo: tutto è committato e pushato, la PR è ind
 ## Stato
 
 - Branch: `claude/dgt-design-directions-iv0ntf` (da `main`, che contiene il sistema di design della PR #1).
+  **PR #3 aperta verso `main`**: https://github.com/av3rgfx/DGT-Design-2.0/pull/3 — se viene unita prima della
+  prossima sessione, ripartire con un branch nuovo da `main`.
 - Artefatto del confronto (tab A/B/C, selettore 11/40): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
   (si aggiorna ricostruendo il file unico con `schermate/direzioni/build-unico.js` e ripubblicandolo).
 - Artefatto della direzione A cliccabile (tendina a tre stati, pagina Richieste):
