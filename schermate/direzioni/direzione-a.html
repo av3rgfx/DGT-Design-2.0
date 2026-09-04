@@ -16,7 +16,7 @@
 <script src="dati.js"></script>
 <script src="direzione-a.js"></script>
 <script>
-  // Parametri: ?n=11|40  ?tendina=chiusa|aperta|estesa  ?pannello=richieste|riepilogo  ?pagina=home|richieste|dipartimento  ?dip=svi|mkt|ven|amm  ?richiesta=0  ?editor=nuovo|<id dipendente>  ?avatar=orbe|kit
+  // Parametri: ?n=11|40  ?tendina=chiusa|aperta|estesa|dossier  ?pannello=richieste|riepilogo  ?pagina=home|richieste|dipartimento|dipendente  ?dip=svi|mkt|ven|amm  ?id=<id dipendente>  ?confronto=6,7  ?richiesta=0  ?editor=nuovo|<id dipendente>  ?avatar=orbe|kit
   const q = new URLSearchParams(location.search);
   DGT_UI.iconeInserisci();
   DGT_AVATAR.usa(q.get('avatar') || 'orbe');   // ?avatar=kit per le forme del kit
@@ -24,8 +24,8 @@
   const root = document.getElementById('root');
   const modello = DGT_DATI.modello(DGT_DATI.nDaUrl());
   DIREZIONE_A.monta(root, modello, {
-    pagina: q.get('pagina') || 'home', dip: q.get('dip') || 'svi', tendina: q.get('tendina') || 'aperta', richiesta: +(q.get('richiesta') || 0),
-    pannello: q.get('pannello') || 'richieste', editor: q.get('editor') });
+    pagina: q.get('pagina') || 'home', dip: q.get('dip') || 'svi', id: +(q.get('id') || 4), tendina: q.get('tendina') || 'aperta', richiesta: +(q.get('richiesta') || 0),
+    pannello: q.get('pannello') || 'richieste', editor: q.get('editor'), confronto: q.get('confronto') });
   // Sotto i 1440 px la console si riduce in scala (la larghezza di progetto resta 1440).
   function scala() { const s = Math.min(1, document.documentElement.clientWidth / 1440); root.style.transform = s < 1 ? 'scale(' + s + ')' : ''; document.body.style.height = s < 1 ? (root.offsetHeight * s) + 'px' : ''; }
   window.addEventListener('resize', scala); new MutationObserver(scala).observe(root, { childList: true, subtree: true }); scala();

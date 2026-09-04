@@ -29,7 +29,7 @@ DGT al posto di Google Meet. Contenuti sintetici, in italiano.
 | `design-system/reference/` | I due riferimenti dell'utente e il README che dice cosa se ne copia. |
 | `design-system/tools/` | `screenshot.js` (cattura desktop/mobile), `fetch-fonts.py` (Urbanist locale per gli ambienti senza Google Fonts), `wcag.py` (utilità di contrasto, non è una regola). |
 | `design-system/archive/` | Varianti precedenti (A e B). **Non fanno testo.** |
-| `schermate/direzioni/` | Prime schermate reali: tre direzioni per la vista principale, prova a 40, direzione scelta (`DIREZIONI.md`). |
+| `schermate/direzioni/` | Schermate reali: tre direzioni per la vista principale, prova a 40, direzione scelta (`DIREZIONI.md`); dentro la direzione A le pagine Richieste, Dipartimento e Dipendente. |
 | `schermate/direzioni/avatar/` | Avatar dei dipendenti AI: motore del kit (verbatim in `vendor-avatars/`, impacchettato in `avatar-motore.js`) e involucro `avatar-dgt.js` con colori, stati e animazione della Console. |
 | `PRODUCT.md`, `CLAUDE.md` | Contesto di prodotto e istruzioni per le sessioni. |
 | `PROSSIMA-SESSIONE.md` | Passaggio di consegne: stato, decisioni, come riprendere. |
@@ -103,6 +103,9 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 | Intestazione di sezione | titolo 28, conteggio sottolineato (numero 20 + parola 13), cerchi cerca e filtri 46, pillole filtro |
 | Card lead | 260×204, r28, `#262626→#1C1C1C`; avatar 48 in alto a sinistra; intaglio con freccia; nome 26; ruolo 13; "Fonte" + pillole `#3A3A3A` 26; etichetta di interesse + contenitore nero con 5 punti 13 |
 | Avatar del dipendente AI | disco 48 (40, 36, 32, 28, 26; 68 nella richiesta corrente) `#E4E4E4`; dentro la forma generata dal seme (ruolo, o seme scelto): corpo `#0A0A0A`, occhi `#FCFCFC`, lime `#B8FC64` per occhi e segni quando serve il titolare (al lavoro, da approvare), rosa `#F9A3A3` per gli occhi a X dell'errore; aria-hidden. Due famiglie: **orbe** (scelta dall'utente): sfere morbide con occhi grandi (lime al lavoro, gialli `#FCDC64` da approvare, rosa a X in errore, bianchi altrimenti) che respirano, battono le palpebre e seguono lo sguardo, animazioni CSS su tutti gli avatar e un moto proprio per stato con cicli lunghi e pause (squash al lavoro, saltello ogni 5,5 s da approvare, tremito ogni 6 s in errore, scorrimento da pianificato, respiro profondo con «z» da libero); **nessun segno animato dietro il corpo** (l'arco che orbitava e le onde sono stati tolti il 2026-09-04); **kit** (anelli e archi fuori dal corpo in nero sottile): le silhouette del generatore del kit, statiche tranne le card al lavoro, tenute con `?avatar=kit`. Le persone (titolare) tengono le iniziali su disco bianco |
+| Pagina Dipendente | stessa cornice (titolo = etichetta in maiuscolo, 36 px oltre 12 caratteri; tre numeri di oggi); testata con avatar 96 che segue il puntatore, etichetta 28, «ruolo · dipartimento · in produzione dal», chip (stato, revisione in sospeso, prompt vN, modello, colloquio), pillole Modifica / Metti in pausa / Ripeti il colloquio a 40, mansione 17, quattro numeri 48/300 a 30 giorni con badge del confronto; sezioni con intestazione e pillole: revisione di performance, oggi, rendimento (righe 56 con due valori e badge), soul prompt (documento `#F4F4F4` r28 con intaglio, 17/26; versioni come righe 56: proposta lime, corrente bianca), modello (tre card lead 236 di altezza, l'assegnato bianco; card criterio 517 con ripartizione a pillola 12: grigio `#6B6B6B` / bianco / lime), strumenti (card come le regole), budget (card attività, lime se oltre il limite del giorno) e permessi (righe con chip «Regola generale» / «Eccezione» lime), colloquio (card grigia con punteggio e barra, righe dei casi) |
+| Card revisione di performance | `ncard.lime` a tutta larghezza, padding 22/24, intaglio con campanella (punto rosso) e «apri»; chip `onlime`; titolo 26/32 entro 38 caratteri per riga; tre colonne 1,25 / 1 / 1 con etichetta 11 maiuscola, evidenze come elenco (numero in pillola `rgb(0 0 0/.1)` 22 + frase 14/19, cerchietto con freccia verso la richiesta), paragrafi 13/18; riga «Decisione del titolare» separata da una linea `.12`: pillole 48 nera (prova), bianca (applica), vuota scura (modifiche), rossa (rifiuta…), link al dossier a destra |
+| Tendina versioni / dossier | tendina estesa 840 (fino a 980 di altezza), chiara; riga «chi» con avatar 36; due colonne bianche r22 con chip della versione (`ink` corrente, `lime` proposta, `light` altre), paragrafi 14/21 su pillole r10: aggiunti su lime, tolti su rosa `#F9A3A3` barrati, cambiati su grigio `.045` con le parole in `mark` lime / rosa; riga dei numeri sotto una linea `.08`; tre `dcard` (Perché, Cosa ci aspettiamo, Rischi) con elenco numero + frase 12/17; azioni come nella richiesta estesa più il campo del motivo (pillola bianca 44, bordo nero a fuoco, rosso se vuoto) |
 | Tendina Dipendente | 330, `#F4F4F4`, r28 a sinistra; intaglio con più/matita e titolo 22; anteprima della card; campi a pillola bianca 48 (Ruolo, Nome facoltativo) con etichetta 11 maiuscola; dipartimento a pillole 36 (scelta = nera); sei cerchi 36 per l'avatar (scelto con anello nero); azioni «Crea dipendente»/«Salva» lime 44 e «Annulla» |
 | Card attività | 336×262, lime / `#4D4D4D` / scura; striscia con avatar 48, nome 15/500, ruolo 12; intaglio con campanella (punto rosso) e freccia; cerchio contornato 64 con icona; titolo 26; riga meta (coppia di avatar, data 500, "alle"); "Stato" 11; selettore a pillola 48 (bianca su lime, nera su grigio/scuro) con avatar, testo e chevron; mail vuota; video nero |
 | Videochiamata | 240 di altezza, gradiente grigio-caldo, avatar grande, controlli in vetro + rosso, espandi e chiudi |
@@ -176,19 +179,30 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
 12. Creazione e modifica del dipendente in una tendina «Dipendente» (anteprima, ruolo, nome facoltativo,
     dipartimento, avatar a scelta fra sei), aperta dalla matita nell'intaglio della card, dalla riga compatta e
     dalla card «Aggiungi». Niente finestre generiche.
+13. Pagina del Dipendente nella stessa cornice, aperta dalla freccia nell'intaglio della card e della riga compatta,
+    con un solo ordine per i due pubblici: testata (avatar grande, etichetta, azioni, quattro numeri a 30 giorni
+    confrontati con i 30 precedenti) e revisione di performance per il titolare; oggi, rendimento, soul prompt con
+    versioni e confronto, modello e criterio di scelta automatica, strumenti e connessioni, budget e permessi,
+    colloquio (eval) per l'operatore. La revisione di performance è una richiesta al titolare come le altre (tipo
+    «revisione», nella coda e in Richieste): dossier con evidenze, stime e rischi, quattro decisioni (prova, applica,
+    chiedi modifiche, rifiuta con motivo obbligatorio) e cronologia con l'effetto misurato. Le richieste decise dal
+    titolare sono la fonte di «corretti da un umano» e «proposte respinte». I modelli sono livelli neutri di DGT
+    (Rapido, Standard, Esperto), non marchi di terzi.
 
 Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in
 `schermate/direzioni/DIREZIONI.md`, sezione 1. Sorgenti in `schermate/direzioni/` (`dati.js`, `comune.js`,
-`direzione-a.js`, `avatar/`). Dettaglio della versione 5 (dipendenti, editor, avatar) in `DIREZIONI.md`, sezione 4.
+`direzione-a.js`, `avatar/`). Dettaglio della versione 5 (dipendenti, editor, avatar), 5b/5c (orbe) e 6 (pagina del
+Dipendente, revisione di performance) in `DIREZIONI.md`, sezione 4.
 
 ## 11. Collegamenti
 
 - Confronto delle tre direzioni (artefatto): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
-- Direzione A cliccabile, tendine, pagine Richieste e Dipartimento, dipendenti con avatar ed editor (artefatto): https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
+- Direzione A cliccabile, tendine, pagine Richieste, Dipartimento e Dipendente (revisione di performance), avatar ed editor (artefatto): https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
 - Avatar dei dipendenti, le due famiglie a confronto (artefatto): https://claude.ai/code/artifact/4bc0c3ee-d1a0-41dc-a6d9-ef4f2b8360bd
 - PR #3 verso `main` con schermate e documenti (unita): https://github.com/av3rgfx/DGT-Design-2.0/pull/3
-- Branch dei dipendenti AI (versione 5 della direzione A): `claude/console-ai-employees-feebdx`
+- Branch dei dipendenti AI (versione 5 della direzione A): `claude/console-ai-employees-feebdx`, PR #4 (unita)
+- Branch della pagina del Dipendente e degli avatar senza segni dietro (versioni 5c e 6): `claude/avatar-orbe-employee-page-3nhqmk`
 
 - Artefatto pubblicato: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b
 - Branch di lavoro: `claude/dgt-design-system-fz5r1g`, PR #1 verso `main`: https://github.com/av3rgfx/DGT-Design-2.0/pull/1

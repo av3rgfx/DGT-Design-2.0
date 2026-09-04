@@ -7,9 +7,11 @@ prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decision
   https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
 - Schermate singole: `direzione-a.html`, `direzione-b.html`, `direzione-c.html`; con `?n=40` la prova di scala.
 - La direzione A è cliccabile (due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente per
-  creare e modificare i dipendenti). Parametri:
-  `?pagina=dipartimento&dip=svi|mkt|ven|amm`, `?tendina=chiusa|aperta|estesa`, `?pannello=richieste|riepilogo`,
-  `?pagina=home|richieste`, `?richiesta=0`, `?editor=nuovo|<id dipendente>`, `?avatar=orbe|kit`. Artefatto:
+  creare e modificare i dipendenti, pagina Dipendente con la revisione di performance). Parametri:
+  `?pagina=dipartimento&dip=svi|mkt|ven|amm`, `?pagina=dipendente&id=4` (con `&tendina=dossier` il dossier della
+  revisione in sospeso, con `&confronto=6,7` due versioni del prompt a confronto), `?tendina=chiusa|aperta|estesa`,
+  `?pannello=richieste|riepilogo`, `?pagina=home|richieste`, `?richiesta=0`, `?editor=nuovo|<id dipendente>`,
+  `?avatar=orbe|kit`. Artefatto:
   https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
 - Avatar dei dipendenti AI in `avatar/`: `avatar-dgt.js` (involucro della Console, sceglie la famiglia con
   `usa('orbe'|'kit')`), `avatar-orbe.js` (la famiglia «orbe», predefinita), `avatar-motore.js` (motore del kit

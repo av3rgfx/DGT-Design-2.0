@@ -95,6 +95,17 @@ window.DGT_DATI = (function () {
       passi: ['Scansione', 'Analisi', 'Report'], nota: 'Il titolare ha chiesto le priorità per pagina.', testo: '38 pagine analizzate, 12 con problemi di titolo, 5 senza descrizione.', allegato: 'Documento: 9 pagine', commento: 'Aggiungi le priorità per pagina e una stima dell\'effort.' },
     { id: 'r7', chi: 5, cosa: 'Bozza newsletter di settembre', cliente: 'Madira Ink', ora: 'ieri 15:20', tipo: 'post', stato: 'rifiutata', decisa: 'ieri 15:50', costo: 4,
       passi: ['Brief', 'Bozza'], nota: 'Prima bozza.', testo: 'Settembre è il mese dei nuovi inizi…', allegato: 'Testo: 1.200 battute', commento: 'Fuori tono: troppo generica, ripartire dai casi cliente.' },
+    // revisioni di performance in sospeso (versione 6): sono richieste al titolare come le altre; il dossier sta in DOSSIER11[chi].revisioni
+    { id: 'rv1', chi: 4, cosa: 'Revisione: soul prompt v7 → v8', cliente: 'Nova Studio', ora: '10:30', tipo: 'revisione', stato: 'attesa', costo: 2, revisione: 'rv1',
+      passi: ['Analisi di 30 giorni', 'Prova sui 12 post di agosto', 'Proposta'],
+      nota: 'Il sistema propone di cambiare il soul prompt di Nora: limite di 800 battute, una domanda in chiusura, niente numeri fuori dal brief. Evidenze e confronto delle due versioni nel dossier.',
+      testo: 'Corretti dal titolare 12% (era 6%), costo per esito utile 1,9 € (era 1,5 €). Con la v8 in prova: 11 post su 12 entro le 800 battute, corretti stimati 5%.',
+      allegato: 'Dossier: v7 e v8 a confronto' },
+    { id: 'rv2', chi: 5, cosa: 'Revisione: modello Standard → Esperto', cliente: 'Nova Studio', ora: '10:35', tipo: 'revisione', stato: 'attesa', costo: 2, revisione: 'rv2',
+      passi: ['Analisi di 30 giorni', 'Confronto con la prova di luglio', 'Proposta'],
+      nota: 'Il sistema propone di assegnare il modello Esperto al Social media manager per piani editoriali e reel: le consegne lunghe vengono respinte con Standard.',
+      testo: 'Respinte 22% (era 7%), tutte con più di 5 passi e con Standard. Le 4 consegne lunghe fatte con Esperto a luglio sono state approvate al primo colpo.',
+      allegato: 'Dossier: Standard ed Esperto a confronto' },
     // storico: oggi presto, questa settimana, prima
     { id: 'r8',  chi: 11, cosa: 'Report giornaliero di ieri', cliente: 'Nova Studio', ora: '08:15', tipo: 'documento', stato: 'approvata', decisa: '08:15', regola: 'Report interni', costo: 1, passi: ['Raccolta', 'Report'], nota: 'Approvato dalla regola «Report interni: automatica».', testo: 'Ieri: 6 esecuzioni, 4 consegne, 131 € di spesa.', allegato: 'Documento: 1 pagina' },
     { id: 'r9',  chi: 4, cosa: 'Post LinkedIn 3 di 12', cliente: 'Rossi Srl', ora: 'ieri 10:30', tipo: 'post', stato: 'approvata', decisa: 'ieri 11:02', costo: 3, passi: ['Brief letto', 'Bozza', 'Immagine'], nota: 'Terzo post della serie.', testo: 'Tre passaggi in meno nel checkout…', allegato: 'Immagine 1200×1200' },
@@ -153,6 +164,262 @@ window.DGT_DATI = (function () {
     { ora: '17:00', chi: [9], stato: 'pianificato' },
     { ora: '18:00', chi: [11], stato: 'pianificato' },
   ];
+
+  /* ---- Il dossier del dipendente (versione 6, 2026-09-04): identità e mansione,
+     soul prompt con le versioni, modello e criterio di scelta, strumenti e
+     connessioni, budget e permessi, colloquio (eval), metriche a 30 giorni
+     confrontate con i 30 precedenti, revisioni di performance.
+     Le richieste decise dal titolare (`richieste`, campo `chi`) restano la fonte
+     di «corretto da un umano» e «proposte respinte»: i numeri qui sotto sono i
+     totali dei 30 giorni, le ultime righe si leggono nella pagina.
+     Una revisione in sospeso è anche una richiesta al titolare (tipo
+     `revisione`, campo `revisione` = id della revisione nel dossier). ---- */
+  const MODELLI = {
+    rapido:   { id: 'rapido',   nome: 'Rapido',   desc: 'Piccolo e veloce: verifiche, riassunti, lettura del brief', costo: '0,1 € per esecuzione', icona: 'i-bolt' },
+    standard: { id: 'standard', nome: 'Standard', desc: 'Il modello di base per le consegne di ogni giorno', costo: '1,5 € per esecuzione', icona: 'i-bot' },
+    esperto:  { id: 'esperto',  nome: 'Esperto',  desc: 'Il più capace: consegne lunghe, molti passi, uscite verso i clienti', costo: '7 € per esecuzione', icona: 'i-star' },
+  };
+  const P_NORA = {
+    p1: 'Sei il copywriter di Nova Studio. Scrivi per i clienti dell\'agenzia: post LinkedIn, newsletter e testi per il sito.',
+    p2: 'Tono diretto e concreto, seconda persona plurale, niente gergo. Una sola idea per post.',
+    p2b: 'Tono diretto e concreto, seconda persona plurale, niente gergo. Una sola idea per post, al massimo 800 battute.',
+    p3: 'Ogni post parte da un fatto del cliente: un risultato, un numero, un caso. Chiudi con un invito a rispondere.',
+    p3b: 'Ogni post parte da un fatto del cliente: un risultato, un numero, un caso. Chiudi con una domanda a chi legge.',
+    p3v6: 'Chiudi ogni post con un invito a rispondere.',
+    p4: 'Prima di scrivere leggi il brief e gli ultimi tre post approvati per lo stesso cliente.',
+    p5: 'Consegna una bozza con l\'immagine proposta e chiedi l\'approvazione del titolare prima di ogni uscita.',
+    p6: 'Usa solo numeri e percentuali che stanno nel brief o nei documenti del cliente. Se mancano, chiedili invece di stimarli.',
+    v1t: 'Tono professionale e cordiale, in terza persona.',
+    v3t: 'Tono cordiale, seconda persona plurale.',
+  };
+  const DOSSIER11 = {
+    4: {
+      mansione: 'Scrive post LinkedIn, newsletter e testi per il sito dei clienti dell\'agenzia, sempre da un brief e con l\'approvazione del titolare prima di ogni uscita.',
+      dal: '12 giu',
+      prompt: {
+        corrente: 7,
+        versioni: [
+          { v: 8, data: 'oggi 10:30', chi: 'Proposta del sistema', proposta: true, nota: 'Limite di 800 battute, domanda in chiusura, niente numeri fuori dal brief', testo: [P_NORA.p1, P_NORA.p2b, P_NORA.p3b, P_NORA.p4, P_NORA.p5, P_NORA.p6], numeri: { task: 12, corretti: 8, respinte: 0, costo: 1.5, prova: true } },
+          { v: 7, data: '12 ago', chi: 'MR', nota: 'Ogni post parte da un fatto del cliente', testo: [P_NORA.p1, P_NORA.p2, P_NORA.p3, P_NORA.p4, P_NORA.p5], numeri: { task: 41, corretti: 12, respinte: 7, costo: 1.9 } },
+          { v: 6, data: '2 lug', chi: 'MR', nota: 'Prima si leggono gli ultimi tre post approvati', testo: [P_NORA.p1, P_NORA.p2, P_NORA.p3v6, P_NORA.p4, P_NORA.p5], numeri: { task: 36, corretti: 6, respinte: 8, costo: 1.5 } },
+          { v: 5, data: '28 giu', chi: 'MR', nota: 'Una sola idea per post', testo: [P_NORA.p1, P_NORA.p2, P_NORA.p3v6, P_NORA.p5], numeri: { task: 9, corretti: 22, respinte: 11, costo: 2.1 } },
+          { v: 4, data: '24 giu', chi: 'MR', nota: 'Niente gergo', testo: [P_NORA.p1, 'Tono diretto e concreto, seconda persona plurale, niente gergo.', P_NORA.p3v6, P_NORA.p5], numeri: { task: 12, corretti: 25, respinte: 17, costo: 2.4 } },
+          { v: 3, data: '18 giu', chi: 'MR', nota: 'Seconda persona plurale', testo: [P_NORA.p1, P_NORA.v3t, P_NORA.p3v6, P_NORA.p5], numeri: { task: 8, corretti: 38, respinte: 25, costo: 2.8 } },
+          { v: 2, data: '14 giu', chi: 'MR', nota: 'Aggiunto l\'invito a rispondere', testo: [P_NORA.p1, P_NORA.v1t, P_NORA.p3v6, P_NORA.p5], numeri: { task: 6, corretti: 33, respinte: 33, costo: 3.0 } },
+          { v: 1, data: '12 giu', chi: 'MR', nota: 'Creazione', testo: [P_NORA.p1, P_NORA.v1t, P_NORA.p5], numeri: { task: 4, corretti: 50, respinte: 25, costo: 3.2 } },
+        ],
+      },
+      modello: {
+        assegnato: 'standard',
+        regola: 'Di base <b>Standard</b>. <b>Esperto</b> quando la consegna esce verso il cliente e ha più di 6 passi. <b>Rapido</b> per verifiche, riassunti e la lettura del brief.',
+        automatica: true,
+        uso: { rapido: { esecuzioni: 9, costo: 3 }, standard: { esecuzioni: 28, costo: 41 }, esperto: { esecuzioni: 4, costo: 28 } },
+      },
+      strumenti: [
+        { id: 'web', nome: 'Ricerca web', desc: 'Fonti e riferimenti per i post', icona: 'i-search', attivo: true, ultimo: '10:31' },
+        { id: 'img', nome: 'Immagini', desc: 'Genera e adatta le immagini proposte', icona: 'i-grid', attivo: true, ultimo: '10:12' },
+        { id: 'arc', nome: 'Archivio del cliente', desc: 'Brief, post approvati, tono di voce', icona: 'i-doc', attivo: true, ultimo: '09:58' },
+        { id: 'cal', nome: 'Calendario editoriale', desc: 'Date e serie in corso', icona: 'i-cal', attivo: true, ultimo: 'ieri' },
+        { id: 'inv', nome: 'Pubblicazione diretta', desc: 'Pubblica senza passare dal titolare', icona: 'i-send', attivo: false, ultimo: 'mai' },
+      ],
+      connessioni: [
+        { nome: 'LinkedIn · Rossi Srl', desc: 'Solo bozze: pubblica il titolare', stato: 'attiva', ultimo: '10:12' },
+        { nome: 'Drive di Nova Studio', desc: 'Brief e immagini dei clienti', stato: 'attiva', ultimo: '09:40' },
+        { nome: 'Analytics · Rossi Srl', desc: 'Risultati dei post pubblicati', stato: 'scaduta', ultimo: '30 ago' },
+      ],
+      budget: { mese: 120, speso: 72, giorno: 10, oggi: 12 },
+      permessi: [
+        { nome: 'Uscite verso i clienti', modo: 'Sempre da approvare', origine: 'Regola generale', attiva: true },
+        { nome: 'Testi per il sito di Nova Studio', modo: 'Automatica sotto 5 €', origine: 'Eccezione di Nora', attiva: true, eccezione: true },
+        { nome: 'Spese sopra 50 €', modo: 'Sempre da approvare', origine: 'Regola generale', attiva: false },
+        { nome: 'Strumenti e connessioni', modo: 'Solo quelli attivi', origine: 'Eccezione di Nora', attiva: true, eccezione: true },
+      ],
+      colloquio: {
+        data: '12 ago', versione: 7, modello: 'standard', punteggio: 91, soglia: 85, costo: 4, durata: '18 min', esito: 'superato',
+        casi: [
+          { nome: 'Post da un brief di tre righe', atteso: '800 battute, una sola idea, invito finale', esito: 'superato', punteggio: 95 },
+          { nome: 'Brief con i dati mancanti', atteso: 'Chiede i numeri, non li inventa', esito: 'superato', punteggio: 90 },
+          { nome: 'Cliente con tono ironico', atteso: 'Adatta il registro senza gergo', esito: 'superato', punteggio: 88 },
+          { nome: 'Newsletter in quattro sezioni', atteso: 'Struttura chiara, oggetto sotto i 50 caratteri', esito: 'superato', punteggio: 94 },
+          { nome: 'Post con un numero da verificare', atteso: 'Cita la fonte del brief', esito: 'superato', punteggio: 86 },
+          { nome: 'Richiesta fuori mansione (un preventivo)', atteso: 'Rimanda al dipendente giusto', esito: 'superato', punteggio: 100 },
+          { nome: 'Serie di tre post coerenti', atteso: 'Stessa voce, nessuna ripetizione', esito: 'superato', punteggio: 92 },
+          { nome: 'Testo per il sito, sezione servizi', atteso: '60–90 parole per servizio', esito: 'superato', punteggio: 96 },
+          { nome: 'Post con un termine tecnico', atteso: 'Lo spiega in una riga', esito: 'superato', punteggio: 90 },
+          { nome: 'Brief in inglese', atteso: 'Consegna in italiano se non è chiesto altro', esito: 'superato', punteggio: 100 },
+          { nome: 'Brief che chiede più di 800 battute', atteso: 'Chiede quale vincolo prevale', esito: 'parziale', punteggio: 72 },
+          { nome: 'Immagine da proporre', atteso: 'La descrive in una riga', esito: 'superato', punteggio: 93 },
+        ],
+        storico: [
+          { data: '12 ago', versione: 7, modello: 'standard', punteggio: 91, esito: 'superato' },
+          { data: '2 lug', versione: 6, modello: 'standard', punteggio: 89, esito: 'superato' },
+          { data: '28 giu', versione: 5, modello: 'rapido', punteggio: 84, esito: 'non superato' },
+          { data: '12 giu', versione: 1, modello: 'rapido', punteggio: 86, esito: 'superato' },
+        ],
+      },
+      metriche: {
+        ora:   { task: 41, approvate: 33, modifiche: 5, rifiutate: 3, spesa: 72, costo: 1.9, corretti: 12, respinte: 7, tempo: 24 },
+        prima: { task: 36, approvate: 31, modifiche: 2, rifiutate: 3, spesa: 49, costo: 1.5, corretti: 6, respinte: 8, tempo: 21 },
+      },
+      revisioni: [
+        { id: 'rv1', richiesta: 'rv1', stato: 'attesa', tipo: 'prompt', da: 7, a: 8, quando: 'oggi 10:30',
+          titolo: 'Passare al soul prompt v8: limite di 800 battute, una domanda in chiusura, niente numeri fuori dal brief',
+          perche: [
+            { n: '5 su 41', t: 'consegne corrette dal titolare in 30 giorni (12%, era 6% con la v6): quattro per la lunghezza, una per un numero che non stava nel brief' },
+            { n: 'lun 1 set', t: 'Post LinkedIn 2 di 12, modifiche chieste: «Troppo lungo: massimo 800 battute»', richiesta: 'r12' },
+            { n: '+0,4 €', t: 'costo per esito utile salito da 1,5 a 1,9 €: ogni correzione è una seconda esecuzione' },
+            { n: '2 su 12', t: 'casi del colloquio in cui la v7 supera le 800 battute: superati, ma al limite' },
+          ],
+          attese: [
+            { n: '11 su 12', t: 'post di agosto rieseguiti con la v8 in prova entro le 800 battute (erano 7 su 12)' },
+            { n: '12% → 5%', t: 'consegne corrette, stima dalla prova' },
+            { n: '1,9 → 1,5 €', t: 'costo per esito utile, a parità di task' },
+            { n: '94 / 100', t: 'la v8 al colloquio, sugli stessi 12 casi' },
+          ],
+          rischi: [
+            'Il limite di lunghezza può tagliare i casi cliente più ricchi: due post di agosto sopra le 900 battute erano stati approvati così com\'erano.',
+            'La v8 va in produzione solo dopo il colloquio: 12 casi, circa 4 €, 20 minuti.',
+          ],
+          prova: { esecuzioni: 20, costo: 30, giorni: 5 },
+        },
+        { id: 'rv0', stato: 'applicata', tipo: 'prompt', da: 6, a: 7, quando: '12 ago', decisa: 'MR · 12 ago', titolo: 'Ogni post parte da un fatto del cliente', effetto: 'Corretti dal 6% al 12%: i fatti hanno allungato i post', verso: 'giu' },
+        { id: 'rvA', stato: 'applicata', tipo: 'modello', da: 'rapido', a: 'standard', quando: '2 lug', decisa: 'MR · 2 lug, dopo una prova su 20', titolo: 'Da Rapido a Standard', effetto: 'Respinte dal 18% all\'8%, costo per esito da 2,1 a 1,5 €', verso: 'su' },
+        { id: 'rvB', stato: 'rifiutata', tipo: 'prompt', da: 6, a: '7 (prima proposta)', quando: '28 lug', decisa: 'MR · 28 lug', titolo: 'Tono formale in terza persona', effetto: '«Il tono formale non è quello dell\'agenzia»', verso: '' },
+      ],
+    },
+    5: {
+      mansione: 'Prepara piani editoriali, post e reel per i clienti dell\'agenzia a partire dai temi che funzionano, con date e bozze dei titoli.',
+      dal: '20 giu',
+      prompt: {
+        corrente: 3,
+        versioni: [
+          { v: 3, data: '5 ago', chi: 'MR', nota: 'Le date evitano festività e lanci', testo: ['Sei il social media manager di Nova Studio. Prepari piani editoriali, post e reel per i clienti dell\'agenzia.', 'Parti dai tre temi che nel mese precedente hanno funzionato meglio e dai vincoli del cliente sul brief.', 'Le date evitano le festività e i lanci del cliente; ogni settimana ha un tema.', 'Consegna il piano con le bozze dei titoli e chiedi l\'approvazione del titolare prima di ogni uscita.'], numeri: { task: 18, corretti: 17, respinte: 22, costo: 3.1 } },
+          { v: 2, data: '8 lug', chi: 'MR', nota: 'Vincoli del cliente dal brief', testo: ['Sei il social media manager di Nova Studio. Prepari piani editoriali, post e reel per i clienti dell\'agenzia.', 'Parti dai tre temi che nel mese precedente hanno funzionato meglio e dai vincoli del cliente sul brief.', 'Consegna il piano con le bozze dei titoli e chiedi l\'approvazione del titolare prima di ogni uscita.'], numeri: { task: 15, corretti: 13, respinte: 7, costo: 2.2 } },
+          { v: 1, data: '20 giu', chi: 'MR', nota: 'Creazione', testo: ['Sei il social media manager di Nova Studio. Prepari piani editoriali, post e reel per i clienti dell\'agenzia.', 'Consegna il piano e chiedi l\'approvazione del titolare prima di ogni uscita.'], numeri: { task: 7, corretti: 29, respinte: 14, costo: 2.6 } },
+        ],
+      },
+      modello: {
+        assegnato: 'standard',
+        regola: 'Di base <b>Standard</b>. <b>Esperto</b> solo se lo chiede il titolare. <b>Rapido</b> per l\'analisi del mese precedente.',
+        automatica: false,
+        uso: { rapido: { esecuzioni: 5, costo: 2 }, standard: { esecuzioni: 11, costo: 29 }, esperto: { esecuzioni: 2, costo: 12 } },
+      },
+      strumenti: [
+        { id: 'arc', nome: 'Archivio del cliente', desc: 'Brief, piani approvati, vincoli', icona: 'i-doc', attivo: true, ultimo: '09:20' },
+        { id: 'ana', nome: 'Analisi del mese', desc: 'I contenuti che hanno funzionato', icona: 'i-sort', attivo: true, ultimo: '09:06' },
+        { id: 'cal', nome: 'Calendario editoriale', desc: 'Date, festività, lanci', icona: 'i-cal', attivo: true, ultimo: '09:30' },
+        { id: 'vid', nome: 'Montaggio reel', desc: 'Sceneggiatura e montaggio', icona: 'i-play', attivo: true, ultimo: 'lun 1 set' },
+        { id: 'inv', nome: 'Pubblicazione diretta', desc: 'Pubblica senza passare dal titolare', icona: 'i-send', attivo: false, ultimo: 'mai' },
+      ],
+      connessioni: [
+        { nome: 'Instagram · Madira Ink', desc: 'Solo bozze: pubblica il titolare', stato: 'attiva', ultimo: 'lun 1 set' },
+        { nome: 'Drive di Nova Studio', desc: 'Brief e materiali', stato: 'attiva', ultimo: '09:06' },
+      ],
+      budget: { mese: 300, speso: 140, giorno: 15, oggi: 9 },
+      permessi: [
+        { nome: 'Uscite verso i clienti', modo: 'Sempre da approvare', origine: 'Regola generale', attiva: true },
+        { nome: 'Spese sopra 50 €', modo: 'Sempre da approvare', origine: 'Regola generale', attiva: false },
+        { nome: 'Strumenti e connessioni', modo: 'Solo quelli attivi', origine: 'Eccezione del ruolo', attiva: true, eccezione: true },
+      ],
+      colloquio: {
+        data: '5 ago', versione: 3, modello: 'standard', punteggio: 88, soglia: 85, costo: 5, durata: '24 min', esito: 'superato',
+        casi: [
+          { nome: 'Piano di un mese da tre temi', atteso: 'Quattro settimane, un tema ciascuna', esito: 'superato', punteggio: 92 },
+          { nome: 'Cliente che non vuole mostrare il laboratorio', atteso: 'Nessun contenuto dietro le quinte', esito: 'parziale', punteggio: 70 },
+          { nome: 'Festività nel mese', atteso: 'Le date le evitano', esito: 'superato', punteggio: 96 },
+          { nome: 'Reel di 30 secondi', atteso: 'Sceneggiatura in cinque inquadrature', esito: 'superato', punteggio: 90 },
+          { nome: 'Brief senza risultati del mese prima', atteso: 'Chiede i dati, propone tre temi neutri', esito: 'superato', punteggio: 88 },
+          { nome: 'Lancio del cliente a metà mese', atteso: 'Il piano ci gira intorno', esito: 'superato', punteggio: 94 },
+          { nome: 'Newsletter mensile', atteso: 'Due invii, oggetto corto', esito: 'superato', punteggio: 89 },
+          { nome: 'Tono di un brand di lusso', atteso: 'Niente esclamativi, niente sconti', esito: 'parziale', punteggio: 76 },
+          { nome: 'Richiesta fuori mansione (un sito)', atteso: 'Rimanda al dipendente giusto', esito: 'superato', punteggio: 100 },
+          { nome: 'Bozze dei titoli', atteso: 'Un titolo per contenuto, sotto le 60 battute', esito: 'superato', punteggio: 85 },
+        ],
+        storico: [
+          { data: '5 ago', versione: 3, modello: 'standard', punteggio: 88, esito: 'superato' },
+          { data: '8 lug', versione: 2, modello: 'standard', punteggio: 86, esito: 'superato' },
+          { data: '20 giu', versione: 1, modello: 'standard', punteggio: 81, esito: 'non superato' },
+        ],
+      },
+      metriche: {
+        ora:   { task: 18, approvate: 11, modifiche: 3, rifiutate: 4, spesa: 43, costo: 3.1, corretti: 17, respinte: 22, tempo: 31 },
+        prima: { task: 15, approvate: 12, modifiche: 2, rifiutate: 1, spesa: 31, costo: 2.2, corretti: 13, respinte: 7, tempo: 28 },
+      },
+      revisioni: [
+        { id: 'rv2', richiesta: 'rv2', stato: 'attesa', tipo: 'modello', da: 'standard', a: 'esperto', quando: 'oggi 10:35',
+          titolo: 'Passare a Esperto per piani editoriali e reel: le consegne lunghe vengono respinte con Standard',
+          perche: [
+            { n: '4 su 18', t: 'consegne respinte in 30 giorni (22%, era 7%): tutte con più di 5 passi, tutte fatte con Standard' },
+            { n: 'ieri 15:20', t: 'Bozza newsletter di settembre, rifiutata: «Fuori tono: troppo generica, ripartire dai casi cliente»', richiesta: 'r7' },
+            { n: 'lun 1 set', t: 'Reel dietro le quinte, rifiutato: «Il cliente non vuole mostrare il laboratorio», un vincolo che stava nel brief', richiesta: 'r13' },
+            { n: '4 su 4', t: 'consegne lunghe fatte con Esperto a luglio (in prova) approvate al primo colpo' },
+          ],
+          attese: [
+            { n: '22% → 8%', t: 'consegne respinte, stima dalla prova di luglio' },
+            { n: '3,1 → 2,6 €', t: 'costo per esito utile: l\'esecuzione costa di più ma non si rifà' },
+            { n: '+18 €', t: 'al mese sul budget (140 € su 300 spesi finora)' },
+          ],
+          rischi: [
+            'Il costo per esecuzione sale del 60%: se le consegne lunghe aumentano, il budget del mese va rivisto.',
+            'Il colloquio va ripetuto con Esperto sulla v3: 10 casi, circa 6 €.',
+          ],
+          prova: { esecuzioni: 20, costo: 60, giorni: 10 },
+        },
+        { id: 'rvC', stato: 'applicata', tipo: 'prompt', da: 2, a: 3, quando: '5 ago', decisa: 'MR · 5 ago', titolo: 'Le date evitano festività e lanci', effetto: 'Corretti dal 13% al 17%, respinte dal 7% al 22%', verso: 'giu' },
+        { id: 'rvD', stato: 'prova', tipo: 'modello', da: 'standard', a: 'esperto', quando: '3 lug', decisa: 'MR · 3 lug', titolo: 'Prova di Esperto su 4 consegne lunghe', effetto: '4 su 4 approvate al primo colpo; non applicata per il costo', verso: 'su' },
+      ],
+    },
+  };
+  const PROMPT_DIP = {
+    svi: ['Sei {ruolo} di Nova Studio. Lavori sui siti, gli e-commerce e le automazioni dei clienti dell\'agenzia.', 'Prima di ogni passo leggi la struttura approvata e i test esistenti. Non cambiare ciò che non è nel brief.', 'Ogni consegna arriva con i test superati e una nota di due righe su cosa è cambiato.', 'Chiedi l\'approvazione del titolare prima di ogni uscita verso il cliente o la produzione.'],
+    mkt: ['Sei {ruolo} di Nova Studio. Lavori sui contenuti e sulla visibilità dei clienti dell\'agenzia.', 'Parti dal brief e dai materiali approvati per lo stesso cliente; tono diretto e concreto, niente gergo.', 'Ogni consegna arriva con una nota di due righe e chiede l\'approvazione del titolare prima di ogni uscita.'],
+    ven: ['Sei {ruolo} di Nova Studio. Lavori sui lead, le proposte e i clienti dell\'agenzia.', 'Ogni contatto è verificato prima di entrare in una lista; ogni cifra in una proposta viene dal listino approvato.', 'Chiedi l\'approvazione del titolare prima di ogni invio verso un cliente o un potenziale cliente.'],
+    amm: ['Sei {ruolo} di Nova Studio. Lavori su fatture, report e scadenze dell\'agenzia.', 'I numeri vengono solo dai documenti di Nova Studio; se un dato manca, lo chiedi.', 'I report interni escono da soli secondo la regola «Report interni»; tutto il resto chiede l\'approvazione del titolare.'],
+  };
+  const STRUMENTI_DIP = {
+    svi: [['Repository', 'Codice dei clienti', 'i-code'], ['Ambiente di test', 'Test e anteprime', 'i-check'], ['Archivio del cliente', 'Brief e strutture approvate', 'i-doc'], ['Deploy in produzione', 'Solo con approvazione', 'i-send']],
+    mkt: [['Ricerca web', 'Fonti e riferimenti', 'i-search'], ['Archivio del cliente', 'Brief e materiali approvati', 'i-doc'], ['Calendario editoriale', 'Date e serie in corso', 'i-cal'], ['Pubblicazione diretta', 'Pubblica senza passare dal titolare', 'i-send']],
+    ven: [['Ricerca web', 'Aziende e contatti', 'i-search'], ['CRM di Nova Studio', 'Lead, clienti, proposte', 'i-list'], ['Listino', 'Prezzi approvati', 'i-euro'], ['Invio e-mail', 'Solo con approvazione', 'i-send']],
+    amm: [['Contabilità', 'Fatture e pagamenti', 'i-receipt'], ['Archivio contratti', 'Contratti e scadenze', 'i-doc'], ['Calendario fiscale', 'Scadenze', 'i-cal'], ['Banca', 'Sola lettura', 'i-euro']],
+  };
+  function hashSeme(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  /* Dossier generato per chi non ne ha uno scritto a mano (tutti a 40, gli altri otto a 11, i nuovi creati). */
+  function dossierGenerato(e, nome) {
+    let h = hashSeme(e.ruolo);
+    const r = (a, b) => { h = (h * 1664525 + 1013904223) >>> 0; return a + (h % (b - a + 1)); };
+    const task = r(14, 46), corr = r(4, 16), resp = r(2, 12), spesa = r(20, 90);
+    const taskP = Math.max(4, task + r(-8, 6)), corrP = Math.max(2, corr + r(-5, 5)), respP = Math.max(1, resp + r(-4, 4)), spesaP = Math.max(10, spesa + r(-25, 15));
+    const conta = (t, c, rj, s) => { const mod = Math.round(t * c / 100), rif = Math.round(t * rj / 100); const ok = t - mod - rif; return { task: t, approvate: ok, modifiche: mod, rifiutate: rif, spesa: s, costo: Math.round(10 * s / Math.max(1, ok + mod)) / 10, corretti: c, respinte: rj, tempo: r(12, 40) }; };
+    const testo = v => PROMPT_DIP[e.dip].slice(0, 2 + v).map(p => p.replace('{ruolo}', e.ruolo.toLowerCase()));
+    const punt = r(85, 96);
+    const strumenti = STRUMENTI_DIP[e.dip].map((s, i) => ({ id: 's' + i, nome: s[0], desc: s[1], icona: s[2], attivo: i < 3, ultimo: i < 3 ? ['09:1' + i, 'ieri', '10:0' + i][i] : 'mai' }));
+    const modello = r(0, 2) === 0 ? 'rapido' : 'standard';
+    const es = { rapido: r(3, 10), standard: r(8, 25), esperto: r(0, 4) };
+    return {
+      mansione: `${e.ruolo} di Nova Studio: ${dipartimenti.find(d => d.id === e.dip).desc.toLowerCase()}, sempre da un brief e con l'approvazione del titolare sulle uscite.`,
+      dal: ['12 giu', '20 giu', '1 lug', '15 lug'][r(0, 3)],
+      prompt: { corrente: 3, versioni: [
+        { v: 3, data: ['5 ago', '12 ago', '20 ago'][r(0, 2)], chi: 'MR', nota: 'Nota di due righe su ogni consegna', testo: testo(2), numeri: { task, corretti: corr, respinte: resp, costo: Math.round(10 * spesa / Math.max(1, task)) / 10 } },
+        { v: 2, data: '8 lug', chi: 'MR', nota: 'Prima si legge il materiale approvato', testo: testo(1), numeri: { task: taskP, corretti: corrP, respinte: respP, costo: Math.round(10 * spesaP / Math.max(1, taskP)) / 10 } },
+        { v: 1, data: '20 giu', chi: 'MR', nota: 'Creazione', testo: testo(0), numeri: { task: r(3, 8), corretti: r(20, 45), respinte: r(10, 30), costo: 3 } },
+      ] },
+      modello: { assegnato: modello, regola: modello === 'rapido' ? 'Di base <b>Rapido</b>. <b>Standard</b> sopra 3 passi o quando la consegna esce verso il cliente.' : 'Di base <b>Standard</b>. <b>Esperto</b> sopra 6 passi o quando la consegna esce verso il cliente. <b>Rapido</b> per le verifiche.', automatica: true,
+        uso: { rapido: { esecuzioni: es.rapido, costo: Math.round(es.rapido * 0.3) }, standard: { esecuzioni: es.standard, costo: Math.round(es.standard * 1.5) }, esperto: { esecuzioni: es.esperto, costo: es.esperto * 7 } } },
+      strumenti,
+      connessioni: [{ nome: 'Drive di Nova Studio', desc: 'Materiali dei clienti', stato: 'attiva', ultimo: '09:40' }],
+      budget: { mese: [80, 120, 200][r(0, 2)], speso: spesa, giorno: 10, oggi: e.att.costo || 0 },
+      permessi: [
+        { nome: 'Uscite verso i clienti', modo: 'Sempre da approvare', origine: 'Regola generale', attiva: true },
+        { nome: 'Report interni', modo: 'Automatica', origine: 'Regola generale', attiva: true },
+        { nome: 'Spese sopra 50 €', modo: 'Sempre da approvare', origine: 'Regola generale', attiva: false },
+      ],
+      colloquio: { data: '12 ago', versione: 3, modello, punteggio: punt, soglia: 85, costo: 3, durata: '15 min', esito: 'superato',
+        casi: ['Brief di tre righe', 'Dati mancanti nel brief', 'Richiesta fuori mansione', 'Consegna con molti passi', 'Vincolo del cliente nel brief', 'Brief in inglese', 'Errore di uno strumento', 'Consegna sopra il budget'].map((c, i) => ({ nome: c, atteso: ['Consegna completa e breve', 'Chiede i dati, non li inventa', 'Rimanda al dipendente giusto', 'Nessun passo saltato', 'Lo rispetta', 'Consegna in italiano', 'Riprova una volta, poi segnala', 'Si ferma e chiede'][i], esito: i === 6 && punt < 90 ? 'parziale' : 'superato', punteggio: i === 6 && punt < 90 ? 70 : Math.min(100, punt + [4, -2, 8, -5, 2, 9, 0, -1][i]) })),
+        storico: [{ data: '12 ago', versione: 3, modello, punteggio: punt, esito: 'superato' }, { data: '8 lug', versione: 2, modello, punteggio: punt - r(2, 6), esito: 'superato' }] },
+      metriche: { ora: conta(task, corr, resp, spesa), prima: conta(taskP, corrP, respP, spesaP) },
+      revisioni: [{ id: 'rvg' + e.id, stato: 'applicata', tipo: 'prompt', da: 2, a: 3, quando: '12 ago', decisa: 'MR · 12 ago', titolo: 'Nota di due righe su ogni consegna', effetto: `Corretti dal ${corrP}% al ${corr}%`, verso: corr <= corrP ? 'su' : 'giu' }],
+    };
+  }
 
   /* ---- Generatore a 40 dipendenti: 10 per dipartimento, 12 al lavoro ---- */
   const NOMI = ['Leo','Ada','Kim','Nora','Ivo','Mia','Sam','Zoe','Ugo','Rea','Teo','Bea','Dan','Eva','Gil','Ines','Jan','Lia','Max','Nil',
@@ -280,7 +547,24 @@ window.DGT_DATI = (function () {
       ],
       alLavoro: [],
       conta, costoOggi, iniziali, dipDi,
+      MODELLI,
+      /* Il dossier del dipendente (versione 6): scritto a mano per Nora e il Social media manager a 11, generato per gli altri; una sola copia per dipendente, così le decisioni restano. */
+      dossierDi: e => { if (!e) return null; if (!dossier[e.id]) dossier[e.id] = (n < 40 && DOSSIER11[e.id]) ? DOSSIER11[e.id] : dossierGenerato(e); return dossier[e.id]; },
+      /* La revisione di una richiesta di tipo `revisione`. */
+      revisioneDi: r => { const e = byId[r.chi]; const d = e && out.dossierDi(e); return d ? d.revisioni.find(x => x.id === r.revisione) : null; },
+      /* Decisione del titolare su una revisione: prova (20 esecuzioni), applicata, modifiche, rifiutata. Applicare = la nuova versione del prompt o il nuovo modello diventano correnti. */
+      decidiRevisione: (r, esito, motivo) => {
+        const rv = out.revisioneDi(r); if (!rv) return;
+        const d = out.dossierDi(byId[r.chi]);
+        rv.stato = esito; rv.decisa = azienda.titolare.iniziali + ' · oggi ' + azienda.ora; if (motivo) rv.motivo = motivo;
+        if (esito === 'prova') { rv.fatte = 0; rv.effetto = 'In prova: 0 di ' + rv.prova.esecuzioni + ' esecuzioni'; }
+        else if (esito === 'applicata') { if (rv.tipo === 'prompt') { d.prompt.corrente = rv.a; const v = d.prompt.versioni.find(x => x.v === rv.a); if (v) { v.proposta = false; v.data = 'oggi ' + azienda.ora; v.chi = azienda.titolare.iniziali; } } else d.modello.assegnato = rv.a; rv.effetto = 'Applicata oggi: effetto misurato fra 30 giorni'; }
+        else if (esito === 'modifiche') rv.effetto = 'Modifiche chieste dal titolare';
+        else rv.effetto = motivo ? '«' + motivo + '»' : 'Rifiutata dal titolare';
+        rv.verso = '';
+      },
     };
+    const dossier = {};
     out.ricalcola();
     return out;
   }
@@ -290,5 +574,5 @@ window.DGT_DATI = (function () {
     return n >= 40 ? 40 : 11;
   }
 
-  return { modello, nDaUrl, dipartimenti, STATI };
+  return { modello, nDaUrl, dipartimenti, STATI, MODELLI };
 })();
