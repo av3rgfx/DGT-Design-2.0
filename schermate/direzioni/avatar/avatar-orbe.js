@@ -114,7 +114,7 @@ window.DGT_AVATAR_ORBE = (function () {
     { id: 'punti',    nome: 'Punti grandi',   desc: 'Le stesse pupille di un solo colore, ma grandi il doppio e all\'altezza del centro, distanti: si leggono anche a 26 px.' },
     { id: 'lilguy',   nome: 'Lilguy',         desc: 'Come il riferimento: occhi grandi un terzo del volto, sclera sempre bianca con la pupilla grande e sempre nera; forma dal seme (tondi, ovali, a gatto, a ghianda), pupilla tonda o ovale; X in errore, palpebre chiuse da libero.' },
     { id: 'neri',     nome: 'Neri',           desc: 'Le stesse forme del riferimento ma invertite: occhi neri con la pupilla grande nel colore dello stato. Si vedono su qualunque corpo, anche vivace.' },
-    { id: 'colorati', nome: 'Colorati',       desc: 'Il riferimento alla lettera: occhi nel colore del dipendente sul corpo nero, pupilla grande e sempre nera. L\'identità passa dagli occhi, il corpo resta la perla nera; X in errore, palpebre chiuse da libero.' },
+    { id: 'colorati', nome: 'Colorati',       desc: 'Il riferimento alla lettera: occhi nel colore del dipendente sul corpo nero, pupilla grande e sempre bianca. L\'identità passa dagli occhi, il corpo resta la perla nera; X in errore, palpebre chiuse da libero.' },
   ];
   const TONI = [
     { id: 'nero',    c: '#2A2A2A', nome: 'Perla nera' },
@@ -333,11 +333,11 @@ svg.ava.orbe[data-finitura="orlo"] .corpo>.orlo{stroke:rgb(0 0 0/.3);stroke-widt
 .ava.orbe .occhio.lg .pupilla circle,.ava.orbe .occhio.lg .pupilla ellipse,.ava.orbe .occhio.lg .pupilla rect{fill:var(--pupilla,#0A0A0A);stroke:#0A0A0A;stroke-width:var(--av-pupilla-bordo,0);paint-order:stroke}
 /* l'occhio chiuso (libero): la palpebra è un arco largo quanto l'occhio, nel colore della sclera (o dello stato per gli occhi neri) */
 .ava.orbe .occhio.lg .palpebra{fill:none;stroke:var(--palpebra,var(--sclera,var(--volto)));stroke-width:.34;stroke-linecap:round}
-/* lilguy e colorati (quarta tornata): la pupilla è sempre nera, in ogni stato; lo stato non passa più dal colore degli occhi
-   (X in errore e palpebre chiuse da libero restano forme, non colori). Per lilguy la sclera è sempre bianca, per colorati è la tinta. */
+/* lilguy e colorati (quarta e quinta tornata): la pupilla ha un solo colore in ogni stato, nera sulla sclera bianca di lilguy, bianca
+   sull'occhio colorato di colorati; lo stato non passa più dal colore degli occhi (X in errore e palpebre chiuse da libero restano forme). */
 svg.ava.orbe[data-occhi="lilguy"]{--sclera:#FCFCFC;--pupilla:#0A0A0A}
 svg.ava.orbe[data-occhi="neri"]{--sclera:#0A0A0A;--pupilla:var(--volto);--av-sclera-bordo:0;--palpebra:var(--volto)}
-svg.ava.orbe[data-occhi="colorati"]{--sclera:var(--av-tinta-c,#FCFCFC);--pupilla:#0A0A0A}
+svg.ava.orbe[data-occhi="colorati"]{--sclera:var(--av-tinta-c,#FCFCFC);--pupilla:#FCFCFC}
 /* i punti grandi su un corpo colorato: un contorno sottile perché bianco e rosa si leggano anche sulle tinte chiare */
 svg.ava.orbe[data-occhi="punti"][data-modo] .occhio path,svg.ava.orbe[data-occhi="punti"][data-modo] .occhio rect{stroke:#0A0A0A;stroke-width:.14;paint-order:stroke}
 [data-pelle="chiaro"]{--av-corpo:url(#av-orbe-corpo-chiaro);--av-orlo:url(#av-orbe-orlo-scuro);--av-orlo-w:3;--av-luce:.9;--av-riflesso:0;--av-bagliore:0;--av-occhi-neutri:#0A0A0A;--av-bordo:1;--av-alone:none;--av-inv-corpo:url(#av-orbe-corpo-perla);--av-inv-orlo:url(#av-orbe-orlo);--av-inv-orlo-w:4;--av-inv-luce:.55}

@@ -11,7 +11,7 @@ Stato al 2026-09-05, fine della sessione sull'**orbe senza disco** (versione 7 d
   tutti uguali → proposta «identità degli orbi» in quattro tornate (`schermate/direzioni/avatar-identita.html`, artefatto
   https://claude.ai/code/artifact/690baac8-2de3-48e3-bb98-98024bc7312f; DIREZIONI.md «Versione 10»). Stato: l'utente ha
   ristretto a **strada 1** (vivace piatto, occhi lilguy: sclera bianca, pupilla grande sempre nera) e **strada 8** (nero,
-  occhi colorati: pupilla grande sempre nera, X in errore, archi da dormiente); **manca la scelta finale fra le due** e il
+  occhi colorati: pupilla grande sempre bianca, X in errore, archi da dormiente); **manca la scelta finale fra le due** e il
   **modo di mostrare lo stato** senza il colore degli occhi (candidati in DIREZIONI.md, «Quarta tornata»). Tutto è
   opzionale e spento di default in `avatar/avatar-orbe.js` (`aspetto()`, `html(seme, stato, opz)`); la Console non cambia
   finché non si porta la scelta nel prodotto («Da fare alla scelta» in DIREZIONI.md). Poi le approvazioni da mobile

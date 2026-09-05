@@ -668,6 +668,9 @@ dello stato; (c) solo le forme e i moti già presenti (X, palpebre, occhi più g
 stato delle card, che è la regola scritta in `avatar-dgt.js`: «l'avatar sta sempre accanto all'etichetta e alla pillola di
 stato, non porta informazione da solo».
 
+**Quinta tornata.** «Per l'opzione 8 proviamo a mettere le pupille bianche». Fatto: nello stile colorati la pupilla è
+bianca in ogni stato, X compresa; le palpebre chiuse restano nel colore della tinta.
+
 **Da fare alla scelta**: portare la combinazione nel prodotto (tinta nel modello dati, assegnata alla creazione come la
 meno usata e scelta nell'editor del dipendente accanto all'avatar; `av()` in `direzione-a.js` passa tinta e dipartimento;
 `direzione-a.html` imposta l'aspetto), aggiornare `SYSTEM-DESIGN.md` (riga «Avatar del dipendente AI», regola sul colore) e
