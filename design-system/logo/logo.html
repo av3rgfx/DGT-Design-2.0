@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logo DGT</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600&display=swap">
+<style>
+:root{
+  --black:#000000;--page:#181818;--card:#1C1C1C;--card-top:#262626;--gray-card:#4D4D4D;--round:#1E1E1E;
+  --white:#FCFCFC;--lime:#B8FC64;--ink:#0A0A0A;--t2:#9A9A9A;--t3:#6E6E6E;
+  --font:"Urbanist",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --r-card:28px;--r-pill:9999px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--white);font:400 16px/24px var(--font);-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,p{margin:0;font-weight:400}
+svg{display:block}
+.wrap{max-width:1300px;margin:0 auto;padding:0 24px 140px}
+.lbl{font-size:14px;color:#BDBDBD;padding:44px 0 0}
+.sec{padding:56px 0 24px;display:grid;gap:28px}
+.sec>*{min-width:0}
+.hd{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.hd h2{font-size:56px;line-height:60px;letter-spacing:-.01em}
+.hd h2 em{font-style:normal;color:var(--lime)}
+.hd p{font-size:24px;line-height:32px;color:#EDEDED;max-width:24em}
+.note{color:var(--t2);font-size:13px;line-height:19px;max-width:84ch}
+@media (max-width:899px){.hd{grid-template-columns:1fr;gap:16px}.hd h2{font-size:40px;line-height:44px}.hd p{font-size:18px;line-height:26px}}
+
+/* proposta */
+.prop{display:grid;gap:16px}
+.prop .top{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap}
+.prop .top h3{font-size:28px;line-height:34px}
+.prop .top .n{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--white);color:var(--ink);font-size:15px;align-self:center}
+.prop .top .n.lime{background:var(--lime)}
+.prop .top p{font-size:18px;line-height:24px;color:#EDEDED;flex:1 1 30em;max-width:44em}
+.grande{background:var(--black);border-radius:var(--r-card);padding:72px 64px;display:grid;place-items:center;min-height:320px}
+.grande svg{width:min(760px,100%);height:auto}
+.grande.mono svg{width:min(300px,60%)}
+.campioni{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.camp{border-radius:var(--r-card);height:168px;display:grid;place-items:center;position:relative;padding:28px 36px}
+.camp svg{width:min(240px,100%);height:auto}
+.camp.mono svg{width:min(92px,60%)}
+.camp .k{position:absolute;left:24px;top:18px;font-size:11px;line-height:14px;color:var(--t2)}
+.camp.nero{background:var(--black)}.camp.lime{background:var(--lime);color:var(--ink)}.camp.lime .k{color:rgb(0 0 0/.55)}
+.camp.bianco{background:var(--white);color:var(--ink)}.camp.bianco .k{color:var(--t3)}
+.camp.grigio{background:var(--gray-card)}.camp.limeink{background:var(--black);color:var(--lime)}
+@media (max-width:899px){.campioni{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* misure piccole e la Console */
+.righe{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:899px){.righe{grid-template-columns:1fr}}
+.piccole{background:var(--black);border-radius:var(--r-card);padding:24px 28px;display:flex;align-items:center;gap:36px;flex-wrap:wrap;min-height:120px}
+.piccole .u{display:grid;gap:8px;justify-items:start}
+.piccole .u span{font-size:11px;line-height:14px;color:var(--t2)}
+.piccole svg{height:auto}
+.console{background:var(--black);border-radius:var(--r-card);height:120px;position:relative;overflow:hidden}
+.console .lg{position:absolute;left:28px;top:40px;height:40px;display:flex;align-items:center;color:var(--white)}
+.console .lg svg{height:19px;width:auto}
+.console .lg.marchio svg{height:32px}
+.console .sched{position:absolute;left:102px;top:28px;right:96px;height:64px;border-radius:var(--r-pill);background:var(--white);color:var(--ink);display:flex;align-items:center;gap:14px;padding:6px 6px 6px 22px}
+.console .sched .t{font-size:18px;white-space:nowrap}
+.console .sched .cal{display:flex;align-items:center;gap:10px;height:44px;padding:0 20px 0 6px;border-radius:var(--r-pill);border:1px solid rgb(0 0 0/.14);font-size:14px;white-space:nowrap}
+.console .sched .cal i{width:32px;height:32px;border-radius:50%;background:#EDEDED;display:block}
+.console .sched .tl{flex:1;height:52px;border-radius:var(--r-pill);background:var(--lime);display:flex;align-items:center;gap:8px;padding:0 6px;min-width:0;overflow:hidden}
+.console .sched .tl i{height:40px;border-radius:var(--r-pill);background:var(--white);display:block;flex:none}
+.console .sched .tl i.a{width:132px}.console .sched .tl i.b{width:96px;background:#A8E65D}.console .sched .tl i.c{width:110px}
+.console .tr{position:absolute;right:26px;top:36px;display:flex;gap:10px;align-items:center}
+.rb{width:48px;height:48px;border-radius:50%;background:var(--round);border:1px solid rgb(255 255 255/.14);display:grid;place-items:center;color:var(--white);flex:none;position:relative}
+.rb.lime{background:var(--lime);border-color:transparent;color:var(--ink)}
+.rb.white{background:var(--white);border-color:transparent;color:var(--ink)}
+.rb.ink{background:var(--ink);border-color:transparent}
+.rb .dot{position:absolute;top:11px;right:12px;width:8px;height:8px;border-radius:50%;background:#F04848}
+.av{width:48px;height:48px;border-radius:50%;background:var(--white);color:#2A2A2A;display:grid;place-items:center;font-weight:500;font-size:15px}
+
+/* il marchio */
+.usi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+@media (max-width:899px){.usi{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.uso{background:var(--black);border-radius:var(--r-card);padding:28px;display:grid;gap:18px;align-content:start;min-height:220px}
+.uso h4{font-size:15px;line-height:20px}
+.uso .r{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.uso .k{font-size:11px;line-height:14px;color:var(--t2)}
+.uso.chiaro{background:var(--white);color:var(--ink)}.uso.chiaro .k{color:var(--t3)}
+.rail{display:grid;gap:8px;justify-items:start}
+.rail .tile{width:44px;height:44px;border-radius:14px;background:#1A1A1A;border:1px solid rgb(255 255 255/.08);display:grid;place-items:center;color:#B5B5B5}
+.rail .tile svg{width:18px;height:18px}
+.rail .tile.on{background:var(--lime);color:var(--ink);border-color:transparent;box-shadow:0 0 18px rgb(184 252 100/.35)}
+.rail .tile.on svg{width:22px;height:22px}
+.ptab{display:flex;gap:8px;align-items:center}
+.ptab .tab{height:44px;padding:0 20px;border-radius:var(--r-pill);border:1px solid rgb(255 255 255/.14);display:flex;align-items:center;gap:10px;font-size:15px;color:var(--white)}
+.ptab .tab.on{background:var(--white);color:var(--ink);border-color:transparent}
+.ptab .tab svg{width:18px;height:18px}
+.finestra{display:flex;align-items:center;gap:10px;height:36px;padding:0 14px;border-radius:10px;background:#2C2C2C;color:#DADADA;font-size:13px}
+.finestra svg{width:16px;height:16px}
+
+/* costruzione */
+.costr{background:var(--black);border-radius:var(--r-card);padding:56px 64px;display:grid;gap:28px}
+.costr svg{width:100%;height:auto}
+.costr .leg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+@media (max-width:899px){.costr .leg{grid-template-columns:1fr 1fr}}
+.costr .leg b{display:block;font-weight:300;font-size:34px;line-height:40px}
+.costr .leg span{font-size:13px;line-height:18px;color:var(--t2)}
+
+/* raccomandazione */
+.racc{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:899px){.racc{grid-template-columns:1fr}}
+.racc .c{border-radius:var(--r-card);padding:32px;display:grid;gap:14px;align-content:start;background:var(--card);background-image:linear-gradient(var(--card-top),var(--card))}
+.racc .c.lime{background:var(--lime);color:var(--ink)}
+.racc .c h4{font-size:26px;line-height:30px}
+.racc .c p{font-size:15px;line-height:22px}
+.racc .c .lg{padding:22px 0 6px}.racc .c .lg svg{height:44px;width:auto}
+.racc .c.lime p{color:rgb(0 0 0/.75)}
+.file{display:grid;gap:6px;font-size:13px;line-height:19px;color:var(--t2)}
+.file code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:#DADADA}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="lbl">Logo</div>
+  <div class="sec">
+    <div class="hd">
+      <h2>Tre lettere, <em>una forma</em></h2>
+      <p>Quattro giochi di lettere sull'acronimo DGT: in ognuno una o più lettere cambiano struttura per unirsi alle altre. Le lettere sono ricostruite in Urbanist 600, il peso del logo di testo di oggi, su un cerchio solo: la pancia della D e la G hanno lo stesso raggio.</p>
+    </div>
+  </div>
+
+  <div class="lbl">(01) Il punto di partenza</div>
+  <div class="sec" id="oggi"></div>
+
+  <div class="lbl">(02) Le proposte</div>
+  <div class="sec" id="proposte" style="gap:64px"></div>
+
+  <div class="lbl">(03) Il marchio</div>
+  <div class="sec" id="marchio"></div>
+
+  <div class="lbl">(04) Costruzione</div>
+  <div class="sec" id="costruzione"></div>
+
+  <div class="lbl">(05) Raccomandazione</div>
+  <div class="sec" id="racc"></div>
+</div>
+<script src="logo.js"></script>
+<script>
+(function () {
+  const L = window.DGT_LOGO, H = L.H;
+  const $ = id => document.getElementById(id);
+  const sv = (id, opz) => L.svg(L.V[id](), opz);
+  const n = (x) => Math.round(x * 10) / 10;
+  const bell = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>';
+
+  /* --- barra della Console con un logo dentro (misure reali: logo a 28/40, barra a 102/28) --- */
+  const console_ = (svg, marchio) => `<div class="console">
+      <span class="lg${marchio ? ' marchio' : ''}">${svg}</span>
+      <div class="sched"><span class="t">Oggi in azienda</span><span class="cal"><i></i>5 settembre</span><span class="tl"><i class="a"></i><i class="b"></i><i class="c"></i></span></div>
+      <div class="tr"><span class="rb">${bell}<i class="dot"></i></span><span class="av">MR</span></div>
+    </div>`;
+  const piccole = (id, mono) => {
+    const h = c => n(c * 1480 / 1400);   // altezza dell'SVG per un'altezza data delle maiuscole
+    return `<div class="piccole">
+      <div class="u"><span>maiuscole 32 px</span>${sv(id, { height: h(32) })}</div>
+      <div class="u"><span>24 px</span>${sv(id, { height: h(24) })}</div>
+      <div class="u"><span>18 px (Console)</span>${sv(id, { height: h(18) })}</div>
+      <div class="u"><span>12 px</span>${sv(id, { height: h(12) })}</div>
+      ${mono ? `<div class="u"><span>favicon 16</span>${L.marchio({ size: 16 })}</div>` : ''}
+    </div>`;
+  };
+
+  /* (01) oggi */
+  $('oggi').innerHTML = `<div class="righe">
+      ${console_(`<span style="font-weight:600;font-size:22px;letter-spacing:.12em">DGT</span>`)}
+      <div class="piccole"><div class="u"><span>Il logo di oggi è testo: Urbanist 600, 22 px, spaziatura .12em, in alto a sinistra della Console</span>${sv('oggi', { height: 46 })}</div></div>
+    </div>
+    <p class="note">La stessa riga a sinistra è la barra della Console (logo a 28/40, barra «Oggi in azienda» a 102/28): tutte le proposte qui sotto sono mostrate anche lì, alla misura reale. La ricostruzione a destra è geometrica (asta 208/2000, altezza 1400, cerchio di raggio 700) e sostituisce il testo: da qui in poi il logo è un disegno, non una parola scritta con un font.</p>`;
+
+  /* (02) proposte */
+  const prop = L.VARIANTI.filter(v => v.id !== 'oggi');
+  $('proposte').innerHTML = prop.map((v, i) => {
+    const mono = v.id === 'monogramma';
+    return `<div class="prop" id="p-${v.id}">
+      <div class="top"><span class="n${i === 0 ? ' lime' : ''}">${i + 1}</span><h3>${v.nome}</h3><p>${v.sotto}</p></div>
+      <div class="grande${mono ? ' mono' : ''}">${sv(v.id)}</div>
+      <div class="campioni">
+        <div class="camp nero${mono ? ' mono' : ''}"><span class="k">bianco su nero · la Console</span>${sv(v.id)}</div>
+        <div class="camp lime${mono ? ' mono' : ''}"><span class="k">nero su lime · pulsanti, marchio</span>${sv(v.id)}</div>
+        <div class="camp bianco${mono ? ' mono' : ''}"><span class="k">nero su bianco · documenti, Riepilogo</span>${sv(v.id)}</div>
+        <div class="camp limeink${mono ? ' mono' : ''}"><span class="k">lime su nero · solo fuori dalla Console</span>${sv(v.id)}</div>
+      </div>
+      <div class="righe">${console_(mono ? L.marchio({ size: 32 }) : sv(v.id), mono)}${piccole(v.id, mono)}</div>
+      <p class="note">Nella Console: <code>schermate/direzioni/direzione-a.html?logo=${v.id}</code>.</p>
+    </div>`;
+  }).join('');
+
+  /* (03) il marchio */
+  $('marchio').innerHTML = `<div class="hd"><h2>Il <em>marchio</em> nei tondi</h2><p>«Tre in uno» è la forma per gli spazi stretti: pulsanti rotondi, tessere del rail, favicon, icona dell'app. Il glifo occupa due terzi del tondo; lime con il glifo nero è il marchio, nero con il glifo bianco è la versione discreta.</p></div>
+    <div class="usi">
+      <div class="uso"><h4>Pulsante rotondo 48</h4><div class="r">${L.marchio({ size: 48 })}${L.marchio({ size: 48, fondo: '#1E1E1E', fill: '#FCFCFC' })}${L.marchio({ size: 48, fondo: '#FCFCFC' })}</div><span class="k">lime · scuro · bianco</span>
+        <div class="r">${L.marchio({ size: 40 })}${L.marchio({ size: 32 })}${L.marchio({ size: 24 })}</div><span class="k">40 · 32 · 24</span></div>
+      <div class="uso"><h4>Tessera e rail</h4><div class="r"><div class="rail"><span class="tile on">${L.svg(L.V.monogramma(), { fill: 'currentColor' })}</span><span class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/></svg></span><span class="tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M12 5v14"/></svg></span></div>${L.marchio({ size: 64, tessera: true })}${L.marchio({ size: 64, tessera: true, fondo: '#1E1E1E', fill: '#FCFCFC' })}</div><span class="k">rail del riferimento 02 (tessera attiva) · icona dell'app 64</span></div>
+      <div class="uso"><h4>Favicon e scheda</h4><div class="r">${L.marchio({ size: 32 })}${L.marchio({ size: 16 })}${L.marchio({ size: 16, fondo: '#1E1E1E', fill: '#FCFCFC' })}</div><span class="k">32 · 16 lime · 16 scuro</span>
+        <div class="finestra">${L.marchio({ size: 16 })}<span>DGT · Nova Studio</span></div><span class="k">nella scheda del browser</span></div>
+      <div class="uso chiaro"><h4>Su chiaro</h4><div class="r">${L.marchio({ size: 48 })}${L.marchio({ size: 48, fondo: '#0A0A0A', fill: '#FCFCFC' })}</div><span class="k">sul Riepilogo e sui documenti</span>
+        <div class="r"><span style="height:auto;width:200px">${L.svg(L.V.filo(), { fill: '#0A0A0A' })}</span></div><span class="k">il logo «Filo» nero sul bianco</span></div>
+    </div>`;
+
+  /* (04) costruzione: il Filo con le guide */
+  const v = L.V.filo();
+  const PAD = 40, x0 = Math.min(v.x0 - PAD, v.cerchi[0] - 700 - 60), x1 = Math.max(v.x1 + PAD, v.cerchi[1] + 700 + 60), w = x1 - x0, ytop = -(H + PAD + 220), hh = H + 2 * PAD + 220 + 300;
+  const guide = [];
+  const lime = 'stroke="#B8FC64" stroke-width="6" fill="none"';
+  for (const cx of v.cerchi) guide.push(`<circle cx="${cx}" cy="${-700}" r="700" ${lime} stroke-dasharray="18 18"/><circle cx="${cx}" cy="${-700}" r="492" ${lime} stroke-dasharray="18 18" opacity=".6"/><circle cx="${cx}" cy="${-700}" r="10" fill="#B8FC64"/>`);
+  guide.push(`<line x1="${x0}" y1="0" x2="${x1}" y2="0" ${lime} opacity=".5"/><line x1="${x0}" y1="${-1400}" x2="${x1}" y2="${-1400}" ${lime} opacity=".5"/><line x1="${x0}" y1="${-700}" x2="${x1}" y2="${-700}" ${lime} opacity=".3"/>`);
+  guide.push(`<line x1="${v.asta}" y1="${-1560}" x2="${v.asta}" y2="200" ${lime} opacity=".5"/>`);
+  const gcx = v.cerchi[1];
+  guide.push(`<path d="M${gcx + 700} ${-700}A700 700 0 0 0 ${n(gcx + 700 * Math.cos(Math.PI / 4.5))} ${n(-700 - 700 * Math.sin(Math.PI / 4.5))}" ${lime}/>`);
+  const tx = (x, y, t, a) => `<text x="${x}" y="${y}" fill="#9A9A9A" font-family="Urbanist,sans-serif" font-size="56" text-anchor="${a || 'start'}">${t}</text>`;
+  const testi = tx(x0 + 20, 70, '0 · linea di base') + tx(x0 + 20, -1440, '1400 · maiuscole') + tx(v.asta + 150, -1090, '40°: dove la G si apriva') + tx(v.cerchi[0], 250, 'cerchio 700 · asta 208', 'middle') + tx(gcx, 250, 'lo stesso cerchio', 'middle') + tx(v.asta, -1590, 'asta della T', 'middle');
+  $('costruzione').innerHTML = `<div class="costr">
+      <svg viewBox="${x0} ${ytop} ${w} ${hh}" role="img" aria-label="Costruzione del logo Filo"><path fill="#FCFCFC" transform="scale(1,-1)" d="${v.d}"/>${guide.join('')}${testi}</svg>
+      <div class="leg">
+        <div><b>208 / 2000</b><span>l'asta: Urbanist 600, come il logo di testo di oggi. In «Filo» la traversa della T ha lo stesso spessore dell'arco della G che la genera.</span></div>
+        <div><b>700</b><span>il raggio del cerchio, metà dell'altezza delle maiuscole: la pancia della D e la G sono lo stesso cerchio, senza overshoot, così i tratti piatti si allineano.</span></div>
+        <div><b>40°</b><span>l'apertura della G in Urbanist. In «Filo» e «Catena» la G si ferma nel punto più alto e prosegue dritta; in «Innesto» e nel monogramma resta l'apertura a 40°.</span></div>
+        <div><b>.12em</b><span>la spaziatura fra D e G (240 unità), la stessa del logo di oggi. La distanza fra la barra della G e l'asta della T è 200 unità.</span></div>
+      </div>
+      <p class="note">Ogni variante è un solo tracciato SVG a riempimento non-zero, con tutte le sottotracce nello stesso verso: le parti che si sovrappongono si fondono senza cuciture. I file stanno in <code>design-system/logo/</code> e si rigenerano con <code>node build.js</code>.</p>
+    </div>`;
+
+  /* (05) raccomandazione */
+  $('racc').innerHTML = `<div class="racc">
+      <div class="c lime"><h4>«Filo» per il logo</h4><div class="lg">${L.svg(L.V.filo(), { fill: '#0A0A0A' })}</div><p>È il gioco più leggibile: la D resta intera, la G e la T diventano un tratto solo e l'acronimo si legge ancora al primo sguardo, anche a 12 px. Un solo intervento sulla struttura delle lettere, dunque nessun rumore in più nella Console, dove il logo sta in un angolo a 18 px.</p></div>
+      <div class="c"><h4>«Tre in uno» per il marchio</h4><div class="lg">${L.marchio({ size: 44 })}</div><p>Nei tondi e nelle tessere serve una forma sola: la T, la D e la G condivise su un'asta. Da lontano si legge «TG» con la D data dall'asta e dalla pancia chiusa in basso: è il compromesso di ogni monogramma a tre lettere, e qui il logo esteso «Filo» gli sta sempre accanto nella Console.</p></div>
+      <div class="c"><h4>«Catena» se si vuole una forma unica</h4><div class="lg">${L.svg(L.V.catena())}</div><p>Le tre lettere sono un unico pezzo: la D e la G condividono un tratto e la G prosegue nella T. Più compatta di «Filo» (spaziatura zero fra D e G) e più caratterizzata; il punto in cui i due cerchi si incrociano è il suo segno distintivo, ma a 12 px si chiude.</p></div>
+      <div class="c"><h4>«Innesto» come alternativa giocosa</h4><div class="lg">${L.svg(L.V.innesto())}</div><p>La T è piccola e sta appesa alla barra della G: si legge «DG» con la T innestata. È il gioco più evidente e il meno formale; funziona bene grande, meno nella barra della Console.</p></div>
+    </div>
+    <div class="file">
+      <span>File in <code>design-system/logo/</code>:</span>
+      <span><code>dgt-filo.svg</code> · <code>dgt-catena.svg</code> · <code>dgt-innesto.svg</code> · <code>dgt-monogramma.svg</code> (riempimento <code>currentColor</code>: prendono il colore del testo)</span>
+      <span><code>dgt-marchio-lime.svg</code> · <code>dgt-marchio-scuro.svg</code> · <code>dgt-tessera.svg</code> · <code>dgt-favicon.svg</code> (colori fissi)</span>
+      <span><code>logo.js</code> costruisce tutto (<code>DGT_LOGO.svg</code>, <code>DGT_LOGO.marchio</code>); <code>build.js</code> scrive i file.</span>
+    </div>`;
+})();
+</script>
+</body>
+</html>

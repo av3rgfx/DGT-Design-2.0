@@ -117,6 +117,16 @@ Urbanist, pesi 300–600 caricato da Google Fonts. Nessun bold nei titoli.
 | ruolo | 400 · 13/18 · `#9A9A9A` | Direttrice marketing, Bianchi & Co. |
 | etichetta | 400 · 11/14 · `#9A9A9A` | Fonte · Stato · 14:15 |
 
+## Logo
+
+Il logo del prodotto è l'acronimo DGT. Oggi è testo (Urbanist 600, 22 px, spaziatura .12em, bianco, in alto a
+sinistra della Console). In `design-system/logo/` ci sono quattro proposte disegnate come giochi di lettere (Filo:
+l'arco della G diventa la traversa della T; Catena: D e G condividono un tratto e la G prosegue nella T; Innesto: la
+barra della G è la traversa di una T a mezza altezza; Tre in uno: monogramma a una lettera) più il marchio per i tondi
+(cerchio o tessera lime con il monogramma nero). Costruzione: unità di Urbanist, asta 208/2000, maiuscole 1400, un
+solo cerchio di raggio 700 per la D e la G. Colori: bianco su nero nella Console, nero su lime e su bianco; lime su nero
+solo fuori dal prodotto. Scelta da fare.
+
 ## Impaginazione (Layout)
 
 - **Console** (1224×912 nella cornice): logo a 34/44; barra agenda a 102/28 larga 960; riga

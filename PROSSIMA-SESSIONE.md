@@ -1,15 +1,22 @@
 # Prossima sessione — passaggio di consegne
 
-Stato al 2026-09-05, fine della sessione sull'**orbe senza disco** (versione 7 della direzione A · Console: le pelli;
-7b: perla, corpi tondi, moti fluidi; 7c: gli occhi del kit), sulla **pagina dell'Esecuzione** (versione 8) e sulle
-**correzioni della cornice** (versione 9: zoom, card, niente emoji). Tutto è committato e pushato sul branch indicato sotto.
+Stato al 2026-09-05, fine della sessione sul **logo del prodotto** (versione 10 della direzione A · Console: quattro
+giochi di lettere e il marchio, in `design-system/logo/`). La sessione precedente, sullo stesso giorno, aveva chiuso
+l'orbe senza disco (versioni 7, 7b, 7c), la pagina dell'Esecuzione (8) e le correzioni della cornice (9): la sua PR #6 è
+stata unita in `main`. Tutto è committato e pushato sul branch indicato sotto.
 
 ## Stato
 
-- Branch: `claude/avatar-execution-page-nv8dm4` (da `main`, che contiene le PR #1, #3, #4 e #5). A fine sessione è
-  aperta la **PR #6** verso `main` (https://github.com/av3rgfx/DGT-Design-2.0/pull/6): se all'avvio della prossima
-  sessione risulta già unita, ripartire da `main` con un branch nuovo; se è ancora aperta, continuare sullo stesso
-  branch e la PR si aggiorna da sola.
+- Branch: `claude/dgt-logo-design-3rnyme` (da `main`, che contiene le PR #1, #3, #4, #5 e #6). Nessuna PR aperta
+  a fine sessione: se serve, aprirla verso `main` all'avvio della prossima.
+- **Il logo** (richiesta dell'utente: «Crea il logo del prodotto DGT. Prova a creare qualche gioco di lettere
+  modificando la struttura di una o più lettere per unirle e formare un logo unico DGT»): quattro proposte disegnate
+  (Filo, Catena, Innesto, Tre in uno) più il marchio per i tondi, pagina `design-system/logo/logo.html`, artefatto
+  https://claude.ai/code/artifact/84f57660-741c-421a-bd56-7aaafbf52953 (si aggiorna con
+  `node schermate/direzioni/build-unico.js ../../design-system/logo/logo.html /percorso/logo.html` e ripubblicando allo
+  stesso URL). Nella Console `direzione-a.html?logo=filo|catena|innesto|monogramma`; senza parametro resta il testo.
+  **L'utente non ha ancora scelto**: raccomandazione Filo per il logo e Tre in uno per il marchio (dettagli in
+  `design-system/logo/README.md` e in `DIREZIONI.md`, «Versione 10»).
 - I tre artefatti della direzione A qui sotto sono stati ripubblicati a fine sessione e corrispondono all'ultimo
   commit del branch.
 - Artefatto della direzione A cliccabile (home, tendine, Richieste, Dipartimento, editor del dipendente, pagina del
@@ -78,6 +85,11 @@ Stato al 2026-09-05, fine della sessione sull'**orbe senza disco** (versione 7 d
     degli occhi più carini». Fatto (versione 7c): le pupille del kit per seme (`deriveRole(seme).pupil`: tonda,
     quadrato morbido, anello; 0,16–0,185 del raggio), dipinte sulla sfera con la base tangente del kit (yaw, pitch,
     roll della testa: l'occhio lontano si stringe da solo) e con i suoi moti dello sguardo. Giudizio: «va bene adesso».
+19. **2026-09-05, sessione del logo**: «Crea il logo del prodotto DGT. Prova a creare qualche gioco di lettere
+    modificando la struttura di una o più lettere per unirle e formare un logo unico DGT». Fatto (versione 10): lettere
+    ricostruite in unità di Urbanist su un cerchio solo; Filo (l'arco della G diventa la traversa della T), Catena (D e G
+    condividono un tratto, poi la G prosegue nella T), Innesto (la barra della G è la traversa di una T a mezza altezza),
+    Tre in uno (monogramma a una lettera); marchio nei tondi; Tetto provata e scartata. **Giudizio non ancora dato.**
 18. **Correzioni della cornice** (versione 9): le tendine e le pillole fisse «spostate» sugli schermi larghi e la Console
     che non si adattava → `zoom` alla larghezza dello schermo, in su e in giù; l'avatar ripetuto nel selettore della
     card del lavoro → chip di stato; il «+1» sotto gli avatar nella card dell'obiettivo → badge dopo la pila;
@@ -88,8 +100,16 @@ Esperto); contenuti sintetici di DGT; documenti in italiano.
 
 ## Come riprendere
 
+0. **Il logo, prima di tutto**: raccogliere la scelta dell'utente fra Filo, Catena, Innesto e Tre in uno (o le
+   correzioni: spessore, spaziatura D–G, distanza G–T, apertura del monogramma; sono i parametri delle funzioni
+   `DGT_LOGO.V[id](spessore, …)` in `design-system/logo/logo.js`). Una volta scelto: rendere quella variante il
+   predefinito di `logo(opz)` in `direzione-a.js` (oggi il testo), mettere il marchio come favicon di `direzione-a.html`
+   e dello specimen, rigenerare gli SVG con `node build.js`, aggiornare `logo.html` (la sezione «Raccomandazione»
+   diventa «Scelta»), i documenti (`SYSTEM-DESIGN.md` regola 7, `DESIGN.md` «Logo», `DIREZIONI.md` regola 7) e gli
+   screenshot della Console.
 1. Leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezione 10) e `schermate/direzioni/DIREZIONI.md` (sezioni 1 e 4, in
-   particolare «Versione 7c», «Versione 8» e «Versione 9»). Controllare se questo branch è stato unito (vedi «Stato»).
+   particolare «Versione 7c», «Versione 8», «Versione 9» e «Versione 10»). Controllare se questo branch è stato unito
+   (vedi «Stato»).
 2. Aprire `schermate/direzioni/direzione-a.html`: la home con gli orbi perla tondi in moto; `?pelle=grigio|chiaro|alone|disco`
    per le altre pelli; `?pagina=esecuzione&id=4` (Nora al lavoro, passo 2 di 4), `&id=3` (Kim in errore: «Riprova il
    passo 3»), `&id=5` (Social media manager: consegnato, «Apri la richiesta»), `&id=2` (Tester QA pianificata: «Avvia
@@ -130,6 +150,12 @@ Esperto); contenuti sintetici di DGT; documenti in italiano.
   (esportare le tre variabili con `export` se si lanciano più catture nella stessa shell: senza, Node non trova
   `playwright-core`).
 - `fetch-fonts.py` — Urbanist locale per Chromium headless (`SSL_CERT_FILE=/root/.ccr/ca-bundle.crt python3 fetch-fonts.py /tmp/fonts.css`).
+  Il CSS contiene il font variabile (asse `wght` 100–900) come data URI: con `fontTools` (`pip install fonttools brotli`)
+  se ne estraggono i contorni delle lettere (`instancer.instantiateVariableFont` + `SVGPathPen`), come fatto per
+  misurare D, G e T del logo (asta 108/140/168/208/244 ai pesi 300/400/500/600/700; maiuscole 1400; D = asta + mezzo
+  cerchio di raggio 700; G e O leggermente ovali, 1376×1450).
+- `design-system/logo/build.js` — scrive i file SVG del logo da `logo.js`; la pagina `logo.html` si cattura con
+  `screenshot-page.js` e si pubblica con `build-unico.js` (accetta anche percorsi fuori da `schermate/direzioni/`).
 - `schermate/direzioni/avatar/build-motore.js` — rigenera `avatar-motore.js` dai sorgenti del kit.
 - `schermate/direzioni/build-unico.js` — file unico per gli artefatti (incorpora anche gli script in `avatar/`).
 - Pellicola degli avatar: una pagina di prova con sei copie di un orbe per stato, `DGT_AVATAR_ORBE.fermo(0)` e poi
@@ -190,8 +216,9 @@ Esperto); contenuti sintetici di DGT; documenti in italiano.
 
 ## Cosa manca e prossimo passo (da decidere con l'utente all'avvio)
 
-Pagine fatte nella direzione A: home, Richieste, Dipartimento, tendina Dipendente, pagina Dipendente, pagina
-Esecuzione. Candidati per la prossima sessione, in ordine di priorità proposto a fine sessione (l'utente sceglie):
+Prima di tutto la **scelta del logo** (vedi «Come riprendere», punto 0). Pagine fatte nella direzione A: home, Richieste,
+Dipartimento, tendina Dipendente, pagina Dipendente, pagina Esecuzione. Candidati per la prossima sessione, in ordine
+di priorità proposto (l'utente sceglie):
 
 1. **Giro di correzioni su Esecuzione e Dipendente** (mai giudicate): mezza sessione, correzioni probabili e poco
    costose adesso; poi si chiude il primo blocco di pagine. Da qui possono uscire la tendina del passo e lo stato
@@ -222,8 +249,9 @@ nella successiva con una sessione intera.
 ```
 Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md. Lavoriamo nella direzione A · Console (schermate/direzioni/direzione-a.js,
 dati.js, comune.js, avatar/): non cambiare la cornice, i componenti o i colori del sistema di design; niente emoji.
-Controlla lo stato della PR #6. Apri la pagina dell'Esecuzione (direzione-a.html?pagina=esecuzione&id=4) e la pagina
-del Dipendente (?pagina=dipendente&id=4): ecco le mie correzioni: […]. Poi il prossimo passo scelto è [le approvazioni
-da mobile / la pagina dei costi / la manutenzione]: proponimi la struttura in poche righe, poi procedi con screenshot,
+Per il logo scelgo [Filo / Catena / Innesto / Tre in uno], con queste correzioni: […]: rendilo il logo della Console e
+il marchio dei tondi. Poi apri la pagina dell'Esecuzione (direzione-a.html?pagina=esecuzione&id=4) e la pagina del
+Dipendente (?pagina=dipendente&id=4): ecco le mie correzioni: […]. Poi il prossimo passo scelto è [le approvazioni da
+mobile / la pagina dei costi / la manutenzione]: proponimi la struttura in poche righe, poi procedi con screenshot,
 artefatto, documenti, commit e push.
 ```

@@ -27,6 +27,7 @@ DGT al posto di Google Meet. Contenuti sintetici, in italiano.
 | `design-system/tokens.css` | Tutti i token come custom property `--dgt-*` (colori campionati dagli originali, tipografia, raggi, misure, spazio, moto). |
 | `design-system/DESIGN.md` | Descrizione strutturata (frontmatter + sezioni) dei colori, della tipografia, del layout, delle forme e di ogni componente. |
 | `design-system/reference/` | I due riferimenti dell'utente e il README che dice cosa se ne copia. |
+| `design-system/logo/` | Il logo del prodotto: `logo.js` (D, G e T ricostruite in unità di Urbanist su un cerchio solo, quattro giochi di lettere e il marchio), `logo.html` (presentazione), i file SVG, `build.js`, `README.md`. Scelta dell'utente da raccogliere. |
 | `design-system/tools/` | `screenshot.js` (cattura desktop/mobile), `fetch-fonts.py` (Urbanist locale per gli ambienti senza Google Fonts), `wcag.py` (utilità di contrasto, non è una regola). |
 | `design-system/archive/` | Varianti precedenti (A e B). **Non fanno testo.** |
 | `schermate/direzioni/` | Schermate reali: tre direzioni per la vista principale, prova a 40, direzione scelta (`DIREZIONI.md`); dentro la direzione A le pagine Richieste, Dipartimento e Dipendente. |
@@ -161,7 +162,9 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
    numero; aperta mostra la richiesta corrente e la coda; estesa mostra la richiesta per intero con le azioni) e
    «Riepilogo di oggi» (pillola bianca con bacchetta; consegne, spesa, obiettivo, diario). Si chiudono verso destra;
    la home prende tutta la larghezza.
-7. Logo del prodotto = acronimo DGT in alto a sinistra; titolo dell'azienda in maiuscolo con la O normale.
+7. Logo del prodotto = acronimo DGT in alto a sinistra; titolo dell'azienda in maiuscolo con la O normale. Dal
+   2026-09-05 il logo ha quattro proposte disegnate (`design-system/logo/`: Filo, Catena, Innesto, Tre in uno; nella
+   Console con `?logo=…`), da scegliere; finché non è scelto resta il testo DGT (Urbanist 600, 22 px, .12em).
 8. Pagina Richieste nella stessa cornice, con pieno controllo: filtri per stato, tipo, periodo, dipartimento,
    cliente e dipendente; Da approvare con ordinamento e «Approva tutte»; Storico per giorno a righe compatte;
    Regole di approvazione.
@@ -226,6 +229,7 @@ gli occhi del kit) e 8 (pagina dell'Esecuzione) in `DIREZIONI.md`, sezione 4.
 
 ## 11. Collegamenti
 
+- Il logo DGT, quattro giochi di lettere e il marchio (artefatto): https://claude.ai/code/artifact/84f57660-741c-421a-bd56-7aaafbf52953
 - Confronto delle tre direzioni (artefatto): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
 - Direzione A cliccabile, tendine, pagine Richieste, Dipartimento, Dipendente (revisione di performance) ed Esecuzione, avatar ed editor (artefatto): https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
 - Avatar dei dipendenti, le due famiglie a confronto (artefatto): https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526

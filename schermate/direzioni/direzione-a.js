@@ -191,6 +191,7 @@ window.DIREZIONE_A = (function () {
 .a-head .impost{margin-left:auto}
 /* impaginazione della console */
 .a-logo{position:absolute;left:28px;top:40px;height:40px;display:flex;align-items:center;font-weight:600;font-size:22px;letter-spacing:.12em;color:var(--white)}
+.a-logo svg{height:19px;width:auto}.a-logo.marchio svg{height:32px;width:32px}
 .a-sched{position:absolute;left:102px;top:28px;right:158px;height:64px;border-radius:var(--r-pill);background:var(--white);color:var(--ink);display:flex;align-items:center;gap:14px;padding:6px 6px 6px 22px}
 .a-sched .t{font-size:18px;white-space:nowrap}
 .a-sched .cal{display:flex;align-items:center;gap:10px;height:44px;padding:0 20px 0 6px;border-radius:var(--r-pill);border:1px solid rgb(0 0 0/.14);font-size:14px;white-space:nowrap}
@@ -792,13 +793,20 @@ window.DIREZIONE_A = (function () {
   }
 
   /* ---------- cornice comune ---------- */
+  /* il logo del prodotto: il testo DGT di oggi, oppure una delle proposte di design-system/logo/ (?logo=filo|catena|innesto|monogramma) */
+  function logo(opz) {
+    const L = window.DGT_LOGO;
+    if (!opz.logo || !L || !L.V[opz.logo]) return '<span class="a-logo">DGT</span>';
+    if (opz.logo === 'monogramma') return `<span class="a-logo marchio">${L.marchio({ size: 32 })}</span>`;
+    return `<span class="a-logo">${L.svg(L.V[opz.logo]())}</span>`;
+  }
   function cornice(m, opz, titolo, stats, railAttivo, corpo, nuovo) {
     /* dal dipendente si torna al suo dipartimento, dall'esecuzione al dipendente; dalle altre pagine alla home */
     const e = (opz.pagina === 'dipendente' || opz.pagina === 'esecuzione') ? m.byId[opz.id] : null;
     const indietro = e && opz.pagina === 'esecuzione' ? `data-az="pagina" data-pagina="dipendente" data-id="${e.id}"` : e ? `data-az="pagina" data-pagina="dipartimento" data-dip="${e.dip}"` : opz.pagina !== 'home' ? 'data-az="pagina" data-pagina="home"' : '';
     const lungo = e ? (titolo.length > 20 ? ' lunghissimo' : titolo.length > 12 ? ' lungo' : '') : '';
     return `<div class="a-app" role="figure" aria-label="Direzione A — ${esc(titolo)} (contenuto sintetico)">
-      <span class="a-logo">DGT</span>
+      ${logo(opz)}
       ${barraAgenda(m)}
       <div class="a-tr"><span class="rb">${ic('i-bell')}<i class="dot"></i></span><span class="av persona">${esc(m.azienda.titolare.iniziali)}</span></div>
       <span class="rb a-back" ${indietro}>${ic('i-left')}</span>

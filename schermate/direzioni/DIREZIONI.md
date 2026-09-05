@@ -173,7 +173,9 @@ direzione. Regole che valgono da qui in avanti:
    che riporta alle richieste. Entrambe si chiudono con la freccia verso destra e sono aperte all'apertura della
    home se c'è qualcosa da approvare.
 7. **Logo e titolo**: il logo del prodotto è l'acronimo **DGT** (Urbanist 600, 22 px, spaziatura .12em) in alto a
-   sinistra; il titolo dell'azienda è in maiuscolo con la O normale (niente marchio al posto della O).
+   sinistra; il titolo dell'azienda è in maiuscolo con la O normale (niente marchio al posto della O). Dal 2026-09-05
+   ci sono quattro proposte disegnate (`design-system/logo/`, versione 10 qui sotto), visibili nella Console con
+   `?logo=filo|catena|innesto|monogramma`; finché l'utente non sceglie resta il testo.
 8. **Pagina Richieste**: tutte le richieste dell'azienda, nella stessa cornice della home (barra in alto, titolo
    RICHIESTE con tre numeri, rail con la campanella attiva). Tre sezioni: *Da approvare* (card lime con approva e
    rifiuta), *Approvate* (esito con ora e iniziali di chi ha deciso), *Con modifiche o rifiutate* (esito con il
@@ -601,12 +603,37 @@ Quattro correzioni dell'utente sulle schermate viste da uno schermo largo, più 
    è l'icona `i-fire`, disegnata nello sprite di DGT (`comune.js`; lo specimen ha il suo sprite). Regola fondamentale
    in `CLAUDE.md` e in `SYSTEM-DESIGN.md` (regola 16).
 
+### Versione 10: il logo del prodotto (2026-09-05, sessione successiva)
+
+Richiesta dell'utente: «Crea il logo del prodotto DGT. Prova a creare qualche gioco di lettere modificando la struttura
+di una o più lettere per unirle e formare un logo unico DGT». Fatto in `design-system/logo/` (vedi il suo `README.md`):
+
+1. **Costruzione**: D, G e T ricostruite in `logo.js` in unità di Urbanist (2000/em, maiuscole 1400, asta 208 come il
+   peso 600 del logo di testo) su un cerchio solo di raggio 700 (la pancia della D e la G sono lo stesso cerchio, senza
+   overshoot, così i tratti piatti si allineano); apertura della G a 40° come nel font; spaziatura .12em fra D e G.
+   Ogni variante è un solo `<path>` non-zero con le sottotracce nello stesso verso.
+2. **Quattro giochi di lettere**: *Filo* (l'arco della G prosegue dritto e diventa la traversa della T), *Catena* (D e G
+   condividono un tratto, la G prosegue nella T: un'unica forma), *Innesto* (la barra della G esce e diventa la traversa
+   di una T a mezza altezza), *Tre in uno* (una lettera sola: asta comune a T e D, traversa della T = tratto alto della
+   D, pancia aperta come una G). *Tetto* (una traversa sopra tutte e tre) provata e scartata: la D perde la spalla tonda.
+3. **Il marchio**: il monogramma in un cerchio o in una tessera (lime con glifo nero; scuro con glifo bianco) per
+   pulsanti rotondi 48, rail, favicon 16/32, icona dell'app 64.
+4. **Nella Console**: `direzione-a.html?logo=…` sostituisce il testo con la proposta alla misura reale (`logo(opz)` in
+   `direzione-a.js`, `.a-logo svg` a 19 px = maiuscole 18; il monogramma in un cerchio lime da 32). Senza parametro
+   niente cambia.
+5. **Raccomandazione**: Filo per il logo, Tre in uno per il marchio; Catena se si vuole una forma unica; Innesto come
+   alternativa giocosa. **Scelta dell'utente da raccogliere.**
+
+Screenshot: `design-system/logo/screenshot/logo.png` (la pagina), `console-filo.png`, `console-catena.png`,
+`console-mono.png`. Artefatto: https://claude.ai/code/artifact/84f57660-741c-421a-bd56-7aaafbf52953
+
 ## 5. File
 
 | File | Ruolo |
 |---|---|
 | `dati.js` | modello sintetico (11 e 40) condiviso; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`), le richieste di tipo `revisione` e l'esecuzione (`esecuzioneDi`: sei scritte a mano, le altre generate) |
 | `comune.js` | sprite di icone di DGT, prefisso CSS, utilità |
+| `../../design-system/logo/logo.js` | costruzione del logo (caricato da `direzione-a.html` per `?logo=…`) |
 | `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo); cliccabile |
 | `avatar/avatar-dgt.js` | involucro degli avatar nel linguaggio della Console (colori, stati, simboli statici, animazione); `usa('orbe'|'kit')` sceglie la famiglia |
 | `avatar/avatar-orbe.js` | la famiglia «orbe» (versioni 5b, 5c, 7, 7b, 7c): cerchi dal seme con le pupille e lo sguardo del kit, un solo motore `requestAnimationFrame` con funzioni continue del tempo, sguardo che segue il puntatore; senza disco, con le pelli (`pelle('perla'|'grigio'|'chiaro'|'alone'|'disco')`, solo variabili CSS; perla predefinita); `fermo(t)`, `riprendi()`, `fotogramma(svg, t)` per gli screenshot |
