@@ -601,6 +601,139 @@ Quattro correzioni dell'utente sulle schermate viste da uno schermo largo, più 
    è l'icona `i-fire`, disegnata nello sprite di DGT (`comune.js`; lo specimen ha il suo sprite). Regola fondamentale
    in `CLAUDE.md` e in `SYSTEM-DESIGN.md` (regola 16).
 
+### Versione 10: l'identità degli orbi (2026-09-05, proposta in due tornate, in attesa di scelta)
+
+**Prima tornata.** Richiesta dell'utente: «quando ci sono molti avatar vicini, o anche quelli piccoli messi in fila, non
+rendono l'idea di diversi dipendenti che lavorano, perché sono tutti uguali; magari di diversi colori». Diagnosi: dalla
+versione 7b l'orbe è una sola perla nera per tutti e l'identità sta negli occhi e nel riflesso, invisibili sotto i 36 px.
+Quattro modi a confronto in `avatar-identita.html`: **perle colorate** (una tinta per dipendente, otto tinte scure,
+assegnate a rotazione alla creazione), **tinta del dipartimento** (le quattro tinte già nel modello: indaco Sviluppo,
+corallo Marketing, ambra Vendite, verdeacqua Amministrazione), **toni di perla** (quattro grigi, quasi indistinguibili
+a 26 px) e il **carattere degli occhi** (intervalli più larghi per misura, distanza, altezza e forma delle pupille del kit,
+riflesso con misura e angolo propri). Scelta dell'utente: **perle colorate**.
+
+**Seconda tornata.** «Va bene le perle colorate ma non mi piacciono i colori, li voglio più accesi e vivaci; gli occhi non
+si vedono bene, vorrei ricreare gli occhi degli avatar di lilguy.net; forse è meglio tenere gli avatar piatti con un colore
+unico senza l'effetto 3D; più opzioni e più varianti». Il riferimento (studiato dal widget del sito, ricostruito in
+locale): dischi neri con due occhi enormi, circa un terzo del volto ciascuno, all'altezza del centro e distanti (i centri a
+0,4 del raggio), il «bianco» dell'occhio in un colore vivo e la pupilla a contrasto (tonda, a fessura verticale, ovale),
+forme tonde, ovali, a gatto (inclinate) e a ghianda, coppie anche asimmetriche; battito come schiacciamento verticale,
+gli occhi scivolano verso lo sguardo. La pagina è diventata un **configuratore** con tre scelte indipendenti e nove strade
+preimpostate:
+
+| Scelta | Opzioni |
+|---|---|
+| Corpo (`finitura`) | **perla** (il volume di oggi: ombreggiatura, riflesso, luce riflessa, orlo e bagliore sopra il colore), **piatta** (disco di colore pieno), **orlo** (piatta con un orlo scuro sottile, per le superfici dello stesso colore) |
+| Palette | **scura** (le perle scure della prima tornata), **vivace** (indaco `#6C6AFF`, corallo `#FF6A55`, ambra `#FFB52E`, verdeacqua `#2BD9B5`, prugna `#C66CFF`, petrolio `#3AB8FF`, bordeaux `#FF5BA6`, grigio `#5A5A5A`), **pastello** (le stesse otto, chiare e morbide) |
+| Occhi | **kit** (le pupille di oggi), **punti** (le stesse, grandi il doppio e al centro, con un contorno sottile sui corpi colorati), **lilguy** («bianco» nel colore dello stato, pupilla nera, contorno sottile), **neri** (occhi neri, pupilla grande nel colore dello stato), **colorati** («bianco» nel colore del dipendente, pupilla nel colore dello stato: l'identità passa dagli occhi, il corpo resta nero) |
+| Identità | tinta per dipendente (a rotazione, o scelta), tinta del dipartimento, nessuna |
+
+Le nove strade: vivace piatto con occhi lilguy, neri o punti grandi; pastello piatto con lilguy; pastello con orlo e
+occhi neri; vivace perla con lilguy; perla scura con lilguy; nero con occhi colorati (perla e piatto). In tutte lo
+**stato resta negli occhi** (bianchi da fermo, lime al lavoro, gialli da approvare, rosa a X in errore, a fessura da
+libero) e i moti sono quelli di sempre. Costo dichiarato: le palette vivace e pastello portano il colore in un sistema a
+un solo accento; le tinte evitano lime, giallo e rosa.
+
+**Come è fatto** (`avatar/avatar-orbe.js`, tutto opzionale e spento di default: la Console non cambia finché non si
+sceglie): `TINTE` (otto tinte, tre palette), `PALETTE`, `FINITURE`, `OCCHI`, `IDENTITA`; `html(seme, stato, opz)` accetta
+`identita`, `palette`, `finitura`, `occhi`, `carattere`, `tinta` (id o indice), `dip` (nome della tinta del dipartimento) e
+stampa sull'SVG `data-modo`, `data-tinta`, `data-palette`, `data-finitura`, `data-occhi`, `data-dip`, `data-carattere`;
+`aspetto({…}, radice)` imposta i predefiniti della pagina (`html[data-*]`) e applica subito palette, finitura e modo agli
+orbi già disegnati (occhi e carattere cambiano il markup: valgono per gli orbi disegnati da lì in avanti). Il colore del
+corpo nei modi con identità è `--av-base`: il cerchio `.pelle` diventa un colore pieno e sopra ci sta `.ombra`, la stessa
+ombreggiatura della perla come gradiente bianco → nero trasparente (la finitura piatta la spegne insieme a luci, orlo e
+bagliore). Gli occhi grandi sono `.occhio.lg` con `.sclera` (cerchio unitario o il tracciato della ghianda, con forma e
+inclinazione dal seme) e `.pupilla` che il motore trasla verso lo sguardo; la geometria è piana (`posaPiana`), non sulla
+sfera. `forma(seme)` estrae i parametri lilguy da un generatore a parte (`#lilguy`), così non cambiano con il carattere.
+Pagina di confronto `avatar-identita.html` (`?identita=&palette=&corpo=&occhi=&carattere=`), artefatto
+https://claude.ai/code/artifact/1fc2ee53-3c23-4462-922a-cd581a90b6d6. Screenshot: `screenshot/avatar-identita.png`.
+
+**Terza tornata.** «Mi piacciono la 1 e la 8. Per la 8: occhi a X in errore, pupille grandi in ogni avatar, un dormiente
+che si capisca. Per la 1: sclera sempre bianca e pupille sempre grandi». Fatto in entrambe: la pupilla è grande sempre
+(0,6–0,7 dell'occhio, tonda o ovale piena, mai a fessura); da **libero** l'occhio è chiuso, una **palpebra ad arco** larga
+quanto l'occhio nel colore della sclera (dello stato per gli occhi neri), con un lento cenno del capo oltre al respiro
+profondo; con gli occhi **colorati** in errore la sclera sparisce e restano due **X rosa** grandi. Nello stile **lilguy** la
+sclera è **sempre bianca** e lo stato passa alla pupilla: nera da fermo, lime al lavoro, gialla da approvare, X rosa in
+errore, con un contorno sottile perché lime e giallo si leggano sul bianco (contorno anche alle pupille degli occhi
+colorati). La tinta «grigio» delle palette vivace e pastello è più chiara (`#9E9E9E`, `#BEBEBE`), perché con gli occhi
+colorati è il colore degli occhi sul nero. Le due opzioni riviste sono le strade 1 e 8 della pagina; **in attesa della
+scelta finale**.
+
+**Quarta tornata.** «In tutti gli stati di entrambe le scelte le pupille siano sempre nere; troveremo un modo diverso per
+visualizzare lo stato». Fatto: negli stili lilguy e colorati la pupilla è nera in ogni stato, la X d'errore è nera dentro
+la sclera (bianca o della tinta), le palpebre chiuse da libero restano. **Aperto: come mostrare lo stato** senza il colore
+degli occhi. Candidati da proporre: (a) un punto di stato sul bordo della casella, come il punto rosso della campanella
+(lime al lavoro, giallo da approvare, rosa in errore, nulla da fermo); (b) un anello sottile attorno all'avatar nel colore
+dello stato; (c) solo le forme e i moti già presenti (X, palpebre, occhi più grandi, sguardo che scandisce) più i chip di
+stato delle card, che è la regola scritta in `avatar-dgt.js`: «l'avatar sta sempre accanto all'etichetta e alla pillola di
+stato, non porta informazione da solo».
+
+**Quinta tornata.** «Per l'opzione 8 proviamo a mettere le pupille bianche». Fatto: nello stile colorati la pupilla è
+bianca in ogni stato, X compresa; le palpebre chiuse restano nel colore della tinta.
+
+**Sesta tornata.** «Proviamo invece a togliere le pupille all'opzione 8». Fatto: nello stile colorati l'occhio è una
+forma piena nel colore del dipendente, senza pupilla; in errore l'occhio stesso è una X colorata (`.occhio.lg.x .segno`),
+da libero la palpebra chiusa; la coppia scivola verso lo sguardo come nel widget del riferimento.
+
+**Settima tornata: lo stato.** «Procediamo con lo stato: tre varianti, una come hai proposto tu, le altre con animazioni
+premium dinamiche dell'avatar». Costruite come **segnale** opzionale dell'orbe (`SEGNALI`, `aspetto({ segnale })`,
+`?segnale=`), sopra la strada 1, nella pagina di confronto (sezione «Tre varianti per lo stato», gruppo «Stato» nel
+configuratore): **A · Punto**, un punto di stato sul bordo della casella in basso a destra (raggio 15 su 125, bordo nero di 4
+che lo stacca dal disco e dalla card lime; lime al lavoro, giallo da approvare, rosa in errore, nulla da fermo e pianificato);
+**B · Anello vivo**, un anello sottile a 13 unità dal disco nel colore dello stato, animato dal motore: al lavoro un arco lime
+del 26 % (con un fondo nero di 9) gira a 70°/s; da approvare due onde gialle si allargano da +4 a +26 e svaniscono ogni 2,2 s;
+in errore un tratteggio rosa pulsa; pianificato un anello grigio di tacche gira a 12°/s; **C · Gesto**, niente segni: il corpo
+dice lo stato con squash e stretch (`scale(sx sy)` su `.tutto`): al lavoro batte un ritmo a 0,5 s con lo sguardo che scandisce
+e un cenno ogni 4 s; da approvare salta ogni 3,2 s (accovacciata, salto di 18 con stiramento, atterraggio e assestamento
+smorzato) guardando in alto; in errore si sgonfia al 96 %, si inclina di 5° e sospira ogni 3,4 s; pianificato oscilla come un
+pendolo (±9, ±9°); da libero dorme con il respiro profondo. Il segnale sta fuori da `.tutto` (non respira né salta con il
+corpo). **Scelta dell'utente**: «punto come standard, ma per gli avatar piccoli delle card dei dipartimenti voglio gesto».
+Portata nel prodotto: `direzione-a.html` imposta `segnale: 'punto'`; `pair()` in `direzione-a.js` (le pile: card dei dipartimenti
+e degli obiettivi, coppie della barra agenda) passa `{ segnale: 'gesto' }` a ogni avatar impilato, perché i punti si
+sovrapporrebbero ai vicini. `?segnale=nessuno|anello|gesto` per provare gli altri. `SYSTEM-DESIGN.md`: riga avatar e regola 19
+aggiornate. Screenshot della Console rigenerati.
+
+**Scelta dell'utente: la strada 1** («Scelgo la 1»): vivace piatto, occhi lilguy con sclera bianca e pupilla nera.
+**Portata nel prodotto** nella stessa sessione: in `dati.js` la tinta è del dipendente (`e.tinta`; `m.tintaDi(e)` la dà, a
+rotazione sull'id per i dipendenti del modello; `m.tintaLibera()` è la meno usata in azienda, che `aggiungi` assegna alla
+creazione; `TINTE_ID` i nomi delle otto tinte); nell'editor del dipendente la riga **Colore** (otto cerchi pieni nella palette in
+uso, il proposto con l'anello nero; `scelteTinta`, `bozza.tinta`); `av()` in `direzione-a.js` passa tinta e dipartimento a
+`DGT_AVATAR.html`; `direzione-a.html` imposta l'aspetto con `DGT_AVATAR_ORBE.aspetto({ identita: 'tinta', palette: 'vivace',
+finitura: 'piatta', occhi: 'lilguy' })`, con i parametri `?identita= ?palette= ?corpo= ?occhi= ?carattere=` per tornare
+indietro o provare altro. Con il corpo piatto il disco riempie la casella (`--av-scala: 128%`) e gli avatar impilati riprendono
+l'anello del fondo con 9 px di sovrapposizione. Screenshot della Console rigenerati; artefatto della Console a un indirizzo
+nuovo, https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34 (il vecchio 93d18853 tiene la versione con la perla nera). `SYSTEM-DESIGN.md`: riga «Avatar del
+dipendente AI» riscritta e regola 19. **Aperto**: come mostrare lo stato (vedi «Quarta tornata»).
+
+### Versione 11 (prossima sessione): le approvazioni da mobile, struttura proposta e accettata (2026-09-05)
+
+Il titolare approva dal telefono. Cornice mobile dello specimen (300 × 620, barra di stato, navigazione a pillola nera in
+basso con i quattro cerchi del rail della Console e, al posto del cerchio lime del video, la **campanella lime con il numero
+da approvare**). Tre schermate:
+
+1. **Da approvare** (fondo chiaro `#E0E0E0` come la schermata WORKSPACE): titolo con il conteggio; la richiesta corrente
+   come card lime grande (avatar del dipendente, cosa, chi · cliente · ora, chip del tipo) e sotto i quattro cerchi della
+   tendina della Console (apri, commenta, approva lime, rifiuta rossa); poi «In coda» con le altre richieste come righe; in
+   fondo la riga «Riepilogo di oggi». Si tocca: approva o rifiuta al volo, la card o una riga per aprire la richiesta, il
+   riepilogo.
+2. **Richiesta** (la tendina estesa in colonna, su fondo nero): indietro, chip del tipo, titolo, «2 di 4»; il documento in
+   una card bianca (testo e allegato); «Chi la propone» (avatar, consegnata alle, costo, passi a chip); la nota del
+   dipendente; barra fissa in basso con Approva lime larga, Chiedi modifiche, Rifiuta rossa. Rifiuta apre il campo del
+   motivo, obbligatorio. Per una revisione le due versioni una sotto l'altra con le differenze e le quattro decisioni. Decisa
+   una richiesta entra la successiva; le frecce scorrono la coda.
+3. **Riepilogo di oggi** (il pannello Riepilogo della terza schermata dello specimen, chiaro `#F4F4F4`): consegne, spesa,
+   obiettivo del mese nella card lime con la matita, le voci del diario sulla linea del tempo con i badge, la riga lime che
+   riporta alle richieste. È anche lo stato vuoto: a coda finita la prima schermata mostra «Niente da approvare» e questo
+   riepilogo.
+
+Dove vive: un file a parte in `schermate/direzioni/` (`mobile.html` + `mobile.js`), stessi `comune.js`, `dati.js`, `avatar/`;
+la decisione sulla richiesta passa da `monta` in `direzione-a.js` a `dati.js` come funzione del modello (`m.decidi`), così
+telefono e Console condividono lo stato. La pagina mostra i tre telefoni affiancati come lo specimen, tutti cliccabili, con
+i parametri `?schermata=1|2|3&richiesta=0`. I componenti si riusano con le stesse classi della Console (`.dirA`).
+**Divisione**: prima sessione le schermate 1 e 2 per post, documento, lista e proposta, con il rifiuto con motivo, screenshot
+(`design-system/tools/screenshot-elementi.js` per le cornici), artefatto, documenti; sessione successiva la revisione sul
+telefono, il Riepilogo, la prova a quaranta e lo stato vuoto.
+
 ## 5. File
 
 | File | Ruolo |
@@ -612,12 +745,13 @@ Quattro correzioni dell'utente sulle schermate viste da uno schermo largo, più 
 | `avatar/avatar-orbe.js` | la famiglia «orbe» (versioni 5b, 5c, 7, 7b, 7c): cerchi dal seme con le pupille e lo sguardo del kit, un solo motore `requestAnimationFrame` con funzioni continue del tempo, sguardo che segue il puntatore; senza disco, con le pelli (`pelle('perla'|'grigio'|'chiaro'|'alone'|'disco')`, solo variabili CSS; perla predefinita); `fermo(t)`, `riprendi()`, `fotogramma(svg, t)` per gli screenshot |
 | `confronto-avatar.html` | le due famiglie a confronto nelle viste della Console |
 | `avatar-pelli.html` | le quattro pelli dell'orbe senza disco a confronto su tutti i fondi della Console, con il selettore che cambia la pelle |
+| `avatar-identita.html` | l'identità degli orbi (versione 10, proposta): perle colorate, tinta del dipartimento, toni, carattere degli occhi a confronto sugli undici vicini, sui fondi e nella Console |
 | `avatar/avatar-motore.js` | motore del kit impacchettato (generato da `build-motore.js`, non si modifica a mano) |
 | `avatar/vendor-avatars/` | sorgenti del motore del kit, verbatim |
 | `direzione-b.js` / `.html` | Registro operativo |
 | `direzione-c.js` / `.html` | Mappa viva |
 | `confronto.html` | pagina di confronto con tab e selettore 11/40 |
 | `build-unico.js` | genera il file unico per l'artefatto (`node build-unico.js direzione-a.html out.html`) |
-| `screenshot/` | catture a 1440 px |
+| `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`; per gli elementi `screenshot-elementi.js`) |
 
 Per gli screenshot: `design-system/tools/screenshot-page.js` (vedi `design-system/tools/README.md`).

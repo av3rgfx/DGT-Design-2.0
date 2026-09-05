@@ -1,41 +1,36 @@
 # Prossima sessione — passaggio di consegne
 
-Stato al 2026-09-05, fine della sessione sull'**orbe senza disco** (versione 7 della direzione A · Console: le pelli;
-7b: perla, corpi tondi, moti fluidi; 7c: gli occhi del kit), sulla **pagina dell'Esecuzione** (versione 8) e sulle
-**correzioni della cornice** (versione 9: zoom, card, niente emoji). Tutto è committato e pushato sul branch indicato sotto.
+Stato al 2026-09-05, fine della sessione sull'**identità degli orbi** (versione 10 della direzione A · Console: le tinte, gli
+occhi «lilguy», il punto di stato e il gesto nelle pile). Tutto è committato e pushato sul branch indicato sotto, con la
+**PR #7** aperta verso `main`. **Prossimo passo deciso dall'utente: le approvazioni da mobile**, con la struttura proposta e
+accettata (sotto, «Come riprendere»).
 
 ## Stato
 
-- Branch: `claude/avatar-execution-page-nv8dm4` (da `main`, che contiene le PR #1, #3, #4 e #5). A fine sessione è
-  aperta la **PR #6** verso `main` (https://github.com/av3rgfx/DGT-Design-2.0/pull/6): se all'avvio della prossima
-  sessione risulta già unita, ripartire da `main` con un branch nuovo; se è ancora aperta, continuare sullo stesso
-  branch e la PR si aggiorna da sola.
-- I tre artefatti della direzione A qui sotto sono stati ripubblicati a fine sessione e corrispondono all'ultimo
-  commit del branch.
-- Artefatto della direzione A cliccabile (home, tendine, Richieste, Dipartimento, editor del dipendente, pagina del
-  Dipendente, **pagina dell'Esecuzione**, orbe senza disco): https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
-  (si aggiorna con `node schermate/direzioni/build-unico.js direzione-a.html /percorso/a.html` e ripubblicando allo
-  stesso URL).
-- Artefatto delle **pelli dell'orbe** (le quattro soluzioni senza disco a confronto su tutti i fondi della Console, con
-  il selettore che cambia la pelle in tutta la pagina): https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569
-  (`node build-unico.js avatar-pelli.html /percorso/pelli.html`; è un URL nuovo: il primo,
-  https://claude.ai/code/artifact/a196c232-35ce-4bf0-ae6c-e472ca0c87f3, tiene la prima versione con «chiaro» e non si
-  aggiorna senza rileggere per intero la copia salvata dallo strumento).
-- Artefatto delle due famiglie di avatar a confronto (kit e orbe perla): https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526
-  (`node build-unico.js confronto-avatar.html /percorso/avatar.html`; indirizzo nuovo dal 2026-09-05: il vecchio
-  4bc0c3ee non si aggiornava senza rileggere per intero la copia live, come era successo per le pelli).
-- Artefatto del confronto A/B/C (selettore 11/40): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
-  (`node build-unico.js confronto.html /percorso/confronto.html`; non ripubblicato in questa sessione: le direzioni B
-  e C non usano gli orbi).
-- Artefatto dello specimen del sistema: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b.
-  **Scoperto in questa sessione**: la copia live conteneva una sezione «moto» (token `--dgt-t-*`, classi `t-*`, script di
-  interazione, card che si allargano, marcatore che avanza) e la fiamma come icona, mai committate nel repository;
-  `design-system/specimen.html` è stato allineato alla copia live (con l'icona rinominata `i-fire`). `DESIGN.md` non
-  descrive ancora la sezione «moto»: da fare.
-- Documento unico: `SYSTEM-DESIGN.md` (sezione 10, regole 1–18; sezione 6 con le righe «Avatar del dipendente AI»
-  riscritta senza disco e «Pagina Esecuzione»). Studio e versioni della direzione A: `schermate/direzioni/DIREZIONI.md`
-  (sezione 4: regole 13 e 14, «Versione 7» per le pelli, «Versione 7b» per perla, tondi e moti fluidi, «Versione 7c» per gli occhi del kit, «Versione 8»
-  per la pagina dell'Esecuzione, «Versione 9» per la cornice, le card e le emoji).
+- Branch: `claude/direzione-a-corrections-mobile-2x5j8x` (da `main`, che contiene le PR #1, #3, #4, #5 e #6). A fine sessione
+  è aperta la **PR #7** verso `main` (https://github.com/av3rgfx/DGT-Design-2.0/pull/7): se all'avvio della prossima sessione
+  risulta già unita, ripartire da `main` con un branch nuovo; se è ancora aperta, continuare sullo stesso branch e la PR si
+  aggiorna da sola.
+- Artefatto della **Console** (direzione A cliccabile: home, tendine, Richieste, Dipartimento, editor del dipendente, pagina
+  del Dipendente, pagina dell'Esecuzione, avatar della versione 10):
+  https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34 (indirizzo nuovo dal 2026-09-05; i precedenti
+  93d18853 e 8a8a273e tengono le versioni con la perla nera e senza il punto di stato). Si rigenera con
+  `node schermate/direzioni/build-unico.js direzione-a.html /percorso/console.html`.
+- Artefatto dell'**identità degli orbi** (`avatar-identita.html`: nove strade, tre varianti per lo stato, configuratore con
+  corpo, palette, occhi, stato e identità, la prova sugli undici vicini e la Console vera):
+  https://claude.ai/code/artifact/1fc2ee53-3c23-4462-922a-cd581a90b6d6 (il precedente 690baac8 tiene la versione prima
+  della scelta dello stato).
+- Artefatti precedenti, non toccati: pelli dell'orbe https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569
+  (`avatar-pelli.html`), le due famiglie kit/orbe https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526
+  (`confronto-avatar.html`), confronto A/B/C https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
+  (`confronto.html`), specimen https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b (`DESIGN.md` non descrive
+  ancora la sezione «moto» dello specimen: da fare). Queste pagine usano l'orbe con i predefiniti del motore (perla nera,
+  pupille del kit), non l'aspetto della Console.
+- Documento unico: `SYSTEM-DESIGN.md` (sezione 6, riga «Avatar del dipendente AI» riscritta per la versione 10; sezione 10,
+  regole 1–19). Studio e versioni della direzione A: `schermate/direzioni/DIREZIONI.md` (sezione 4: «Versione 10» con le
+  sette tornate sull'identità e le scelte; «Versione 11» con la struttura del mobile da costruire).
+- Regola in `CLAUDE.md`: avatar = disco piatto nella tinta del dipendente, occhi grandi con sclera bianca e pupilla nera,
+  stato dal punto sul bordo (nelle pile dal gesto). Niente emoji resta regola fondamentale.
 
 ## Decisioni dell'utente (in ordine)
 
@@ -83,147 +78,137 @@ Stato al 2026-09-05, fine della sessione sull'**orbe senza disco** (versione 7 d
     card del lavoro → chip di stato; il «+1» sotto gli avatar nella card dell'obiettivo → badge dopo la pila;
     **niente emoji** nel prodotto e nel sistema (regola fondamentale in `CLAUDE.md`, `i-fire` al posto della fiamma).
 
+19. **2026-09-05, l'identità degli orbi** («molti avatar vicini, o piccoli in fila, non rendono l'idea di diversi
+    dipendenti: sono tutti uguali; magari di diversi colori»). Prima tornata: perle colorate, tinta del dipartimento, toni
+    di grigio, carattere degli occhi → **perle colorate**.
+20. Seconda tornata: «colori più accesi e vivaci; gli occhi non si vedono bene, ricreare gli occhi di lilguy.net; forse
+    piatti senza 3D; più opzioni e varianti» → configuratore con corpo (perla, piatto, orlo), palette (scura, vivace,
+    pastello), occhi (attuali, punti grandi, lilguy, neri, colorati) e nove strade preimpostate. Il riferimento studiato dal
+    widget del sito, ricostruito in locale: occhi enormi al centro, bianco colorato e pupilla a contrasto.
+21. Terza tornata: ristrette a **strada 1** (vivace piatto, lilguy) e **strada 8** (nero, occhi colorati); pupille grandi
+    sempre, dormiente con le palpebre chiuse ad arco, X in errore; nella 1 sclera sempre bianca. Quarta: **pupille sempre
+    nere** in entrambe («troveremo un modo diverso per visualizzare lo stato»). Quinta e sesta: nella 8 pupille bianche,
+    poi **senza pupille** (occhi pieni colorati).
+22. **«Scelgo la 1»**: portata nel prodotto (tinta nel modello, riga «Colore» nell'editor, `av()` passa tinta e dipartimento,
+    aspetto in `direzione-a.html`, dischi che riempiono la casella, pile con l'anello del fondo).
+23. Lo stato: tre varianti («una come hai proposto tu, le altre con animazioni premium dinamiche dell'avatar») → **punto**
+    sul bordo, **anello vivo** animato, **gesto** del corpo con squash e stretch.
+24. **«Punto come standard, ma per gli avatar piccoli delle card dei dipartimenti voglio gesto»**: applicato a tutte le
+    pile (card dei dipartimenti e degli obiettivi, coppie della barra agenda), che passano tutte da `pair()`.
+25. La struttura delle **approvazioni da mobile** proposta all'inizio della sessione è accettata («si procederà con le
+    approvazioni da mobile come proposto»). Restano non giudicate la pagina dell'Esecuzione (versione 8) e la pagina del
+    Dipendente (versione 6): l'utente non ha dato correzioni.
+
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
-Esperto); contenuti sintetici di DGT; documenti in italiano.
+Esperto; il riferimento lilguy.net è stato studiato, non copiato: occhi ridisegnati nel linguaggio del sistema);
+contenuti sintetici di DGT; documenti in italiano.
 
-## Come riprendere
+## Come riprendere: le approvazioni da mobile
 
-1. Leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezione 10) e `schermate/direzioni/DIREZIONI.md` (sezioni 1 e 4, in
-   particolare «Versione 7c», «Versione 8» e «Versione 9»). Controllare se questo branch è stato unito (vedi «Stato»).
-2. Aprire `schermate/direzioni/direzione-a.html`: la home con gli orbi perla tondi in moto; `?pelle=grigio|chiaro|alone|disco`
-   per le altre pelli; `?pagina=esecuzione&id=4` (Nora al lavoro, passo 2 di 4), `&id=3` (Kim in errore: «Riprova il
-   passo 3»), `&id=5` (Social media manager: consegnato, «Apri la richiesta»), `&id=2` (Tester QA pianificata: «Avvia
-   ora»), `?n=40&pagina=esecuzione&id=1` (esecuzione generata, al lavoro); `avatar-pelli.html` per il confronto delle pelli.
-   Modello dati in `dati.js` (`ESEC11`, `esecuzioneGenerata`, `esecuzioneDi`), pagina in `direzione-a.js`
-   (`esecuzione`, `testataEsecuzione`, `barraPassi`, `rigaPasso`, `rigaLog`, `cardOutput`, `riepilogoEsecuzione`;
-   azioni in `monta`: `esecAzione`, `inviaNota`, filtro `filtro-log`), pelli in `avatar/avatar-orbe.js` (`PELLI`,
-   `pelle`, il CSS `[data-pelle=…]`, il motore: `registra`, `posa`, `palpebra`, `ciclo`, `fermo`, `fotogramma`; gli
-   occhi del kit: `posaOcchi`, `matrice`, `occhiConf`) e
-   l'inversione di contesto in `direzione-a.js` (le regole `… .av svg.orbe`, che contano solo per la pelle «chiaro»).
-3. Raccogliere il giudizio dell'utente su tre cose: l'**orbe perla tondo con gli occhi del kit** (versioni 7b e 7c), la
-   **pagina dell'Esecuzione**, la **pagina del Dipendente** (versione 6, mai giudicata). Punti aperti che possono
-   uscire:
-   - i moti sono volutamente **quieti** (respiro ±1,6 %, sguardo, palpebre, un gesto ogni 6–10 s per stato): se
-     l'utente li vuole più visibili si alzano le ampiezze in `posa()` (`amp`, `impulso`, i coefficienti di `gx/gy`),
-     senza toccare la struttura;
-   - a 26–28 px (coda, diario, storico) la perla si legge dagli occhi e dall'orlo di luce: è la più discreta delle
-     pelli; se serve più stacco, alzare `--av-bagliore` o `--av-orlo-w` nella pelle «perla»;
-   - i **filtri delle sezioni Passi, Output e Costo** (Fatti / Da fare / Con strumenti; Da approvare / In corso /
-     Approvate; Per passo / Per strumento) sono inerti come nelle altre pagine; quelli del Log funzionano;
-   - «Sposta» (esecuzione pianificata), «Ripeti» (conclusa) e le frecce nell'intaglio delle righe dei passi e degli
-     strumenti sono inerti: non c'è una tendina del passo. Se serve, la tendina estesa può mostrare un passo (log
-     filtrato, strumenti, output di quel passo);
-   - «Rinnova la connessione» (Kim) porta alla pagina del Dipendente, dove c'è il pulsante «Rinnova» della connessione
-     scaduta: non rinnova da sola;
-   - le esecuzioni generate a 40 hanno passi e log generici (nomi dei passi per dipartimento); quelle concluse ieri
-     senza costo nel modello prendono un costo dal seme;
-   - un dipendente appena creato ha come «ultima consegna» il segnaposto «Nessuna esecuzione»: la sua pagina Esecuzione
-     si apre (tre passi generici, 0 €) ma non ha senso; manca uno stato vuoto («Nessuna esecuzione ancora»).
-4. Pagine fatte nella direzione A: home, Richieste, Dipartimento, tendina Dipendente, pagina Dipendente, pagina
-   Esecuzione. Restano le **approvazioni da mobile** e i **costi** dell'azienda. Stessa cornice.
+1. Leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezioni 6 e 10) e `schermate/direzioni/DIREZIONI.md` («Versione 10» e «Versione
+   11»). Controllare la PR #7 (vedi «Stato»).
+2. Aprire `schermate/direzioni/direzione-a.html` per la Console com'è oggi; `design-system/specimen.html`, sezione «(02) DGT —
+   App mobile», per le tre cornici del telefono (`.phone`, `.screen.lightbg|.daily|.callscr`, `.sb` barra di stato, `.nav`,
+   `.bnav` navigazione a pillola con `.meet` lime e `.tabs`, il Riepilogo `.summary` con `.tline` e `.dcard`; i colori: `--light`
+   `#E0E0E0`, `--summary` `#F4F4F4`, `--docs` `#E4E4E4`, lime `#B8FC64`, `--lime-deep` `#A8E65D`, `--hangup` `#F15E60`, `--badge-red`
+   `#F9A3A3`, raggi `--r-card` 28, `--r-inner` 22). Le richieste sono in `dati.js` (`richieste11`, `m.richiesteDi('attesa')`,
+   `inAttesa` ordina le più vecchie prima; i tipi post, documento, lista, proposta, revisione; `decidi()` è dentro `monta` in
+   `direzione-a.js`, riga ~1425, con `m.decidiRevisione` per le revisioni); la tendina «Da approvare» e quella estesa sono
+   `tendinaAperta`, `cardRichiestaCorrente`, `tendinaEstesa` in `direzione-a.js` (~riga 700).
+3. **La struttura accettata** (dettagli in `DIREZIONI.md`, «Versione 11»): cornice del telefono dello specimen con la
+   navigazione a pillola (quattro cerchi del rail + campanella lime con il numero da approvare); tre schermate: **Da
+   approvare** (fondo chiaro, card lime della richiesta corrente con i quattro cerchi apri/commenta/approva/rifiuta, «In
+   coda», riga «Riepilogo di oggi»), **Richiesta** (la tendina estesa in colonna su fondo nero: documento, chi la propone,
+   nota, barra fissa Approva/Chiedi modifiche/Rifiuta con il motivo obbligatorio; per una revisione le due versioni con le
+   differenze), **Riepilogo di oggi** (il pannello Riepilogo dello specimen; anche stato vuoto). Un file a parte
+   (`mobile.html` + `mobile.js`) con gli stessi `comune.js`, `dati.js`, `avatar/`; `decidi` spostata in `dati.js` come `m.decidi`
+   così telefono e Console condividono lo stato; i tre telefoni affiancati come lo specimen, tutti cliccabili,
+   `?schermata=1|2|3&richiesta=0`.
+4. **Divisione**: in questa sessione le schermate 1 e 2 per post, documento, lista e proposta, con il rifiuto con motivo;
+   screenshot delle cornici con `design-system/tools/screenshot-elementi.js`; artefatto (`build-unico.js mobile.html`);
+   `DIREZIONI.md` (Versione 11), `SYSTEM-DESIGN.md` (sezione 6 riga «Mobile», sezione 10), README, questo file; commit e
+   push. Nella sessione successiva la revisione sul telefono, il Riepilogo, la prova a quaranta e lo stato vuoto.
+5. Gli avatar nel mobile: gli stessi orbi della Console (`DGT_AVATAR.html(seme, stato, { tinta, dip })` via una `av()` come
+   quella di `direzione-a.js`), con l'aspetto impostato all'apertura come in `direzione-a.html` (`DGT_AVATAR_ORBE.aspetto({
+   identita: 'tinta', palette: 'vivace', finitura: 'piatta', occhi: 'lilguy', segnale: 'punto' })`); nelle pile `{ segnale:
+   'gesto' }`. Il CSS di `.av` vive dentro `.dirA .a-app`: fuori dalla Console va ridichiarato (vedi `avatar-identita.html`).
+
+Punti aperti ereditati (non chiesti dall'utente, da non toccare senza richiesta): i filtri inerti delle sezioni Passi,
+Output e Costo dell'Esecuzione; «Sposta», «Ripeti» e le frecce dei passi senza tendina del passo; lo stato vuoto del
+dipendente appena creato («Nessuna esecuzione»); la pagina del Dipendente (versione 6) e quella dell'Esecuzione (versione
+8) mai giudicate.
 
 ## Strumenti (`design-system/tools/`)
 
-- `screenshot-page.js` — cattura a pagina intera (`FULL_PAGE=0` per il solo viewport; il quarto argomento è l'altezza
-  del viewport: 1120 per far stare il dossier).
-  `PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/tmp/fonts.css node screenshot-page.js "../../schermate/direzioni/direzione-a.html?pagina=esecuzione&id=4&tendina=chiusa" /tmp/a.png`
-  (esportare le tre variabili con `export` se si lanciano più catture nella stessa shell: senza, Node non trova
-  `playwright-core`).
-- `fetch-fonts.py` — Urbanist locale per Chromium headless (`SSL_CERT_FILE=/root/.ccr/ca-bundle.crt python3 fetch-fonts.py /tmp/fonts.css`).
+- `screenshot-page.js` — cattura a pagina intera (`FULL_PAGE=0` per il solo viewport; il quarto argomento è l'altezza del
+  viewport: 1120 per far stare il dossier).
+  `export PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css` e poi
+  `node screenshot-page.js "../../schermate/direzioni/direzione-a.html?pagina=esecuzione&id=4&tendina=chiusa" /percorso/a.png`.
+- `screenshot-elementi.js` (nuovo, 2026-09-05) — cattura elementi per selettore (`node screenshot-elementi.js pagina.html
+  prefisso '#sel1' '.sel2'`); `MOTION=no-preference` per gli avatar in moto, `SCALE=2`, `CLICK="sel|sel"`. Per le cornici del
+  telefono e le card.
+- `fetch-fonts.py` — Urbanist locale per Chromium headless (`SSL_CERT_FILE=/root/.ccr/ca-bundle.crt python3 fetch-fonts.py
+  /percorso/fonts.css`): va rifatto a ogni sessione, il file non è nel repository.
 - `schermate/direzioni/avatar/build-motore.js` — rigenera `avatar-motore.js` dai sorgenti del kit.
 - `schermate/direzioni/build-unico.js` — file unico per gli artefatti (incorpora anche gli script in `avatar/`).
-- Pellicola degli avatar: una pagina di prova con sei copie di un orbe per stato, `DGT_AVATAR_ORBE.fermo(0)` e poi
-  `fotogramma(svg, t)` con t = 0…5 s per colonna, uno screenshot solo (800×560 a 2×). Lo script è stato tenuto fuori
-  dal repository: rifarlo in dieci righe se serve.
-- Prova cliccata: uno script Playwright (`reducedMotion: 'no-preference'`) che apre la Console, clicca le azioni e
-  verifica il DOM e gli errori di console; anche questo fuori dal repository, da rifare al bisogno (le verifiche fatte
-  sono elencate in `DIREZIONI.md`, «Versione 7» e «Versione 8»).
+- Pellicola degli avatar: una pagina con più copie di un orbe per stato e un `data-t` per copia, `DGT_AVATAR_ORBE.fermo(0)` e
+  poi `fotogramma(svg, t)`; cattura con `screenshot-elementi.js` e `MOTION=no-preference`. Tenuta fuori dal repository:
+  dieci righe da rifare al bisogno.
+- Prova cliccata: uno script Playwright (`reducedMotion: 'no-preference'`) che apre la Console, clicca le azioni e verifica il
+  DOM e gli errori di console; fuori dal repository, da rifare al bisogno.
 
 ## Note tecniche apprese
 
 - Playwright globale (`NODE_PATH=/opt/node22/lib/node_modules`, `PLAYWRIGHT_MODULE=playwright`), Chromium in
-  `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`; Google Fonts bloccato: gli script servono un CSS locale.
-- La Console gira da `file://` e come file unico: **niente moduli ESM**. Il kit avatar è impacchettato in uno script
-  classico.
-- Gli screenshot usano `reducedMotion: 'reduce'`, quindi gli avatar sono al fotogramma fisso; la prova cliccata
-  (Playwright con `no-preference`) verifica che si muovano e che ogni azione della pagina funzioni.
-- La famiglia «orbe» (dalla versione 7b) non ha più animazioni CSS: un solo `requestAnimationFrame` per pagina
-  (`ciclo`) chiama `posa(v, t)` per ogni orbe visibile e scrive gli attributi `transform` di `.tutto`, `.corpo` e dei
-  due `.occhio` (origine al centro del viewBox: scala e rotazione sono attorno al centro). Tutto è funzione continua
-  del tempo (`rumore` a tre armoniche, `impulso` sin², `liscia` smoothstep); fase e periodi dal seme. Gli orbi si
-  registrano da soli con un `MutationObserver` sul body (anche via `innerHTML`), si aggiornano solo nel viewport
-  (`IntersectionObserver`), si fermano con la scheda nascosta; con `prefers-reduced-motion` non si registrano e restano
-  nella posa di riposo del markup. `fermo(t)` / `riprendi()` / `fotogramma(svg, t)` servono agli screenshot.
-- Gli **occhi sono quelli del kit** (7c): `posaOcchi(gaze, R, split)` è `eyePoses` di `gaze.js` (base tangente della
-  sfera proiettata in ortografico), `matrice(e, w, h, tilt, k, R)` la stessa matrice che il kit dà alla pupilla
-  (`[ax·w·R, ay·w·R·k, cx·h·R, cy·h·R·k, x, y]`, con k lo schiacciamento del battito); la pupilla è un path unitario
-  (`M.UNIT_CIRCLE` / `M.UNIT_SQUARE`, anello = cerchio con solo il tratto), le X dell'errore due tacche unitarie.
-  Lo sguardo si esprime in gradi (yaw, pitch, roll): per ampliarlo o attenuarlo si toccano i coefficienti in `posa()`.
-- **Le pelli dell'orbe sono solo variabili CSS** (`--av-corpo`, `--av-orlo`, `--av-orlo-w`, `--av-luce`,
-  `--av-occhi-neutri`, `--av-bordo`, `--av-zeta`, `--av-alone`, `--av-fondo`, `--av-taglio`, `--av-scala`,
-  `--av-anello-pelle`) dichiarate su `[data-pelle="…"]` ed ereditate: vale l'antenato più vicino, così una cella o una
-  card può avere una pelle diversa dalla pagina. L'SVG legge `--av-c-*` prima di `--av-*`: le regole di contesto in
-  `direzione-a.js` (`.ncard.lime .av svg.orbe` ecc.) impostano `--av-c-*` a `var(--av-inv-*)`, che solo la pelle
-  «chiaro» definisce (per le altre pelli il valore è non valido e cade sul fallback). Le regole vanno messe
-  **sull'SVG**, non sul contenitore: una `var()` dichiarata sul contenitore non vede le variabili dell'SVG.
-- `.av:has(>svg.orbe)` distingue gli orbi dal kit, che tiene il disco; il kit non ha pelli.
-- Il CSS di `.av` vive dentro `.dirA .a-app`: fuori dalla cornice della Console il disco (o la sua assenza) va
-  ridichiarato, come in `avatar-pelli.html` e `confronto-avatar.html`.
-- `DGT_UI.prefissa(css, '.dirA')` prefissa ogni selettore; nelle griglie con testo `nowrap` servono `minmax(0,1fr)` e
-  `min-width:0`.
-- Gli **intagli** (`.nt`) prendono il colore di `--behind`: sulle card chiare messe sul nero (documento del prompt,
-  card del modello assegnato) i pulsanti dentro l'intaglio restano bianchi su nero, non neri.
-- Le **tendine coprono la destra della pagina** (330 px aperte, 840 estese): nelle pagine del Dipendente e
-  dell'Esecuzione i numeri e le azioni stanno a sinistra apposta.
-- La **barra dei passi** riusa `.a-sched` con `position:static` dentro `.etesta`: gli eventi (`.ev`) sono i passi,
-  `.live` è il passo in corso, `.ev.plan` quelli da fare, `.ev.err` l'errore, `.fine` la pillola con la stima; la
-  timeline scorre in orizzontale se i passi non stanno.
-- L'**esecuzione** è un oggetto in cache per dipendente (`esecuzioni[id]`): la pagina, le card della home e del
-  dipartimento e la card «Oggi» del Dipendente leggono lo stesso oggetto; le azioni (`esecAzione`) cambiano i passi e
-  `e.stato`/`e.att`, poi `m.ricalcola()` rifà i conteggi.
-- Le **differenze** fra due versioni sono un LCS per paragrafo e poi per parola dentro i paragrafi appaiati.
-- La Console si scala con `zoom` (`scala()` in `direzione-a.html`): sopra i 1440 si ingrandisce, sotto si riduce; le
-  tendine e le pillole `position: fixed` restano al bordo dello schermo (con `transform` scorrerebbero con la pagina);
-  i `100vh` si dividono per `--z`, perché sotto `zoom` i `vh` non si riducono da soli (Chromium 141).
-- Gli artefatti si ripubblicano allo stesso URL; se lo strumento rifiuta perché «esiste una versione più recente»,
-  rifare `read` sull'URL (e leggere per intero la copia salvata se lo chiede) e poi pubblicare di nuovo, mai forzare.
+  `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`; Google Fonts bloccato: gli script servono un CSS locale. La
+  navigazione di Chromium verso siti esterni attraverso il proxy viene resettata: per studiare un sito si scaricano gli
+  asset con `curl` e si serve la copia in locale (`http-server` su localhost, che è fuori dal proxy).
+- La Console gira da `file://` e come file unico: **niente moduli ESM**. Il kit avatar è impacchettato in uno script classico.
+- Gli screenshot usano `reducedMotion: 'reduce'`, quindi gli avatar sono al fotogramma fisso; il gesto nelle pile e il moto
+  in genere si vedono solo nell'artefatto o con `MOTION=no-preference`.
+- **L'orbe della versione 10** (`avatar/avatar-orbe.js`): l'aspetto della pagina sta in `html[data-identita|palette|finitura|
+  occhi|segnale|carattere]` (`aspetto({…}, radice)`), e `html(seme, stato, opz)` lo stampa sull'SVG (`data-modo`, `data-tinta`,
+  `data-palette`, `data-finitura`, `data-occhi`, `data-segnale`, `data-dip`). Il corpo con identità è un colore pieno (`--av-base`
+  da `--av-tinta-c` per palette e tinta, generato nel CSS per le otto tinte × tre palette) con sopra `.ombra` (l'ombreggiatura
+  della perla), che la finitura piatta spegne insieme a luci, orlo e bagliore; con il corpo piatto `--av-scala` è 128 % (il
+  disco riempie la casella) e le pile riprendono l'anello del fondo con 9 px di sovrapposizione. Gli occhi grandi sono
+  `.occhio.lg` con `.sclera` (cerchio unitario o il tracciato della ghianda) e `.pupilla` traslata verso lo sguardo
+  (`pupillaXY`), in geometria piana (`posaPiana`: la coppia scivola di poco verso lo sguardo); `forma(seme)` estrae i
+  parametri lilguy da un generatore a parte (`#lilguy`). Da libero l'occhio è la palpebra ad arco (`.palpebra`); in errore la
+  pupilla è una X. Il segnale di stato sta fuori da `.tutto` (`.segnale`: `.punto`, o `.giro/.arco`, `.onda`, `.tratto`, `.tacche`
+  per l'anello vivo); il gesto è un ramo di `posa()` che aggiunge squash e stretch (`scale(sx sy)` su `.tutto`).
+- Il modello dà la tinta con `m.tintaDi(e)` (`e.tinta` o rotazione sull'id) e la meno usata con `m.tintaLibera()`; `TINTE_ID`
+  in `dati.js` ha gli stessi nomi di `TINTE` in `avatar-orbe.js`, i colori stanno solo nel sistema.
+- Gli occhi del kit (7c), le pelli (variabili CSS su `[data-pelle]`), `.av:has(>svg.orbe)`, il CSS di `.av` dentro `.dirA .a-app`,
+  `DGT_UI.prefissa`, gli intagli con `--behind`, le tendine che coprono la destra, la barra dei passi, l'esecuzione in cache,
+  le differenze LCS e la Console che si scala con `zoom`: come nelle note della sessione precedente (vedi la storia di
+  questo file in git, commit `f3a5d53`).
+- Gli artefatti si ripubblicano allo stesso URL solo se lo strumento accetta; in questa sessione ha rifiutato ogni
+  aggiornamento in loco chiedendo di rileggere per intero la copia live (300–400 KB): si è scelto di pubblicare a un
+  indirizzo nuovo e aggiornare i collegamenti nei documenti (Console: 93d18853 → 8a8a273e → e6699f3a; identità degli orbi:
+  690baac8 → 1fc2ee53). Per un artefatto nuovo serve un percorso di file nuovo e un `favicon`. Mai forzare.
 
-## Cosa manca e prossimo passo (da decidere con l'utente all'avvio)
+## Cosa manca
 
-Pagine fatte nella direzione A: home, Richieste, Dipartimento, tendina Dipendente, pagina Dipendente, pagina
-Esecuzione. Candidati per la prossima sessione, in ordine di priorità proposto a fine sessione (l'utente sceglie):
-
-1. **Giro di correzioni su Esecuzione e Dipendente** (mai giudicate): mezza sessione, correzioni probabili e poco
-   costose adesso; poi si chiude il primo blocco di pagine. Da qui possono uscire la tendina del passo e lo stato
-   vuoto del dipendente appena creato (vedi «Come riprendere», punto 3).
-2. **Le approvazioni da mobile**: la promessa del prodotto (il titolare approva dal telefono), nella cornice mobile
-   delle tre schermate dello specimen (barra di stato, navigazione a pillola in basso, agenda). È la pagina più
-   grande fra quelle rimaste: struttura da proporre in poche righe prima di costruire.
-3. **La pagina dei costi dell'azienda**: per dipartimento, dipendente, cliente, modello, strumento; riusa la card
-   costo dell'esecuzione e le righe della spesa del mese. Più piccola della 2.
-4. **Manutenzione**: descrivere la sezione «moto» dello specimen in `DESIGN.md`; estrarre i componenti di
-   `direzione-a.js` in `schermate/componenti.js` (utile prima di aggiungere il mobile, che riusa card e pillole).
-
-Raccomandazione: 1 e poi 2 nella stessa sessione se il giro di correzioni è breve; altrimenti 1 e 4, e il mobile
-nella successiva con una sessione intera.
-
-## Possibili prossimi passi (non decisi dall'utente)
-
-- Tendina del passo (dall'intaglio delle righe dei passi): log filtrato, strumenti, output di quel passo.
-- Editor del soul prompt (dalla matita sul documento): nuova versione, nota, colloquio prima della produzione.
-- Versione mobile della vista principale (approvazioni) partendo dalle tre schermate mobile dello specimen.
-- Pagina dei costi dell'azienda (per dipartimento, dipendente, cliente, modello, strumento).
-- Stati vuoti, caricamento ed errori nel linguaggio della Console.
-- Eliminazione di un dipendente (la pausa c'è; l'eliminazione no, non richiesta).
-- Estrarre i componenti di `direzione-a.js` in un file condiviso `schermate/componenti.js`.
+1. **Le approvazioni da mobile** (deciso): vedi «Come riprendere».
+2. **La pagina dei costi dell'azienda**: per dipartimento, dipendente, cliente, modello, strumento; riusa la card costo
+   dell'esecuzione e le righe della spesa del mese.
+3. **Manutenzione**: descrivere la sezione «moto» dello specimen in `DESIGN.md`; estrarre i componenti di `direzione-a.js` in
+   `schermate/componenti.js` (il mobile riusa card, pillole e tendine: potrebbe essere il momento).
+4. Giudizio dell'utente sulle pagine dell'Esecuzione e del Dipendente; tendina del passo; stato vuoto del dipendente nuovo.
 
 ### Prompt di avvio suggerito per la prossima sessione
 
 ```
-Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md. Lavoriamo nella direzione A · Console (schermate/direzioni/direzione-a.js,
-dati.js, comune.js, avatar/): non cambiare la cornice, i componenti o i colori del sistema di design; niente emoji.
-Controlla lo stato della PR #6. Apri la pagina dell'Esecuzione (direzione-a.html?pagina=esecuzione&id=4) e la pagina
-del Dipendente (?pagina=dipendente&id=4): ecco le mie correzioni: […]. Poi il prossimo passo scelto è [le approvazioni
-da mobile / la pagina dei costi / la manutenzione]: proponimi la struttura in poche righe, poi procedi con screenshot,
-artefatto, documenti, commit e push.
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md. Controlla la PR #7: se è unita riparti da main con un branch nuovo, altrimenti
+continua sullo stesso branch. Lavoriamo nella direzione A · Console (schermate/direzioni/direzione-a.js, dati.js, comune.js,
+avatar/): non cambiare la cornice, i componenti o i colori del sistema di design; niente emoji, solo le icone dello sprite;
+gli avatar sono quelli della versione 10 (tinta, occhi lilguy, punto di stato, gesto nelle pile).
+
+Costruisci le approvazioni da mobile con la struttura già accettata (PROSSIMA-SESSIONE.md «Come riprendere», DIREZIONI.md
+«Versione 11»): prima metà, le schermate «Da approvare» e «Richiesta» per post, documento, lista e proposta, con il rifiuto
+con motivo, in mobile.html + mobile.js, la decisione spostata in dati.js come m.decidi. Poi screenshot delle cornici con
+design-system/tools/screenshot-elementi.js, artefatto con build-unico.js, aggiornamento di DIREZIONI.md, SYSTEM-DESIGN.md,
+README e PROSSIMA-SESSIONE.md, commit e push. Alla fine mostrami le schermate e fermati: il Riepilogo, la revisione sul
+telefono, la prova a quaranta e lo stato vuoto sono per la sessione dopo.
 ```

@@ -372,6 +372,9 @@ window.DIREZIONE_A = (function () {
 .scelte{display:flex;gap:6px;flex-wrap:wrap;padding-left:2px}
 .scelte .av{cursor:pointer;border:2px solid transparent}
 .scelte .av.on{border-color:var(--ink)}
+.tinte{display:flex;gap:8px;flex-wrap:wrap;padding:2px 0 0 2px}
+.tinte .dot{width:30px;height:30px;border-radius:50%;cursor:pointer;border:2px solid var(--summary);box-shadow:0 0 0 2px transparent;flex:none}
+.tinte .dot.on{box-shadow:0 0 0 2px var(--ink)}
 .a-tend .azioni{display:flex;gap:8px;padding-top:2px;flex-wrap:wrap}
 .a-tend .azioni .pill{height:44px;cursor:pointer}
 .a-tend .azioni .pill.olight{color:var(--ink)}
@@ -571,12 +574,15 @@ window.DIREZIONE_A = (function () {
   const S = n => `<i></i>`.repeat(n);
   const dots = lv => `<span class="dots l${lv}">${S(5)}</span>`;
   /* Avatar generato dal seme (ruolo o seme scelto) nello stato del dipendente; `stato` lo forza (es. la richiesta che aspetta), `extra` aggiunge attributi (data-anima, data-segue). */
-  const av = (m, e, size, stato, extra) => `<span class="av${size ? ' ' + size : ''}"${extra ? ' ' + extra : ''}>${window.DGT_AVATAR.html(m.semeDi(e), stato || e.stato)}</span>`;
+  /* l'orbe riceve la tinta del dipendente e quella del suo dipartimento (versione 10): il modo con cui le usa lo decide l'aspetto della pagina */
+  const av = (m, e, size, stato, extra, opz) => { const d = m.dipDi(e); return `<span class="av${size ? ' ' + size : ''}"${extra ? ' ' + extra : ''}>${window.DGT_AVATAR.html(m.semeDi(e), stato || e.stato, Object.assign({ tinta: m.tintaDi ? m.tintaDi(e) : undefined, dip: d ? d.tinta : undefined }, opz || {}))}</span>`; };
   const pair = (m, ids, size, max) => {
     const lst = ids.map(id => m.byId[id]).filter(Boolean);
     const shown = max ? lst.slice(0, max) : lst;
     const rest = lst.length - shown.length;
-    return `<span class="pair">${shown.map(e => av(m, e, size)).join('')}${rest > 0 ? `<span class="more">+${rest}</span>` : ''}</span>`;
+    /* nelle pile (card dei dipartimenti e degli obiettivi, coppie della barra agenda) lo stato è il gesto del corpo, non il punto:
+       i punti si sovrapporrebbero ai vicini (scelta dell'utente, 2026-09-05) */
+    return `<span class="pair">${shown.map(e => av(m, e, size, undefined, undefined, { segnale: 'gesto' })).join('')}${rest > 0 ? `<span class="more">+${rest}</span>` : ''}</span>`;
   };
   const iconaTipo = { post: 'i-mega', documento: 'i-doc', lista: 'i-list', proposta: 'i-receipt', revisione: 'i-bolt' };
   const nomeTipo = { post: 'Post', documento: 'Documento', lista: 'Lista', proposta: 'Proposta', revisione: 'Revisione' };
@@ -749,7 +755,7 @@ window.DIREZIONE_A = (function () {
     </div>`;
   }
   /* ---------- tendina Dipendente: creazione e modifica ---------- */
-  /* opz.modifica = { id?: dipendente esistente, bozza: { nome, ruolo, dip, seme|null } }.
+  /* opz.modifica = { id?: dipendente esistente, bozza: { nome, ruolo, dip, seme|null, tinta|null } }.
      Il dipendente «di prova» dell'anteprima: la bozza sopra il dipendente vero (o uno nuovo, libero). */
   function dipendenteBozza(m, mod) {
     const base = mod.id ? m.byId[mod.id] : { id: 0, stato: 'libero', att: { titolo: 'Nessuna esecuzione', costo: 0 } };
@@ -757,7 +763,14 @@ window.DIREZIONE_A = (function () {
     const e = Object.assign({}, base, { ruolo: (b.ruolo || '').trim() || (mod.id ? base.ruolo : 'Nuovo dipendente'), dip: b.dip || base.dip || m.dipartimenti[0].id });
     if ((b.nome || '').trim()) e.nome = b.nome.trim(); else delete e.nome;
     if (b.seme) e.seme = b.seme; else delete e.seme;
+    e.tinta = b.tinta || (mod.id ? m.tintaDi(base) : (b.tintaProposta || (b.tintaProposta = m.tintaLibera())));
     return e;
+  }
+  /* le otto tinte dell'avatar come cerchi pieni nella palette in uso; quella del dipendente ha l'anello nero */
+  function scelteTinta(m, mod) {
+    const e = dipendenteBozza(m, mod), O = window.DGT_AVATAR_ORBE, pal = O ? O.aspetto().palette : 'vivace';
+    const tinte = O ? O.TINTE : m.TINTE_ID.map(id => ({ id, nome: id, [pal]: '#4D4D4D' }));
+    return `<div class="tinte">${tinte.map(t => `<span class="dot${t.id === e.tinta ? ' on' : ''}" style="background:${t[pal] || t.c}" data-az="bozza" data-k="tinta" data-v="${t.id}" title="${esc(t.nome)}"></span>`).join('')}</div>`;
   }
   const anteprimaDipendente = (m, mod) => `<div class="anteprima">${cardDipendente(m, dipendenteBozza(m, mod), true)}</div>`;
   function scelteAvatar(m, mod) {
@@ -779,6 +792,7 @@ window.DIREZIONE_A = (function () {
         <div class="campo"><span class="k">Nome <i>facoltativo: senza nome si vede il ruolo</i></span><input type="text" data-campo="nome" value="${esc(b.nome || '')}" placeholder="Nessun nome" maxlength="24"></div>
         <div class="campo"><span class="k">Dipartimento</span><div class="pills">${m.dipartimenti.map(d => `<span class="pill${d.id === dipSel ? ' on' : ''}" data-az="bozza" data-k="dip" data-v="${d.id}">${ic(iconaDip[d.id])}${esc(d.nome)}</span>`).join('')}</div></div>
         <div class="campo"><span class="k">Avatar <i>dal ruolo, o una variante</i></span><div id="a-scelte">${scelteAvatar(m, mod)}</div></div>
+        <div class="campo"><span class="k">Colore <i>${nuovo ? 'proposto da DGT: il meno usato in azienda' : 'della perla'}</i></span><div id="a-tinte">${scelteTinta(m, mod)}</div></div>
         <div class="azioni"><span class="pill lime" data-az="salva">${ic('i-check')}${nuovo ? 'Crea dipendente' : 'Salva'}</span><span class="pill olight" data-az="annulla">Annulla</span></div>
       </div>
     </div>`;
@@ -1403,7 +1417,7 @@ window.DIREZIONE_A = (function () {
     /* editor del dipendente: apre sopra la tendina corrente e la ricorda per il ritorno */
     const apriEditor = (id, dip) => {
       const e = id ? m.byId[id] : null;
-      st.modifica = { id: e ? e.id : 0, bozza: e ? { nome: e.nome || '', ruolo: e.ruolo, dip: e.dip, seme: e.seme || null } : { nome: '', ruolo: '', dip: dip || (st.pagina === 'dipartimento' ? st.dip : m.dipartimenti[0].id), seme: null } };
+      st.modifica = { id: e ? e.id : 0, bozza: e ? { nome: e.nome || '', ruolo: e.ruolo, dip: e.dip, seme: e.seme || null, tinta: e.tinta || null } : { nome: '', ruolo: '', dip: dip || (st.pagina === 'dipartimento' ? st.dip : m.dipartimenti[0].id), seme: null, tinta: null } };
       if (st.tendina !== 'dipendente') st.tendinaPrima = st.tendina;
       st.tendina = 'dipendente';
       soloTendina();
@@ -1411,14 +1425,14 @@ window.DIREZIONE_A = (function () {
     };
     const chiudiEditor = () => { st.modifica = null; st.tendina = st.tendinaPrima || 'chiusa'; };
     const aggiornaAnteprima = () => {
-      const a = radice.querySelector('#a-anteprima'), sc = radice.querySelector('#a-scelte');
-      if (a) { a.innerHTML = anteprimaDipendente(m, st.modifica); } if (sc) sc.innerHTML = scelteAvatar(m, st.modifica);
+      const a = radice.querySelector('#a-anteprima'), sc = radice.querySelector('#a-scelte'), tn = radice.querySelector('#a-tinte');
+      if (a) { a.innerHTML = anteprimaDipendente(m, st.modifica); } if (sc) sc.innerHTML = scelteAvatar(m, st.modifica); if (tn) tn.innerHTML = scelteTinta(m, st.modifica);
       vivi();
     };
     const salva = () => {
       const b = st.modifica.bozza;
       if (!(b.ruolo || '').trim()) { const inp = radice.querySelector('.a-tend.dip input[data-campo="ruolo"]'); if (inp) { inp.focus(); inp.style.borderColor = 'var(--hangup)'; } return; }
-      const dati = { nome: (b.nome || '').trim(), ruolo: b.ruolo.trim(), dip: b.dip, seme: b.seme && b.seme !== b.ruolo.trim() ? b.seme : '' };
+      const dati = { nome: (b.nome || '').trim(), ruolo: b.ruolo.trim(), dip: b.dip, seme: b.seme && b.seme !== b.ruolo.trim() ? b.seme : '', tinta: b.tinta || b.tintaProposta || '' };
       if (st.modifica.id) m.aggiorna(st.modifica.id, dati); else m.aggiungi(dati);
       chiudiEditor(); tutto();
     };

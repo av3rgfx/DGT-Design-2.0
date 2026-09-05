@@ -14,7 +14,7 @@ prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decision
   `?tendina=chiusa|aperta|estesa`, `?pannello=richieste|riepilogo`, `?pagina=home|richieste`, `?richiesta=0`,
   `?editor=nuovo|<id dipendente>`, `?avatar=orbe|kit`, `?pelle=perla|grigio|chiaro|alone|disco` (la pelle dell'orbe
   senza disco; predefinita perla). Artefatto:
-  https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
+  https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34
 - Avatar dei dipendenti AI in `avatar/`: `avatar-dgt.js` (involucro della Console, sceglie la famiglia con
   `usa('orbe'|'kit')` e la pelle con `pelle('chiaro'|…)`), `avatar-orbe.js` (la famiglia «orbe», predefinita, senza
   disco), `avatar-motore.js` (motore del kit impacchettato: rigenerare con `node avatar/build-motore.js` dopo aver
@@ -23,3 +23,8 @@ prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decision
   fondi della Console: `avatar-pelli.html`, artefatto https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569
 - File unico per l'artefatto: `node build-unico.js /percorso/confronto-unico.html`.
 - Screenshot: `LOCAL_FONT_CSS=/tmp/fonts.css node ../../design-system/tools/screenshot-page.js "direzione-a.html?n=40" out.png`.
+- L'identità degli orbi (versione 10, proposta in attesa di scelta): `avatar-identita.html`, un configuratore con corpo
+  (perla, piatta, con orlo), palette (scura, vivace, pastello), occhi (attuali, punti grandi, lilguy, neri, colorati) e
+  identità (tinta per dipendente, dipartimento, nessuna), nove strade preimpostate e la Console vera;
+  `?identita=tinta&palette=vivace&corpo=piatta&occhi=lilguy`. Artefatto
+  https://claude.ai/code/artifact/1fc2ee53-3c23-4462-922a-cd581a90b6d6

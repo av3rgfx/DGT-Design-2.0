@@ -16,11 +16,15 @@
 <script src="dati.js"></script>
 <script src="direzione-a.js"></script>
 <script>
-  // Parametri: ?n=11|40  ?tendina=chiusa|aperta|estesa|dossier  ?pannello=richieste|riepilogo  ?pagina=home|richieste|dipartimento|dipendente|esecuzione  ?dip=svi|mkt|ven|amm  ?id=<id dipendente>  ?confronto=6,7  ?richiesta=0  ?editor=nuovo|<id dipendente>  ?avatar=orbe|kit  ?pelle=perla|grigio|chiaro|alone|disco
+  // Parametri: ?n=11|40  ?tendina=chiusa|aperta|estesa|dossier  ?pannello=richieste|riepilogo  ?pagina=home|richieste|dipartimento|dipendente|esecuzione  ?dip=svi|mkt|ven|amm  ?id=<id dipendente>  ?confronto=6,7  ?richiesta=0  ?editor=nuovo|<id dipendente>  ?avatar=orbe|kit  ?pelle=perla|grigio|chiaro|alone|disco  ?identita=tinta|dipartimento|toni|nessuna  ?palette=vivace|pastello|scura  ?corpo=piatta|orlo|perla  ?occhi=lilguy|neri|colorati|punti|kit  ?segnale=nessuno|punto|anello|gesto  ?carattere=1
   const q = new URLSearchParams(location.search);
   DGT_UI.iconeInserisci();
   DGT_AVATAR.usa(q.get('avatar') || 'orbe');   // ?avatar=kit per le forme del kit
-  DGT_AVATAR.pelle(q.get('pelle') || 'perla');   // la pelle dell'orbe: perla (predefinita), grigio, chiaro, alone, disco
+  DGT_AVATAR.pelle(q.get('pelle') || 'perla');   // la pelle dell'orbe quando il corpo non ha tinta: perla (predefinita), grigio, chiaro, alone, disco
+  // L'aspetto scelto dall'utente (2026-09-05, versione 10, «strada 1»): dischi piatti nella tinta del dipendente, palette vivace,
+  // occhi lilguy con sclera bianca e pupilla nera; lo stato è un punto sul bordo (nelle pile il gesto del corpo, vedi pair() in
+  // direzione-a.js). ?identita=nessuna&occhi=kit&corpo=perla&segnale=nessuno riporta all'orbe di prima.
+  DGT_AVATAR_ORBE.aspetto({ identita: q.get('identita') || 'tinta', palette: q.get('palette') || 'vivace', finitura: q.get('corpo') || 'piatta', occhi: q.get('occhi') || 'lilguy', segnale: q.get('segnale') || 'punto', carattere: q.get('carattere') === '1' });
   DGT_UI.stile('css-a', DIREZIONE_A.css);
   const root = document.getElementById('root');
   const modello = DGT_DATI.modello(DGT_DATI.nDaUrl());

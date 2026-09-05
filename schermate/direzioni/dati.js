@@ -15,6 +15,9 @@ window.DGT_DATI = (function () {
     obiettivoMese: 'Consegnare <b>3 e-commerce</b> e <b>36 post</b> entro il 30 settembre, con <b>approvazione del titolare</b> su ogni uscita verso i clienti.',
   };
 
+  /* Le otto tinte dell'avatar (stesse chiavi di TINTE in avatar/avatar-orbe.js): il modello tiene solo il nome, i colori stanno nel sistema. */
+  const TINTE_ID = ['indaco', 'corallo', 'ambra', 'verdeacqua', 'prugna', 'petrolio', 'bordeaux', 'neutro'];
+
   const dipartimenti = [
     { id: 'svi', nome: 'Sviluppo',        breve: 'Sviluppo',  desc: 'Siti, e-commerce, automazioni', tinta: 'indaco' },
     { id: 'mkt', nome: 'Marketing',       breve: 'Marketing', desc: 'Contenuti, social, SEO',         tinta: 'corallo' },
@@ -709,15 +712,19 @@ window.DGT_DATI = (function () {
     const etichetta = e => e.nome || e.ruolo;
     const sotto = (e, breve) => { const d = dipDi(e); const nd = d ? (breve ? d.breve : d.nome) : ''; return e.nome ? e.ruolo + (nd ? ' · ' + nd : '') : nd; };
     const semeDi = e => e.seme || e.ruolo;
+    /* La tinta dell'avatar (versione 10, 2026-09-05): una delle otto del sistema, scelta dal titolare nell'editor o assegnata
+       da DGT alla creazione come la meno usata in azienda; per i dipendenti del modello, a rotazione sull'id. */
+    const tintaDi = e => e.tinta || TINTE_ID[(e.id - 1 + TINTE_ID.length * 1000) % TINTE_ID.length];
+    const tintaLibera = () => { const uso = Object.fromEntries(TINTE_ID.map(t => [t, 0])); m.dipendenti.forEach(e => { uso[tintaDi(e)]++; }); return TINTE_ID.reduce((a, t) => uso[t] < uso[a] ? t : a, TINTE_ID[0]); };
     const iniziali = e => etichetta(e).slice(0, 2).toUpperCase();
     const out = {
       azienda, dipartimenti, STATI, n: m.dipendenti.length,
       dipendenti: m.dipendenti, byId, perDip: {}, approvazioni: m.approvazioni, richieste: m.richieste, diario: m.diario, agenda: m.agenda,
       obiettivi: m.obiettivi,
-      etichetta, sotto, semeDi,
+      etichetta, sotto, semeDi, tintaDi, tintaLibera, TINTE_ID,
       /* Mutazioni dell'organico (editor del dipendente): ritornano il dipendente. */
-      aggiungi: dati => { const id = Math.max(0, ...m.dipendenti.map(e => e.id)) + 1; const e = { id, ruolo: dati.ruolo || 'Nuovo dipendente', dip: dati.dip || dipartimenti[0].id, stato: 'libero', att: { titolo: 'Nessuna esecuzione', cliente: '', costo: 0, fine: '' } }; if (dati.nome) e.nome = dati.nome; if (dati.seme && dati.seme !== e.ruolo) e.seme = dati.seme; m.dipendenti.push(e); out.ricalcola(); return e; },
-      aggiorna: (id, dati) => { const e = out.byId[id]; if (!e) return null; if ('nome' in dati) { if (dati.nome) e.nome = dati.nome; else delete e.nome; } if (dati.ruolo) e.ruolo = dati.ruolo; if (dati.dip) e.dip = dati.dip; if ('seme' in dati) { if (dati.seme && dati.seme !== e.ruolo) e.seme = dati.seme; else delete e.seme; } out.ricalcola(); return e; },
+      aggiungi: dati => { const id = Math.max(0, ...m.dipendenti.map(e => e.id)) + 1; const e = { id, ruolo: dati.ruolo || 'Nuovo dipendente', dip: dati.dip || dipartimenti[0].id, stato: 'libero', att: { titolo: 'Nessuna esecuzione', cliente: '', costo: 0, fine: '' } }; if (dati.nome) e.nome = dati.nome; if (dati.seme && dati.seme !== e.ruolo) e.seme = dati.seme; e.tinta = TINTE_ID.includes(dati.tinta) ? dati.tinta : tintaLibera(); m.dipendenti.push(e); out.ricalcola(); return e; },
+      aggiorna: (id, dati) => { const e = out.byId[id]; if (!e) return null; if ('nome' in dati) { if (dati.nome) e.nome = dati.nome; else delete e.nome; } if (dati.ruolo) e.ruolo = dati.ruolo; if (dati.dip) e.dip = dati.dip; if ('seme' in dati) { if (dati.seme && dati.seme !== e.ruolo) e.seme = dati.seme; else delete e.seme; } if (TINTE_ID.includes(dati.tinta)) e.tinta = dati.tinta; out.ricalcola(); return e; },
       ricalcola: () => { byId = out.byId = Object.fromEntries(m.dipendenti.map(e => [e.id, e])); out.perDip = Object.fromEntries(dipartimenti.map(d => [d.id, m.dipendenti.filter(e => e.dip === d.id)])); out.n = m.dipendenti.length; out.alLavoro = m.dipendenti.filter(e => e.stato === 'lavoro'); },
       obiettiviDi: dip => m.obiettivi.filter(o => o.dip === dip),
       richiesteDi: st => m.richieste.filter(r => r.stato === st),

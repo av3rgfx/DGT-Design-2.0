@@ -105,8 +105,8 @@ window.DGT_AVATAR = (function () {
     return id;
   }
   /** Markup da mettere dentro <span class="av">: un <svg> che riusa il simbolo. */
-  function html(seme, stato) {
-    if (orbe()) return window.DGT_AVATAR_ORBE.html(seme, stato);
+  function html(seme, stato, opz) {
+    if (orbe()) return window.DGT_AVATAR_ORBE.html(seme, stato, opz);
     const id = simbolo(seme, stato);
     /* il <use> di un simbolo si posiziona a (0,0) del viewBox esterno: qui parte da 0 */
     return `<svg class="ava" viewBox="0 0 ${CORNICE * 2} ${CORNICE * 2}" aria-hidden="true" focusable="false" data-seme="${String(seme || '').replace(/"/g, '&quot;')}" data-stato="${stato}"><use href="#${id}"/></svg>`;
