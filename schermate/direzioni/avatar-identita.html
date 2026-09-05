@@ -13,7 +13,7 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
 .v-hd p{margin:0;color:#9A9A9A;font-size:18px;line-height:26px;max-width:78ch}
 .v-hd p b{color:#FCFCFC;font-weight:500}
 .v-sec{display:grid;gap:18px}
-.v-sec h2{margin:0;font-weight:400;font-size:28px;line-height:34px;display:flex;align-items:center;gap:14px}
+.v-sec h2{margin:0;font-weight:400;font-size:28px;line-height:34px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .v-sec h2 .chip{display:inline-flex;align-items:center;height:28px;padding:0 12px;border-radius:9999px;background:#3A3A3A;color:#E8E8E8;font-size:13px}
 .v-sec h2 .chip.lime{background:#B8FC64;color:#0A0A0A}
 .v-note{color:#9A9A9A;font-size:14px;line-height:20px;max-width:88ch;margin:0}
@@ -23,33 +23,21 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
 .av svg{width:100%;height:100%;display:block}
 .av.xl{width:96px;height:96px}.av.lg{width:68px;height:68px}.av.md{width:40px;height:40px}.av.s{width:36px;height:36px}.av.q{width:32px;height:32px}.av.xs{width:28px;height:28px}.av.xxs{width:26px;height:26px}
 .pair{display:inline-flex;align-items:center}.pair .av{border:2px solid var(--av-anello-pelle,#FCFCFC)}.pair .av+.av{margin-left:-10px}
-/* i cinque modi, uno accanto all'altro */
-.v-cinque{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
-.v-sol{min-width:0;border-radius:28px;background:linear-gradient(180deg,#262626,#1C1C1C);padding:22px 20px 20px;display:grid;gap:14px;align-content:start;position:relative}
-.v-sol.on{outline:2px solid #B8FC64;outline-offset:-2px}
-.v-sol .top{display:flex;align-items:center;gap:14px;min-width:0}.v-sol .top h3{min-width:0}
-.v-sol h3{margin:0;font-weight:400;font-size:21px;line-height:25px}
-.v-sol h3 small{display:block;font-size:12px;color:#9A9A9A;margin-top:2px}
-.v-sol p{margin:0;font-size:13px;line-height:18px;color:#CFCFCF}
-.v-sol .pc{display:grid;gap:4px;font-size:12px;line-height:16px;color:#9A9A9A}
-.v-sol .pc b{color:#B8FC64;font-weight:500}.v-sol .pc i{font-style:normal;color:#F9A3A3;font-weight:500}
-.v-sol .scegli{display:inline-flex;align-items:center;justify-content:center;height:40px;padding:0 18px;border-radius:9999px;border:1px solid rgb(255 255 255/.16);font-size:14px;cursor:pointer;margin-top:4px}
-.v-sol.on .scegli{background:#B8FC64;color:#0A0A0A;border-color:transparent}
-.v-sol .sei{display:flex;gap:6px;flex-wrap:wrap}
-.v-sol .sei .k{width:100%;font-size:11px;color:#9A9A9A;text-transform:uppercase;letter-spacing:.06em}
-/* la prova sugli undici vicini: righe = modi, colonne = contesti */
-.v-prova{display:grid;grid-template-columns:170px 350px 300px 168px minmax(0,1fr);gap:6px;align-items:stretch}
-.v-prova .k{display:flex;align-items:center;font-size:13px;color:#9A9A9A;padding-right:6px}
-.v-prova .k b{color:#FCFCFC;font-weight:400;display:block;font-size:15px}
-.v-prova .h{font-size:11px;color:#9A9A9A;text-transform:uppercase;letter-spacing:.06em;padding:0 0 4px 12px;align-self:end}
-.v-prova .h b{display:block;color:#FCFCFC;font-weight:400;font-size:13px;text-transform:none;letter-spacing:0}
-/* la tabella dei fondi: righe = superfici, colonne = modi */
-.v-tab{display:grid;grid-template-columns:150px repeat(5,minmax(0,1fr));gap:6px;align-items:stretch}
-.v-tab .k{display:flex;align-items:center;font-size:13px;color:#9A9A9A;padding-right:6px}
-.v-tab .k b{color:#FCFCFC;font-weight:400;display:block;font-size:14px}
-.v-tab .h{font-size:11px;color:#9A9A9A;text-transform:uppercase;letter-spacing:.06em;padding:0 0 4px 12px}
-.v-cell{min-height:72px;border-radius:20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;padding:8px 10px;min-width:0}
-.v-cell.fila{gap:4px;flex-wrap:nowrap}
+/* le strade: card tre per riga */
+.v-strade{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.v-str{min-width:0;border-radius:28px;background:linear-gradient(180deg,#262626,#1C1C1C);padding:22px 22px 20px;display:grid;gap:12px;align-content:start;position:relative}
+.v-str.on{outline:2px solid #B8FC64;outline-offset:-2px}
+.v-str .top{display:flex;align-items:center;gap:16px;min-width:0}.v-str .top h3{min-width:0}
+.v-str h3{margin:0;font-weight:400;font-size:22px;line-height:26px}
+.v-str h3 small{display:block;font-size:12px;color:#9A9A9A;margin-top:3px;font-weight:400}
+.v-str .n{position:absolute;top:18px;right:22px;font-size:12px;color:#9A9A9A;letter-spacing:.06em}
+.v-str p{margin:0;font-size:13px;line-height:18px;color:#CFCFCF}
+.v-str .scegli{display:inline-flex;align-items:center;justify-content:center;height:40px;padding:0 18px;border-radius:9999px;border:1px solid rgb(255 255 255/.16);font-size:14px;cursor:pointer;margin-top:2px;justify-self:start}
+.v-str.on .scegli{background:#B8FC64;color:#0A0A0A;border-color:transparent}
+.v-str .k{font-size:11px;color:#9A9A9A;text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+/* le celle dei contesti */
+.v-cell{min-height:72px;border-radius:20px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;padding:8px 10px;min-width:0;position:relative}
+.v-cell.fila{gap:4px;flex-wrap:nowrap;justify-content:flex-start;padding:10px 12px}
 .v-cell.pile{gap:12px}
 .v-cell.nero{background:#000;box-shadow:inset 0 0 0 1px rgb(255 255 255/.08)}
 .v-cell.card{background:linear-gradient(180deg,#262626,#1C1C1C)}
@@ -57,13 +45,18 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
 .v-cell.lime{background:#B8FC64}
 .v-cell.bianca{background:#FCFCFC}
 .v-cell.tendina{background:#F4F4F4}
-/* la Console vera, ritagliata: qui il modo lo decide il selettore in alto */
-.v-sel{position:sticky;top:0;z-index:5;background:rgb(0 0 0/.85);backdrop-filter:blur(8px);padding:12px 0;display:flex;align-items:center;gap:8px;margin:-12px 0}
-.v-sel span{font-size:13px;color:#9A9A9A;margin-right:8px}
-.v-sel .pill{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px;border-radius:9999px;border:1px solid rgb(255 255 255/.16);font-size:14px;color:#FCFCFC;cursor:pointer;white-space:nowrap;margin:0}
+.v-cell .lb{position:absolute;left:14px;top:9px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#9A9A9A}
+.v-cell.lime .lb,.v-cell.bianca .lb,.v-cell.tendina .lb{color:rgb(0 0 0/.5)}
+.v-cell.con{padding-top:30px;min-height:96px}
+.v-prova{display:grid;grid-template-columns:350px 300px 168px minmax(0,1fr);gap:6px}
+.v-fondi{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+/* il configuratore, fisso in alto */
+.v-sel{position:sticky;top:0;z-index:5;background:rgb(0 0 0/.86);backdrop-filter:blur(8px);padding:12px 0;display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;margin:-12px 0}
+.v-sel .g{display:inline-flex;align-items:center;gap:6px}
+.v-sel .g>span:first-child{font-size:12px;color:#9A9A9A;text-transform:uppercase;letter-spacing:.06em;margin-right:4px}
+.v-sel .pill{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 16px;border-radius:9999px;border:1px solid rgb(255 255 255/.16);font-size:14px;color:#FCFCFC;cursor:pointer;white-space:nowrap}
 .v-sel .pill.on{background:#FCFCFC;color:#0A0A0A;border-color:transparent}
 .v-sel .pill.car.on{background:#B8FC64}
-.v-sel .sep{width:1px;height:28px;background:rgb(255 255 255/.16);margin:0 6px}
 .dirA .a-app.v-solo{min-height:0;width:auto;padding:0;overflow:visible}
 .dirA .a-app.v-solo .cards{margin-top:0}
 .dirA .a-app.v-solo .elenco{margin-top:0;grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -78,28 +71,21 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
 <div class="v-wrap">
   <div class="v-hd">
     <h1>L'identità degli orbi</h1>
-    <p>Richiesta dell'utente (2026-09-05): <b>«quando ci sono molti avatar vicini, o anche quelli piccoli messi in fila, non rendono l'idea di diversi dipendenti che lavorano, perché sono tutti uguali; magari di diversi colori, per distinguerli almeno un minimo»</b>. Oggi l'orbe è una sola perla nera per tutti, e un dipendente si distingue dagli occhi e dal riflesso, che sotto i 36 px non si leggono. Qui quattro modi di dare un'identità al corpo, più il «carattere» degli occhi che si somma a ciascuno: stesso volume, stesse luci, stessi moti; nei contesti in cui il problema si vede (gli undici in fila a 26 px, le pile, la coda, le card) e nella Console vera, dove il modo lo cambia il selettore.</p>
+    <p>Prima tornata: <b>«molti avatar vicini, o piccoli in fila, non rendono l'idea di diversi dipendenti: sono tutti uguali»</b>. Scelte le perle colorate. Seconda tornata: <b>«colori più accesi e vivaci; gli occhi non si vedono bene, vorrei ricreare gli occhi degli avatar di lilguy.net; forse meglio avatar piatti, di un colore unico, senza l'effetto 3D; più opzioni e più varianti»</b>. Il riferimento: dischi neri con due occhi enormi, un terzo del volto ciascuno, all'altezza del centro, il «bianco» in un colore vivo e la pupilla a contrasto, tonda, a fessura o ovale. Qui tre scelte indipendenti, <b>corpo</b> (perla con volume, piatto, piatto con orlo), <b>palette</b> (scura, vivace, pastello) e <b>occhi</b> (attuali, punti grandi, lilguy, neri, colorati), combinate in nove strade preimpostate e libere nel configuratore. Stessi moti di sempre: respiro, sguardo, palpebre, un gesto per stato.</p>
   </div>
 
   <section class="v-sec">
-    <h2>Quattro modi e il carattere <span class="chip">Nora a 96 px · sei dipendenti a 28 px</span></h2>
-    <div class="v-cinque" id="modi"></div>
-  </section>
-
-  <section class="v-sec">
-    <h2>La prova vera: gli undici vicini <span class="chip">26 in fila · 28 impilati · 32 in coda · 48 nelle card</span><span class="chip lime">ultima riga: la combinazione consigliata</span></h2>
-    <div class="v-prova" id="prova"></div>
-    <p class="v-note">La <b>coda</b> di oggi ha quattro richieste di <b>due sole persone</b> (Nora e il Social media manager, con le loro revisioni): lì due orbi uguali sono giusti. Il problema è la <b>fila</b> e la <b>pila</b>: undici o tre dipendenti diversi che a 26–28 px si leggono come lo stesso. Gli occhi colorati dallo stato (lime al lavoro, gialli da approvare, rosa in errore) restano il segnale del titolare in ogni modo: le tinte del corpo sono scure e non usano il lime, il giallo né il rosa.</p>
-  </section>
-
-  <section class="v-sec">
-    <h2>Su tutti i fondi della Console <span class="chip">36 px · cinque dipendenti nei loro stati</span></h2>
-    <div class="v-tab" id="fondi"></div>
-    <p class="v-note">Fondi: il nero della pagina, la card scura <b>#262626 → #1C1C1C</b>, la card grigia <b>#4D4D4D</b>, la card lime, le pillole bianche (selettore di stato, coda, agenda) e le tendine chiare <b>#F4F4F4</b>. L'orbe resta lo stesso su ogni fondo: l'ombreggiatura della perla sta sopra il colore, l'orlo di luce e il bagliore non cambiano.</p>
+    <h2>Nove strade <span class="chip">Nora a 96 px · gli undici a 26 px · tre al lavoro a 48 px sulla card lime</span></h2>
+    <div class="v-strade" id="strade"></div>
+    <p class="v-note">La prima riga è piatta e vivace con i tre stili di occhi grandi; la seconda cambia palette e corpo; la terza tiene qualcosa di oggi: il volume della perla, le perle scure, il nero. In ogni strada la <b>tinta</b> è assegnata a rotazione per dipendente (il modello darebbe la meno usata alla creazione; il titolare la cambia nell'editor) e gli <b>occhi</b> tengono il colore dello stato: bianchi da fermo, lime al lavoro, gialli da approvare, rosa a X in errore, a fessura da libero.</p>
   </section>
 
   <section class="v-sec">
     <div class="v-sel" id="sel"></div>
+    <h2>La prova vera con la combinazione scelta <span class="chip">26 in fila · 28 impilati · 32 in coda · 48 nelle card</span></h2>
+    <div class="v-prova" id="prova"></div>
+    <h2>Su tutti i fondi della Console <span class="chip">36 px · cinque dipendenti nei loro stati</span></h2>
+    <div class="v-fondi" id="fondi"></div>
     <h2>Le card al lavoro adesso <span class="chip lime">animate</span></h2>
     <div id="c-lavoro"></div>
     <h2>I dipartimenti <span class="chip">le pile di avatar</span></h2>
@@ -127,50 +113,38 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
   DGT_AVATAR.pelle('perla');
   const O = DGT_AVATAR_ORBE;
   const q = new URLSearchParams(location.search);
-  O.identita(q.get('identita') || 'tinta');          // il modo della Console in basso (i confronti sopra sono fissi per colonna)
-  O.carattere(q.get('carattere') === '1');
+  /* la combinazione del configuratore (e della Console in basso): ?identita=tinta&palette=vivace&corpo=piatta&occhi=lilguy&carattere=1 */
+  O.aspetto({ identita: q.get('identita') || 'tinta', palette: q.get('palette') || 'vivace', finitura: q.get('corpo') || 'piatta', occhi: q.get('occhi') || 'lilguy', carattere: q.get('carattere') === '1' });
   const m = DGT_DATI.modello(11), m40 = DGT_DATI.modello(40);
-  const MODI = O.IDENTITA.map(x => Object.assign({ identita: x.id, carattere: false, par: 'identita=' + x.id }, x)).concat([
-    { id: 'carattere', identita: 'nessuna', carattere: true, par: 'carattere=1', nome: 'Occhi e riflesso con carattere', desc: 'Niente colore: le stesse estrazioni dal seme coprono intervalli più larghi (occhi grandi o piccoli, vicini o distanti, alti o bassi, tondi o schiacciati) e il riflesso cambia misura e angolo. Si somma a qualunque modo: qui sulla perla di oggi.' },
-  ]);
-  /* la combinazione consigliata, solo nella prova: le perle colorate con il carattere degli occhi */
-  const COMBO = { id: 'tinta+carattere', identita: 'tinta', carattere: true, par: 'identita=tinta&carattere=1', nome: 'Perle colorate con carattere' };
-  /* la tinta a rotazione per id (come farebbe il modello alla creazione: la meno usata), la tinta del dipartimento dal modello */
-  const opzDi = (e, modo, mm) => ({ identita: modo.identita, carattere: modo.carattere, tinta: e.id - 1, dip: (mm || m).dipDi(e).tinta });
-  const av = (e, cls, modo, stato, mm) => `<span class="av${cls ? ' ' + cls : ''}">${DGT_AVATAR.html((mm || m).semeDi(e), stato || e.stato, opzDi(e, modo, mm))}</span>`;
-  const PRO = {
-    nessuna: ['<b>Per</b> un solo oggetto, fedele all\'orbe di riferimento e alla regola del solo accento', '<i>Contro</i> in fila e impilati sono indistinguibili: l\'identità sta negli occhi, invisibili sotto i 36 px'],
-    tinta: ['<b>Per</b> distingue ogni dipendente a ogni misura; otto tinte scure della stessa famiglia, il lime e il rosa degli stati restano gli unici colori vivi; il titolare la cambia nell\'editor come sceglie l\'avatar', '<i>Contro</i> porta il colore in un sistema a un solo accento; oltre otto dipendenti le tinte tornano (a rotazione, mai vicine alla creazione); un colore senza significato può sembrare uno stato'],
-    dipartimento: ['<b>Per</b> il colore dice qualcosa: il dipartimento, con le quattro tinte già nel modello; poche tinte, lettura immediata nella riga «al lavoro» e nel diario', '<i>Contro</i> dentro un dipartimento gli orbi restano uguali (le tre pile delle card obiettivo, la pagina Dipartimento): non risolve il problema dov\'è più forte'],
-    toni: ['<b>Per</b> niente colore, resta dentro il sistema a un solo accento', '<i>Contro</i> a 26–28 px i quattro livelli quasi non si distinguono; le perle più chiare abbassano il contrasto degli occhi bianchi e sulla card grigia si confondono'],
-    carattere: ['<b>Per</b> individualità vera dove l\'avatar è grande (testata 96, richiesta 68, card 48): ognuno ha la sua faccia; vale in più con qualunque modo', '<i>Contro</i> a 26–32 px non si vede: da solo non risolve la fila'],
-  };
-  /* 1. i cinque modi */
-  const nora = m.byId[4];
-  document.getElementById('modi').innerHTML = MODI.map(x => `<div class="v-sol" data-id="${x.id}">
-      <div class="top">${av(nora, 'xl', x)}<h3>${x.nome}<small>?${x.par}</small></h3></div>
-      <div class="sei"><span class="k">Sei dipendenti · 28 px</span>${m.dipendenti.slice(0, 6).map(e => av(e, 'xs', x)).join('')}</div>
-      <p>${x.desc}</p>
-      <div class="pc">${PRO[x.id].map(t => `<span>${t}</span>`).join('')}</div>
-      <span class="scegli" data-scegli="${x.id}">Prova nella Console</span>
+  const STRADE = [
+    { nome: 'Vivace piatto, occhi lilguy', o: { identita: 'tinta', palette: 'vivace', finitura: 'piatta', occhi: 'lilguy' }, desc: 'Il riferimento portato sui colori: dischi pieni e vivaci, occhi grandi nel colore dello stato con la pupilla nera e un contorno sottile che li fa leggere su ogni corpo.' },
+    { nome: 'Vivace piatto, occhi neri', o: { identita: 'tinta', palette: 'vivace', finitura: 'piatta', occhi: 'neri' }, desc: 'Gli stessi dischi, occhi neri con la pupilla grande nel colore dello stato: il contrasto più alto su corpi accesi, lo stato si legge dalla pupilla.' },
+    { nome: 'Vivace piatto, punti grandi', o: { identita: 'tinta', palette: 'vivace', finitura: 'piatta', occhi: 'punti' }, desc: 'La strada più vicina a oggi: le pupille di un solo colore, ma grandi il doppio e al centro. Più sobria, meno «creatura».' },
+    { nome: 'Pastello piatto, occhi lilguy', o: { identita: 'tinta', palette: 'pastello', finitura: 'piatta', occhi: 'lilguy' }, desc: 'Colori chiari e morbidi come le pillole della Console: si staccano dal nero senza competere con il lime; le pupille nere fanno il resto.' },
+    { nome: 'Pastello con orlo, occhi neri', o: { identita: 'tinta', palette: 'pastello', finitura: 'orlo', occhi: 'neri' }, desc: 'I pastelli con un orlo scuro sottile, che li separa dalle pillole chiare e dalla card lime; occhi neri con pupilla di stato.' },
+    { nome: 'Vivace perla, occhi lilguy', o: { identita: 'tinta', palette: 'vivace', finitura: 'perla', occhi: 'lilguy' }, desc: 'I colori vivaci con il volume di oggi: ombreggiatura, riflesso e orlo di luce sopra la tinta. Più materico, più vicino all\'orbe.' },
+    { nome: 'Perla scura, occhi lilguy', o: { identita: 'tinta', palette: 'scura', finitura: 'perla', occhi: 'lilguy' }, desc: 'La proposta della prima tornata con i soli occhi cambiati: la distinzione viene dagli occhi grandi e dalla perla appena colorata.' },
+    { nome: 'Nero, occhi colorati', o: { identita: 'nessuna', palette: 'vivace', finitura: 'perla', occhi: 'colorati' }, desc: 'Il riferimento alla lettera: corpo nero per tutti, l\'identità sta nel colore degli occhi e lo stato nella pupilla. La Console resta nera; lo stato si legge meno da lontano.' },
+    { nome: 'Nero piatto, occhi colorati', o: { identita: 'nessuna', palette: 'vivace', finitura: 'piatta', occhi: 'colorati' }, desc: 'Come la precedente, senza volume: il disco scuro dei pulsanti della Console con due occhi colorati. La più grafica.' },
+  ];
+  const par = o => `corpo=${o.finitura} · palette=${o.palette} · occhi=${o.occhi}${o.identita === 'nessuna' ? ' · senza tinta' : ''}`;
+  const opzDi = (e, o, mm) => Object.assign({ tinta: e.id - 1, dip: (mm || m).dipDi(e).tinta, carattere: false }, o);
+  const av = (e, cls, o, stato, mm) => `<span class="av${cls ? ' ' + cls : ''}">${DGT_AVATAR.html((mm || m).semeDi(e), stato || e.stato, opzDi(e, o, mm))}</span>`;
+  const nora = m.byId[4], LAV = [1, 4, 7].map(id => m.byId[id]);
+  /* 1. le nove strade (fisse, ognuna con la sua combinazione) */
+  document.getElementById('strade').innerHTML = STRADE.map((s, i) => `<div class="v-str" data-i="${i}">
+      <span class="n">${i + 1} / ${STRADE.length}</span>
+      <div class="top">${av(nora, 'xl', s.o)}<h3>${s.nome}<small>${par(s.o)}</small></h3></div>
+      <div class="v-cell nero fila">${m.dipendenti.map(e => av(e, 'xxs', s.o)).join('')}</div>
+      <div class="v-cell lime" style="min-height:64px">${LAV.map(e => av(e, '', s.o, 'lavoro')).join('')}<span class="pair" style="margin-left:14px">${[2, 3].map(id => av(m.byId[id], 'xs', s.o)).join('')}</span></div>
+      <p>${s.desc}</p>
+      <span class="scegli" data-strada="${i}">Vedi nella Console</span>
     </div>`).join('');
-  /* 2. la prova sugli undici vicini */
+  /* 2. la combinazione corrente: prova, fondi, Console */
   const attesa = m.richiesteDi('attesa').slice().sort((a, b) => (b.giorno - a.giorno) || (a.min - b.min));
   const PILE = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11]];
-  const CONTESTI = [
-    ['nero fila', 'In fila a 26 px', 'coda, diario, storico', mo => m.dipendenti.map(e => av(e, 'xxs', mo)).join('')],
-    ['card pile', 'Impilati a 28 px', 'le pile delle card obiettivo', mo => PILE.map(ids => `<span class="pair">${ids.map(id => av(m.byId[id], 'xs', mo)).join('')}</span>`).join('')],
-    ['tendina', 'La coda a 32 px', 'quattro richieste, due persone', mo => attesa.map(r => av(m.byId[r.chi], 'q', mo, 'attesa')).join('')],
-    ['lime', 'Le card a 48 px', 'al lavoro, da approvare', mo => m.dipendenti.slice(0, 6).map(e => av(e, '', mo)).join('')],
-  ];
-  document.getElementById('prova').innerHTML = '<span></span>' + CONTESTI.map(([, nome, sub]) => `<span class="h"><b>${nome}</b>${sub}</span>`).join('')
-    + MODI.concat([COMBO]).map(x => `<div class="k"><span><b>${x.nome}</b>?${x.par}</span></div>` + CONTESTI.map(([cls, , , f]) => `<div class="v-cell ${cls}">${f(x)}</div>`).join('')).join('');
-  /* 3. i fondi */
-  const FONDI = [['nero', 'Nero', 'la pagina'], ['card', 'Card scura', '#262626 → #1C1C1C'], ['grigia', 'Card grigia', '#4D4D4D'], ['lime', 'Card lime', 'da approvare'], ['bianca', 'Pillola bianca', 'selettore, coda, agenda'], ['tendina', 'Tendina chiara', '#F4F4F4']];
+  const FONDI = [['nero', 'Nero'], ['card', 'Card scura'], ['grigia', 'Card grigia'], ['lime', 'Card lime'], ['bianca', 'Pillola bianca'], ['tendina', 'Tendina chiara']];
   const CINQUE = [1, 5, 3, 2, 6].map(id => m.byId[id]);   // al lavoro, da approvare, errore, pianificato, libero
-  document.getElementById('fondi').innerHTML = '<span></span>' + MODI.map(x => `<span class="h">${x.nome}</span>`).join('')
-    + FONDI.map(([f, nome, sub]) => `<div class="k"><span><b>${nome}</b>${sub}</span></div>` + MODI.map(x => `<div class="v-cell ${f}">${CINQUE.map(e => av(e, 's', x)).join('')}</div>`).join('')).join('');
-  /* 4. la Console vera: gli orbi disegnati da direzione-a.js prendono la tinta a rotazione e il dipartimento dal modello */
   const consoleSez = document.getElementById('sel').parentElement;
   function marca(radice) {
     const perSeme = mm => Object.fromEntries(mm.dipendenti.map(e => [mm.semeDi(e).trim().toLowerCase(), e]));
@@ -180,11 +154,17 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
       const a40 = !!svg.closest('.elenco');
       const e = a40 ? (s40[k] || s11[k]) : (s11[k] || s40[k]);
       if (!e) return;
-      svg.style.setProperty('--av-tinta', O.tintaDi(e.id - 1).c);
+      svg.dataset.tinta = O.tintaDi(e.id - 1).id;
       svg.dataset.dip = (a40 && s40[k] ? m40 : m).dipDi(e).tinta;
     });
   }
-  function costruisci() {
+  function tutto() {
+    const a = O.aspetto(), o = { identita: a.identita, palette: a.palette, finitura: a.finitura, occhi: a.occhi, carattere: a.carattere };
+    document.getElementById('prova').innerHTML = `<div class="v-cell nero fila con"><span class="lb">In fila a 26 px · coda, diario, storico</span>${m.dipendenti.map(e => av(e, 'xxs', o)).join('')}</div>`
+      + `<div class="v-cell card pile con"><span class="lb">Impilati a 28 px</span>${PILE.map(ids => `<span class="pair">${ids.map(id => av(m.byId[id], 'xs', o)).join('')}</span>`).join('')}</div>`
+      + `<div class="v-cell tendina con"><span class="lb">La coda a 32 px</span>${attesa.map(r => av(m.byId[r.chi], 'q', o, 'attesa')).join('')}</div>`
+      + `<div class="v-cell lime con"><span class="lb">Le card a 48 px</span>${m.dipendenti.slice(0, 8).map(e => av(e, '', o)).join('')}</div>`;
+    document.getElementById('fondi').innerHTML = FONDI.map(([f, nome]) => `<div class="v-cell ${f} con"><span class="lb">${nome}</span>${CINQUE.map(e => av(e, 's', o)).join('')}</div>`).join('');
     const tmp = document.createElement('div'); tmp.className = 'dirA';
     tmp.innerHTML = DIREZIONE_A.render(m, { tendina: 'aperta' });
     const sez = tmp.querySelectorAll('section');
@@ -204,28 +184,24 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
     document.getElementById('c-righe').innerHTML = solo(righe.outerHTML) + solo(tend.outerHTML);
     document.getElementById('c-testata').innerHTML = solo(testata.outerHTML);
     marca(consoleSez);
-    O.identita(O.identita(), consoleSez);
     DGT_AVATAR.anima(consoleSez);
+    barra_();
   }
-  costruisci();
-  /* il selettore: cambia il modo della Console (gli orbi già disegnati) e il carattere (ridisegna) */
+  /* 3. il configuratore */
   const sel = document.getElementById('sel');
-  function segna() {
-    const modo = O.identita(), car = O.carattere();
-    sel.innerHTML = '<span>Nella Console</span>' + O.IDENTITA.map(x => `<span class="pill${x.id === modo ? ' on' : ''}" data-scegli="${x.id}">${x.nome}</span>`).join('')
-      + `<span class="sep"></span><span class="pill car${car ? ' on' : ''}" data-scegli="carattere">Occhi con carattere${car ? ' · sì' : ' · no'}</span>`;
-    document.querySelectorAll('.v-sol').forEach(n => {
-      const on = n.dataset.id === 'carattere' ? car : n.dataset.id === modo;
-      n.classList.toggle('on', on);
-      n.querySelector('.scegli').textContent = n.dataset.id === 'carattere' ? (car ? 'Attivo nella Console' : 'Aggiungi nella Console') : (on ? 'Nella Console' : 'Prova nella Console');
-    });
+  const grp = (label, key, lista, cur) => `<span class="g"><span>${label}</span>${lista.map(x => `<span class="pill${x.id === cur ? ' on' : ''}" data-k="${key}" data-v="${x.id}" title="${x.desc || ''}">${x.nome}</span>`).join('')}</span>`;
+  function barra_() {
+    const a = O.aspetto();
+    sel.innerHTML = grp('Corpo', 'finitura', O.FINITURE, a.finitura) + grp('Palette', 'palette', O.PALETTE, a.palette) + grp('Occhi', 'occhi', O.OCCHI, a.occhi)
+      + grp('Identità', 'identita', O.IDENTITA.filter(x => x.id !== 'toni'), a.identita)
+      + `<span class="g"><span>Carattere</span><span class="pill car${a.carattere ? ' on' : ''}" data-k="carattere" data-v="${a.carattere ? '0' : '1'}">occhi e riflesso dal seme · ${a.carattere ? 'sì' : 'no'}</span></span>`;
+    document.querySelectorAll('.v-str').forEach(n => { const s = STRADE[+n.dataset.i]; const on = ['identita', 'palette', 'finitura', 'occhi'].every(k => s.o[k] === a[k]); n.classList.toggle('on', on); n.querySelector('.scegli').textContent = on ? 'Nella Console' : 'Vedi nella Console'; });
   }
-  segna();
+  tutto();
   document.addEventListener('click', ev => {
-    const el = ev.target.closest('[data-scegli]'); if (!el) return;
-    if (el.dataset.scegli === 'carattere') { O.carattere(!O.carattere()); costruisci(); }
-    else O.identita(el.dataset.scegli, consoleSez);
-    segna();
+    const s = ev.target.closest('[data-strada]'), p = ev.target.closest('[data-k]');
+    if (s) { O.aspetto(STRADE[+s.dataset.strada].o); tutto(); document.getElementById('sel').scrollIntoView({ behavior: 'smooth' }); }
+    else if (p) { const o = {}; o[p.dataset.k] = p.dataset.k === 'carattere' ? p.dataset.v === '1' : p.dataset.v; O.aspetto(o); tutto(); }
   });
 </script>
 </body>

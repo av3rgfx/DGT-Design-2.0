@@ -601,41 +601,57 @@ Quattro correzioni dell'utente sulle schermate viste da uno schermo largo, più 
    è l'icona `i-fire`, disegnata nello sprite di DGT (`comune.js`; lo specimen ha il suo sprite). Regola fondamentale
    in `CLAUDE.md` e in `SYSTEM-DESIGN.md` (regola 16).
 
-### Versione 10: l'identità degli orbi (2026-09-05, sessione successiva; proposta in attesa di scelta)
+### Versione 10: l'identità degli orbi (2026-09-05, proposta in due tornate, in attesa di scelta)
 
-Correzione dell'utente sulle pagine viste: «quando ci sono molti avatar vicini, o anche quelli piccoli messi in fila, non
-rendono l'idea di diversi dipendenti che lavorano, perché sono tutti uguali; magari di diversi colori, per distinguerli
-almeno un minimo; proponimi altre soluzioni se ce ne sono di migliori». Diagnosi: dalla versione 7b l'orbe è una sola
-perla nera per tutti e l'identità sta negli occhi (tre forme di pupilla, misura 0,16–0,185 del raggio, distanza 15,5–19°)
-e nel riflesso, che sotto i 36 px non si leggono; nella coda, nel diario, nelle pile delle card obiettivo e nella riga «al
-lavoro» tre dipendenti diversi sono tre punti neri uguali. Costruite quattro soluzioni per il corpo più una per gli occhi,
-tutte **opzionali e spente di default** (la Console non cambia finché non si sceglie), a confronto in `avatar-identita.html`
-e nel suo artefatto (https://claude.ai/code/artifact/690baac8-2de3-48e3-bb98-98024bc7312f): i cinque modi in card, la prova sugli undici vicini (in fila a 26 px, impilati a 28, la coda a
-32, le card a 48, con in fondo la combinazione consigliata), tutti i fondi, e la Console vera con il selettore.
+**Prima tornata.** Richiesta dell'utente: «quando ci sono molti avatar vicini, o anche quelli piccoli messi in fila, non
+rendono l'idea di diversi dipendenti che lavorano, perché sono tutti uguali; magari di diversi colori». Diagnosi: dalla
+versione 7b l'orbe è una sola perla nera per tutti e l'identità sta negli occhi e nel riflesso, invisibili sotto i 36 px.
+Quattro modi a confronto in `avatar-identita.html`: **perle colorate** (una tinta per dipendente, otto tinte scure,
+assegnate a rotazione alla creazione), **tinta del dipartimento** (le quattro tinte già nel modello: indaco Sviluppo,
+corallo Marketing, ambra Vendite, verdeacqua Amministrazione), **toni di perla** (quattro grigi, quasi indistinguibili
+a 26 px) e il **carattere degli occhi** (intervalli più larghi per misura, distanza, altezza e forma delle pupille del kit,
+riflesso con misura e angolo propri). Scelta dell'utente: **perle colorate**.
 
-| Modo | Che cos'è | Per | Contro |
-|---|---|---|---|
-| **Oggi: una perla sola** (`identita=nessuna`) | il corpo nero lucido di tutti | un solo oggetto, fedele all'orbe di riferimento e alla regola del solo accento | in fila e impilati indistinguibili |
-| **Perle colorate** (`identita=tinta`) | otto tinte scure della stessa famiglia (indaco, corallo, ambra, verdeacqua, prugna, petrolio, bordeaux, nera), assegnate a rotazione alla creazione, cambiabili nell'editor | distingue ogni dipendente a ogni misura; il lime e il rosa degli stati restano gli unici colori vivi | porta il colore in un sistema a un solo accento; oltre otto le tinte tornano; un colore senza significato può sembrare uno stato |
-| **La tinta del dipartimento** (`identita=dipartimento`) | quattro perle con le tinte già nel modello (indaco Sviluppo, corallo Marketing, ambra Vendite, verdeacqua Amministrazione) | il colore dice qualcosa | dentro un dipartimento gli orbi restano uguali: non risolve le pile né la pagina Dipartimento |
-| **Toni di perla** (`identita=toni`) | quattro perle dal nero al grigio argento, dal seme | niente colore | a 26–28 px quasi non si distinguono; le chiare abbassano il contrasto degli occhi bianchi |
-| **Occhi e riflesso con carattere** (`carattere=1`) | le stesse estrazioni dal seme su intervalli più larghi (misura 0,13–0,215, distanza 12,5–21,5°, altezza −12…+1°, occhi tondi o schiacciati) e il riflesso con misura e angolo propri | individualità vera dove l'avatar è grande; si somma a qualunque modo | a 26–32 px non si vede |
+**Seconda tornata.** «Va bene le perle colorate ma non mi piacciono i colori, li voglio più accesi e vivaci; gli occhi non
+si vedono bene, vorrei ricreare gli occhi degli avatar di lilguy.net; forse è meglio tenere gli avatar piatti con un colore
+unico senza l'effetto 3D; più opzioni e più varianti». Il riferimento (studiato dal widget del sito, ricostruito in
+locale): dischi neri con due occhi enormi, circa un terzo del volto ciascuno, all'altezza del centro e distanti (i centri a
+0,4 del raggio), il «bianco» dell'occhio in un colore vivo e la pupilla a contrasto (tonda, a fessura verticale, ovale),
+forme tonde, ovali, a gatto (inclinate) e a ghianda, coppie anche asimmetriche; battito come schiacciamento verticale,
+gli occhi scivolano verso lo sguardo. La pagina è diventata un **configuratore** con tre scelte indipendenti e nove strade
+preimpostate:
 
-**Raccomandazione**: **perle colorate con carattere** (`?identita=tinta&carattere=1`): la tinta separa i dipendenti dove
-sono piccoli e vicini, il carattere dà a ognuno una faccia dove sono grandi. Il costo per il sistema è un'eccezione
-dichiarata alla regola 4 («un solo accento»): le tinte del corpo sono scure, desaturate e mai lime, gialle o rosa, così
-gli occhi di stato restano il segnale del titolare. Nella coda di oggi due orbi uguali sono giusti: sono la stessa persona
-(Nora e il Social media manager con le loro revisioni).
+| Scelta | Opzioni |
+|---|---|
+| Corpo (`finitura`) | **perla** (il volume di oggi: ombreggiatura, riflesso, luce riflessa, orlo e bagliore sopra il colore), **piatta** (disco di colore pieno), **orlo** (piatta con un orlo scuro sottile, per le superfici dello stesso colore) |
+| Palette | **scura** (le perle scure della prima tornata), **vivace** (indaco `#6C6AFF`, corallo `#FF6A55`, ambra `#FFB52E`, verdeacqua `#2BD9B5`, prugna `#C66CFF`, petrolio `#3AB8FF`, bordeaux `#FF5BA6`, grigio `#5A5A5A`), **pastello** (le stesse otto, chiare e morbide) |
+| Occhi | **kit** (le pupille di oggi), **punti** (le stesse, grandi il doppio e al centro, con un contorno sottile sui corpi colorati), **lilguy** («bianco» nel colore dello stato, pupilla nera, contorno sottile), **neri** (occhi neri, pupilla grande nel colore dello stato), **colorati** («bianco» nel colore del dipendente, pupilla nel colore dello stato: l'identità passa dagli occhi, il corpo resta nero) |
+| Identità | tinta per dipendente (a rotazione, o scelta), tinta del dipartimento, nessuna |
 
-**Come funziona** (`avatar-orbe.js`): il corpo diventa un colore pieno (`--av-base`) e sopra ci sta la stessa
-ombreggiatura della perla (`#av-orbe-ombra`, gradiente bianco → nero trasparente), così volume, luci, orlo e bagliore
-restano quelli; il modo sta sull'SVG (`data-modo`, da `identita(nome, radice)` o da `html(seme, stato, {identita,
-carattere, tinta, dip})`), la tinta e il tono in due variabili inline (`--av-tinta`, `--av-tono`: dal seme, o assegnate),
-la tinta del dipartimento in `data-dip`. `forma(seme, carattere)` tiene fase, periodi e semi del rumore di prima. Se si
-sceglie una tinta per dipendente, il passo successivo è nel modello: `e.tinta` assegnata a rotazione alla creazione
-(`aggiungi`), la scelta nell'editor accanto alle sei varianti dell'avatar, `av()` in `direzione-a.js` che la passa
-all'orbe, `?identita=` in `direzione-a.html`. Gli screenshot della Console non cambiano: senza modo l'orbe è quello di
-prima (il riflesso ha la stessa misura, il markup ha in più il cerchio dell'ombra, spento).
+Le nove strade: vivace piatto con occhi lilguy, neri o punti grandi; pastello piatto con lilguy; pastello con orlo e
+occhi neri; vivace perla con lilguy; perla scura con lilguy; nero con occhi colorati (perla e piatto). In tutte lo
+**stato resta negli occhi** (bianchi da fermo, lime al lavoro, gialli da approvare, rosa a X in errore, a fessura da
+libero) e i moti sono quelli di sempre. Costo dichiarato: le palette vivace e pastello portano il colore in un sistema a
+un solo accento; le tinte evitano lime, giallo e rosa.
+
+**Come è fatto** (`avatar/avatar-orbe.js`, tutto opzionale e spento di default: la Console non cambia finché non si
+sceglie): `TINTE` (otto tinte, tre palette), `PALETTE`, `FINITURE`, `OCCHI`, `IDENTITA`; `html(seme, stato, opz)` accetta
+`identita`, `palette`, `finitura`, `occhi`, `carattere`, `tinta` (id o indice), `dip` (nome della tinta del dipartimento) e
+stampa sull'SVG `data-modo`, `data-tinta`, `data-palette`, `data-finitura`, `data-occhi`, `data-dip`, `data-carattere`;
+`aspetto({…}, radice)` imposta i predefiniti della pagina (`html[data-*]`) e applica subito palette, finitura e modo agli
+orbi già disegnati (occhi e carattere cambiano il markup: valgono per gli orbi disegnati da lì in avanti). Il colore del
+corpo nei modi con identità è `--av-base`: il cerchio `.pelle` diventa un colore pieno e sopra ci sta `.ombra`, la stessa
+ombreggiatura della perla come gradiente bianco → nero trasparente (la finitura piatta la spegne insieme a luci, orlo e
+bagliore). Gli occhi grandi sono `.occhio.lg` con `.sclera` (cerchio unitario o il tracciato della ghianda, con forma e
+inclinazione dal seme) e `.pupilla` che il motore trasla verso lo sguardo; la geometria è piana (`posaPiana`), non sulla
+sfera. `forma(seme)` estrae i parametri lilguy da un generatore a parte (`#lilguy`), così non cambiano con il carattere.
+Pagina di confronto `avatar-identita.html` (`?identita=&palette=&corpo=&occhi=&carattere=`), artefatto
+https://claude.ai/code/artifact/690baac8-2de3-48e3-bb98-98024bc7312f. Screenshot: `screenshot/avatar-identita.png`.
+
+**Da fare alla scelta**: portare la combinazione nel prodotto (tinta nel modello dati, assegnata alla creazione come la
+meno usata e scelta nell'editor del dipendente accanto all'avatar; `av()` in `direzione-a.js` passa tinta e dipartimento;
+`direzione-a.html` imposta l'aspetto), aggiornare `SYSTEM-DESIGN.md` (riga «Avatar del dipendente AI», regola sul colore) e
+rigenerare screenshot e artefatto della Console.
 
 ## 5. File
 

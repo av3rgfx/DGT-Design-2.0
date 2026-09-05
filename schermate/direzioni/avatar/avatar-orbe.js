@@ -87,15 +87,34 @@ window.DGT_AVATAR_ORBE = (function () {
      stessa ombreggiatura): tinta assegnata al dipendente (TINTE, a rotazione alla creazione o scelta nell'editor), tinta
      del dipartimento (le quattro tinte già nel modello: indaco, corallo, ambra, verdeacqua), toni di grigio dal seme
      (TONI) e nessuna (la perla di oggi). A parte, gli occhi e il riflesso «con carattere» (forma(seme, true)). */
+  /* otto tinte, ognuna in tre palette (seconda tornata, 2026-09-05: «colori più accesi e vivaci»): scura = perle scure della
+     prima proposta; vivace = colori pieni e saturi; pastello = chiari e morbidi. `c` è la scura, per compatibilità. */
   const TINTE = [
-    { id: 'indaco',     c: '#2F3574', nome: 'Indaco' },
-    { id: 'corallo',    c: '#7A3A2A', nome: 'Corallo' },
-    { id: 'ambra',      c: '#66531B', nome: 'Ambra' },
-    { id: 'verdeacqua', c: '#1F5A3F', nome: 'Verdeacqua' },
-    { id: 'prugna',     c: '#4B2A6B', nome: 'Prugna' },
-    { id: 'petrolio',   c: '#174C5F', nome: 'Petrolio' },
-    { id: 'bordeaux',   c: '#6A2445', nome: 'Bordeaux' },
-    { id: 'nero',       c: '#2A2A2A', nome: 'Perla nera' },
+    { id: 'indaco',     nome: 'Indaco',     scura: '#2F3574', vivace: '#6C6AFF', pastello: '#A3A1FF' },
+    { id: 'corallo',    nome: 'Corallo',    scura: '#7A3A2A', vivace: '#FF6A55', pastello: '#FFB09E' },
+    { id: 'ambra',      nome: 'Ambra',      scura: '#66531B', vivace: '#FFB52E', pastello: '#FFDC8C' },
+    { id: 'verdeacqua', nome: 'Verdeacqua', scura: '#1F5A3F', vivace: '#2BD9B5', pastello: '#A8F0DE' },
+    { id: 'prugna',     nome: 'Prugna',     scura: '#4B2A6B', vivace: '#C66CFF', pastello: '#E0B7FF' },
+    { id: 'petrolio',   nome: 'Petrolio',   scura: '#174C5F', vivace: '#3AB8FF', pastello: '#A8D8FF' },
+    { id: 'bordeaux',   nome: 'Bordeaux',   scura: '#6A2445', vivace: '#FF5BA6', pastello: '#FFB4D5' },
+    { id: 'neutro',     nome: 'Grigio',     scura: '#2A2A2A', vivace: '#5A5A5A', pastello: '#9C9C9C' },
+  ].map(t => Object.assign(t, { c: t.scura }));
+  const PALETTE = [
+    { id: 'scura',    nome: 'Scura',    desc: 'Le perle scure della prima proposta: colore appena percepibile, il nero resta il tono dominante.' },
+    { id: 'vivace',   nome: 'Vivace',   desc: 'Colori pieni e saturi: la fila si legge al primo sguardo; il lime e il rosa degli stati non sono più i soli colori vivi.' },
+    { id: 'pastello', nome: 'Pastello', desc: 'Chiari e morbidi, come le pillole bianche della Console: si staccano dal nero senza urlare.' },
+  ];
+  const FINITURE = [
+    { id: 'perla',  nome: 'Perla',            desc: 'Il volume di oggi: ombreggiatura, riflesso, luce riflessa, orlo di luce e bagliore sopra il colore.' },
+    { id: 'piatta', nome: 'Piatta',           desc: 'Un disco di colore pieno, senza volume né luci: come il riferimento, e come i cerchi e le pillole della Console.' },
+    { id: 'orlo',   nome: 'Piatta con orlo',  desc: 'Il disco piatto con un orlo scuro sottile, che lo separa dalle superfici dello stesso colore (card lime, pillole chiare).' },
+  ];
+  const OCCHI = [
+    { id: 'kit',      nome: 'Attuali',        desc: 'Le pupille del kit dipinte sulla sfera, piccole e appena sotto il centro.' },
+    { id: 'punti',    nome: 'Punti grandi',   desc: 'Le stesse pupille di un solo colore, ma grandi il doppio e all\'altezza del centro, distanti: si leggono anche a 26 px.' },
+    { id: 'lilguy',   nome: 'Lilguy',         desc: 'Come il riferimento: occhi grandi un terzo del volto, «bianco» nel colore dello stato (bianco, lime, giallo, rosa) con la pupilla nera; forma dal seme (tondi, ovali, a gatto, a ghianda) e pupilla tonda, a fessura o larga.' },
+    { id: 'neri',     nome: 'Neri',           desc: 'Le stesse forme del riferimento ma invertite: occhi neri con la pupilla grande nel colore dello stato. Si vedono su qualunque corpo, anche vivace.' },
+    { id: 'colorati', nome: 'Colorati',       desc: 'Il riferimento alla lettera: occhi nel colore del dipendente sul corpo nero, pupilla nel colore dello stato. L\'identità passa dagli occhi, il corpo resta la perla nera.' },
   ];
   const TONI = [
     { id: 'nero',    c: '#2A2A2A', nome: 'Perla nera' },
@@ -142,8 +161,33 @@ window.DGT_AVATAR_ORBE = (function () {
       ratio: 1, luceR: 0.3, luceA: -30, car: !!car,       // forma degli occhi (alti/larghi) e misura e angolo del riflesso
     };
     if (car) { p.ratio = 0.78 + rng() * 0.42; p.luceR = 0.22 + rng() * 0.18; p.luceA = -52 + rng() * 34; }
+    /* gli occhi grandi del riferimento (stili punti, lilguy, neri, colorati): forma del «bianco», pupilla, misura, inclinazione */
+    const lg = M.createRng(hash(chiave + '#lilguy'));
+    const f = lg(), q = lg();
+    p.lgForma = f < 0.4 ? 'cerchio' : f < 0.65 ? 'ovale' : f < 0.85 ? 'gatto' : 'ghianda';
+    p.lgPup = q < 0.5 ? 'tonda' : q < 0.8 ? 'fessura' : 'larga';
+    p.lgMis = 0.29 + lg() * 0.05;            // raggio dell'occhio in frazione del raggio del corpo (il riferimento: circa un terzo)
+    p.lgPupMis = 0.36 + lg() * 0.16;         // raggio della pupilla in frazione dell'occhio
+    p.lgTilt = 9 + lg() * 7;                 // inclinazione degli occhi a gatto
+    p.lgSplit = 23 + lg() * 2.5;             // semi-distanza degli occhi grandi, in gradi (sin → 0,39–0,43 del raggio)
+    p.occhi = 'kit';
     return p;
   }
+  const GRANDI = { punti: 1, lilguy: 1, neri: 1, colorati: 1 };
+  const famLG = p => p.occhi === 'lilguy' || p.occhi === 'neri' || p.occhi === 'colorati';
+  /** La geometria degli occhi per stile: le pupille del kit stanno appena sotto il centro; quelli grandi al centro e più distanti. */
+  const geom = p => GRANDI[p.occhi] ? { split: p.occhi === 'punti' ? 20 + (p.split - 15.5) * 0.6 : p.lgSplit, pitch: 0 } : { split: p.split, pitch: p.pitch };
+  /** Posizione degli occhi grandi sul disco: piana, la coppia scivola un poco verso lo sguardo (come il widget del riferimento) e ruota col roll. */
+  function posaPiana(g, R, split) {
+    const sx = Math.sin(deg(split)) * R, dx = g.yaw / 30 * 0.06 * R, dy = -g.pitch / 30 * 0.06 * R;
+    const c = Math.cos(deg(g.roll)), s = Math.sin(deg(g.roll));
+    const mk = lato => { const x0 = sx * lato + dx, y0 = dy; return { x: x0 * c - y0 * s, y: x0 * s + y0 * c, a: c, b: s, c: -s, d: c, depth: 1 }; };
+    return [mk(-1), mk(1)];
+  }
+  const posaOcchiDi = (p, g) => famLG(p) ? posaPiana(g, p.r, geom(p).split) : posaOcchi(g, p.r, geom(p).split);
+  /** Lo spostamento della pupilla dentro l'occhio grande (spazio unitario dell'occhio), dallo sguardo. */
+  const pupillaXY = (p, g) => { const c = x => Math.max(-1, Math.min(1, x)); const r = (1 - p.lgPupMis) * 0.72; return [c(g.yaw / 30) * r, c(-g.pitch / 30) * r]; };
+  const SCLERA = { cerchio: null, ovale: null, gatto: null, ghianda: 'M0 -1.18C.62 -1.02 1 -.42 1 .18C1 .78 .58 1 0 1C-.58 1 -1 .78 -1 .18C-1 -.42 -.62 -1.02 0 -1.18Z' };
 
   /* ---------- gli occhi del kit: pupille dipinte su una sfera (base tangente proiettata in ortografico) ---------- */
   const deg = d => d * Math.PI / 180;
@@ -165,7 +209,15 @@ window.DGT_AVATAR_ORBE = (function () {
   }
   /** Misura e inclinazione delle pupille per stato (rapporti del kit). */
   function occhiConf(p, stato) {
-    const m = p.misura * (p.pupilla === 'ring' ? 1.12 : 1), q = p.ratio || 1;
+    if (famLG(p)) {
+      /* gli occhi grandi: il bianco ha la forma del seme; da approvare crescono, da libero si chiudono a fessura (tutto l'occhio si schiaccia) */
+      const e = p.lgMis, sh = p.lgForma === 'ovale' ? 1.15 : p.lgForma === 'gatto' ? 1.2 : 1, sw = p.lgForma === 'gatto' ? 0.9 : 1;
+      const tilt = p.lgForma === 'gatto' ? [p.lgTilt, -p.lgTilt] : [0, 0];
+      if (stato === 'attesa') return { w: e * sw * 1.15, h: e * sh * 1.15, tilt };
+      if (stato === 'libero') return { w: e * sw, h: e * sh * 0.4, tilt };
+      return { w: e * sw, h: e * sh, tilt };
+    }
+    const m = p.misura * (p.pupilla === 'ring' ? 1.12 : 1) * (p.occhi === 'punti' ? 1.75 : 1), q = p.ratio || 1;
     if (stato === 'lavoro') return { w: m * 0.97, h: m * 0.82 * q, tilt: [0, 0] };
     if (stato === 'attesa') return { w: m * 1.25, h: m * 1.25 * q, tilt: [0, 0] };
     if (stato === 'libero') return { w: m * 0.9, h: 0.028, tilt: [8, -8] };
@@ -173,14 +225,15 @@ window.DGT_AVATAR_ORBE = (function () {
     return { w: m, h: m * q, tilt: [0, 0] };
   }
   /** Lo sguardo di riposo per stato (senza vita): quello del markup e degli screenshot. */
-  const sguardoRiposo = (p, stato) => ({ yaw: 0, pitch: p.pitch + (stato === 'lavoro' ? 3 : stato === 'libero' ? -3 : 0), roll: 0 });
+  const sguardoRiposo = (p, stato) => ({ yaw: 0, pitch: geom(p).pitch + (stato === 'lavoro' ? 3 : stato === 'libero' ? -3 : 0), roll: 0 });
 
   /** La tinta di un dipendente: per id ('indaco'), per indice (a rotazione: il modello assegna la meno usata alla creazione) o dal seme. */
   const tintaDi = x => typeof x === 'number' ? TINTE[((Math.round(x) % TINTE.length) + TINTE.length) % TINTE.length] : TINTE.find(t => t.id === x) || null;
   const tonoDi = x => typeof x === 'number' ? TONI[((Math.round(x) % TONI.length) + TONI.length) % TONI.length] : TONI.find(t => t.id === x) || null;
   const chiaveDi = seme => (seme || 'dipendente').trim().toLowerCase();
-  const tintaSeme = (seme, scelta) => ((scelta !== undefined && scelta !== null && tintaDi(scelta)) || TINTE[hash(chiaveDi(seme) + '#tinta') % TINTE.length]).c;
+  const tintaSeme = (seme, scelta) => (scelta !== undefined && scelta !== null && tintaDi(scelta)) || TINTE[hash(chiaveDi(seme) + '#tinta') % TINTE.length];
   const tonoSeme = (seme, scelta) => ((scelta !== undefined && scelta !== null && tonoDi(scelta)) || TONI[hash(chiaveDi(seme) + '#tono') % TONI.length]).c;
+  const fra = (lista, id, pred) => lista.some(x => x.id === id) ? id : pred;
 
   /** Il markup dell'orbe: un <svg> inline nella posa di riposo; il motore sotto lo muove. Colori e volume della pelle stanno nel CSS (variabili --av-*). */
   /** opz (facoltativo, proposta 2026-09-05): identita 'nessuna'|'tinta'|'dipartimento'|'toni' (predefinito: quello della
@@ -191,19 +244,34 @@ window.DGT_AVATAR_ORBE = (function () {
     const ds = typeof document !== 'undefined' ? document.documentElement.dataset : {};
     const car = opz.carattere !== undefined ? !!opz.carattere : ds.carattere === '1';
     const modo = opz.identita !== undefined ? opz.identita : (ds.identita || 'nessuna');
-    const p = forma(seme, car);
+    const palette = fra(PALETTE, opz.palette !== undefined ? opz.palette : ds.palette, 'scura');
+    const finitura = fra(FINITURE, opz.finitura !== undefined ? opz.finitura : ds.finitura, 'perla');
+    const stile = fra(OCCHI, opz.occhi !== undefined ? opz.occhi : ds.occhi, 'kit');
+    const p = forma(seme, car); p.occhi = stile;
     const volto = VOLTO[stato] || VOLTO.libero;
-    const o = occhiConf(p, stato), poses = posaOcchi(sguardoRiposo(p, stato), p.r, p.split);
-    /* la pupilla in spazio unitario (raggio 1): la matrice la porta a misura; le X dell'errore sono due tacche 1,8 × 0,4 */
-    const dentro = stato === 'errore'
-      ? `<rect x="-.9" y="-.2" width="1.8" height=".4" rx=".2" transform="rotate(45)"/><rect x="-.9" y="-.2" width="1.8" height=".4" rx=".2" transform="rotate(-45)"/>`
-      : `<path d="${p.pupilla === 'square' ? M.UNIT_SQUARE : M.UNIT_CIRCLE}"/>`;
-    const anello = p.pupilla === 'ring' && stato !== 'errore' && stato !== 'libero';
-    const occhio = i => `<g class="occhio${anello ? ' anello' : ''}" transform="${matrice(poses[i], o.w, o.h, o.tilt[i], 1, p.r)}">${dentro}</g>`;
+    const o = occhiConf(p, stato), poses = posaOcchiDi(p, sguardoRiposo(p, stato));
+    const X = `<rect x="-.9" y="-.2" width="1.8" height=".4" rx=".2" transform="rotate(45)"/><rect x="-.9" y="-.2" width="1.8" height=".4" rx=".2" transform="rotate(-45)"/>`;
+    let occhio;
+    if (famLG(p)) {
+      /* gli occhi grandi: il «bianco» (sclera) in spazio unitario e dentro la pupilla, che si sposta con lo sguardo; le X dell'errore al posto della pupilla */
+      const pm = p.lgPupMis;
+      const pup = stato === 'errore' ? `<g transform="scale(${r2(pm * 1.15)})">${X}</g>`
+        : p.lgPup === 'fessura' ? `<ellipse rx="${r2(pm * 0.42)}" ry="${r2(pm * 1.05)}"/>`
+        : p.lgPup === 'larga' ? `<ellipse rx="${r2(pm * 1.05)}" ry="${r2(pm * 0.68)}"/>` : `<circle r="${r2(pm)}"/>`;
+      const sclera = SCLERA[p.lgForma] ? `<path class="sclera" d="${SCLERA[p.lgForma]}"/>` : `<circle class="sclera" r="1"/>`;
+      occhio = i => `<g class="occhio lg" transform="${matrice(poses[i], o.w, o.h, o.tilt[i], 1, p.r)}">${sclera}<g class="pupilla">${pup}</g></g>`;
+    } else {
+      /* la pupilla del kit in spazio unitario (raggio 1): la matrice la porta a misura; le X dell'errore sono due tacche 1,8 × 0,4 */
+      const dentro = stato === 'errore' ? X : `<path d="${p.pupilla === 'square' ? M.UNIT_SQUARE : M.UNIT_CIRCLE}"/>`;
+      const anello = p.pupilla === 'ring' && stato !== 'errore' && stato !== 'libero';
+      occhio = i => `<g class="occhio${anello ? ' anello' : ''}" transform="${matrice(poses[i], o.w, o.h, o.tilt[i], 1, p.r)}">${dentro}</g>`;
+    }
     /* --volto colore degli occhi (i neutri leggono --av-occhi-neutri: neri sul corpo chiaro), --bordo-c contorno nero (in spazio unitario) se l'occhio è colorato sul corpo chiaro */
     const neutro = volto === '#FCFCFC';
-    const vars = `--volto:${neutro ? 'var(--av-occhi-neutri,#FCFCFC)' : volto};--bordo-c:${neutro ? 0 : 0.25};--av-tinta:${tintaSeme(seme, opz.tinta)};--av-tono:${tonoSeme(seme, opz.tono)}`;
-    const attrs = (modo && modo !== 'nessuna' ? ` data-modo="${modo}"` : '') + (opz.dip ? ` data-dip="${String(opz.dip).replace(/"/g, '&quot;')}"` : '') + (car ? ' data-carattere="1"' : '');
+    const tinta = tintaSeme(seme, opz.tinta);
+    const vars = `--volto:${neutro ? 'var(--av-occhi-neutri,#FCFCFC)' : volto};--bordo-c:${neutro ? 0 : 0.25};--av-tono:${tonoSeme(seme, opz.tono)}`;
+    const attrs = (modo && modo !== 'nessuna' ? ` data-modo="${modo}"` : '') + ` data-tinta="${tinta.id}"` + (opz.dip ? ` data-dip="${String(opz.dip).replace(/"/g, '&quot;')}"` : '')
+      + (palette !== 'scura' ? ` data-palette="${palette}"` : '') + (finitura !== 'perla' ? ` data-finitura="${finitura}"` : '') + (stile !== 'kit' ? ` data-occhi="${stile}"` : '') + (car ? ' data-carattere="1"' : '');
     const lx = r2(p.luce), ly = r2(-0.42 * p.r);
     return `<svg class="ava orbe ${stato}" viewBox="${VIEWBOX}" aria-hidden="true" focusable="false" style="${vars}" data-seme="${String(seme || '').replace(/"/g, '&quot;')}" data-stato="${stato}"${attrs}>`
       + `<circle class="alone" r="122"/>`
@@ -248,9 +316,25 @@ window.DGT_AVATAR_ORBE = (function () {
 .ava.orbe .corpo>.ombra{display:none;fill:url(#av-orbe-ombra)}
 svg.ava.orbe[data-modo] .corpo>.ombra{display:block}
 svg.ava.orbe[data-modo] .corpo>.pelle{fill:var(--av-base,#2A2A2A)}
-svg.ava.orbe[data-modo="tinta"]{--av-base:var(--av-tinta)}
+svg.ava.orbe[data-modo="tinta"]{--av-base:var(--av-tinta-c)}
 svg.ava.orbe[data-modo="toni"]{--av-base:var(--av-tono)}
-${TINTE.map(t => `svg.ava.orbe[data-modo="dipartimento"][data-dip="${t.id}"]{--av-base:${t.c}}`).join('\n')}
+svg.ava.orbe[data-modo="dipartimento"]{--av-base:var(--av-dip-c,#2A2A2A)}
+/* il colore della tinta (--av-tinta-c) e del dipartimento (--av-dip-c) per palette: scura senza attributo, vivace e pastello con data-palette */
+${PALETTE.map(pl => TINTE.map(t => `svg.ava.orbe${pl.id === 'scura' ? ':not([data-palette])' : `[data-palette="${pl.id}"]`}[data-tinta="${t.id}"]{--av-tinta-c:${t[pl.id]}}svg.ava.orbe${pl.id === 'scura' ? ':not([data-palette])' : `[data-palette="${pl.id}"]`}[data-dip="${t.id}"]{--av-dip-c:${t[pl.id]}}`).join('\n')).join('\n')}
+/* ---- la finitura: piatta = un disco di colore pieno senza volume né luci; orlo = piatta con un orlo scuro sottile ---- */
+svg.ava.orbe[data-finitura] .corpo>.ombra,svg.ava.orbe[data-finitura] .corpo>.luce,svg.ava.orbe[data-finitura] .corpo>.riflesso,svg.ava.orbe[data-finitura] .bagliore{display:none}
+svg.ava.orbe[data-finitura] .corpo>.orlo{stroke:none}
+svg.ava.orbe[data-finitura]:not([data-modo]) .corpo>.pelle{fill:#1E1E1E}
+svg.ava.orbe[data-finitura="orlo"] .corpo>.orlo{stroke:rgb(0 0 0/.3);stroke-width:5}
+/* ---- gli occhi grandi (stili lilguy, neri, colorati): sclera e pupilla dai colori dello stile; un contorno sottile alla sclera perché si legga su ogni corpo ---- */
+.ava.orbe .occhio.lg .sclera{fill:var(--sclera,var(--volto));stroke:#0A0A0A;stroke-width:var(--av-sclera-bordo,.07);paint-order:stroke}
+.ava.orbe .occhio.lg .pupilla circle,.ava.orbe .occhio.lg .pupilla ellipse,.ava.orbe .occhio.lg .pupilla rect{fill:var(--pupilla,#0A0A0A);stroke:none}
+svg.ava.orbe[data-occhi="lilguy"]{--sclera:var(--volto);--pupilla:#0A0A0A}
+svg.ava.orbe[data-occhi="neri"]{--sclera:#0A0A0A;--pupilla:var(--volto);--av-sclera-bordo:0}
+svg.ava.orbe[data-occhi="colorati"]{--sclera:var(--av-tinta-c,#FCFCFC);--pupilla:var(--volto)}
+svg.ava.orbe[data-occhi="colorati"].errore{--pupilla:#F9A3A3}
+/* i punti grandi su un corpo colorato: un contorno sottile perché bianco e rosa si leggano anche sulle tinte chiare */
+svg.ava.orbe[data-occhi="punti"][data-modo] .occhio path,svg.ava.orbe[data-occhi="punti"][data-modo] .occhio rect{stroke:#0A0A0A;stroke-width:.14;paint-order:stroke}
 [data-pelle="chiaro"]{--av-corpo:url(#av-orbe-corpo-chiaro);--av-orlo:url(#av-orbe-orlo-scuro);--av-orlo-w:3;--av-luce:.9;--av-riflesso:0;--av-bagliore:0;--av-occhi-neutri:#0A0A0A;--av-bordo:1;--av-alone:none;--av-inv-corpo:url(#av-orbe-corpo-perla);--av-inv-orlo:url(#av-orbe-orlo);--av-inv-orlo-w:4;--av-inv-luce:.55}
 `;
   let pronto = false;
@@ -311,6 +395,20 @@ ${TINTE.map(t => `svg.ava.orbe[data-modo="dipartimento"][data-dip="${t.id}"]{--a
     }
     return document.documentElement.dataset.identita || 'nessuna';
   }
+  /** L'aspetto della pagina in un colpo: { identita, palette, finitura, occhi, carattere }. Palette e finitura si applicano subito agli orbi
+      in `radice` (sono attributi); lo stile degli occhi e il carattere cambiano il markup e valgono per gli orbi disegnati da qui in avanti. */
+  function aspetto(o, radice) {
+    if (typeof document === 'undefined') return {};
+    const ds = document.documentElement.dataset;
+    if (o) {
+      if (o.identita !== undefined) identita(o.identita, radice);
+      if (o.palette !== undefined) { ds.palette = fra(PALETTE, o.palette, 'scura'); (radice || document).querySelectorAll('svg.orbe').forEach(s => { if (ds.palette === 'scura') delete s.dataset.palette; else s.dataset.palette = ds.palette; }); }
+      if (o.finitura !== undefined) { ds.finitura = fra(FINITURE, o.finitura, 'perla'); (radice || document).querySelectorAll('svg.orbe').forEach(s => { if (ds.finitura === 'perla') delete s.dataset.finitura; else s.dataset.finitura = ds.finitura; }); }
+      if (o.occhi !== undefined) ds.occhi = fra(OCCHI, o.occhi, 'kit');
+      if (o.carattere !== undefined) ds.carattere = o.carattere ? '1' : '0';
+    }
+    return { identita: ds.identita || 'nessuna', palette: ds.palette || 'scura', finitura: ds.finitura || 'perla', occhi: ds.occhi || 'kit', carattere: ds.carattere === '1' };
+  }
   /** Gli occhi e il riflesso «con carattere» per gli orbi disegnati da qui in avanti (quelli già in pagina vanno ridisegnati). */
   function carattere(on) {
     if (typeof document === 'undefined') return false;
@@ -328,6 +426,7 @@ ${TINTE.map(t => `svg.ava.orbe[data-modo="dipartimento"][data-dip="${t.id}"]{--a
   function registra(svg) {
     if (vivi.has(svg) || !svg.isConnected || !svg.classList.contains('orbe')) return;
     const seme = svg.dataset.seme, stato = svg.dataset.stato, p = forma(seme, svg.dataset.carattere === '1');
+    p.occhi = fra(OCCHI, svg.dataset.occhi, 'kit');
     const oc = svg.querySelectorAll('.occhio');
     const v = { svg, p, stato, tutto: svg.querySelector('.tutto'), corpo: svg.querySelector('.corpo'), occhi: svg.querySelector('.occhi'), oS: oc[0], oD: oc[1],
       rng: M.createRng(hash((seme || '') + '#battito')), inizio: -1, visibile: true,
@@ -370,9 +469,16 @@ ${TINTE.map(t => `svg.ava.orbe[data-modo="dipartimento"][data-dip="${t.id}"]{--a
     v.tutto.setAttribute('transform', `translate(${r2(tx)} ${r2(ty)}) rotate(${r2(rot)}) scale(${r2(sc)})`);
     v.corpo.setAttribute('transform', `scale(${r2(respiro)})`);
     v.occhi.setAttribute('opacity', r2(op));
-    const poses = posaOcchi({ yaw, pitch, roll }, p.r, p.split);
+    const g = { yaw, pitch, roll }, poses = posaOcchiDi(p, g);
     v.oS.setAttribute('transform', matrice(poses[0], o.w * apre, o.h * apre, o.tilt[0], k, p.r));
     v.oD.setAttribute('transform', matrice(poses[1], o.w * apre, o.h * apre, o.tilt[1], k, p.r));
+    if (famLG(p)) {
+      /* la pupilla scivola dentro l'occhio grande verso lo sguardo (spazio unitario dell'occhio) */
+      const [px, py] = pupillaXY(p, g), tr = `translate(${r2(px)} ${r2(py)})`;
+      if (!v.pS) { v.pS = v.oS.querySelector('.pupilla'); v.pD = v.oD.querySelector('.pupilla'); }
+      if (v.pS) v.pS.setAttribute('transform', tr);
+      if (v.pD) v.pD.setAttribute('transform', tr);
+    }
   }
 
   function ciclo() {
@@ -410,5 +516,5 @@ ${TINTE.map(t => `svg.ava.orbe[data-modo="dipartimento"][data-dip="${t.id}"]{--a
 
   const semi = (ruolo, n) => Array.from({ length: n || 6 }, (_, i) => i ? `${ruolo} ·${i + 1}` : ruolo);
 
-  return { html: (seme, stato, opz) => { prepara(); return html(seme, stato, opz); }, anima, semi, forma, pelle, PELLI, identita, carattere, IDENTITA, TINTE, TONI, tintaDi, tonoDi, CORNICE, fermo, riprendi, fotogramma, vivi: () => vivi.size };
+  return { html: (seme, stato, opz) => { prepara(); return html(seme, stato, opz); }, anima, semi, forma, pelle, PELLI, identita, carattere, aspetto, IDENTITA, PALETTE, FINITURE, OCCHI, TINTE, TONI, tintaDi, tonoDi, CORNICE, fermo, riprendi, fotogramma, vivi: () => vivi.size };
 })();
