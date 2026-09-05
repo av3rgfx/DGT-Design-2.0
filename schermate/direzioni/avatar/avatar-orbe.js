@@ -112,9 +112,9 @@ window.DGT_AVATAR_ORBE = (function () {
   const OCCHI = [
     { id: 'kit',      nome: 'Attuali',        desc: 'Le pupille del kit dipinte sulla sfera, piccole e appena sotto il centro.' },
     { id: 'punti',    nome: 'Punti grandi',   desc: 'Le stesse pupille di un solo colore, ma grandi il doppio e all\'altezza del centro, distanti: si leggono anche a 26 px.' },
-    { id: 'lilguy',   nome: 'Lilguy',         desc: 'Come il riferimento: occhi grandi un terzo del volto, «bianco» nel colore dello stato (bianco, lime, giallo, rosa) con la pupilla nera; forma dal seme (tondi, ovali, a gatto, a ghianda) e pupilla tonda, a fessura o larga.' },
+    { id: 'lilguy',   nome: 'Lilguy',         desc: 'Come il riferimento: occhi grandi un terzo del volto, sclera sempre bianca con la pupilla grande e sempre nera; forma dal seme (tondi, ovali, a gatto, a ghianda), pupilla tonda o ovale; X in errore, palpebre chiuse da libero.' },
     { id: 'neri',     nome: 'Neri',           desc: 'Le stesse forme del riferimento ma invertite: occhi neri con la pupilla grande nel colore dello stato. Si vedono su qualunque corpo, anche vivace.' },
-    { id: 'colorati', nome: 'Colorati',       desc: 'Il riferimento alla lettera: occhi nel colore del dipendente sul corpo nero, pupilla nel colore dello stato. L\'identità passa dagli occhi, il corpo resta la perla nera.' },
+    { id: 'colorati', nome: 'Colorati',       desc: 'Il riferimento alla lettera: occhi nel colore del dipendente sul corpo nero, pupilla grande e sempre nera. L\'identità passa dagli occhi, il corpo resta la perla nera; X in errore, palpebre chiuse da libero.' },
   ];
   const TONI = [
     { id: 'nero',    c: '#2A2A2A', nome: 'Perla nera' },
@@ -259,9 +259,8 @@ window.DGT_AVATAR_ORBE = (function () {
         : p.lgPup === 'larga' ? `<ellipse rx="${r2(pm * 1.06)}" ry="${r2(pm * 0.82)}"/>` : `<circle r="${r2(pm)}"/>`;
       const sclera = SCLERA[p.lgForma] ? `<path class="sclera" d="${SCLERA[p.lgForma]}"/>` : `<circle class="sclera" r="1"/>`;
       /* da libero l'occhio è chiuso: una palpebra ad arco larga quanto l'occhio (terza tornata: «non si capisce che dorme»);
-         in errore con gli occhi colorati la sclera sparisce e resta la X grande (il segno di errore di sempre) */
+         in errore la pupilla è una X (quarta tornata: le pupille sono sempre nere, lo stato si mostrerà in un altro modo) */
       if (stato === 'libero') occhio = i => `<g class="occhio lg chiuso" transform="${matrice(poses[i], o.w, o.h, o.tilt[i], 1, p.r)}"><path class="palpebra" d="M-1 -.12Q0 .82 1 -.12"/></g>`;
-      else if (stato === 'errore' && stile === 'colorati') occhio = i => `<g class="occhio lg x" transform="${matrice(poses[i], o.w, o.h, o.tilt[i], 1, p.r)}"><g class="pupilla"><g transform="scale(.95)">${X}</g></g></g>`;
       else occhio = i => `<g class="occhio lg" transform="${matrice(poses[i], o.w, o.h, o.tilt[i], 1, p.r)}">${sclera}<g class="pupilla">${pup}</g></g>`;
     } else {
       /* la pupilla del kit in spazio unitario (raggio 1): la matrice la porta a misura; le X dell'errore sono due tacche 1,8 × 0,4 */
@@ -272,7 +271,7 @@ window.DGT_AVATAR_ORBE = (function () {
     /* --volto colore degli occhi (i neutri leggono --av-occhi-neutri: neri sul corpo chiaro), --bordo-c contorno nero (in spazio unitario) se l'occhio è colorato sul corpo chiaro */
     const neutro = volto === '#FCFCFC';
     const tinta = tintaSeme(seme, opz.tinta);
-    const vars = `--volto:${neutro ? 'var(--av-occhi-neutri,#FCFCFC)' : volto};--volto-p:${neutro ? '#0A0A0A' : volto};--bordo-c:${neutro ? 0 : 0.25};--av-tono:${tonoSeme(seme, opz.tono)}`;
+    const vars = `--volto:${neutro ? 'var(--av-occhi-neutri,#FCFCFC)' : volto};--bordo-c:${neutro ? 0 : 0.25};--av-tono:${tonoSeme(seme, opz.tono)}`;
     const attrs = (modo && modo !== 'nessuna' ? ` data-modo="${modo}"` : '') + ` data-tinta="${tinta.id}"` + (opz.dip ? ` data-dip="${String(opz.dip).replace(/"/g, '&quot;')}"` : '')
       + (palette !== 'scura' ? ` data-palette="${palette}"` : '') + (finitura !== 'perla' ? ` data-finitura="${finitura}"` : '') + (stile !== 'kit' ? ` data-occhi="${stile}"` : '') + (car ? ' data-carattere="1"' : '');
     const lx = r2(p.luce), ly = r2(-0.42 * p.r);
@@ -334,11 +333,11 @@ svg.ava.orbe[data-finitura="orlo"] .corpo>.orlo{stroke:rgb(0 0 0/.3);stroke-widt
 .ava.orbe .occhio.lg .pupilla circle,.ava.orbe .occhio.lg .pupilla ellipse,.ava.orbe .occhio.lg .pupilla rect{fill:var(--pupilla,#0A0A0A);stroke:#0A0A0A;stroke-width:var(--av-pupilla-bordo,0);paint-order:stroke}
 /* l'occhio chiuso (libero): la palpebra è un arco largo quanto l'occhio, nel colore della sclera (o dello stato per gli occhi neri) */
 .ava.orbe .occhio.lg .palpebra{fill:none;stroke:var(--palpebra,var(--sclera,var(--volto)));stroke-width:.34;stroke-linecap:round}
-/* lilguy (terza tornata): sclera sempre bianca; lo stato sta nella pupilla, nera da fermo, lime al lavoro, gialla da approvare, X rosa in errore, con un contorno sottile */
-svg.ava.orbe[data-occhi="lilguy"]{--sclera:#FCFCFC;--pupilla:var(--volto-p,#0A0A0A);--av-pupilla-bordo:.1}
+/* lilguy e colorati (quarta tornata): la pupilla è sempre nera, in ogni stato; lo stato non passa più dal colore degli occhi
+   (X in errore e palpebre chiuse da libero restano forme, non colori). Per lilguy la sclera è sempre bianca, per colorati è la tinta. */
+svg.ava.orbe[data-occhi="lilguy"]{--sclera:#FCFCFC;--pupilla:#0A0A0A}
 svg.ava.orbe[data-occhi="neri"]{--sclera:#0A0A0A;--pupilla:var(--volto);--av-sclera-bordo:0;--palpebra:var(--volto)}
-svg.ava.orbe[data-occhi="colorati"]{--sclera:var(--av-tinta-c,#FCFCFC);--pupilla:var(--volto);--av-pupilla-bordo:.1}
-svg.ava.orbe[data-occhi="colorati"].errore{--pupilla:#F9A3A3}
+svg.ava.orbe[data-occhi="colorati"]{--sclera:var(--av-tinta-c,#FCFCFC);--pupilla:#0A0A0A}
 /* i punti grandi su un corpo colorato: un contorno sottile perché bianco e rosa si leggano anche sulle tinte chiare */
 svg.ava.orbe[data-occhi="punti"][data-modo] .occhio path,svg.ava.orbe[data-occhi="punti"][data-modo] .occhio rect{stroke:#0A0A0A;stroke-width:.14;paint-order:stroke}
 [data-pelle="chiaro"]{--av-corpo:url(#av-orbe-corpo-chiaro);--av-orlo:url(#av-orbe-orlo-scuro);--av-orlo-w:3;--av-luce:.9;--av-riflesso:0;--av-bagliore:0;--av-occhi-neutri:#0A0A0A;--av-bordo:1;--av-alone:none;--av-inv-corpo:url(#av-orbe-corpo-perla);--av-inv-orlo:url(#av-orbe-orlo);--av-inv-orlo-w:4;--av-inv-luce:.55}

@@ -659,6 +659,15 @@ colorati). La tinta «grigio» delle palette vivace e pastello è più chiara (`
 colorati è il colore degli occhi sul nero. Le due opzioni riviste sono le strade 1 e 8 della pagina; **in attesa della
 scelta finale**.
 
+**Quarta tornata.** «In tutti gli stati di entrambe le scelte le pupille siano sempre nere; troveremo un modo diverso per
+visualizzare lo stato». Fatto: negli stili lilguy e colorati la pupilla è nera in ogni stato, la X d'errore è nera dentro
+la sclera (bianca o della tinta), le palpebre chiuse da libero restano. **Aperto: come mostrare lo stato** senza il colore
+degli occhi. Candidati da proporre: (a) un punto di stato sul bordo della casella, come il punto rosso della campanella
+(lime al lavoro, giallo da approvare, rosa in errore, nulla da fermo); (b) un anello sottile attorno all'avatar nel colore
+dello stato; (c) solo le forme e i moti già presenti (X, palpebre, occhi più grandi, sguardo che scandisce) più i chip di
+stato delle card, che è la regola scritta in `avatar-dgt.js`: «l'avatar sta sempre accanto all'etichetta e alla pillola di
+stato, non porta informazione da solo».
+
 **Da fare alla scelta**: portare la combinazione nel prodotto (tinta nel modello dati, assegnata alla creazione come la
 meno usata e scelta nell'editor del dipendente accanto all'avatar; `av()` in `direzione-a.js` passa tinta e dipartimento;
 `direzione-a.html` imposta l'aspetto), aggiornare `SYSTEM-DESIGN.md` (riga «Avatar del dipendente AI», regola sul colore) e
