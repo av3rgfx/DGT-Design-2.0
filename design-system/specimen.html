@@ -55,6 +55,7 @@ h1,h2,h3,p{margin:0;font-weight:400}
 .pair{display:inline-flex;align-items:center}
 .pair .av{border:2px solid var(--white)}.pair .av+.av{margin-left:-10px}
 .pill{display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 20px;border-radius:var(--r-pill);border:1px solid rgb(255 255 255/.14);background:transparent;color:var(--white);font-size:15px;white-space:nowrap;flex:none}
+.pill svg{width:16px;height:16px;flex:none}svg.ik{width:12px;height:12px;display:inline-block;vertical-align:-1px;margin-right:4px}/* l'icona fiamma al posto dell'emoji (regola: niente emoji, 2026-09-04) */
 .pill.on{background:var(--white);color:var(--ink);border-color:transparent}
 .pill.white{background:var(--white);color:var(--ink);border-color:transparent}
 .pill.lime{background:var(--lime);color:var(--ink);border-color:transparent}
@@ -445,6 +446,7 @@ h1,h2,h3,p{margin:0;font-weight:400}
     <symbol id="i-mark" viewBox="0 0 44 44"><circle cx="22" cy="24" r="12" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="22" cy="24" r="3" fill="currentColor"/><path d="M22 12V5M12 15 7 10" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><circle cx="22" cy="4" r="3.5" fill="currentColor"/><circle cx="6" cy="9" r="3" fill="currentColor"/></symbol>
     <symbol id="i-logo" viewBox="0 0 32 32"><circle cx="16" cy="18" r="8" fill="none" stroke="currentColor" stroke-width="2.6"/><circle cx="16" cy="18" r="2.2" fill="currentColor"/><path d="M16 10V4M9.5 12 5 7.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><circle cx="16" cy="3.5" r="2.4" fill="currentColor"/><circle cx="4.5" cy="7" r="2.2" fill="currentColor"/></symbol>
     <symbol id="i-ne" viewBox="0 0 16 16"><path d="M4 12 12 4M6 4h6v6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-fire" viewBox="0 0 16 16"><path d="M8 1.6c.6 2 3.6 3.6 3.6 6.9a3.6 3.6 0 0 1-7.2 0c0-1.3.5-2.3 1.2-3.1.2 1 .7 1.7 1.5 2C7.4 5.6 7.2 3.5 8 1.6Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M8 13.4a1.7 1.7 0 0 1-1.7-1.7c0-.8.6-1.4 1-2 .5.5 1 .9 1.4 1.5.4.5.3 1.3-.1 1.7a1.7 1.7 0 0 1-.6.5Z" fill="currentColor"/></symbol>
     <symbol id="i-left" viewBox="0 0 16 16"><path d="M13 8H3M7 4 3 8l4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-plus" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
     <symbol id="i-x" viewBox="0 0 16 16"><path d="m4 4 8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
@@ -550,10 +552,10 @@ h1,h2,h3,p{margin:0;font-weight:400}
       <div class="shead" style="top:232px">
         <h3>Nuovi lead</h3><span class="cnt"><b>7</b><span>Lead</span></span>
         <span class="rb sm ghost"><svg><use href="#i-search"/></svg></span><span class="rb sm ghost"><svg><use href="#i-sliders"/></svg></span>
-        <div class="filters"><span class="pill on">Tutti</span><span class="pill">🔥 Cliente caldo</span><span class="pill">Interesse alto</span><span class="pill">Interesse medio</span><span class="pill">Interesse basso</span><span class="pill">Nessun interesse</span></div>
+        <div class="filters"><span class="pill on">Tutti</span><span class="pill"><svg><use href="#i-fire"/></svg>Cliente caldo</span><span class="pill">Interesse alto</span><span class="pill">Interesse medio</span><span class="pill">Interesse basso</span><span class="pill">Nessun interesse</span></div>
       </div>
       <div class="cards" style="top:302px">
-        <div class="ncard lead"><span class="av a1">GB</span><div class="nt"><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div><div class="name">Giulia Bianchi</div><div class="role">Direttrice marketing, Bianchi &amp; Co.</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip">Linkedin</span><span class="chip">Email</span></div></div><div><span class="k">🔥 Cliente caldo</span><span class="dots l5"><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
+        <div class="ncard lead"><span class="av a1">GB</span><div class="nt"><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div><div class="name">Giulia Bianchi</div><div class="role">Direttrice marketing, Bianchi &amp; Co.</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip">Linkedin</span><span class="chip">Email</span></div></div><div><span class="k"><svg class="ik"><use href="#i-fire"/></svg>Cliente caldo</span><span class="dots l5"><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
         <div class="ncard lead"><span class="av a2">DR</span><div class="nt"><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div><div class="name">Dario Rossi</div><div class="role">Responsabile finanza, Rossi Srl</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip">Linkedin</span><span class="chip">Facebook</span></div></div><div><span class="k">Interesse alto</span><span class="dots l4"><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
         <div class="ncard lead"><span class="av a3">WV</span><div class="nt"><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div><div class="name">Walter Verdi</div><div class="role">Direttore operativo, Zenith</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip">Modulo web</span></div></div><div><span class="k">Interesse medio</span><span class="dots"><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
         <div class="ncard lead"><span class="av a4">JN</span><div class="nt"><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div><div class="name">Jonah Neri</div><div class="role">Sviluppatore web, Binary Bytes</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip">Modulo web</span></div></div><div><span class="k">Interesse basso</span><span class="dots l2"><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
@@ -562,7 +564,7 @@ h1,h2,h3,p{margin:0;font-weight:400}
       <div class="shead" style="top:546px">
         <h3>Le tue attività di oggi</h3><span class="cnt"><b>16</b><span>Attività</span></span>
         <span class="rb sm ghost"><svg><use href="#i-search"/></svg></span><span class="rb sm ghost"><svg><use href="#i-sliders"/></svg></span>
-        <div class="filters"><span class="pill on">Tutte</span><span class="pill">🔥 Urgenti</span><span class="pill">Scadono oggi</span><span class="pill">In ritardo</span><span class="pill">Completate</span></div>
+        <div class="filters"><span class="pill on">Tutte</span><span class="pill"><svg><use href="#i-fire"/></svg>Urgenti</span><span class="pill">Scadono oggi</span><span class="pill">In ritardo</span><span class="pill">Completate</span></div>
       </div>
       <div class="cards" style="top:616px">
         <div class="ncard task lime">
@@ -630,7 +632,7 @@ h1,h2,h3,p{margin:0;font-weight:400}
         <h3 class="h1">W<svg style="color:var(--lime)"><use href="#i-mark"/></svg>RKSPACE</h3>
         <div class="sh"><h4>Nuovi lead</h4><span class="rb"><svg><use href="#i-search"/></svg></span><span class="rb"><svg><use href="#i-sliders"/></svg></span></div>
         <div class="leadrow">
-          <div class="ncard lead light"><span class="av a1 s">GB</span><div class="nt"><span class="rb"><svg><use href="#i-ne"/></svg></span></div><div class="name">Giulia Bianchi</div><div class="role">Direttrice marketing, Bianchi &amp; Co.</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip light">Linkedin</span><span class="chip light">Email</span></div></div><div><span class="k">🔥 Cliente caldo</span><span class="dots light l5"><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
+          <div class="ncard lead light"><span class="av a1 s">GB</span><div class="nt"><span class="rb"><svg><use href="#i-ne"/></svg></span></div><div class="name">Giulia Bianchi</div><div class="role">Direttrice marketing, Bianchi &amp; Co.</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip light">Linkedin</span><span class="chip light">Email</span></div></div><div><span class="k"><svg class="ik"><use href="#i-fire"/></svg>Cliente caldo</span><span class="dots light l5"><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
           <div class="ncard lead light"><span class="av a2 s">DR</span><div class="nt"><span class="rb"><svg><use href="#i-ne"/></svg></span></div><div class="name">Dario Rossi</div><div class="role">Responsabile finanza</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip light">Linkedin</span></div></div></div></div>
         </div>
         <div class="sh"><h4>Attività di oggi</h4><span class="rb"><svg><use href="#i-search"/></svg></span><span class="rb"><svg><use href="#i-sliders"/></svg></span></div>
@@ -717,7 +719,7 @@ h1,h2,h3,p{margin:0;font-weight:400}
       <div class="r"><span>sezione · 28/34 · 400</span><div style="font:400 28px/34px var(--font)">Le tue attività di oggi</div></div>
       <div class="r"><span>nome · 26/30 · 400</span><div style="font:400 26px/30px var(--font)">Giulia Bianchi</div></div>
       <div class="r"><span>corpo · 18/24 · 400</span><div style="font:400 18px/24px var(--font)">La tua agenda · Documenti: · Obiettivo:</div></div>
-      <div class="r"><span>pillola · 15/20 · 400</span><div style="font:400 15px/20px var(--font)">Tutti · 🔥 Cliente caldo · Interesse alto · Nuova attività</div></div>
+      <div class="r"><span>pillola · 15/20 · 400</span><div style="font:400 15px/20px var(--font)">Tutti · <svg class="ik"><use href="#i-fire"/></svg>Cliente caldo · Interesse alto · Nuova attività</div></div>
       <div class="r"><span>ruolo · 13/18 · 400</span><div style="font:400 13px/18px var(--font);color:var(--t2)">Direttrice marketing, Bianchi &amp; Co. · 28.03.2026 alle 14:00</div></div>
       <div class="r"><span>etichetta · 11/14 · 400</span><div style="font:400 11px/14px var(--font);color:var(--t2)">Fonte · Stato · 14:15</div></div>
     </div>
@@ -733,13 +735,13 @@ h1,h2,h3,p{margin:0;font-weight:400}
     <div class="kit">
       <div class="col">
         <div class="tlk"><span class="ev"><span class="pair"><span class="av a3">WV</span><span class="av a4">PT</span></span></span><div class="live"><span class="rb"><svg><use href="#i-video"/></svg></span></div><span class="now"><b>14:15</b><i></i></span></div>
-        <div class="krow"><span class="pill xl on">Tutte</span><span class="pill xl">🔥 Urgenti</span><span class="pill xl">Scadono oggi</span></div>
+        <div class="krow"><span class="pill xl on">Tutte</span><span class="pill xl"><svg><use href="#i-fire"/></svg>Urgenti</span><span class="pill xl">Scadono oggi</span></div>
         <div class="krow"><span class="nt2"><i><svg><use href="#i-plus"/></svg></i>Nuova attività</span><span class="rb xl g2"><svg><use href="#i-video"/></svg></span><span class="rb xl g2"><svg><use href="#i-mic"/></svg></span><span class="rb xl g2"><svg><use href="#i-speaker"/></svg></span></div>
         <div class="krow"><span class="rb xl ghost"><svg><use href="#i-search"/></svg></span><span class="rb xl ghost"><svg><use href="#i-sliders"/></svg></span><span class="evk"><span class="pair"><span class="av a1">GB</span><span class="av a2">DR</span></span>36 min<span class="rb"><svg><use href="#i-ne"/></svg></span></span></div>
         <div class="krow" style="gap:40px"><span class="chip xl lime">Facebook</span><span class="chip xl">Linkedin</span><span class="dots xl l4"><i></i><i></i><i></i><i></i><i></i></span></div>
       </div>
       <div class="col">
-        <div class="ncard lead on2"><span class="av a1">GB</span><div class="nt"><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div><div class="name">Giulia Bianchi</div><div class="role">Direttrice marketing, Bianchi &amp; Co.</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip">Linkedin</span><span class="chip">Email</span></div></div><div><span class="k">🔥</span><span class="dots l5"><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
+        <div class="ncard lead on2"><span class="av a1">GB</span><div class="nt"><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div><div class="name">Giulia Bianchi</div><div class="role">Direttrice marketing, Bianchi &amp; Co.</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip">Linkedin</span><span class="chip">Email</span></div></div><div><span class="k"><svg class="ik"><use href="#i-fire"/></svg></span><span class="dots l5"><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
         <div class="ncard lead on2"><span class="av a3">WV</span><div class="nt"><span class="rb ghost"><svg><use href="#i-ne"/></svg></span></div><div class="name">Walter Verdi</div><div class="role">Direttore operativo, Zenith</div><div class="ft"><div><span class="k">Fonte</span><div class="src"><span class="chip">Modulo web</span></div></div><div><span class="k">Interesse medio</span><span class="dots"><i></i><i></i><i></i><i></i><i></i></span></div></div></div>
       </div>
       <div class="col">

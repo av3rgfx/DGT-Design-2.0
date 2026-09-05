@@ -76,7 +76,7 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 | sezione | 400 · 28/34 | Nuovi lead · Riepilogo |
 | nome | 400 · 26/30 | Giulia Bianchi · Videochiamata |
 | corpo | 400 · 18/24 | La tua agenda · Documenti: |
-| pillola | 400 · 15/20 | Tutti · 🔥 Cliente caldo |
+| pillola | 400 · 15/20 | Tutti · [fiamma] Cliente caldo (icona `i-fire`, niente emoji) |
 | ruolo | 400 · 13/18 · `#9A9A9A` | Direttrice marketing, Bianchi & Co. |
 | etichetta | 400 · 11/14 · `#9A9A9A` | Fonte · Stato · 14:15 |
 
@@ -96,7 +96,7 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 | Componente | Misure e regole |
 |---|---|
 | Pulsante rotondo | 48 (40, 32); scuro `#1E1E1E`; bianco se attivo; vuoto con bordo `.14`; nero pieno per il video; rosso `#F15E60` per chiudere la chiamata; vetro `rgb(255 255 255/.22)` nella videochiamata |
-| Pillola filtro | 44 di altezza, bordo `.14`, trasparente; "Tutti" bianca con testo nero; emoji 🔥 nel testo |
+| Pillola filtro | 44 di altezza, bordo `.14`, trasparente; "Tutti" bianca con testo nero; l'icona fiamma `i-fire` (16) davanti al testo delle pillole «caldo / urgenti / da approvare / in ritardo»: **niente emoji** (regola 16) |
 | Barra agenda | pillola bianca 64 → titolo 18, pillola calendario con cerchio grigio, timeline lime 52 con eventi bianchi 40 (coppia di avatar, durata, freccia), separatori, orari 14, segmento in corso `#A8E65D` con icona video, marcatore nero "14:15" con linea e punto bianco, freccia finale 52 |
 | Riga WORKSPACE | cerchio indietro 48, titolo 46 con la O sostituita dal marchio lime, "Nuova attività" bianca 52 con cerchio grigio "+", tre numeri 48/300 con etichetta 19 grigia e badge ↑ lime / ↓ rosa |
 | Rail | 4 cerchi 48 a sinistra: elenco (attivo, bianco), organizzazione, chat, calendario |
@@ -108,7 +108,7 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 | Card revisione di performance | `ncard.lime` a tutta larghezza, padding 22/24, intaglio con campanella (punto rosso) e «apri»; chip `onlime`; titolo 26/32 entro 38 caratteri per riga; tre colonne 1,25 / 1 / 1 con etichetta 11 maiuscola, evidenze come elenco (numero in pillola `rgb(0 0 0/.1)` 22 + frase 14/19, cerchietto con freccia verso la richiesta), paragrafi 13/18; riga «Decisione del titolare» separata da una linea `.12`: pillole 48 nera (prova), bianca (applica), vuota scura (modifiche), rossa (rifiuta…), link al dossier a destra |
 | Tendina versioni / dossier | tendina estesa 840 (fino a 980 di altezza), chiara; riga «chi» con avatar 36; due colonne bianche r22 con chip della versione (`ink` corrente, `lime` proposta, `light` altre), paragrafi 14/21 su pillole r10: aggiunti su lime, tolti su rosa `#F9A3A3` barrati, cambiati su grigio `.045` con le parole in `mark` lime / rosa; riga dei numeri sotto una linea `.08`; tre `dcard` (Perché, Cosa ci aspettiamo, Rischi) con elenco numero + frase 12/17; azioni come nella richiesta estesa più il campo del motivo (pillola bianca 44, bordo nero a fuoco, rosso se vuoto) |
 | Tendina Dipendente | 330, `#F4F4F4`, r28 a sinistra; intaglio con più/matita e titolo 22; anteprima della card; campi a pillola bianca 48 (Ruolo, Nome facoltativo) con etichetta 11 maiuscola; dipartimento a pillole 36 (scelta = nera); sei cerchi 36 per l'avatar (scelto con anello nero); azioni «Crea dipendente»/«Salva» lime 44 e «Annulla» |
-| Card attività | 336×262, lime / `#4D4D4D` / scura; striscia con avatar 48, nome 15/500, ruolo 12; intaglio con campanella (punto rosso) e freccia; cerchio contornato 64 con icona; titolo 26; riga meta (coppia di avatar, data 500, "alle"); "Stato" 11; selettore a pillola 48 (bianca su lime, nera su grigio/scuro) con avatar, testo e chevron; mail vuota; video nero |
+| Card attività | 336×262, lime / `#4D4D4D` / scura; striscia con avatar 48, nome 15/500, ruolo 12; intaglio con campanella (punto rosso) e freccia; cerchio contornato 64 con icona; titolo 26; riga meta (coppia di avatar, data 500, "alle"); "Stato" 11; selettore a pillola 48 (bianca su lime, nera su grigio/scuro) con testo e chevron: nella card di un solo dipendente un chip di stato («In corso» lime, «Errore» rosa, l'ora) al posto dell'avatar, che sta già nella striscia; nelle card con più dipendenti (obiettivi) la pila di avatar e il badge «+N» dopo la pila, mai sotto (2026-09-04); mail vuota; video nero |
 | Videochiamata | 240 di altezza, gradiente grigio-caldo, avatar grande, controlli in vetro + rosso, espandi e chiudi |
 | Riepilogo | `#F4F4F4`, r28; cerchio nero con bacchetta, "Riepilogo" 26, freccia vuota; colonna orari 12 con badge rotondi 22 (lime "mi piace", rosa "stella") e linea `#C8C8C8`; card Documenti `#E4E4E4` r22 con intaglio per il download e due miniature 118 (`#D2D2D2`, foglio bianco, etichetta `#A7A7A7`); card Obiettivo con matita, testo 13/19 con parti in 500 (lime su mobile) |
 | Mobile | cornice 300×620 (bezel nero, r52), barra di stato "9:41", navigazione in basso a pillola nera 64 con quattro cerchi 44 (il primo bianco) e cerchio lime "video" a sinistra; WORKSPACE chiaro `#E0E0E0`; agenda nera con pannello lime, ore 38/300 ("14:00"), eventi bianchi, marcatore nero, blocco tratteggiato; videochiamata con Riepilogo |
@@ -206,6 +206,16 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     = eventi traslucidi con la stima, errore = rosa); poi Passi come righe, Log con filtri e la barra di scrittura
     del titolare, Output come card con le consegne precedenti della serie, Costo per modello e per strumento. Le
     azioni cambiano il modello e si vedono subito nella home e nel dipartimento.
+16. **Niente emoji**, nel prodotto e nel sistema di design (2026-09-04, regola fondamentale chiesta dall'utente): al loro
+    posto le icone del sistema, disegnate per DGT nello sprite (`schermate/direzioni/comune.js`; lo specimen ha il suo).
+    La fiamma delle pillole «caldo», «urgenti», «da approvare», «in ritardo» è l'icona `i-fire`.
+17. **La Console riempie sempre lo schermo** (2026-09-04): è progettata a 1440 px e si scala con `zoom` alla larghezza
+    della finestra, in su sugli schermi grandi e in giù su quelli piccoli (`scala()` in `direzione-a.html`). Niente
+    `transform`: così le tendine e le pillole fisse («da approvare», «Riepilogo») restano al bordo destro dello schermo
+    e non scorrono con la pagina; i `100vh` delle tendine si dividono per `--z`.
+18. **Nessuna ripetizione dell'avatar dentro una card di un solo dipendente**: l'avatar sta nella striscia in alto; il
+    selettore di stato porta un chip («In corso», «Errore», l'ora), non l'avatar. La pila di avatar resta dove i
+    dipendenti sono più d'uno (obiettivi, dipartimenti), con il badge «+N» dopo la pila.
 
 Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in

@@ -81,7 +81,10 @@ window.DIREZIONE_A = (function () {
 .av svg.ava{width:100%;height:100%}
 .pair{display:inline-flex;align-items:center}
 /* l'anello degli avatar impilati prende il colore del fondo; con le pelli senza disco (avatar-orbe.js) sparisce (--av-anello-pelle) */
-.pair .av{border:2px solid var(--av-anello-pelle,var(--white))}.pair .av+.av,.pair .av+.more{margin-left:-10px}
+.pair .av{border:2px solid var(--av-anello-pelle,var(--white))}.pair .av+.av{margin-left:-10px}
+/* il «+N» dopo la pila: un badge a sé, mai sotto gli avatar (correzione dell'utente, 2026-09-04) */
+.pair .more{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 7px;margin-left:4px;border-radius:var(--r-pill);background:rgb(255 255 255/.16);color:var(--white);font-size:11px;line-height:1;position:relative;z-index:1;flex:none}
+.task .sel .pair .more{background:rgb(0 0 0/.1);color:var(--ink)}.task.gray .sel .pair .more,.task.dark .sel .pair .more{background:rgb(255 255 255/.16);color:var(--white)}
 /* superfici chiare: con la pelle «chiaro» l'orbe si inverte da solo in perla nera (variabili --av-inv-* della pelle, lette da avatar-orbe.js; con le altre pelli non contano) */
 .ncard.lime .av svg.orbe,.task .sel .av svg.orbe,.qrow .av svg.orbe,.a-sched .av svg.orbe,.hrow.attesa .av svg.orbe,.vrow.on .av svg.orbe,.vrow.prop .av svg.orbe,.a-tend .av svg.orbe,.pdoc .av svg.orbe,.erow.lav .av svg.orbe,.pill.on .av svg.orbe,.lead.mod.on .av svg.orbe{--av-c-corpo:var(--av-inv-corpo);--av-c-orlo:var(--av-inv-orlo);--av-c-orlo-w:var(--av-inv-orlo-w);--av-c-luce:var(--av-inv-luce);--av-occhi-neutri:#FCFCFC;--av-c-bordo:0;--av-c-zeta:#FCFCFC}
 .task.gray .sel .av svg.orbe,.task.dark .sel .av svg.orbe,.a-tend .ncard .av svg.orbe,.a-tend .appr .av svg.orbe{--av-c-corpo:initial;--av-c-orlo:initial;--av-c-orlo-w:initial;--av-c-luce:initial;--av-occhi-neutri:initial;--av-c-bordo:initial;--av-c-zeta:initial}
@@ -281,7 +284,7 @@ window.DIREZIONE_A = (function () {
 .a-mini b{font-weight:500;font-size:22px;line-height:1}
 .a-mini svg.ch{width:14px;height:14px;opacity:.7}
 .a-mini.rie{top:308px;background:var(--white)}
-.a-tend{position:fixed;right:0;top:112px;height:calc(100vh - 136px);max-height:764px;width:330px;z-index:30;background:var(--summary);color:var(--ink);border-radius:var(--r-card) 0 0 var(--r-card);box-shadow:0 30px 80px rgb(0 0 0/.7);display:grid;grid-template-rows:auto 1fr;grid-template-columns:minmax(0,1fr);--behind:var(--summary)}
+.a-tend{position:fixed;right:0;top:112px;height:calc((100vh / var(--z,1)) - 136px);max-height:764px;width:330px;z-index:30;background:var(--summary);color:var(--ink);border-radius:var(--r-card) 0 0 var(--r-card);box-shadow:0 30px 80px rgb(0 0 0/.7);display:grid;grid-template-rows:auto 1fr;grid-template-columns:minmax(0,1fr);--behind:var(--summary)}
 .a-tend>*{min-width:0}
 .a-tend.estesa{width:840px}
 .a-tend .th{display:flex;align-items:center;gap:10px;padding:14px 14px 0 14px}
@@ -604,7 +607,7 @@ window.DIREZIONE_A = (function () {
       <div class="who">${av(m, e, '', null, 'data-anima="1"')}<div><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div></div>
       <div class="nt"><span class="rb ghost">${ic('i-bell')}${pend ? '<i class="dot"></i>' : ''}</span><span class="rb ghost" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Apri l'esecuzione">${ic('i-ne')}</span></div>
       <div class="body"><span class="ico">${ic(iconaDip[e.dip])}</span><div><div class="tt">${esc(e.att.titolo)}</div><div class="meta"><b>${esc(e.att.cliente)}</b><span>da</span><b>${esc(e.att.da)}</b></div></div></div>
-      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${av(m, e, 's')}<span>Passo ${e.att.passo[0]} di ${e.att.passo[1]}</span>${ic('i-chev')}</span><span class="rb ghost">${ic('i-chat')}</span><span class="rb black" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Passi, log e output">${ic('i-eye')}</span></div></div>
+      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel"><span class="chip lime">${ic('i-play')}In corso</span><span>Passo ${e.att.passo[0]} di ${e.att.passo[1]}</span>${ic('i-chev')}</span><span class="rb ghost">${ic('i-chat')}</span><span class="rb black" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Passi, log e output">${ic('i-eye')}</span></div></div>
     </div>`;
   }
   function cardEsecuzione(m, e, i) {
@@ -827,7 +830,7 @@ window.DIREZIONE_A = (function () {
     const corpo = `
       <section>
         <div class="shead"><h3>Al lavoro adesso</h3><span class="cnt"><b>${lav.length}</b><span>Esecuzioni</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
-          <div class="filters"><span class="pill on">Tutte</span><span class="pill">🔥 Da approvare</span><span class="pill">In corso</span><span class="pill">Pianificate</span><span class="pill">Errori</span></div></div>
+          <div class="filters"><span class="pill on">Tutte</span><span class="pill">${ic('i-fire')}Da approvare</span><span class="pill">In corso</span><span class="pill">Pianificate</span><span class="pill">Errori</span></div></div>
         <div class="cards riga">${lav.map((e, i) => cardAttivita(m, e, i)).join('')}</div>
       </section>
       <section>
@@ -941,7 +944,7 @@ window.DIREZIONE_A = (function () {
       </section>
       <section>
         <div class="shead"><h3>Obiettivi</h3><span class="cnt"><b>${ob.length}</b><span>Obiettivi</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
-          <div class="filters"><span class="pill on">Tutti</span><span class="pill">🔥 In ritardo</span><span class="pill">In corso</span><span class="pill">Da iniziare</span><span class="pill">Conclusi</span></div></div>
+          <div class="filters"><span class="pill on">Tutti</span><span class="pill">${ic('i-fire')}In ritardo</span><span class="pill">In corso</span><span class="pill">Da iniziare</span><span class="pill">Conclusi</span></div></div>
         ${ob.length ? `<div class="cards">${ob.map((o, i) => cardObiettivo(m, o, i)).join('')}</div>` : `<div class="vuoto">Nessun obiettivo assegnato a ${esc(d.nome)}</div>`}
       </section>
       <section>
@@ -1291,7 +1294,7 @@ window.DIREZIONE_A = (function () {
       </section>
       <section>
         <div class="shead"><h3>Output</h3><span class="cnt"><b>${x.output.length}</b><span>Consegne</span></span><span class="rb sm ghost">${ic('i-search')}</span>
-          <div class="filters"><span class="pill on">Tutte</span><span class="pill">🔥 Da approvare</span><span class="pill">In corso</span><span class="pill">Approvate</span></div></div>
+          <div class="filters"><span class="pill on">Tutte</span><span class="pill">${ic('i-fire')}Da approvare</span><span class="pill">In corso</span><span class="pill">Approvate</span></div></div>
         <div class="cards">${x.output.map(o => cardOutput(m, e, o)).join('')}</div>
         ${serie.length ? `<div class="hgroup"><b>Consegne precedenti della serie</b>${serie.length} · con l'esito del titolare<span class="link" data-az="pagina" data-pagina="richieste" data-chi="${e.id}">Tutte le richieste di ${esc(m.etichetta(e))} ${ic('i-ne')}</span></div><div class="hlist">${serie.map(q => rigaStorico(m, q)).join('')}</div>` : ''}
       </section>

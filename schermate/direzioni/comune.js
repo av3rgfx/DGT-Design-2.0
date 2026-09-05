@@ -49,6 +49,7 @@ window.DGT_UI = (function () {
 <symbol id="i-sort" viewBox="0 0 16 16"><path d="M5 3v10M3 11l2 2 2-2M11 13V3M9 5l2-2 2 2" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="i-target" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="1" fill="currentColor"/></symbol>
 <symbol id="i-send" viewBox="0 0 16 16"><path d="M2.5 8 13.5 3l-3 10-2.5-4.5L2.5 8Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></symbol>
+<symbol id="i-fire" viewBox="0 0 16 16"><path d="M8 1.6c.6 2 3.6 3.6 3.6 6.9a3.6 3.6 0 0 1-7.2 0c0-1.3.5-2.3 1.2-3.1.2 1 .7 1.7 1.5 2C7.4 5.6 7.2 3.5 8 1.6Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M8 13.4a1.7 1.7 0 0 1-1.7-1.7c0-.8.6-1.4 1-2 .5.5 1 .9 1.4 1.5.4.5.3 1.3-.1 1.7a1.7 1.7 0 0 1-.6.5Z" fill="currentColor"/></symbol>
 </defs></svg>`;
 
   function iconeInserisci() {

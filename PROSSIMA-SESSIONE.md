@@ -1,7 +1,8 @@
 # Prossima sessione — passaggio di consegne
 
 Stato al 2026-09-04, fine della sessione sull'**orbe senza disco** (versione 7 della direzione A · Console: le pelli;
-7b: perla, corpi tondi, moti fluidi; 7c: gli occhi del kit) e sulla **pagina dell'Esecuzione** (versione 8). Tutto è committato e pushato sul branch indicato sotto.
+7b: perla, corpi tondi, moti fluidi; 7c: gli occhi del kit), sulla **pagina dell'Esecuzione** (versione 8) e sulle
+**correzioni della cornice** (versione 9: zoom, card, niente emoji). Tutto è committato e pushato sul branch indicato sotto.
 
 ## Stato
 
@@ -70,8 +71,11 @@ Stato al 2026-09-04, fine della sessione sull'**orbe senza disco** (versione 7 d
 17. **Terza tornata**: «preferivo gli occhi del kit di riferimento, nel quale hanno occhi più grossi e i movimenti
     degli occhi più carini». Fatto (versione 7c): le pupille del kit per seme (`deriveRole(seme).pupil`: tonda,
     quadrato morbido, anello; 0,16–0,185 del raggio), dipinte sulla sfera con la base tangente del kit (yaw, pitch,
-    roll della testa: l'occhio lontano si stringe da solo) e con i suoi moti dello sguardo. **Da confermare
-    dall'utente** insieme alla pagina Esecuzione.
+    roll della testa: l'occhio lontano si stringe da solo) e con i suoi moti dello sguardo. Giudizio: «va bene adesso».
+18. **Correzioni della cornice** (versione 9): le tendine e le pillole fisse «spostate» sugli schermi larghi e la Console
+    che non si adattava → `zoom` alla larghezza dello schermo, in su e in giù; l'avatar ripetuto nel selettore della
+    card del lavoro → chip di stato; il «+1» sotto gli avatar nella card dell'obiettivo → badge dopo la pila;
+    **niente emoji** nel prodotto e nel sistema (regola fondamentale in `CLAUDE.md`, `i-fire` al posto della fiamma).
 
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto); contenuti sintetici di DGT; documenti in italiano.
@@ -79,7 +83,7 @@ Esperto); contenuti sintetici di DGT; documenti in italiano.
 ## Come riprendere
 
 1. Leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezione 10) e `schermate/direzioni/DIREZIONI.md` (sezioni 1 e 4, in
-   particolare «Versione 7b», «Versione 7c» e «Versione 8»). Controllare se questo branch è stato unito (vedi «Stato»).
+   particolare «Versione 7c», «Versione 8» e «Versione 9»). Controllare se questo branch è stato unito (vedi «Stato»).
 2. Aprire `schermate/direzioni/direzione-a.html`: la home con gli orbi perla tondi in moto; `?pelle=grigio|chiaro|alone|disco`
    per le altre pelli; `?pagina=esecuzione&id=4` (Nora al lavoro, passo 2 di 4), `&id=3` (Kim in errore: «Riprova il
    passo 3»), `&id=5` (Social media manager: consegnato, «Apri la richiesta»), `&id=2` (Tester QA pianificata: «Avvia
@@ -172,6 +176,9 @@ Esperto); contenuti sintetici di DGT; documenti in italiano.
   dipartimento e la card «Oggi» del Dipendente leggono lo stesso oggetto; le azioni (`esecAzione`) cambiano i passi e
   `e.stato`/`e.att`, poi `m.ricalcola()` rifà i conteggi.
 - Le **differenze** fra due versioni sono un LCS per paragrafo e poi per parola dentro i paragrafi appaiati.
+- La Console si scala con `zoom` (`scala()` in `direzione-a.html`): sopra i 1440 si ingrandisce, sotto si riduce; le
+  tendine e le pillole `position: fixed` restano al bordo dello schermo (con `transform` scorrerebbero con la pagina);
+  i `100vh` si dividono per `--z`, perché sotto `zoom` i `vh` non si riducono da soli (Chromium 141).
 - Gli artefatti si ripubblicano allo stesso URL; se lo strumento rifiuta perché «esiste una versione più recente»,
   rifare `read` sull'URL (e leggere per intero la copia salvata se lo chiede) e poi pubblicare di nuovo, mai forzare.
 

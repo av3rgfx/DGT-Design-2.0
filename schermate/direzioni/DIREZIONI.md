@@ -67,7 +67,7 @@ direzione A.
 | Videochiamata con controlli in vetro + rosso | **Da approvare**: l'anteprima della consegna con apri, commenta, approva (lime), rifiuta (rosso) |
 | Riepilogo chiaro (Documenti, Obiettivo) | **Riepilogo del giorno**: consegne, spesa di oggi, obiettivo del mese |
 | Rail di quattro cerchi | Azienda · organizzazione · chat · agenda |
-| Pillole filtro con emoji | Tutte · 🔥 Da approvare · In corso · Pianificate · Errori |
+| Pillole filtro con l'icona fiamma (niente emoji dal 2026-09-04) | Tutte · [fiamma] Da approvare · In corso · Pianificate · Errori |
 
 ## 2. Le tre direzioni
 
@@ -574,6 +574,32 @@ indietro → dipendente, dalla card di Oggi alla pagina, Kim fermo con il passo 
 avvia ora, Social consegnato con la pillola finale e «Apri la richiesta», riprova dalla card del dipartimento,
 esecuzione generata a 40; nessun errore in console. Screenshot: `a-esecuzione.png` (Nora al lavoro),
 `a-esecuzione-errore.png` (Kim), `a-esecuzione-attesa.png` (Social media manager, da approvare).
+
+### Versione 9: la cornice sugli schermi grandi, le card, niente emoji (2026-09-04, stessa sessione)
+
+Quattro correzioni dell'utente sulle schermate viste da uno schermo largo, più una regola nuova.
+
+1. **Le tendine e le pillole fisse «spostate»**. Causa: la Console era larga 1440 px fissi, allineata a sinistra, e sotto
+   i 1440 si riduceva con `transform: scale()`; le tendine e le pillole chiuse sono `position: fixed` e su uno schermo
+   più largo restavano al bordo dello schermo mentre il contenuto finiva a 1440 (uno spazio nero in mezzo), e sotto un
+   antenato trasformato scorrevano con la pagina invece di restare fisse. Soluzione, insieme al punto 2: la Console
+   riempie sempre la larghezza, quindi il bordo del contenuto e il bordo dello schermo coincidono.
+2. **Sugli schermi grandi tutto si ingrandisce**: `scala()` in `direzione-a.html` applica `zoom = larghezza / 1440` alla
+   radice, in su e in giù (prima solo in giù). Con `zoom`, a differenza di `transform`, gli elementi fissi restano
+   fissi e al bordo; i `100vh` delle tendine si dividono per la variabile `--z` (sotto zoom i `vh` non si riducono da
+   soli: verificato in Chromium 141). Gli screenshot a 1440 sono identici a prima; `screenshot/a-1920.png` mostra la
+   pagina del Dipendente a 1920 × 1080: la Console riempie lo schermo e le pillole stanno al bordo.
+3. **L'avatar ripetuto nella card del lavoro di un dipendente**: nel selettore di stato («Passo 3 di 7») c'era di nuovo
+   l'avatar della striscia. Ora c'è un chip di stato lime «In corso», come nelle card in errore (chip rosa «Errore») e
+   pianificate (chip con l'ora): la card ha un solo avatar. La pila di avatar resta nelle card con più dipendenti.
+4. **Il «+1» sopra gli avatar nella card dell'obiettivo**: il badge non aveva uno stile e stava sotto la pila con margine
+   negativo. Soluzioni considerate: (a) un badge a sé dopo la pila, con un piccolo spazio; (b) il conteggio nel testo
+   («3 dipendenti · In corso»); (c) solo due avatar e il numero in un chip. Fatta la (a): `.pair .more` è un badge
+   24 px a pillola (grigio `.16` sul nero, `.1` sul selettore bianco) dopo la pila, mai sotto; la (b) resta possibile
+   se la riga si stringe.
+5. **Niente emoji**: la fiamma delle pillole «Da approvare» e «In ritardo» (e «Cliente caldo», «Urgenti» nello specimen)
+   è l'icona `i-fire`, disegnata nello sprite di DGT (`comune.js`; lo specimen ha il suo sprite). Regola fondamentale
+   in `CLAUDE.md` e in `SYSTEM-DESIGN.md` (regola 16).
 
 ## 5. File
 
