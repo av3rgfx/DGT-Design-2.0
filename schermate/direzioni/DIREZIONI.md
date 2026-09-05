@@ -705,6 +705,35 @@ l'anello del fondo con 9 px di sovrapposizione. Screenshot della Console rigener
 nuovo, https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34 (il vecchio 93d18853 tiene la versione con la perla nera). `SYSTEM-DESIGN.md`: riga «Avatar del
 dipendente AI» riscritta e regola 19. **Aperto**: come mostrare lo stato (vedi «Quarta tornata»).
 
+### Versione 11 (prossima sessione): le approvazioni da mobile, struttura proposta e accettata (2026-09-05)
+
+Il titolare approva dal telefono. Cornice mobile dello specimen (300 × 620, barra di stato, navigazione a pillola nera in
+basso con i quattro cerchi del rail della Console e, al posto del cerchio lime del video, la **campanella lime con il numero
+da approvare**). Tre schermate:
+
+1. **Da approvare** (fondo chiaro `#E0E0E0` come la schermata WORKSPACE): titolo con il conteggio; la richiesta corrente
+   come card lime grande (avatar del dipendente, cosa, chi · cliente · ora, chip del tipo) e sotto i quattro cerchi della
+   tendina della Console (apri, commenta, approva lime, rifiuta rossa); poi «In coda» con le altre richieste come righe; in
+   fondo la riga «Riepilogo di oggi». Si tocca: approva o rifiuta al volo, la card o una riga per aprire la richiesta, il
+   riepilogo.
+2. **Richiesta** (la tendina estesa in colonna, su fondo nero): indietro, chip del tipo, titolo, «2 di 4»; il documento in
+   una card bianca (testo e allegato); «Chi la propone» (avatar, consegnata alle, costo, passi a chip); la nota del
+   dipendente; barra fissa in basso con Approva lime larga, Chiedi modifiche, Rifiuta rossa. Rifiuta apre il campo del
+   motivo, obbligatorio. Per una revisione le due versioni una sotto l'altra con le differenze e le quattro decisioni. Decisa
+   una richiesta entra la successiva; le frecce scorrono la coda.
+3. **Riepilogo di oggi** (il pannello Riepilogo della terza schermata dello specimen, chiaro `#F4F4F4`): consegne, spesa,
+   obiettivo del mese nella card lime con la matita, le voci del diario sulla linea del tempo con i badge, la riga lime che
+   riporta alle richieste. È anche lo stato vuoto: a coda finita la prima schermata mostra «Niente da approvare» e questo
+   riepilogo.
+
+Dove vive: un file a parte in `schermate/direzioni/` (`mobile.html` + `mobile.js`), stessi `comune.js`, `dati.js`, `avatar/`;
+la decisione sulla richiesta passa da `monta` in `direzione-a.js` a `dati.js` come funzione del modello (`m.decidi`), così
+telefono e Console condividono lo stato. La pagina mostra i tre telefoni affiancati come lo specimen, tutti cliccabili, con
+i parametri `?schermata=1|2|3&richiesta=0`. I componenti si riusano con le stesse classi della Console (`.dirA`).
+**Divisione**: prima sessione le schermate 1 e 2 per post, documento, lista e proposta, con il rifiuto con motivo, screenshot
+(`design-system/tools/screenshot-elementi.js` per le cornici), artefatto, documenti; sessione successiva la revisione sul
+telefono, il Riepilogo, la prova a quaranta e lo stato vuoto.
+
 ## 5. File
 
 | File | Ruolo |
@@ -723,6 +752,6 @@ dipendente AI» riscritta e regola 19. **Aperto**: come mostrare lo stato (vedi 
 | `direzione-c.js` / `.html` | Mappa viva |
 | `confronto.html` | pagina di confronto con tab e selettore 11/40 |
 | `build-unico.js` | genera il file unico per l'artefatto (`node build-unico.js direzione-a.html out.html`) |
-| `screenshot/` | catture a 1440 px |
+| `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`; per gli elementi `screenshot-elementi.js`) |
 
 Per gli screenshot: `design-system/tools/screenshot-page.js` (vedi `design-system/tools/README.md`).
