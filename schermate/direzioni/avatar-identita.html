@@ -82,7 +82,7 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
   </section>
 
   <section class="v-sec">
-    <h2>Tre varianti per lo stato <span class="chip">strada 1 · Nora nei cinque stati a 96 px · gli undici a 40 · tre al lavoro a 48</span><span class="chip lime">l'anello e il gesto si muovono: guardali qui, non nello screenshot</span></h2>
+    <h2>Tre varianti per lo stato <span class="chip">strada 1 · Nora nei cinque stati a 96 px · gli undici a 28 · tre al lavoro a 48</span><span class="chip lime">l'anello e il gesto si muovono: guardali qui, non nello screenshot</span></h2>
     <div class="v-strade" id="segnali"></div>
     <p class="v-note">Con la strada 1 scelta, gli occhi non portano più lo stato. Qui tre modi per dirlo: il <b>punto</b> sul bordo della casella (fermo, si legge a ogni misura, ma è un segno in più); l'<b>anello vivo</b> nel colore dello stato (si muove, si legge anche a 26 px, tiene il colore fuori dalla faccia); il <b>gesto</b> del corpo (niente segni: il disco batte un ritmo, salta, si sgonfia, oscilla, dorme; sulle catture ferme non si vede). In tutte restano le forme degli occhi: X in errore, palpebre chiuse da libero.</p>
   </section>
@@ -155,7 +155,7 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
       <span class="n">${String.fromCharCode(65 + i)}</span>
       <div class="top"><h3>${sg.nome}<small>?segnale=${sg.id}</small></h3></div>
       <div class="v-cell card" style="min-height:120px;justify-content:space-around;padding:16px 10px">${STATI5.map(st => av(nora, 'xl', o, st)).join('')}</div>
-      <div class="v-cell nero fila" style="gap:6px">${m.dipendenti.map(e => av(e, 'md', o)).join('')}</div>
+      <div class="v-cell nero fila">${m.dipendenti.map(e => av(e, 'xs', o)).join('')}</div>
       <div class="v-cell lime" style="min-height:64px">${LAV.map(e => av(e, '', o, 'lavoro')).join('')}<span class="pair" style="margin-left:14px">${[2, 3].map(id => av(m.byId[id], 'xs', o)).join('')}</span></div>
       <p>${sg.desc}</p>
       <span class="scegli" data-segnale="${sg.id}">Vedi nella Console</span>
