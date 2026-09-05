@@ -234,7 +234,7 @@ gli occhi del kit) e 8 (pagina dell'Esecuzione) in `DIREZIONI.md`, sezione 4.
 ## 11. Collegamenti
 
 - Confronto delle tre direzioni (artefatto): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
-- Direzione A cliccabile, tendine, pagine Richieste, Dipartimento, Dipendente (revisione di performance) ed Esecuzione, avatar ed editor (artefatto): https://claude.ai/code/artifact/8a8a273e-882b-4ef8-8e9b-f9270628e149
+- Direzione A cliccabile, tendine, pagine Richieste, Dipartimento, Dipendente (revisione di performance) ed Esecuzione, avatar ed editor (artefatto): https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34
 - Avatar dei dipendenti, le due famiglie a confronto (artefatto): https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526
 - Le pelli dell'orbe senza disco, quattro soluzioni a confronto (artefatto): https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569
 - PR #3 verso `main` con schermate e documenti (unita): https://github.com/av3rgfx/DGT-Design-2.0/pull/3

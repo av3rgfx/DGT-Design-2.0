@@ -9,7 +9,7 @@ Stato al 2026-09-05, fine della sessione sull'**orbe senza disco** (versione 7 d
 - **Aggiornamento 2026-09-05 (sessione in corso)**: la PR #6 è unita in `main`; si lavora sul branch
   `claude/direzione-a-corrections-mobile-2x5j8x` (da `main`). Correzione dell'utente: gli avatar piccoli o vicini sono
   tutti uguali → proposta «identità degli orbi» in quattro tornate (`schermate/direzioni/avatar-identita.html`, artefatto
-  https://claude.ai/code/artifact/690baac8-2de3-48e3-bb98-98024bc7312f; DIREZIONI.md «Versione 10»). **Scelta: la strada 1**
+  https://claude.ai/code/artifact/1fc2ee53-3c23-4462-922a-cd581a90b6d6; DIREZIONI.md «Versione 10»). **Scelta: la strada 1**
   (vivace piatto, occhi lilguy: sclera bianca, pupilla grande sempre nera), **portata nel prodotto**: tinta nel modello
   (`m.tintaDi`, `m.tintaLibera`, `e.tinta`), riga «Colore» nell'editor, `av()` passa tinta e dipartimento, aspetto impostato in
   `direzione-a.html`; screenshot rigenerati; artefatto della Console a un indirizzo nuovo (sotto). **Lo stato**: tre varianti
@@ -22,7 +22,7 @@ Stato al 2026-09-05, fine della sessione sull'**orbe senza disco** (versione 7 d
 - I tre artefatti della direzione A qui sotto sono stati ripubblicati a fine sessione e corrispondono all'ultimo
   commit del branch.
 - Artefatto della direzione A cliccabile (home, tendine, Richieste, Dipartimento, editor del dipendente, pagina del
-  Dipendente, **pagina dell'Esecuzione**, orbe senza disco): https://claude.ai/code/artifact/8a8a273e-882b-4ef8-8e9b-f9270628e149
+  Dipendente, **pagina dell'Esecuzione**, orbe senza disco): https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34
   (si aggiorna con `node schermate/direzioni/build-unico.js direzione-a.html /percorso/a.html` e ripubblicando allo
   stesso URL).
 - Artefatto delle **pelli dell'orbe** (le quattro soluzioni senza disco a confronto su tutti i fondi della Console, con
@@ -194,8 +194,10 @@ Esperto); contenuti sintetici di DGT; documenti in italiano.
 - La Console si scala con `zoom` (`scala()` in `direzione-a.html`): sopra i 1440 si ingrandisce, sotto si riduce; le
   tendine e le pillole `position: fixed` restano al bordo dello schermo (con `transform` scorrerebbero con la pagina);
   i `100vh` si dividono per `--z`, perché sotto `zoom` i `vh` non si riducono da soli (Chromium 141).
-- Gli artefatti si ripubblicano allo stesso URL; se lo strumento rifiuta perché «esiste una versione più recente»,
-  rifare `read` sull'URL (e leggere per intero la copia salvata se lo chiede) e poi pubblicare di nuovo, mai forzare.
+- Gli artefatti si ripubblicano allo stesso URL solo se lo strumento accetta; in questa sessione (2026-09-05, seconda parte) ha
+  rifiutato ogni aggiornamento in loco chiedendo di rileggere per intero la copia live (300–400 KB): si è scelto di pubblicare a
+  un indirizzo nuovo e aggiornare i collegamenti nei documenti (Console: 93d18853 → 8a8a273e → e6699f3a; identità degli orbi:
+  690baac8 → 1fc2ee53). I vecchi indirizzi tengono le versioni precedenti. Mai forzare.
 
 ## Cosa manca e prossimo passo (da decidere con l'utente all'avvio)
 

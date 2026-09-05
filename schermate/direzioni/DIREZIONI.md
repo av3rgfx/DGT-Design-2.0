@@ -646,7 +646,7 @@ bagliore). Gli occhi grandi sono `.occhio.lg` con `.sclera` (cerchio unitario o 
 inclinazione dal seme) e `.pupilla` che il motore trasla verso lo sguardo; la geometria è piana (`posaPiana`), non sulla
 sfera. `forma(seme)` estrae i parametri lilguy da un generatore a parte (`#lilguy`), così non cambiano con il carattere.
 Pagina di confronto `avatar-identita.html` (`?identita=&palette=&corpo=&occhi=&carattere=`), artefatto
-https://claude.ai/code/artifact/690baac8-2de3-48e3-bb98-98024bc7312f. Screenshot: `screenshot/avatar-identita.png`.
+https://claude.ai/code/artifact/1fc2ee53-3c23-4462-922a-cd581a90b6d6. Screenshot: `screenshot/avatar-identita.png`.
 
 **Terza tornata.** «Mi piacciono la 1 e la 8. Per la 8: occhi a X in errore, pupille grandi in ogni avatar, un dormiente
 che si capisca. Per la 1: sclera sempre bianca e pupille sempre grandi». Fatto in entrambe: la pupilla è grande sempre
@@ -702,7 +702,7 @@ uso, il proposto con l'anello nero; `scelteTinta`, `bozza.tinta`); `av()` in `di
 finitura: 'piatta', occhi: 'lilguy' })`, con i parametri `?identita= ?palette= ?corpo= ?occhi= ?carattere=` per tornare
 indietro o provare altro. Con il corpo piatto il disco riempie la casella (`--av-scala: 128%`) e gli avatar impilati riprendono
 l'anello del fondo con 9 px di sovrapposizione. Screenshot della Console rigenerati; artefatto della Console a un indirizzo
-nuovo, https://claude.ai/code/artifact/8a8a273e-882b-4ef8-8e9b-f9270628e149 (il vecchio 93d18853 tiene la versione con la perla nera). `SYSTEM-DESIGN.md`: riga «Avatar del
+nuovo, https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34 (il vecchio 93d18853 tiene la versione con la perla nera). `SYSTEM-DESIGN.md`: riga «Avatar del
 dipendente AI» riscritta e regola 19. **Aperto**: come mostrare lo stato (vedi «Quarta tornata»).
 
 ## 5. File
