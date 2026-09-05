@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=1440">
 <title>Nova Studio Console</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600&display=swap">
-<style>html,body{margin:0;background:#000}#root{transform-origin:0 0}</style>
+<style>html,body{margin:0;background:#000}</style>
 </head>
 <body>
 <div class="dirA" id="root"></div>
@@ -16,19 +16,22 @@
 <script src="dati.js"></script>
 <script src="direzione-a.js"></script>
 <script>
-  // Parametri: ?n=11|40  ?tendina=chiusa|aperta|estesa|dossier  ?pannello=richieste|riepilogo  ?pagina=home|richieste|dipartimento|dipendente  ?dip=svi|mkt|ven|amm  ?id=<id dipendente>  ?confronto=6,7  ?richiesta=0  ?editor=nuovo|<id dipendente>  ?avatar=orbe|kit
+  // Parametri: ?n=11|40  ?tendina=chiusa|aperta|estesa|dossier  ?pannello=richieste|riepilogo  ?pagina=home|richieste|dipartimento|dipendente|esecuzione  ?dip=svi|mkt|ven|amm  ?id=<id dipendente>  ?confronto=6,7  ?richiesta=0  ?editor=nuovo|<id dipendente>  ?avatar=orbe|kit  ?pelle=perla|grigio|chiaro|alone|disco
   const q = new URLSearchParams(location.search);
   DGT_UI.iconeInserisci();
   DGT_AVATAR.usa(q.get('avatar') || 'orbe');   // ?avatar=kit per le forme del kit
+  DGT_AVATAR.pelle(q.get('pelle') || 'perla');   // la pelle dell'orbe: perla (predefinita), grigio, chiaro, alone, disco
   DGT_UI.stile('css-a', DIREZIONE_A.css);
   const root = document.getElementById('root');
   const modello = DGT_DATI.modello(DGT_DATI.nDaUrl());
   DIREZIONE_A.monta(root, modello, {
     pagina: q.get('pagina') || 'home', dip: q.get('dip') || 'svi', id: +(q.get('id') || 4), tendina: q.get('tendina') || 'aperta', richiesta: +(q.get('richiesta') || 0),
     pannello: q.get('pannello') || 'richieste', editor: q.get('editor'), confronto: q.get('confronto') });
-  // Sotto i 1440 px la console si riduce in scala (la larghezza di progetto resta 1440).
-  function scala() { const s = Math.min(1, document.documentElement.clientWidth / 1440); root.style.transform = s < 1 ? 'scale(' + s + ')' : ''; document.body.style.height = s < 1 ? (root.offsetHeight * s) + 'px' : ''; }
-  window.addEventListener('resize', scala); new MutationObserver(scala).observe(root, { childList: true, subtree: true }); scala();
+  // La Console è progettata a 1440 px e riempie sempre la larghezza dello schermo: sopra i 1440 si ingrandisce, sotto si riduce
+  // (richiesta dell'utente, 2026-09-04). Si usa `zoom`, non `transform`: così le tendine e le pillole fisse restano al bordo dello
+  // schermo e non scorrono con la pagina; i 100vh delle tendine si dividono per --z (vedi il CSS in direzione-a.js).
+  function scala() { const s = document.documentElement.clientWidth / 1440; root.style.zoom = s; root.style.setProperty('--z', s); }
+  window.addEventListener('resize', scala); scala();
 </script>
 </body>
 </html>

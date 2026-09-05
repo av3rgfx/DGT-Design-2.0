@@ -5,13 +5,16 @@ un'azienda DGT con quattro dipartimenti e undici dipendenti AI, tre dei quali al
 Tre direzioni sulla stessa schermata, prova di scala a quaranta dipendenti, direzione scelta.
 
 - Confronto interattivo (tab A/B/C, selettore 11/40): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
-- Direzione A cliccabile (tendine, pagine Richieste, Dipartimento e Dipendente, avatar ed editor): https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
+- Direzione A cliccabile (tendine, pagine Richieste, Dipartimento, Dipendente ed Esecuzione, avatar ed editor): https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
 - Sorgenti: `direzione-a.html`, `direzione-b.html`, `direzione-c.html` (aggiungere `?n=40` per la prova di scala),
   `confronto.html` (la stessa pagina dell'artefatto, con gli script separati).
-- Avatar dei dipendenti, le due famiglie a confronto (kit e orbe): https://claude.ai/code/artifact/4bc0c3ee-d1a0-41dc-a6d9-ef4f2b8360bd
+- Avatar dei dipendenti, le due famiglie a confronto (kit e orbe): https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526
+- Le pelli dell'orbe senza disco, quattro soluzioni a confronto su tutti i fondi della Console (`avatar-pelli.html`):
+  https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569
 - Screenshot a 1440 px in `screenshot/` (`a-11.png` … `c-40.png`, `a-dipendente-nuovo.png`, `a-dipendente-modifica.png`,
-  `a-11-avatar-kit.png`, `avatar-confronto.png`, `avatar-orbe-pellicola.png`; la pagina del dipendente: `a-dipendente.png`,
-  `a-dipendente-ruolo.png`, `a-dipendente-dossier.png`, `a-dipendente-confronto.png`).
+  `a-11-avatar-kit.png`, `avatar-confronto.png`, `avatar-orbe-pellicola.png`, `avatar-pelli.png`; la pagina del dipendente:
+  `a-dipendente.png`, `a-dipendente-ruolo.png`, `a-dipendente-dossier.png`, `a-dipendente-confronto.png`; la pagina
+  dell'esecuzione: `a-esecuzione.png`, `a-esecuzione-errore.png`, `a-esecuzione-attesa.png`).
 
 ## 1. Studio del prodotto
 
@@ -64,7 +67,7 @@ direzione A.
 | Videochiamata con controlli in vetro + rosso | **Da approvare**: l'anteprima della consegna con apri, commenta, approva (lime), rifiuta (rosso) |
 | Riepilogo chiaro (Documenti, Obiettivo) | **Riepilogo del giorno**: consegne, spesa di oggi, obiettivo del mese |
 | Rail di quattro cerchi | Azienda · organizzazione · chat · agenda |
-| Pillole filtro con emoji | Tutte · 🔥 Da approvare · In corso · Pianificate · Errori |
+| Pillole filtro con l'icona fiamma (niente emoji dal 2026-09-04) | Tutte · [fiamma] Da approvare · In corso · Pianificate · Errori |
 
 ## 2. Le tre direzioni
 
@@ -181,9 +184,11 @@ direzione. Regole che valgono da qui in avanti:
    forma piena (nome grande, sotto «ruolo · dipartimento»). Vale in tutte le viste: card, righe compatte, striscia
    «chi» delle card esecuzione e richiesta, tendine, coda, diario, storico, filtri, agenda.
 10. **Avatar generati, non iniziali**: ogni dipendente AI ha un avatar deterministico dal seme (il ruolo, o un seme
-    scelto nell'editor), disegnato nel linguaggio del sistema: disco chiaro, corpo nero, pupille bianche, lime solo
-    quando serve il titolare (al lavoro, da approvare), rosa per l'errore. Statico ovunque tranne le card «Al lavoro
-    adesso» e l'anteprima dell'editor. Il titolare, che è una persona, tiene le iniziali su disco bianco.
+    scelto nell'editor), disegnato nel linguaggio del sistema e **senza disco** (versioni 7 e 7b): l'orbe perla
+    nera, un cerchio nero lucido con riflesso, luce riflessa e orlo di luce, lo stesso su ogni fondo; occhi bianchi,
+    lime quando serve il titolare (al lavoro), gialli da approvare, rosa a X per l'errore. Con l'orbe tutti gli
+    avatar sono in moto (un solo motore per pagina); il kit è statico tranne le card «Al lavoro adesso» e
+    l'anteprima dell'editor. Il titolare, che è una persona, tiene le iniziali su disco bianco.
 11. **Creazione e modifica del dipendente in una tendina**, con la stessa forma delle tendine del titolare: anteprima
     della card, ruolo, nome facoltativo, dipartimento a pillole, scelta dell'avatar fra sei varianti, Crea/Salva e
     Annulla. Si apre dalla matita nell'intaglio della card, dalla riga compatta e dalla card «Aggiungi».
@@ -193,6 +198,20 @@ direzione. Regole che valgono da qui in avanti:
     budget e permessi, colloquio). **Una revisione di performance è una richiesta al titolare** come le altre: ha un
     dossier con evidenze, stime e rischi, quattro decisioni (prova, applica, chiedi modifiche, rifiuta con motivo) e
     una cronologia con l'effetto misurato. Le richieste decise dal titolare sono la fonte di «corretti» e «respinte».
+13. **L'avatar è un avatar, non un'icona** (versioni 7 e 7b): niente disco né anello bianco dietro l'orbe; pelle
+    **perla nera** su ogni fondo, che si stacca dal nero per il volume (riflesso, luce riflessa, orlo di luce,
+    bagliore di pochi pixel), non per un contorno; **corpi tondi** (cerchi, niente ovali né squash e stretch) e
+    **moti continui** (un solo motore per pagina, funzioni del tempo senza scatti); gli **occhi sono quelli del kit**
+    (pupille grandi dipinte sulla sfera con la sua base tangente e i suoi moti dello sguardo, versione 7c). Gli avatar
+    impilati (coppie,
+    tendine) si sovrappongono di 6 px senza anello. Le altre pelli (grigio, chiaro, alone, disco) restano dietro
+    `?pelle=` per il confronto.
+14. **La pagina dell'Esecuzione** (versione 8) nella stessa cornice, aperta dall'«occhio» e dalla freccia delle card
+    esecuzione: titolo = titolo dell'esecuzione, tre numeri (passi fatti, spesi, tempo); testata con avatar, chip,
+    la frase «Adesso … Prossimo …», le azioni per stato (pausa, interrompi, scrivi; riprova; avvia ora; apri la
+    richiesta) e la **barra dei passi**, che è la barra agenda del sistema; poi Passi, Log con la barra di scrittura
+    del titolare, Output con le consegne precedenti della serie, Costo. Ogni azione cambia il modello e si vede
+    subito nella home e nel dipartimento.
 
 ### Versione 2 della direzione A (2026-09-04)
 
@@ -400,22 +419,199 @@ Il kit (`?avatar=kit`) non è toccato. Pellicola rifatta (`screenshot/avatar-orb
 Console e del confronto rigenerati. Prova con Playwright: 37 orbi nella home, nessun nodo `.giro`/`.onda`, i corpi
 cambiano trasformazione fra due fotogrammi, nessun errore in console.
 
-Pagina di confronto `confronto-avatar.html` (artefatto: https://claude.ai/code/artifact/4bc0c3ee-d1a0-41dc-a6d9-ef4f2b8360bd):
+Pagina di confronto `confronto-avatar.html` (artefatto: https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526):
 undici ruoli per cinque stati, le card dei dipendenti, le card al lavoro (animate), le righe compatte, misure e fondi,
 per entrambe le famiglie. Screenshot: `avatar-confronto.png`, `a-11.png` (orbe), `a-11-avatar-kit.png` (kit).
 Prova con Playwright: 41 orbi in pagina, il corpo respira (la trasformazione cambia fra due fotogrammi), l'anteprima
 segue il puntatore, creazione e scelta del seme funzionano, nessun errore in console.
 
+### Versione 7: l'orbe senza disco, le pelli (2026-09-04, sessione successiva)
+
+Richiesta dell'utente: «Non mi piace che l'avatar sembri un'icona animata. Deve essere un avatar, senza quel contorno
+bianco. Di conseguenza potrebbero essere poco visibili per via del colore dell'avatar e dello sfondo: dammi più
+soluzioni per risolvere e rendere la vista dell'avatar più bella e coerente. Vale per tutte le pagine, oltre che per
+la pagina Dipendente.»
+
+Diagnosi: il disco chiaro `#E4E4E4` con il corpo nero dentro ha la forma dei pulsanti rotondi bianchi della Console
+(cerchio chiaro con un segno nero), per cui l'avatar si legge come un'icona; l'anello bianco delle coppie impilate
+lo rafforza. Tolto il disco, il corpo nero sparisce sul nero della pagina e delle card scure. Quattro soluzioni,
+costruite come **pelli** dell'orbe (`avatar-orbe.js`: solo variabili CSS ereditate da `[data-pelle]`, il disegno
+non cambia; `DGT_AVATAR.pelle(nome)`, nelle pagine `?pelle=chiaro|perla|grigio|alone|disco`), confrontate nella
+pagina `avatar-pelli.html` (artefatto https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569) su
+tutti i fondi della Console (nero, card scura, card grigia, card lime, pillola bianca, tendina chiara) per cinque
+stati, nelle misure (96 … 26 e impilati) e nelle viste vere (card al lavoro animate, barra «Oggi in azienda», card
+dei dipendenti, righe compatte con la tendina, testata del Dipendente), con «Prova nella Console» che cambia la
+pelle in tutta la pagina.
+
+| Pelle | Che cos'è | Per | Contro |
+|---|---|---|---|
+| **Chiaro** (predefinita) | corpo chiaro `#E4E4E4` con occhi neri, come un'orbe di ceramica: orlo scuro sottile, riflesso forte; sulle superfici chiare e lime si inverte da solo in perla nera con gli occhi bianchi; gli occhi di stato (lime, gialli, rosa) tengono il colore con un contorno nero | la più visibile e la più «avatar» sul nero; è l'orbe di riferimento (sfera chiara sul nero); sta con le pillole bianche della Console | due corpi (chiaro sul nero, nero sul chiaro): l'avatar cambia colore fra card e pillola, come fanno i pulsanti rotondi |
+| Perla nera | corpo nero lucido con la luce in alto a sinistra, un orlo di luce riflessa e l'ombra in basso: sul nero si vede per il volume, non per un contorno | un solo colore di corpo ovunque; gli occhi colorati restano il segnale; è l'orbe della modalità voce, nero lucido | sulle card scure si legge dal volume e dagli occhi, non dalla sagoma: a 26–28 px è la più discreta |
+| Grigio | corpo nel grigio delle card `#4D4D4D` con lo stesso volume | si stacca da ogni fondo senza trucchi; un solo colore; il grigio è già nella palette | sulla card grigia si confonde; è la meno «viva», sembra un robot di plastica |
+| Alone | corpo nero come prima, ma al posto del disco un alone morbido di luce dietro l'orbe | il passo più piccolo dal disco: stesso corpo, il fondo resta nero, niente bordo netto | l'alone è comunque un campo chiaro dietro l'avatar: a 48 px torna a somigliare a un disco sfumato |
+| Disco (prima) | la versione precedente, tenuta solo per il confronto | — | il disco chiaro con il corpo dentro ha la forma dei pulsanti rotondi: sembra un'icona |
+
+**Scelta fatta in sessione: chiaro** (da confermare dall'utente): la più vicina all'orbe di riferimento e la più
+visibile sul nero. Che cosa è cambiato nella Console: `.av` senza fondo, senza ritaglio e senza bordo per gli orbi,
+l'SVG disegnato al 115 % del riquadro; l'**inversione di contesto** in `direzione-a.js`: sulle superfici chiare e
+lime (card lime, selettore bianco delle card attività, coda della tendina, barra agenda, righe in attesa, righe
+delle versioni, tendine, documento del prompt, pillole attive, card del modello assegnato) l'orbe prende le variabili
+`--av-inv-*` della pelle e diventa perla nera con occhi bianchi; sui selettori delle card grigie e scure e sulle card
+scure dentro le tendine torna chiaro. Le coppie e gli avatar impilati si sovrappongono di 6 px con l'anello
+trasparente (l'anello bianco del sistema resta solo per le iniziali del titolare). Il kit (`?avatar=kit`) tiene il
+disco. Screenshot della Console rigenerati; pellicola `avatar-orbe-pellicola.png` e confronto `avatar-confronto.png`
+rifatti con la pelle chiara; `avatar-pelli.png` la pagina delle pelli. Prova con Playwright: pelle predefinita chiaro,
+nessun disco dietro gli orbi, corpo chiaro sulla card scura e perla sulla card lime, occhi lime al lavoro, occhi neri
+da pianificato e libero, corpo che si muove fra due fotogrammi, anello degli impilati trasparente, `?pelle=disco`
+rimette il disco, il selettore della pagina delle pelli cambia la Console, nessun errore in console.
+
+### Versione 7b: perla, corpi tondi, moti fluidi (2026-09-04, stessa sessione, seconda tornata)
+
+Giudizio dell'utente sulla versione 7: «Chiaro non va bene. Poi vorrei renderli tondi e meno ovali. E le animazioni
+non mi piacciono, sono scadenti e poco fluide». Tre correzioni, tutte in `avatar-orbe.js` (sesta versione del file):
+
+1. **Pelle perla** predefinita: il nero lucido dell'orbe di riferimento, un solo colore su ogni fondo. Per vederlo sul
+   nero della Console il volume è più deciso: gradiente fra i neri della palette (`#7A7A7A` in alto a sinistra →
+   `#050505`), riflesso morbido in alto a sinistra (gradiente radiale, niente filtri), luce riflessa in basso, orlo di
+   luce lungo il bordo (4 unità, bianco `.85` → `.06` → `.34`) e un bagliore di 9 unità appena fuori dal corpo (un
+   anello di gradiente, non l'alone largo). La pelle «chiaro» resta nella pagina delle pelli come scartata; la Console
+   non la usa più (`?pelle=chiaro` la rimette per il confronto).
+2. **Corpi tondi**: il corpo è un `<circle>` di raggio 95–100 su 125, dal seme. Via la superellisse, il rapporto,
+   l'inclinazione e il rigonfiamento; via lo squash e stretch. Un dipendente si distingue dagli **occhi** (tondi,
+   pillola alta o pillola larga; distanza e altezza) e dalla posizione del riflesso.
+3. **Moti fluidi**: via tutti i keyframe CSS (saltelli, tremiti, scrollate, «z»). Un solo `requestAnimationFrame` per
+   pagina muove gli orbi con **funzioni continue del tempo**: seni, rumore periodico (tre armoniche) e finestre
+   morbide sin² per i gesti che si ripetono, così nessun movimento parte o finisce di scatto. Base per tutti: respiro
+   (scala uniforme ±1,6 %, 4,6–6,2 s dal seme), galleggiamento (±2), deriva dello sguardo con **proiezione sferica**
+   (l'occhio che va verso il bordo si stringe: è questo che dà volume alla sfera), battito delle palpebre con easing
+   (chiusura svelta, riapertura più lenta, ogni 2,8–7 s, a volte doppio). Per stato, un solo moto quieto:
+
+   | Stato | Che cosa fa l'orbe |
+   |---|---|
+   | lavoro | occhi lime; lo sguardo scandisce piano da un lato all'altro (3,4 s); respiro un poco più svelto |
+   | attesa | occhi gialli più grandi; ogni ~6 s si solleva di 7 e guarda in alto verso il titolare per 1,9 s, poi torna |
+   | errore | X rosa che pulsano piano (2,6 s); sta 4 più in basso e appena più piccolo; ogni ~7,5 s scuote la testa lentamente (±4,5°, due oscillazioni in 1,6 s) |
+   | pianificato | dondola da un lato all'altro (±5, ±2,5°, 7,2 s); ogni ~10 s guarda in alto a destra «l'orologio» per 2 s |
+   | libero | palpebre socchiuse (32 %), respiro profondo e lento (±2,6 %, ~7,5 s), sta 5 più in basso; niente «z» |
+
+   Ogni orbe che entra nella pagina si registra da solo (`MutationObserver`), anche dentro le tendine e dopo un
+   clic; si aggiornano solo quelli nel viewport (`IntersectionObserver`); con la scheda nascosta il motore si ferma;
+   con `prefers-reduced-motion` gli orbi restano nella posa di riposo (è quella degli screenshot). L'anteprima
+   dell'editor segue il puntatore con inseguimento morbido. `DGT_AVATAR_ORBE.fermo(t)`, `riprendi()` e
+   `fotogramma(svg, t)` fermano il motore a un istante: servono alla pellicola.
+
+Prova con Playwright (`reducedMotion: no-preference`), 22 verifiche: pelle predefinita perla, 39 orbi tutti registrati,
+corpo `<circle>`, occhi e corpo che cambiano fra due fotogrammi, **salto massimo per frame 0,17 unità** su dodici frame
+(continuità), nessun keyframe residuo, nessun disco, palpebre socchiuse da libero, pagina Esecuzione e orbi nuovi
+dopo un'azione registrati, anteprima che segue il puntatore, 94 orbi vivi a 40, `?pelle=disco`, kit intatto, pagina
+delle pelli (273 orbi, perla segnata, niente scorrimento), confronto kit/orbe, reduced motion fermo; nessun errore in
+console. Pellicola `screenshot/avatar-orbe-pellicola.png` (Copywriter, cinque stati a 0…5 s con `fotogramma`).
+
+### Versione 7c: gli occhi del kit (2026-09-04, stessa sessione, terza tornata)
+
+Giudizio dell'utente sulla 7b: «Così già meglio, però preferivo gli occhi del kit di riferimento, nel quale hanno occhi
+più grossi e i movimenti degli occhi più carini». Gli occhi dell'orbe sono ora quelli del kit (`vendor-avatars`,
+`gaze.js`), portati dentro `avatar-orbe.js` (settima versione del file); corpo, pelle e moti del corpo restano quelli
+della 7b.
+
+- **La pupilla del kit per seme**: `deriveRole(seme).pupil` decide la forma (tonda, quadrato morbido, anello), la
+  stessa che il seme avrebbe nel kit; grande 0,16–0,185 del raggio (il kit 0,16; prima era 0,135), da approvare ×1,25
+  (il kit 0,2), al lavoro 0,97 × 0,82 (il kit 0,155 × 0,13), da libero due fessure inclinate di ±8° (il kit
+  0,145 × 0,02), in errore le X sopra le pupille.
+- **Dipinte sulla sfera**: la stessa base tangente proiettata del kit. Le due pupille distano 15,5–19° dal centro
+  della sfera (il kit 17°) e lo sguardo di riposo ha il mento appena basso (pitch −7…−2; il kit −6). Yaw, pitch e
+  roll ruotano la testa: quando lo sguardo va di lato l'occhio lontano si stringe e si inclina da solo, il roll piega
+  la testa. È questo che rende i movimenti «carini»: gli occhi non scivolano sul disco, la testa gira.
+- **Lo stesso repertorio di moti del kit**: deriva dello sguardo a due armoniche (yaw ±6,2°, pitch ±4,7°, roll
+  ±1,6°); scansione ±13° in 1,8 s al lavoro con la deriva al 35 %; sguardo fisso e occhi grandi da approvare (deriva
+  al 20 %); dondolio ±3,5° da fermo; ±2° con le fessure da libero; niente deriva né battito in errore e da libero. Il
+  battito è lo schiacciamento verticale della pupilla attorno al suo centro (0,08 da chiusa), come nel kit. Il
+  puntatore ruota la testa (±30° yaw, ±24° pitch) con inseguimento morbido. I gesti di stato della 7b (sollevamento
+  con lo sguardo in alto da approvare, scossa in errore, dondolio e sguardo all'orologio da pianificato) restano e ora
+  agiscono sullo sguardo in gradi.
+
+Prova con Playwright, 24 verifiche (le 22 di prima più «pupille del kit: tonde, quadrate, X» e «pupilla grande: raggio
+14,1 unità»), continuità 1,33 unità per frame (la scansione al lavoro è più svelta), nessun errore in console.
+Pellicola `screenshot/avatar-orbe-pellicola.png` e screenshot rigenerati.
+
+### Versione 8: la pagina dell'Esecuzione (2026-09-04, stessa sessione)
+
+Richiesta dell'utente: la pagina dell'esecuzione (passi, log, output) dal pulsante «occhio» delle card al lavoro,
+struttura proposta in poche righe e poi costruita. Domanda a cui risponde: **a che punto è, cosa sta facendo adesso,
+cosa ha prodotto, quanto è costato, e cosa posso fare io** (fermarla, correggerla, approvare). Stessa cornice,
+stessi componenti: la barra dei passi è la barra agenda del sistema, i passi e il log sono righe, gli output card
+lead, il costo una card attività.
+
+| # | Sezione | Che cosa c'è |
+|---|---|---|
+| 0 | Cornice | titolo = titolo dell'esecuzione in maiuscolo; tre numeri: **passi fatti** su totale, **spesi** (badge «oltre» se sopra il limite del giorno), **tempo** («da 10:20» al lavoro, «fermo dalle» in errore, «parte alle» se pianificata, «in tutto» se conclusa); indietro → la pagina del dipendente; rail con la home attiva |
+| 1 | Testata | avatar 68 animato (a riposo se in pausa), etichetta e «ruolo · dipartimento»; chip: stato, «Passo n di N», modello del passo in corso, cliente, obiettivo (apre il dipartimento); la frase **«Adesso … Prossimo …»** che cambia per stato (in pausa, al lavoro, fermo per errore, parte alle, consegnato e aspetta il titolare, concluso); le **azioni per stato**: al lavoro = Metti in pausa · Interrompi · Scrivi a … · La pagina di …; in pausa = Riprendi · Interrompi; errore = **Riprova il passo n** (lime) · Rinnova la connessione · Interrompi; pianificata = **Avvia ora** (lime) · Sposta; da approvare = **Apri la richiesta** (lime) · Scrivi; conclusa = Ripeti; la **barra dei passi**: la barra agenda ferma nella testata, i passi fatti sono eventi bianchi con il numero in un cerchio nero e la durata, il passo in corso è il segmento «adesso» verde profondo con il marcatore dell'ora, i passi da fare sono eventi traslucidi con la stima, il passo in errore è rosa; in fondo la pillola con la stima di fine |
+| 2 | Passi | righe con il cerchio 40 (spunta se fatto, play se in corso, avviso se in errore, numero se da fare), nome ed esito (o gli strumenti), chip di stato, tempi («10:20 → 10:24» con la durata; «da 10:24» con il tempo trascorso per quello in corso; «≈ 6 min» per quelli da fare), modello, costo («≈» se stimato); la riga in corso è lime, quella in errore grigia, quelle da fare al 60 % |
+| 3 | Log | le voci dall'ultima alla prima: ora, chip del tipo (Passo, Strumento, Modello, Nota, **Richiesta** lime, **Errore** rosa, **Titolare** nera), testo con «passo n», costo; **filtri funzionanti** con i conteggi (Tutto, Passi, Strumenti, Richieste, Errori, Note); le voci di tipo richiesta aprono la tendina estesa; in fondo la **barra di scrittura** (la barra chat del riferimento: pillola bianca con l'avatar, campo, pulsante nero) per una nota del titolare al passo in corso, che entra nel log come voce «Titolare» (Invio o pulsante) |
+| 4 | Output | card lead 224 con l'icona del tipo (post, documento, lista, immagine, codice, proposta), nome, descrizione, stato e quando: **da approvare** lime con la campanella (apre la richiesta), bozza ed errore grigie, da fare spenta; sotto, **Consegne precedenti della serie** come righe dello storico con l'esito del titolare e il link a Richieste filtrate sul dipendente |
+| 5 | Costo | card «Costo dell'esecuzione» (finora su stimato a fine, ripartizione per modello a pillola con legenda, «oggi su limite del giorno» → budget e permessi; **lime con «oltre il limite»** se sforato, scura altrimenti) e gli **strumenti** come righe (chiamate, Usato / Non usato / Errore, in quali passi, costo) |
+
+**Dati** (`dati.js`, `m.esecuzioneDi(e)`): sei esecuzioni scritte a mano per gli undici, una per stato: Nora (post
+5 di 12, passo 2 di 4, con il post 4 in attesa del titolare come output e la nota del brief nel log), Sviluppatore
+full-stack (checkout, passo 3 di 7), Ricerca lead (passo 5 di 6), **Kim** (deploy fermo al passo 3 con l'errore di
+connessione nel log e lo strumento in errore), Social media manager (piano editoriale concluso e da approvare),
+Tester QA (pianificata alle 15:00: passi tutti da fare con le stime); generate dal seme per gli altri, per i 40 e
+per i dipendenti creati nell'editor (passi per dipartimento, costo ripartito, stima dei passi da fare dal costo medio
+di quelli fatti). Ogni esecuzione: obiettivo, serie (le richieste precedenti della stessa serie), passi (stato, tempi,
+costo, modello, strumenti, esito), log (ora, tipo, testo, passo, costo, richiesta), output, strumenti usati. La card
+esecuzione della home e del dipartimento e la pagina leggono lo stesso oggetto, per cui le azioni valgono ovunque.
+
+**Interazioni**: occhio e freccia delle card al lavoro (home, dipartimento, pagina del Dipendente), play della card in
+errore o pianificata (riprova / avvia senza aprire la pagina), freccia e occhio della card «ultima consegna» → pagina
+(`?pagina=esecuzione&id=4`); pausa e riprendi (chip «In pausa», voce nel log, avatar a riposo); interrompi (il passo
+in corso torna da fare con l'esito «Interrotto dal titolare», il dipendente diventa libero, «al lavoro» scende nella
+home); riprova (Kim riparte dal passo 3); avvia ora (Tester parte dal passo 1); nota del titolare nel log; filtri del
+log; apri la richiesta dal log e dall'output; obiettivo → dipartimento; «La pagina di …» e «Budget e permessi» →
+pagina del Dipendente; indietro → dipendente. Prova con Playwright, 22 verifiche: apertura dall'occhio, titolo, barra
+con il segmento adesso, quattro righe di passi, pausa e ripresa con le voci nel log, filtro Strumenti, nota del
+titolare in testa al log, output da approvare → tendina estesa, interruzione (frase «Concluso», al lavoro da 3 a 2),
+indietro → dipendente, dalla card di Oggi alla pagina, Kim fermo con il passo in errore nella barra e riprova, Tester
+avvia ora, Social consegnato con la pillola finale e «Apri la richiesta», riprova dalla card del dipartimento,
+esecuzione generata a 40; nessun errore in console. Screenshot: `a-esecuzione.png` (Nora al lavoro),
+`a-esecuzione-errore.png` (Kim), `a-esecuzione-attesa.png` (Social media manager, da approvare).
+
+### Versione 9: la cornice sugli schermi grandi, le card, niente emoji (2026-09-04, stessa sessione)
+
+Quattro correzioni dell'utente sulle schermate viste da uno schermo largo, più una regola nuova.
+
+1. **Le tendine e le pillole fisse «spostate»**. Causa: la Console era larga 1440 px fissi, allineata a sinistra, e sotto
+   i 1440 si riduceva con `transform: scale()`; le tendine e le pillole chiuse sono `position: fixed` e su uno schermo
+   più largo restavano al bordo dello schermo mentre il contenuto finiva a 1440 (uno spazio nero in mezzo), e sotto un
+   antenato trasformato scorrevano con la pagina invece di restare fisse. Soluzione, insieme al punto 2: la Console
+   riempie sempre la larghezza, quindi il bordo del contenuto e il bordo dello schermo coincidono.
+2. **Sugli schermi grandi tutto si ingrandisce**: `scala()` in `direzione-a.html` applica `zoom = larghezza / 1440` alla
+   radice, in su e in giù (prima solo in giù). Con `zoom`, a differenza di `transform`, gli elementi fissi restano
+   fissi e al bordo; i `100vh` delle tendine si dividono per la variabile `--z` (sotto zoom i `vh` non si riducono da
+   soli: verificato in Chromium 141). Gli screenshot a 1440 sono identici a prima; `screenshot/a-1920.png` mostra la
+   pagina del Dipendente a 1920 × 1080: la Console riempie lo schermo e le pillole stanno al bordo.
+3. **L'avatar ripetuto nella card del lavoro di un dipendente**: nel selettore di stato («Passo 3 di 7») c'era di nuovo
+   l'avatar della striscia. Ora c'è un chip di stato lime «In corso», come nelle card in errore (chip rosa «Errore») e
+   pianificate (chip con l'ora): la card ha un solo avatar. La pila di avatar resta nelle card con più dipendenti.
+4. **Il «+1» sopra gli avatar nella card dell'obiettivo**: il badge non aveva uno stile e stava sotto la pila con margine
+   negativo. Soluzioni considerate: (a) un badge a sé dopo la pila, con un piccolo spazio; (b) il conteggio nel testo
+   («3 dipendenti · In corso»); (c) solo due avatar e il numero in un chip. Fatta la (a): `.pair .more` è un badge
+   24 px a pillola (grigio `.16` sul nero, `.1` sul selettore bianco) dopo la pila, mai sotto; la (b) resta possibile
+   se la riga si stringe.
+5. **Niente emoji**: la fiamma delle pillole «Da approvare» e «In ritardo» (e «Cliente caldo», «Urgenti» nello specimen)
+   è l'icona `i-fire`, disegnata nello sprite di DGT (`comune.js`; lo specimen ha il suo sprite). Regola fondamentale
+   in `CLAUDE.md` e in `SYSTEM-DESIGN.md` (regola 16).
+
 ## 5. File
 
 | File | Ruolo |
 |---|---|
-| `dati.js` | modello sintetico (11 e 40) condiviso; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`) e le richieste di tipo `revisione` |
+| `dati.js` | modello sintetico (11 e 40) condiviso; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`), le richieste di tipo `revisione` e l'esecuzione (`esecuzioneDi`: sei scritte a mano, le altre generate) |
 | `comune.js` | sprite di icone di DGT, prefisso CSS, utilità |
-| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni; cliccabile |
+| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo); cliccabile |
 | `avatar/avatar-dgt.js` | involucro degli avatar nel linguaggio della Console (colori, stati, simboli statici, animazione); `usa('orbe'|'kit')` sceglie la famiglia |
-| `avatar/avatar-orbe.js` | la famiglia «orbe» (versione 5b): sfere morbide dal seme, animazioni CSS, sguardo che segue il puntatore |
+| `avatar/avatar-orbe.js` | la famiglia «orbe» (versioni 5b, 5c, 7, 7b, 7c): cerchi dal seme con le pupille e lo sguardo del kit, un solo motore `requestAnimationFrame` con funzioni continue del tempo, sguardo che segue il puntatore; senza disco, con le pelli (`pelle('perla'|'grigio'|'chiaro'|'alone'|'disco')`, solo variabili CSS; perla predefinita); `fermo(t)`, `riprendi()`, `fotogramma(svg, t)` per gli screenshot |
 | `confronto-avatar.html` | le due famiglie a confronto nelle viste della Console |
+| `avatar-pelli.html` | le quattro pelli dell'orbe senza disco a confronto su tutti i fondi della Console, con il selettore che cambia la pelle |
 | `avatar/avatar-motore.js` | motore del kit impacchettato (generato da `build-motore.js`, non si modifica a mano) |
 | `avatar/vendor-avatars/` | sorgenti del motore del kit, verbatim |
 | `direzione-b.js` / `.html` | Registro operativo |

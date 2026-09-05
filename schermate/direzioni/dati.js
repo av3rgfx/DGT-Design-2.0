@@ -421,6 +421,200 @@ window.DGT_DATI = (function () {
     };
   }
 
+  /* ---- L'esecuzione (versione 8, 2026-09-04): la pagina aperta dall'«occhio» delle card al lavoro.
+     Un'esecuzione è l'attività corrente del dipendente (e.att): qui i suoi passi (fatti, in corso,
+     da fare, in errore) con tempo, modello, strumenti e costo; il log in ordine di tempo (passi,
+     strumenti, modello, note, richieste, errori, interventi del titolare); gli output (consegne
+     parziali: bozza, da approvare, approvata, fatta) e le consegne precedenti della stessa serie
+     (id di richieste). I costi dei passi sommano al costo di oggi dell'esecuzione (e.att.costo).
+     Scritte a mano per Nora, lo Sviluppatore full-stack, Ricerca lead, Kim (errore), il Social media
+     manager (da approvare) e il Tester QA (pianificata); generate per gli altri e per i 40. ---- */
+  const ESEC11 = {
+    4: { // Nora · Post LinkedIn 5 di 12 · da 10:20 · passo 2 di 4
+      obiettivo: 'o4', serie: ['ap1', 'r9', 'r12', 'r18'],
+      passi: [
+        { n: 1, nome: 'Brief e ultimi tre post approvati', stato: 'fatto', inizio: '10:20', fine: '10:24', durata: '4 min', costo: 0.4, modello: 'rapido', strumenti: ['Archivio del cliente'], esito: 'Tre vincoli dal brief: tono informale, 800 battute, una domanda in chiusura' },
+        { n: 2, nome: 'Struttura e prima stesura', stato: 'corso', inizio: '10:24', costo: 11.6, modello: 'standard', strumenti: ['Ricerca web'], esito: 'Bozza a 640 battute, sta rileggendo' },
+        { n: 3, nome: 'Bozza e immagine', stato: 'da fare', stima: '6 min', costo: 1.8, modello: 'standard', strumenti: ['Immagini'] },
+        { n: 4, nome: 'Consegna al titolare', stato: 'da fare', stima: '1 min', costo: 0.1, modello: 'rapido', strumenti: [] },
+      ],
+      log: [
+        { ora: '10:20', tipo: 'passo', testo: 'Passo 1 iniziato · Brief e ultimi tre post approvati', passo: 1 },
+        { ora: '10:20', tipo: 'strumento', testo: 'Archivio del cliente · brief «12 post LinkedIn» e i post 1–3 approvati', passo: 1, costo: 0.1 },
+        { ora: '10:22', tipo: 'nota', testo: 'Dal brief: tono informale, massimo 800 battute, una domanda in chiusura. Il post 2 era stato corretto per la lunghezza.', passo: 1 },
+        { ora: '10:24', tipo: 'passo', testo: 'Passo 1 concluso in 4 min · 0,4 €', passo: 1, costo: 0.3 },
+        { ora: '10:24', tipo: 'modello', testo: 'Modello Standard per il passo 2 · regola: la consegna esce verso il cliente', passo: 2 },
+        { ora: '10:27', tipo: 'strumento', testo: 'Ricerca web · «checkout abbandono carrello 2026» · 3 fonti lette', passo: 2, costo: 0.2 },
+        { ora: '10:31', tipo: 'nota', testo: 'Prima stesura: 640 battute, una sola idea (la spedizione che compare solo alla fine).', passo: 2 },
+        { ora: '10:35', tipo: 'strumento', testo: 'Ricerca web · verifica del dato «70% dei carrelli abbandonati» · fonte del brief, non del web', passo: 2, costo: 0.1 },
+        { ora: '10:38', tipo: 'richiesta', testo: 'Il post 4 di 12 aspetta l\'approvazione del titolare dalle 10:12', richiesta: 'ap1' },
+        { ora: '10:41', tipo: 'nota', testo: 'Rilettura: tolto un numero che non sta nel brief.', passo: 2 },
+      ],
+      output: [
+        { nome: 'Post LinkedIn 5 di 12', tipo: 'post', stato: 'bozza', quando: 'passo 2 · in corso', desc: '640 battute, una sola idea, domanda in chiusura' },
+        { nome: 'Immagine proposta', tipo: 'immagine', stato: 'da fare', quando: 'passo 3', desc: 'Mock-up del carrello, 1200×1200' },
+        { nome: 'Post LinkedIn 4 di 12', tipo: 'post', stato: 'attesa', quando: 'consegnato 10:12', desc: 'Esecuzione precedente della serie: aspetta il titolare', richiesta: 'ap1' },
+      ],
+      strumentiUso: [{ nome: 'Ricerca web', icona: 'i-search', chiamate: 4, costo: 0.3 }, { nome: 'Archivio del cliente', icona: 'i-doc', chiamate: 2, costo: 0.1 }, { nome: 'Immagini', icona: 'i-grid', chiamate: 0, costo: 0 }],
+    },
+    1: { // Sviluppatore full-stack · Checkout e-commerce · da 09:40 · passo 3 di 7
+      obiettivo: 'o1', serie: ['r5', 'r10'],
+      passi: [
+        { n: 1, nome: 'Struttura approvata e catalogo', stato: 'fatto', inizio: '09:40', fine: '09:47', durata: '7 min', costo: 0.4, modello: 'rapido', strumenti: ['Archivio del cliente', 'Repository'], esito: 'Alberatura a tre livelli letta, 14 template, 80 prodotti nel catalogo' },
+        { n: 2, nome: 'Pagina del carrello', stato: 'fatto', inizio: '09:47', fine: '10:18', durata: '31 min', costo: 14, modello: 'standard', strumenti: ['Repository', 'Ambiente di test'], esito: 'Carrello con quantità, rimozione e totale; 12 test superati' },
+        { n: 3, nome: 'Carrello collegato al magazzino', stato: 'corso', inizio: '10:18', costo: 23.6, modello: 'esperto', strumenti: ['Repository', 'Ambiente di test'], esito: 'Disponibilità letta dal magazzino, 3 prodotti di prova; sta scrivendo i test' },
+        { n: 4, nome: 'Pagamento con carta', stato: 'da fare', stima: '40 min', costo: 21, modello: 'esperto', strumenti: ['Repository'] },
+        { n: 5, nome: 'Spedizione e indirizzi', stato: 'da fare', stima: '25 min', costo: 9, modello: 'standard', strumenti: ['Repository'] },
+        { n: 6, nome: 'Test di regressione del checkout', stato: 'da fare', stima: '15 min', costo: 3, modello: 'standard', strumenti: ['Ambiente di test'] },
+        { n: 7, nome: 'Nota di consegna e richiesta al titolare', stato: 'da fare', stima: '3 min', costo: 0.2, modello: 'rapido', strumenti: [] },
+      ],
+      log: [
+        { ora: '09:40', tipo: 'passo', testo: 'Passo 1 iniziato · Struttura approvata e catalogo', passo: 1 },
+        { ora: '09:41', tipo: 'strumento', testo: 'Archivio del cliente · «Struttura delle pagine e-commerce», approvata ieri alle 16:40', passo: 1, costo: 0.1 },
+        { ora: '09:47', tipo: 'passo', testo: 'Passo 1 concluso in 7 min · 0,4 €', passo: 1 },
+        { ora: '09:47', tipo: 'modello', testo: 'Modello Standard per il passo 2', passo: 2 },
+        { ora: '10:02', tipo: 'strumento', testo: 'Ambiente di test · 12 test del carrello superati', passo: 2, costo: 0.5 },
+        { ora: '10:18', tipo: 'passo', testo: 'Passo 2 concluso in 31 min · 14 €', passo: 2 },
+        { ora: '10:18', tipo: 'modello', testo: 'Modello Esperto per il passo 3 · regola: più di 6 passi e consegna verso il cliente', passo: 3 },
+        { ora: '10:31', tipo: 'nota', testo: 'Carrello collegato al magazzino: la disponibilità si legge in tempo reale, 3 prodotti di prova.', passo: 3 },
+        { ora: '10:40', tipo: 'strumento', testo: 'Ambiente di test · 4 test del magazzino, 1 da rivedere (prodotto esaurito nel carrello)', passo: 3, costo: 0.5 },
+      ],
+      output: [
+        { nome: 'Pagina del carrello', tipo: 'codice', stato: 'fatto', quando: 'passo 2 · 10:18', desc: 'Quantità, rimozione, totale; 12 test' },
+        { nome: 'Collegamento al magazzino', tipo: 'codice', stato: 'bozza', quando: 'passo 3 · in corso', desc: 'Disponibilità in tempo reale, test in scrittura' },
+        { nome: 'Checkout in 3 passi', tipo: 'codice', stato: 'da fare', quando: 'passi 4 e 5', desc: 'Pagamento con carta, spedizione, indirizzi' },
+      ],
+      strumentiUso: [{ nome: 'Repository', icona: 'i-code', chiamate: 18, costo: 1.2 }, { nome: 'Ambiente di test', icona: 'i-check', chiamate: 3, costo: 1 }, { nome: 'Archivio del cliente', icona: 'i-doc', chiamate: 1, costo: 0.1 }],
+    },
+    7: { // Ricerca lead · 200 lead e-commerce in Lombardia · da 08:30 · passo 5 di 6
+      obiettivo: 'o7', serie: ['r3', 'r11'],
+      passi: [
+        { n: 1, nome: 'Criteri dal brief', stato: 'fatto', inizio: '08:30', fine: '08:34', durata: '4 min', costo: 0.5, modello: 'rapido', strumenti: ['Archivio del cliente'], esito: 'E-commerce lombardi, 10–50 addetti, con e-mail aziendale' },
+        { n: 2, nome: 'Ricerca delle fonti', stato: 'fatto', inizio: '08:34', fine: '08:52', durata: '18 min', costo: 6, modello: 'standard', strumenti: ['Ricerca web'], esito: '3 registri e 2 elenchi di settore' },
+        { n: 3, nome: 'Estrazione di 200 aziende', stato: 'fatto', inizio: '08:52', fine: '09:12', durata: '20 min', costo: 22, modello: 'standard', strumenti: ['Ricerca web', 'CRM di Nova Studio'], esito: '214 aziende trovate, 200 tenute' },
+        { n: 4, nome: 'Deduplica e prima metà', stato: 'fatto', inizio: '09:12', fine: '09:20', durata: '8 min', costo: 9.5, modello: 'standard', strumenti: ['CRM di Nova Studio'], esito: '120 lead verificati consegnati al titolare, approvati alle 09:35' },
+        { n: 5, nome: 'Arricchimento della seconda metà', stato: 'corso', inizio: '09:20', costo: 23, modello: 'standard', strumenti: ['Ricerca web', 'CRM di Nova Studio'], esito: '61 su 80 con telefono e fatturato stimato' },
+        { n: 6, nome: 'Verifica email', stato: 'da fare', stima: '12 min', costo: 4, modello: 'rapido', strumenti: ['Invio e-mail'] },
+      ],
+      log: [
+        { ora: '08:30', tipo: 'passo', testo: 'Passo 1 iniziato · Criteri dal brief', passo: 1 },
+        { ora: '08:34', tipo: 'passo', testo: 'Passo 1 concluso in 4 min · 0,5 €', passo: 1 },
+        { ora: '08:52', tipo: 'passo', testo: 'Passo 2 concluso in 18 min · 6 €', passo: 2 },
+        { ora: '09:05', tipo: 'strumento', testo: 'CRM di Nova Studio · 14 aziende già clienti o contattate, escluse', passo: 3, costo: 0.2 },
+        { ora: '09:12', tipo: 'passo', testo: 'Passo 3 concluso in 20 min · 22 €', passo: 3 },
+        { ora: '09:20', tipo: 'richiesta', testo: 'Lista di 120 lead verificati consegnata al titolare', richiesta: 'r3' },
+        { ora: '09:35', tipo: 'titolare', testo: 'MR ha approvato «Lista di 120 lead verificati»', richiesta: 'r3' },
+        { ora: '10:10', tipo: 'strumento', testo: 'Ricerca web · fatturato stimato per 61 aziende', passo: 5, costo: 0.6 },
+        { ora: '10:36', tipo: 'nota', testo: '19 aziende senza telefono pubblico: restano con la sola e-mail.', passo: 5 },
+      ],
+      output: [
+        { nome: 'Lista di 120 lead verificati', tipo: 'lista', stato: 'approvata', quando: 'approvata alle 09:35', desc: 'Prima metà: azienda, sito, e-mail, telefono, fatturato', richiesta: 'r3' },
+        { nome: 'Seconda metà: 80 lead', tipo: 'lista', stato: 'bozza', quando: 'passo 5 · in corso', desc: '61 su 80 arricchiti' },
+      ],
+      strumentiUso: [{ nome: 'Ricerca web', icona: 'i-search', chiamate: 92, costo: 4.6 }, { nome: 'CRM di Nova Studio', icona: 'i-list', chiamate: 6, costo: 0.4 }, { nome: 'Archivio del cliente', icona: 'i-doc', chiamate: 1, costo: 0.1 }],
+    },
+    3: { // Kim · Deploy in staging · fallito alle 08:55
+      obiettivo: 'o2', serie: [],
+      passi: [
+        { n: 1, nome: 'Build della versione 2.4.1', stato: 'fatto', inizio: '08:41', fine: '08:49', durata: '8 min', costo: 1.5, modello: 'standard', strumenti: ['Repository'], esito: 'Build riuscita, 3 avvisi' },
+        { n: 2, nome: 'Test automatici', stato: 'fatto', inizio: '08:49', fine: '08:53', durata: '4 min', costo: 2, modello: 'standard', strumenti: ['Ambiente di test'], esito: '41 test superati' },
+        { n: 3, nome: 'Deploy in staging', stato: 'errore', inizio: '08:53', fine: '08:55', durata: '2 min', costo: 0.5, modello: 'rapido', strumenti: ['Deploy in produzione'], esito: 'Chiavi di accesso scadute: il server di staging rifiuta la connessione' },
+        { n: 4, nome: 'Verifica dopo il deploy', stato: 'da fare', stima: '5 min', costo: 0.5, modello: 'rapido', strumenti: ['Ambiente di test'] },
+      ],
+      log: [
+        { ora: '08:41', tipo: 'passo', testo: 'Passo 1 iniziato · Build della versione 2.4.1', passo: 1 },
+        { ora: '08:49', tipo: 'passo', testo: 'Passo 1 concluso in 8 min · 1,5 €', passo: 1 },
+        { ora: '08:53', tipo: 'passo', testo: 'Passo 2 concluso in 4 min · 2 € · 41 test superati', passo: 2 },
+        { ora: '08:53', tipo: 'strumento', testo: 'Deploy in produzione · connessione al server di staging Zenith', passo: 3, costo: 0.1 },
+        { ora: '08:55', tipo: 'errore', testo: 'Chiavi di accesso scadute il 31 ago: il server rifiuta la connessione', passo: 3 },
+        { ora: '08:56', tipo: 'errore', testo: 'Riprovato una volta: stesso errore. Esecuzione ferma, serve un intervento', passo: 3 },
+        { ora: '08:56', tipo: 'nota', testo: 'Per ripartire: rinnovare le chiavi della connessione «Server di staging Zenith» e riprovare il passo 3.', passo: 3 },
+      ],
+      output: [
+        { nome: 'Build 2.4.1', tipo: 'codice', stato: 'fatto', quando: 'passo 1 · 08:49', desc: 'Pacchetto pronto per lo staging' },
+        { nome: 'Report dei test', tipo: 'documento', stato: 'fatto', quando: 'passo 2 · 08:53', desc: '41 test superati, 0 falliti' },
+        { nome: 'Staging aggiornato', tipo: 'codice', stato: 'errore', quando: 'passo 3 · 08:55', desc: 'Non fatto: chiavi scadute' },
+      ],
+      strumentiUso: [{ nome: 'Repository', icona: 'i-code', chiamate: 5, costo: 0.3 }, { nome: 'Ambiente di test', icona: 'i-check', chiamate: 1, costo: 0.4 }, { nome: 'Deploy in produzione', icona: 'i-send', chiamate: 2, costo: 0.1, errore: true }],
+    },
+    5: { // Social media manager · Piano editoriale ottobre · 09:06–09:48 · da approvare
+      obiettivo: 'o5', serie: ['ap2', 'r7', 'r13'],
+      passi: [
+        { n: 1, nome: 'Analisi di settembre', stato: 'fatto', inizio: '09:06', fine: '09:14', durata: '8 min', costo: 0.5, modello: 'rapido', strumenti: ['Analisi del mese'], esito: 'Tre temi che hanno funzionato: dietro le quinte, casi cliente, consigli pratici' },
+        { n: 2, nome: 'Temi del mese', stato: 'fatto', inizio: '09:14', fine: '09:24', durata: '10 min', costo: 2, modello: 'standard', strumenti: ['Archivio del cliente'], esito: 'Un tema per settimana, i vincoli del brief rispettati' },
+        { n: 3, nome: 'Calendario', stato: 'fatto', inizio: '09:24', fine: '09:36', durata: '12 min', costo: 3, modello: 'standard', strumenti: ['Calendario editoriale'], esito: '12 post, 4 reel, 2 newsletter; evitati il 1° e il lancio del 14' },
+        { n: 4, nome: 'Bozze dei titoli e consegna', stato: 'fatto', inizio: '09:36', fine: '09:48', durata: '12 min', costo: 3.5, modello: 'standard', strumenti: [], esito: 'Documento di 4 pagine consegnato al titolare' },
+      ],
+      log: [
+        { ora: '09:06', tipo: 'passo', testo: 'Passo 1 iniziato · Analisi di settembre', passo: 1 },
+        { ora: '09:14', tipo: 'passo', testo: 'Passo 1 concluso in 8 min · 0,5 €', passo: 1 },
+        { ora: '09:20', tipo: 'strumento', testo: 'Archivio del cliente · brief di ottobre e vincoli: niente laboratorio, lancio del 14', passo: 2, costo: 0.1 },
+        { ora: '09:24', tipo: 'passo', testo: 'Passo 2 concluso in 10 min · 2 €', passo: 2 },
+        { ora: '09:36', tipo: 'passo', testo: 'Passo 3 concluso in 12 min · 3 €', passo: 3 },
+        { ora: '09:48', tipo: 'passo', testo: 'Passo 4 concluso in 12 min · 3,5 €', passo: 4 },
+        { ora: '09:48', tipo: 'richiesta', testo: 'Piano editoriale ottobre consegnato: aspetta l\'approvazione del titolare', richiesta: 'ap2' },
+      ],
+      output: [
+        { nome: 'Piano editoriale ottobre', tipo: 'documento', stato: 'attesa', quando: 'consegnato 09:48', desc: '4 pagine: temi, calendario, bozze dei titoli', richiesta: 'ap2' },
+      ],
+      strumentiUso: [{ nome: 'Analisi del mese', icona: 'i-sort', chiamate: 3, costo: 0.3 }, { nome: 'Archivio del cliente', icona: 'i-doc', chiamate: 2, costo: 0.1 }, { nome: 'Calendario editoriale', icona: 'i-cal', chiamate: 4, costo: 0.2 }],
+    },
+    2: { // Tester QA · Test di regressione · pianificata alle 15:00
+      obiettivo: 'o2', serie: [],
+      passi: [
+        { n: 1, nome: 'Preparazione dell\'ambiente', stato: 'da fare', stima: '5 min', costo: 0.3, modello: 'rapido', strumenti: ['Ambiente di test'] },
+        { n: 2, nome: 'Esecuzione dei 214 test', stato: 'da fare', stima: '25 min', costo: 4, modello: 'standard', strumenti: ['Ambiente di test', 'Repository'] },
+        { n: 3, nome: 'Report e richiesta al titolare', stato: 'da fare', stima: '5 min', costo: 0.5, modello: 'rapido', strumenti: [] },
+      ],
+      log: [
+        { ora: 'ieri 18:20', tipo: 'titolare', testo: 'MR ha pianificato «Test di regressione» per le 15:00 di oggi' },
+        { ora: '08:56', tipo: 'nota', testo: 'Il deploy in staging di Kim è in errore: se non si sblocca, i test partono sulla versione precedente.' },
+      ],
+      output: [
+        { nome: 'Report dei test di regressione', tipo: 'documento', stato: 'da fare', quando: 'passo 3', desc: '214 test sull\'area riservata' },
+      ],
+      strumentiUso: [{ nome: 'Ambiente di test', icona: 'i-check', chiamate: 0, costo: 0 }, { nome: 'Repository', icona: 'i-code', chiamate: 0, costo: 0 }],
+    },
+  };
+  const PASSI_DIP = {
+    svi: ['Lettura della struttura approvata', 'Sviluppo', 'Test automatici', 'Nota di consegna e richiesta al titolare'],
+    mkt: ['Brief e materiali approvati', 'Bozza', 'Revisione del tono', 'Consegna al titolare'],
+    ven: ['Criteri dal brief', 'Ricerca', 'Verifica', 'Consegna al titolare'],
+    amm: ['Raccolta dei documenti', 'Elaborazione', 'Controllo', 'Consegna'],
+  };
+  /* Esecuzione generata per chi non ne ha una scritta a mano: dai passi dell'attività (e.att.passo) o tre passi. */
+  function esecuzioneGenerata(e) {
+    let h = hashSeme(e.ruolo + '#' + e.att.titolo);
+    const r = (a, b) => { h = (h * 1664525 + 1013904223) >>> 0; return a + (h % (b - a + 1)); };
+    const a = e.att, tot = a.passo ? a.passo[1] : 3, cur = a.passo ? a.passo[0] : (e.stato === 'errore' ? 2 : tot);
+    const nomi = PASSI_DIP[e.dip];
+    const nome = i => i === 0 ? nomi[0] : i === tot - 1 ? nomi[3] : (i === tot - 2 && tot > 3 ? nomi[2] : nomi[1] + (tot > 4 ? ' · parte ' + i : ''));
+    const min = t => { const m = /^(\d\d):(\d\d)$/.exec(t || ''); return m ? +m[1] * 60 + +m[2] : 9 * 60; };
+    const hm = t => (t / 60 | 0).toString().padStart(2, '0') + ':' + (t % 60).toString().padStart(2, '0');
+    const inizio = min(a.da || a.quando || '09:00'), fine = a.fine ? min(a.fine) : 10 * 60 + 42;
+    const fatti = e.stato === 'pianificato' ? 0 : e.stato === 'libero' || e.stato === 'attesa' ? tot : cur - 1;
+    const dur = Math.max(2, Math.round((fine - inizio) / Math.max(1, fatti + 1)));
+    const costoTot = a.costo || (a.fine ? r(4, 24) : 0);   // le esecuzioni concluse senza costo nel modello (ieri) prendono un costo dal seme
+    const quote = Array.from({ length: tot }, (_, i) => i < fatti ? 1 : i === fatti ? 1.6 : 0);
+    const somma = quote.reduce((t, q) => t + q, 0) || 1;
+    const stimaPasso = Math.max(0.3, Math.round(10 * (costoTot || 6) / Math.max(1, fatti + 1)) / 10);   // i passi da fare: una stima dal costo medio dei passi fatti
+    const passi = Array.from({ length: tot }, (_, i) => {
+      const stato = i < fatti ? 'fatto' : (i === fatti && e.stato === 'lavoro') ? 'corso' : (i === fatti && e.stato === 'errore') ? 'errore' : 'da fare';
+      const p = { n: i + 1, nome: nome(i), stato, costo: stato === 'da fare' ? stimaPasso : Math.round(10 * costoTot * quote[i] / somma) / 10, modello: i === 0 || i === tot - 1 ? 'rapido' : 'standard', strumenti: STRUMENTI_DIP[e.dip].slice(0, 1 + (i % 2)).map(s => s[0]) };
+      if (stato === 'fatto' || stato === 'errore') { p.inizio = hm(inizio + dur * i); p.fine = hm(inizio + dur * (i + 1)); p.durata = dur + ' min'; p.esito = stato === 'errore' ? a.errore : 'Concluso senza note'; }
+      else if (stato === 'corso') { p.inizio = hm(inizio + dur * i); p.esito = 'In corso da ' + p.inizio; }
+      else p.stima = r(3, 20) + ' min';
+      return p;
+    });
+    const log = [];
+    passi.forEach(p => { if (p.inizio) log.push({ ora: p.inizio, tipo: 'passo', testo: `Passo ${p.n} iniziato · ${p.nome}`, passo: p.n }); if (p.fine && p.stato === 'fatto') log.push({ ora: p.fine, tipo: 'passo', testo: `Passo ${p.n} concluso in ${p.durata} · ${String(p.costo).replace('.', ',')} €`, passo: p.n }); if (p.stato === 'errore') log.push({ ora: p.fine, tipo: 'errore', testo: a.errore + ': esecuzione ferma, serve un intervento', passo: p.n }); });
+    if (e.stato === 'pianificato') log.push({ ora: 'ieri', tipo: 'titolare', testo: `MR ha pianificato «${a.titolo}» per le ${a.quando} di oggi` });
+    if (e.stato === 'attesa') log.push({ ora: a.fine, tipo: 'richiesta', testo: `«${a.titolo}» consegnato: aspetta l'approvazione del titolare` });
+    const out = { nome: a.titolo, tipo: e.dip === 'svi' ? 'codice' : e.dip === 'ven' ? 'lista' : 'documento', stato: e.stato === 'attesa' ? 'attesa' : e.stato === 'libero' ? 'fatto' : e.stato === 'errore' ? 'errore' : e.stato === 'pianificato' ? 'da fare' : 'bozza', quando: e.stato === 'lavoro' ? `passo ${cur} · in corso` : e.stato === 'attesa' ? 'consegnato alle ' + a.fine : e.stato === 'pianificato' ? 'parte alle ' + a.quando : e.stato === 'errore' ? 'fermo al passo ' + cur : 'concluso ' + (a.fine || ''), desc: e.dip === 'svi' ? 'Codice e test' : 'Consegna per ' + (a.cliente || 'Nova Studio') };
+    const strumentiUso = STRUMENTI_DIP[e.dip].slice(0, 3).map((s, i) => ({ nome: s[0], icona: s[2], chiamate: fatti ? r(1, 12) : 0, costo: fatti ? r(1, 9) / 10 : 0 }));
+    return { obiettivo: null, serie: [], passi, log, output: [out], strumentiUso };
+  }
+
   /* ---- Generatore a 40 dipendenti: 10 per dipartimento, 12 al lavoro ---- */
   const NOMI = ['Leo','Ada','Kim','Nora','Ivo','Mia','Sam','Zoe','Ugo','Rea','Teo','Bea','Dan','Eva','Gil','Ines','Jan','Lia','Max','Nil',
     'Ora','Pia','Rio','Sia','Tom','Uma','Vic','Wes','Yan','Zed','Aldo','Bice','Caio','Dora','Elia','Fede','Gaia','Hugo','Iris','Jole'];
@@ -550,6 +744,8 @@ window.DGT_DATI = (function () {
       MODELLI,
       /* Il dossier del dipendente (versione 6): scritto a mano per Nora e il Social media manager a 11, generato per gli altri; una sola copia per dipendente, così le decisioni restano. */
       dossierDi: e => { if (!e) return null; if (!dossier[e.id]) dossier[e.id] = (n < 40 && DOSSIER11[e.id]) ? DOSSIER11[e.id] : dossierGenerato(e); return dossier[e.id]; },
+      /* L'esecuzione corrente del dipendente (versione 8): scritta a mano a 11 per sei dipendenti, generata per gli altri; una sola copia per dipendente, così le azioni restano. */
+      esecuzioneDi: e => { if (!e) return null; if (!esecuzioni[e.id]) esecuzioni[e.id] = (n < 40 && ESEC11[e.id]) ? ESEC11[e.id] : esecuzioneGenerata(e); return esecuzioni[e.id]; },
       /* La revisione di una richiesta di tipo `revisione`. */
       revisioneDi: r => { const e = byId[r.chi]; const d = e && out.dossierDi(e); return d ? d.revisioni.find(x => x.id === r.revisione) : null; },
       /* Decisione del titolare su una revisione: prova (20 esecuzioni), applicata, modifiche, rifiutata. Applicare = la nuova versione del prompt o il nuovo modello diventano correnti. */
@@ -564,7 +760,7 @@ window.DGT_DATI = (function () {
         rv.verso = '';
       },
     };
-    const dossier = {};
+    const dossier = {}, esecuzioni = {};
     out.ricalcola();
     return out;
   }
