@@ -1,14 +1,15 @@
 # Prossima sessione — passaggio di consegne
 
-Stato al 2026-09-04, fine della sessione sull'**orbe senza disco** (versione 7 della direzione A · Console: le pelli;
+Stato al 2026-09-05, fine della sessione sull'**orbe senza disco** (versione 7 della direzione A · Console: le pelli;
 7b: perla, corpi tondi, moti fluidi; 7c: gli occhi del kit), sulla **pagina dell'Esecuzione** (versione 8) e sulle
 **correzioni della cornice** (versione 9: zoom, card, niente emoji). Tutto è committato e pushato sul branch indicato sotto.
 
 ## Stato
 
-- Branch: `claude/avatar-execution-page-nv8dm4` (da `main`, che contiene le PR #1, #3, #4 e #5). Nessuna PR aperta a
-  fine sessione: se l'utente la vuole, aprirla da questo branch verso `main`; se intanto risulta unita, ripartire da
-  `main` con un branch nuovo.
+- Branch: `claude/avatar-execution-page-nv8dm4` (da `main`, che contiene le PR #1, #3, #4 e #5). A fine sessione è
+  aperta la **PR #6** verso `main` (https://github.com/av3rgfx/DGT-Design-2.0/pull/6): se all'avvio della prossima
+  sessione risulta già unita, ripartire da `main` con un branch nuovo; se è ancora aperta, continuare sullo stesso
+  branch e la PR si aggiorna da sola.
 - I tre artefatti della direzione A qui sotto sono stati ripubblicati a fine sessione e corrispondono all'ultimo
   commit del branch.
 - Artefatto della direzione A cliccabile (home, tendine, Richieste, Dipartimento, editor del dipendente, pagina del
@@ -31,10 +32,10 @@ Stato al 2026-09-04, fine della sessione sull'**orbe senza disco** (versione 7 d
   interazione, card che si allargano, marcatore che avanza) e la fiamma come icona, mai committate nel repository;
   `design-system/specimen.html` è stato allineato alla copia live (con l'icona rinominata `i-fire`). `DESIGN.md` non
   descrive ancora la sezione «moto»: da fare.
-- Documento unico: `SYSTEM-DESIGN.md` (sezione 10, regole 1–15; sezione 6 con le righe «Avatar del dipendente AI»
+- Documento unico: `SYSTEM-DESIGN.md` (sezione 10, regole 1–18; sezione 6 con le righe «Avatar del dipendente AI»
   riscritta senza disco e «Pagina Esecuzione»). Studio e versioni della direzione A: `schermate/direzioni/DIREZIONI.md`
   (sezione 4: regole 13 e 14, «Versione 7» per le pelli, «Versione 7b» per perla, tondi e moti fluidi, «Versione 7c» per gli occhi del kit, «Versione 8»
-  per la pagina dell'Esecuzione).
+  per la pagina dell'Esecuzione, «Versione 9» per la cornice, le card e le emoji).
 
 ## Decisioni dell'utente (in ordine)
 
@@ -62,11 +63,11 @@ Stato al 2026-09-04, fine della sessione sull'**orbe senza disco** (versione 7 d
     tolti; quattro pelli costruite (chiaro, perla nera, grigio, alone) più la vecchia «disco» per il confronto, nella
     pagina `avatar-pelli.html` e nel suo artefatto. **Scelta fatta in sessione: «chiaro»** (orbe chiaro con occhi
     neri sul nero, perla nera con occhi bianchi sulle superfici chiare e lime), perché è la più visibile e la più
-    vicina all'orbe di riferimento. **Da confermare dall'utente**: le altre pelli si provano con `?pelle=perla|grigio|alone`
-    e con il pulsante «Prova nella Console» dell'artefatto; per cambiare la predefinita basta il primo elemento di
-    `PELLI` in `avatar-orbe.js` e la riga `DGT_AVATAR.pelle(q.get('pelle') || 'chiaro')` in `direzione-a.html`.
+    vicina all'orbe di riferimento. **Superata dalla decisione 16**: l'utente ha scartato «chiaro» («Chiaro non va
+    bene»); la predefinita è «perla» (primo elemento di `PELLI` in `avatar-orbe.js` e `DGT_AVATAR.pelle(q.get('pelle')
+    || 'perla')` in `direzione-a.html`).
 15. **Lavoro 2**: la pagina dell'Esecuzione (passi, log, output) dall'«occhio» delle card al lavoro; struttura proposta
-    e costruita nella stessa sessione (versione 8). **Da confermare dall'utente.**
+    e costruita nella stessa sessione (versione 8). **Da confermare dall'utente** (non ancora giudicata).
 16. **Seconda tornata sull'avatar**: «Chiaro non va bene. Poi vorrei renderli tondi e meno ovali. E le animazioni non
     mi piacciono, sono scadenti e poco fluide». Fatto (versione 7b): pelle **perla** predefinita (nero lucido con
     riflesso, luce riflessa, orlo e bagliore, un solo colore su ogni fondo), **corpi tondi** (cerchi; via superellisse,
@@ -187,6 +188,25 @@ Esperto); contenuti sintetici di DGT; documenti in italiano.
 - Gli artefatti si ripubblicano allo stesso URL; se lo strumento rifiuta perché «esiste una versione più recente»,
   rifare `read` sull'URL (e leggere per intero la copia salvata se lo chiede) e poi pubblicare di nuovo, mai forzare.
 
+## Cosa manca e prossimo passo (da decidere con l'utente all'avvio)
+
+Pagine fatte nella direzione A: home, Richieste, Dipartimento, tendina Dipendente, pagina Dipendente, pagina
+Esecuzione. Candidati per la prossima sessione, in ordine di priorità proposto a fine sessione (l'utente sceglie):
+
+1. **Giro di correzioni su Esecuzione e Dipendente** (mai giudicate): mezza sessione, correzioni probabili e poco
+   costose adesso; poi si chiude il primo blocco di pagine. Da qui possono uscire la tendina del passo e lo stato
+   vuoto del dipendente appena creato (vedi «Come riprendere», punto 3).
+2. **Le approvazioni da mobile**: la promessa del prodotto (il titolare approva dal telefono), nella cornice mobile
+   delle tre schermate dello specimen (barra di stato, navigazione a pillola in basso, agenda). È la pagina più
+   grande fra quelle rimaste: struttura da proporre in poche righe prima di costruire.
+3. **La pagina dei costi dell'azienda**: per dipartimento, dipendente, cliente, modello, strumento; riusa la card
+   costo dell'esecuzione e le righe della spesa del mese. Più piccola della 2.
+4. **Manutenzione**: descrivere la sezione «moto» dello specimen in `DESIGN.md`; estrarre i componenti di
+   `direzione-a.js` in `schermate/componenti.js` (utile prima di aggiungere il mobile, che riusa card e pillole).
+
+Raccomandazione: 1 e poi 2 nella stessa sessione se il giro di correzioni è breve; altrimenti 1 e 4, e il mobile
+nella successiva con una sessione intera.
+
 ## Possibili prossimi passi (non decisi dall'utente)
 
 - Tendina del passo (dall'intaglio delle righe dei passi): log filtrato, strumenti, output di quel passo.
@@ -201,9 +221,9 @@ Esperto); contenuti sintetici di DGT; documenti in italiano.
 
 ```
 Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md. Lavoriamo nella direzione A · Console (schermate/direzioni/direzione-a.js,
-dati.js, comune.js, avatar/): non cambiare la cornice, i componenti o i colori del sistema di design.
-Apri la home (direzione-a.html) e la pagina dell'Esecuzione (direzione-a.html?pagina=esecuzione&id=4), poi
-DIREZIONI.md «Versione 7» e «Versione 8». Sulla pelle dell'orbe: [chiaro va bene / preferisco …]. Sulla pagina
-dell'Esecuzione ecco le mie correzioni: […]. Poi […]: proponimi la struttura in poche righe, poi procedi con
-screenshot, artefatto, documenti, commit e push.
+dati.js, comune.js, avatar/): non cambiare la cornice, i componenti o i colori del sistema di design; niente emoji.
+Controlla lo stato della PR #6. Apri la pagina dell'Esecuzione (direzione-a.html?pagina=esecuzione&id=4) e la pagina
+del Dipendente (?pagina=dipendente&id=4): ecco le mie correzioni: […]. Poi il prossimo passo scelto è [le approvazioni
+da mobile / la pagina dei costi / la manutenzione]: proponimi la struttura in poche righe, poi procedi con screenshot,
+artefatto, documenti, commit e push.
 ```
