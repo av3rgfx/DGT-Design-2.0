@@ -148,7 +148,7 @@ gradiente radiale grigio-caldo con pulsanti in vetro (`rgb(255 255 255/.22)`).
 
 - **Pulsante rotondo** 48 (40, 32): scuro `#1E1E1E`; bianco se attivo; vuoto con bordo `.14`;
   nero pieno per il video; rosso `#F15E60` per chiudere la chiamata; vetro nella chiamata.
-- **Pillola filtro** 44: bordo `.14`, trasparente; "Tutti" bianca. L'icona fiamma `i-fire` nel testo (niente emoji, regola dal 2026-09-04) come
+- **Pillola filtro** 44: bordo `.14`, trasparente; "Tutti" bianca. L'icona fiamma `i-fire` nel testo (niente emoji, regola dal 2026-09-04; lo specimen ha anche una sezione «moto» con i token `--dgt-t-*`, da descrivere qui) come
   nell'originale.
 - **Barra agenda**: pillola bianca 64 → titolo, pillola calendario con cerchio grigio, timeline
   lime 52 con eventi bianchi (coppia di avatar, durata, freccia), separatori, orari, segmento in

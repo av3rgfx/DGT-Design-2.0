@@ -25,7 +25,11 @@ Stato al 2026-09-04, fine della sessione sull'**orbe senza disco** (versione 7 d
 - Artefatto del confronto A/B/C (selettore 11/40): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
   (`node build-unico.js confronto.html /percorso/confronto.html`; non ripubblicato in questa sessione: le direzioni B
   e C non usano gli orbi).
-- Artefatto dello specimen del sistema: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b
+- Artefatto dello specimen del sistema: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b.
+  **Scoperto in questa sessione**: la copia live conteneva una sezione «moto» (token `--dgt-t-*`, classi `t-*`, script di
+  interazione, card che si allargano, marcatore che avanza) e la fiamma come icona, mai committate nel repository;
+  `design-system/specimen.html` è stato allineato alla copia live (con l'icona rinominata `i-fire`). `DESIGN.md` non
+  descrive ancora la sezione «moto»: da fare.
 - Documento unico: `SYSTEM-DESIGN.md` (sezione 10, regole 1–15; sezione 6 con le righe «Avatar del dipendente AI»
   riscritta senza disco e «Pagina Esecuzione»). Studio e versioni della direzione A: `schermate/direzioni/DIREZIONI.md`
   (sezione 4: regole 13 e 14, «Versione 7» per le pelli, «Versione 7b» per perla, tondi e moti fluidi, «Versione 7c» per gli occhi del kit, «Versione 8»
