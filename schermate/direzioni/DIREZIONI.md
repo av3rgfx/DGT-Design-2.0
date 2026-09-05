@@ -675,10 +675,17 @@ bianca in ogni stato, X compresa; le palpebre chiuse restano nel colore della ti
 forma piena nel colore del dipendente, senza pupilla; in errore l'occhio stesso è una X colorata (`.occhio.lg.x .segno`),
 da libero la palpebra chiusa; la coppia scivola verso lo sguardo come nel widget del riferimento.
 
-**Da fare alla scelta**: portare la combinazione nel prodotto (tinta nel modello dati, assegnata alla creazione come la
-meno usata e scelta nell'editor del dipendente accanto all'avatar; `av()` in `direzione-a.js` passa tinta e dipartimento;
-`direzione-a.html` imposta l'aspetto), aggiornare `SYSTEM-DESIGN.md` (riga «Avatar del dipendente AI», regola sul colore) e
-rigenerare screenshot e artefatto della Console.
+**Scelta dell'utente: la strada 1** («Scelgo la 1»): vivace piatto, occhi lilguy con sclera bianca e pupilla nera.
+**Portata nel prodotto** nella stessa sessione: in `dati.js` la tinta è del dipendente (`e.tinta`; `m.tintaDi(e)` la dà, a
+rotazione sull'id per i dipendenti del modello; `m.tintaLibera()` è la meno usata in azienda, che `aggiungi` assegna alla
+creazione; `TINTE_ID` i nomi delle otto tinte); nell'editor del dipendente la riga **Colore** (otto cerchi pieni nella palette in
+uso, il proposto con l'anello nero; `scelteTinta`, `bozza.tinta`); `av()` in `direzione-a.js` passa tinta e dipartimento a
+`DGT_AVATAR.html`; `direzione-a.html` imposta l'aspetto con `DGT_AVATAR_ORBE.aspetto({ identita: 'tinta', palette: 'vivace',
+finitura: 'piatta', occhi: 'lilguy' })`, con i parametri `?identita= ?palette= ?corpo= ?occhi= ?carattere=` per tornare
+indietro o provare altro. Con il corpo piatto il disco riempie la casella (`--av-scala: 128%`) e gli avatar impilati riprendono
+l'anello del fondo con 9 px di sovrapposizione. Screenshot della Console rigenerati; artefatto della Console a un indirizzo
+nuovo, https://claude.ai/code/artifact/8a8a273e-882b-4ef8-8e9b-f9270628e149 (il vecchio 93d18853 tiene la versione con la perla nera). `SYSTEM-DESIGN.md`: riga «Avatar del
+dipendente AI» riscritta e regola 19. **Aperto**: come mostrare lo stato (vedi «Quarta tornata»).
 
 ## 5. File
 

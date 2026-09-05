@@ -6,7 +6,10 @@ Repository di design del prodotto DGT (sistema operativo aziendale per agenti AI
 - Documento unico: `SYSTEM-DESIGN.md`. Il sistema di design vive in `design-system/` (`DESIGN.md`, `tokens.css`, `specimen.html`, `tools/`). Le varianti precedenti sono archiviate in `design-system/archive/` e non fanno testo.
 - All'inizio di una nuova sessione leggere `PROSSIMA-SESSIONE.md` (stato, decisioni, strumenti, come riprendere).
 - Le schermate reali del prodotto stanno in `schermate/`. Direzione scelta il 2026-09-04: **A · Console** (il sistema di design applicato senza sconti). Le schermate successive si generano solo dentro quella direzione, con le regole di scala in `schermate/direzioni/DIREZIONI.md` (sezione 4) e in `SYSTEM-DESIGN.md` (sezione 10). Modello dati e componenti in codice: `schermate/direzioni/dati.js`, `comune.js`, `direzione-a.js` (home, Richieste, Dipartimento; tutto cliccabile).
-- Non copiare logo, foto o marchi di terzi: contenuti di DGT, avatar con iniziali.
+- Non copiare logo, foto o marchi di terzi: contenuti di DGT, avatar con iniziali per le persone.
+- **Avatar dei dipendenti AI** (scelta del 2026-09-05, «strada 1» in `schermate/direzioni/DIREZIONI.md`, versione 10): disco
+  piatto nella tinta del dipendente (otto tinte vivaci, assegnate alla creazione, cambiabili nell'editor) con due occhi grandi,
+  sclera bianca e pupilla nera sempre; lo stato non passa dal colore degli occhi. Regola 19 in `SYSTEM-DESIGN.md`.
 - **Niente emoji**, né nel prodotto né nel sistema di design (regola fondamentale, 2026-09-04): al loro posto le icone del
   sistema, disegnate per DGT nello sprite (`schermate/direzioni/comune.js`; lo specimen ha il suo). La fiamma delle pillole
   «caldo», «urgenti», «da approvare», «in ritardo» è l'icona `i-fire`.

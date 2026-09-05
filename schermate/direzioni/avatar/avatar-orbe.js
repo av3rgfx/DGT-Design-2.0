@@ -332,6 +332,9 @@ svg.ava.orbe[data-finitura] .corpo>.ombra,svg.ava.orbe[data-finitura] .corpo>.lu
 svg.ava.orbe[data-finitura] .corpo>.orlo{stroke:none}
 svg.ava.orbe[data-finitura]:not([data-modo]) .corpo>.pelle{fill:#1E1E1E}
 svg.ava.orbe[data-finitura="orlo"] .corpo>.orlo{stroke:rgb(0 0 0/.3);stroke-width:5}
+/* con il corpo piatto (aspetto della pagina) il disco riempie la casella e gli avatar impilati riprendono l'anello del fondo, come una pila classica */
+html[data-pelle][data-finitura="piatta"],html[data-pelle][data-finitura="orlo"]{--av-scala:128%;--av-anello-pelle:initial}
+html[data-pelle][data-finitura="piatta"] .pair .av:has(>svg.orbe)+.av,html[data-pelle][data-finitura="orlo"] .pair .av:has(>svg.orbe)+.av{margin-left:-9px}
 /* ---- gli occhi grandi (stili lilguy, neri, colorati): sclera e pupilla dai colori dello stile; un contorno sottile alla sclera perché si legga su ogni corpo ---- */
 .ava.orbe .occhio.lg .sclera{fill:var(--sclera,var(--volto));stroke:#0A0A0A;stroke-width:var(--av-sclera-bordo,.07);paint-order:stroke}
 .ava.orbe .occhio.lg .pupilla circle,.ava.orbe .occhio.lg .pupilla ellipse,.ava.orbe .occhio.lg .pupilla rect{fill:var(--pupilla,#0A0A0A);stroke:#0A0A0A;stroke-width:var(--av-pupilla-bordo,0);paint-order:stroke}

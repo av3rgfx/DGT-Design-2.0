@@ -9,19 +9,18 @@ Stato al 2026-09-05, fine della sessione sull'**orbe senza disco** (versione 7 d
 - **Aggiornamento 2026-09-05 (sessione in corso)**: la PR #6 è unita in `main`; si lavora sul branch
   `claude/direzione-a-corrections-mobile-2x5j8x` (da `main`). Correzione dell'utente: gli avatar piccoli o vicini sono
   tutti uguali → proposta «identità degli orbi» in quattro tornate (`schermate/direzioni/avatar-identita.html`, artefatto
-  https://claude.ai/code/artifact/690baac8-2de3-48e3-bb98-98024bc7312f; DIREZIONI.md «Versione 10»). Stato: l'utente ha
-  ristretto a **strada 1** (vivace piatto, occhi lilguy: sclera bianca, pupilla grande sempre nera) e **strada 8** (nero,
-  occhi colorati pieni senza pupilla, X colorata in errore, archi da dormiente); **manca la scelta finale fra le due** e il
-  **modo di mostrare lo stato** senza il colore degli occhi (candidati in DIREZIONI.md, «Quarta tornata»). Tutto è
-  opzionale e spento di default in `avatar/avatar-orbe.js` (`aspetto()`, `html(seme, stato, opz)`); la Console non cambia
-  finché non si porta la scelta nel prodotto («Da fare alla scelta» in DIREZIONI.md). Poi le approvazioni da mobile
-  (struttura proposta, in attesa dell'ok).
+  https://claude.ai/code/artifact/690baac8-2de3-48e3-bb98-98024bc7312f; DIREZIONI.md «Versione 10»). **Scelta: la strada 1**
+  (vivace piatto, occhi lilguy: sclera bianca, pupilla grande sempre nera), **portata nel prodotto**: tinta nel modello
+  (`m.tintaDi`, `m.tintaLibera`, `e.tinta`), riga «Colore» nell'editor, `av()` passa tinta e dipartimento, aspetto impostato in
+  `direzione-a.html`; screenshot rigenerati; artefatto della Console a un indirizzo nuovo (sotto). **Aperto: come mostrare lo
+  stato** senza il colore degli occhi (candidati in DIREZIONI.md, «Versione 10», «Quarta tornata»; la mia preferenza è un
+  punto di stato sul bordo della casella). Poi le approvazioni da mobile (struttura proposta, in attesa dell'ok).
 - Branch precedente: `claude/avatar-execution-page-nv8dm4` (da `main`, che contiene le PR #1, #3, #4 e #5), chiuso con la
   **PR #6** verso `main` (https://github.com/av3rgfx/DGT-Design-2.0/pull/6), unita.
 - I tre artefatti della direzione A qui sotto sono stati ripubblicati a fine sessione e corrispondono all'ultimo
   commit del branch.
 - Artefatto della direzione A cliccabile (home, tendine, Richieste, Dipartimento, editor del dipendente, pagina del
-  Dipendente, **pagina dell'Esecuzione**, orbe senza disco): https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
+  Dipendente, **pagina dell'Esecuzione**, orbe senza disco): https://claude.ai/code/artifact/8a8a273e-882b-4ef8-8e9b-f9270628e149
   (si aggiorna con `node schermate/direzioni/build-unico.js direzione-a.html /percorso/a.html` e ripubblicando allo
   stesso URL).
 - Artefatto delle **pelli dell'orbe** (le quattro soluzioni senza disco a confronto su tutti i fondi della Console, con

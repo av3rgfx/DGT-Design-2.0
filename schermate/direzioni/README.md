@@ -14,7 +14,7 @@ prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decision
   `?tendina=chiusa|aperta|estesa`, `?pannello=richieste|riepilogo`, `?pagina=home|richieste`, `?richiesta=0`,
   `?editor=nuovo|<id dipendente>`, `?avatar=orbe|kit`, `?pelle=perla|grigio|chiaro|alone|disco` (la pelle dell'orbe
   senza disco; predefinita perla). Artefatto:
-  https://claude.ai/code/artifact/93d18853-06f7-4e68-a903-fdc9b97eb37c
+  https://claude.ai/code/artifact/8a8a273e-882b-4ef8-8e9b-f9270628e149
 - Avatar dei dipendenti AI in `avatar/`: `avatar-dgt.js` (involucro della Console, sceglie la famiglia con
   `usa('orbe'|'kit')` e la pelle con `pelle('chiaro'|…)`), `avatar-orbe.js` (la famiglia «orbe», predefinita, senza
   disco), `avatar-motore.js` (motore del kit impacchettato: rigenerare con `node avatar/build-motore.js` dopo aver
