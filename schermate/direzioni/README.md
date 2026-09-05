@@ -21,5 +21,8 @@ prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decision
   toccato `avatar/vendor-avatars/`). Le due famiglie a confronto: `confronto-avatar.html`, artefatto
   https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526. Le pelli dell'orbe a confronto su tutti i
   fondi della Console: `avatar-pelli.html`, artefatto https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569
+  L'identità degli orbi (proposta 2026-09-05, in attesa di scelta: perle colorate, tinta del dipartimento, toni di
+  grigio, carattere degli occhi): `avatar-identita.html` (`?identita=tinta|dipartimento|toni|nessuna&carattere=1`),
+  artefatto https://claude.ai/code/artifact/690baac8-2de3-48e3-bb98-98024bc7312f
 - File unico per l'artefatto: `node build-unico.js /percorso/confronto-unico.html`.
 - Screenshot: `LOCAL_FONT_CSS=/tmp/fonts.css node ../../design-system/tools/screenshot-page.js "direzione-a.html?n=40" out.png`.

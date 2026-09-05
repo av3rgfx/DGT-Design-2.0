@@ -6,10 +6,13 @@ Stato al 2026-09-05, fine della sessione sull'**orbe senza disco** (versione 7 d
 
 ## Stato
 
-- Branch: `claude/avatar-execution-page-nv8dm4` (da `main`, che contiene le PR #1, #3, #4 e #5). A fine sessione è
-  aperta la **PR #6** verso `main` (https://github.com/av3rgfx/DGT-Design-2.0/pull/6): se all'avvio della prossima
-  sessione risulta già unita, ripartire da `main` con un branch nuovo; se è ancora aperta, continuare sullo stesso
-  branch e la PR si aggiorna da sola.
+- **Aggiornamento 2026-09-05 (sessione in corso)**: la PR #6 è unita in `main`; si lavora sul branch
+  `claude/direzione-a-corrections-mobile-2x5j8x` (da `main`). Prima correzione dell'utente: gli avatar piccoli o vicini
+  sono tutti uguali → costruita la proposta «identità degli orbi» (`schermate/direzioni/avatar-identita.html`, artefatto
+  https://claude.ai/code/artifact/690baac8-2de3-48e3-bb98-98024bc7312f; DIREZIONI.md «Versione 10»), **in attesa della scelta dell'utente**; la
+  raccomandazione è «perle colorate con carattere». Poi le approvazioni da mobile (struttura proposta, in attesa dell'ok).
+- Branch precedente: `claude/avatar-execution-page-nv8dm4` (da `main`, che contiene le PR #1, #3, #4 e #5), chiuso con la
+  **PR #6** verso `main` (https://github.com/av3rgfx/DGT-Design-2.0/pull/6), unita.
 - I tre artefatti della direzione A qui sotto sono stati ripubblicati a fine sessione e corrispondono all'ultimo
   commit del branch.
 - Artefatto della direzione A cliccabile (home, tendine, Richieste, Dipartimento, editor del dipendente, pagina del

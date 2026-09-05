@@ -81,6 +81,34 @@ window.DGT_AVATAR_ORBE = (function () {
     { id: 'alone',  nome: 'Alone',        desc: 'Corpo nero come la perla, ma con un alone morbido di luce dietro l\'orbe al posto del disco: niente bordo netto, il fondo resta nero.' },
     { id: 'disco',  nome: 'Disco (prima)', desc: 'La versione precedente: disco chiaro #E4E4E4 con il corpo nero dentro. Tenuta solo per il confronto.' },
   ];
+  /* ---- l'identità dell'orbe (proposta 2026-09-05, in confronto in avatar-identita.html; spenta di default) ----
+     Richiesta dell'utente: «molti avatar vicini, o piccoli in fila, non rendono l'idea di diversi dipendenti: sono tutti
+     uguali». Quattro modi, tutti con lo stesso volume della perla (il corpo diventa un colore pieno e sopra ci sta la
+     stessa ombreggiatura): tinta assegnata al dipendente (TINTE, a rotazione alla creazione o scelta nell'editor), tinta
+     del dipartimento (le quattro tinte già nel modello: indaco, corallo, ambra, verdeacqua), toni di grigio dal seme
+     (TONI) e nessuna (la perla di oggi). A parte, gli occhi e il riflesso «con carattere» (forma(seme, true)). */
+  const TINTE = [
+    { id: 'indaco',     c: '#2F3574', nome: 'Indaco' },
+    { id: 'corallo',    c: '#7A3A2A', nome: 'Corallo' },
+    { id: 'ambra',      c: '#66531B', nome: 'Ambra' },
+    { id: 'verdeacqua', c: '#1F5A3F', nome: 'Verdeacqua' },
+    { id: 'prugna',     c: '#4B2A6B', nome: 'Prugna' },
+    { id: 'petrolio',   c: '#174C5F', nome: 'Petrolio' },
+    { id: 'bordeaux',   c: '#6A2445', nome: 'Bordeaux' },
+    { id: 'nero',       c: '#2A2A2A', nome: 'Perla nera' },
+  ];
+  const TONI = [
+    { id: 'nero',    c: '#2A2A2A', nome: 'Perla nera' },
+    { id: 'grafite', c: '#404040', nome: 'Grafite' },
+    { id: 'piombo',  c: '#565656', nome: 'Piombo' },
+    { id: 'argento', c: '#6E6E6E', nome: 'Argento' },
+  ];
+  const IDENTITA = [
+    { id: 'nessuna',      nome: 'Oggi: una perla sola',     desc: 'Tutti gli orbi hanno lo stesso corpo nero lucido; un dipendente si distingue solo dagli occhi e dal riflesso, che a 26–32 px non si vedono.' },
+    { id: 'tinta',        nome: 'Perle colorate',            desc: 'Ogni dipendente ha la sua perla: otto tinte scure della stessa famiglia (indaco, corallo, ambra, verdeacqua, prugna, petrolio, bordeaux, nera), assegnate a rotazione alla creazione, cambiabili nell\'editor. Il volume, le luci e l\'orlo restano quelli della perla; gli occhi di stato restano il segnale.' },
+    { id: 'dipartimento', nome: 'La tinta del dipartimento', desc: 'Quattro perle, una per dipartimento, con le tinte già nel modello: indaco Sviluppo, corallo Marketing, ambra Vendite, verdeacqua Amministrazione. Il colore dice qualcosa; dentro un dipartimento gli orbi restano uguali.' },
+    { id: 'toni',         nome: 'Toni di perla',             desc: 'Niente colore: quattro perle dal nero al grigio argento, dal seme. Resta dentro il sistema a un solo accento, ma distingue meno e le più chiare abbassano il contrasto degli occhi bianchi.' },
+  ];
   const r2 = M.r2;
   const pelleDi = () => (typeof document !== 'undefined' && document.documentElement.dataset.pelle) || PELLI[0].id;
 
@@ -91,22 +119,30 @@ window.DGT_AVATAR_ORBE = (function () {
   const impulso = (t, per, dur) => { const f = ((t % per) + per) % per; if (f >= dur) return 0; const s = Math.sin(Math.PI * f / dur); return s * s; };
   const liscia = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
 
-  /** I parametri dell'orbe dal seme: tutti cerchi, si distinguono per gli occhi (la pupilla del kit) e per il riflesso. */
-  function forma(seme) {
+  /** I parametri dell'orbe dal seme: tutti cerchi, si distinguono per gli occhi (la pupilla del kit) e per il riflesso.
+      Con `car` («carattere», proposta 2026-09-05) le stesse estrazioni coprono intervalli più larghi (occhi grandi o
+      piccoli, vicini o distanti, alti o bassi) e due estrazioni in più danno la forma degli occhi e il riflesso;
+      fase, periodi e semi del rumore restano quelli di prima. */
+  function forma(seme, car) {
     const chiave = (seme || 'dipendente').trim().toLowerCase();
     const rng = M.createRng(hash(chiave));
     rng(); rng(); rng();   // (i tre estratti della vecchia forma, per tenere fase e periodi di prima)
-    return {
-      r: 95 + rng() * 5,                    // raggio del cerchio
-      pupilla: M.deriveRole(chiave).pupil,  // dot | square | ring: la stessa pupilla del kit per questo seme
-      split: 15.5 + rng() * 3.5,            // semi-distanza delle pupille sulla sfera, in gradi (il kit: 17)
-      pitch: -7 + rng() * 5,                // sguardo di riposo: mento appena basso, come il kit (-6)
-      misura: 0.16 + rng() * 0.025,         // raggio della pupilla in frazione del raggio (il kit: 0,16)
-      luce: -36 + rng() * 12,               // dove sta il riflesso
+    const r = 95 + rng() * 5;                        // raggio del cerchio
+    const pupilla = M.deriveRole(chiave).pupil;      // dot | square | ring: la stessa pupilla del kit per questo seme
+    const eSplit = rng(), ePitch = rng(), eMisura = rng(), eLuce = rng();
+    const p = {
+      r, pupilla,
+      split: car ? 12.5 + eSplit * 9 : 15.5 + eSplit * 3.5,      // semi-distanza delle pupille sulla sfera, in gradi (il kit: 17)
+      pitch: car ? -12 + ePitch * 13 : -7 + ePitch * 5,          // sguardo di riposo: mento appena basso, come il kit (-6)
+      misura: car ? 0.13 + eMisura * 0.085 : 0.16 + eMisura * 0.025,   // raggio della pupilla in frazione del raggio (il kit: 0,16)
+      luce: -36 + eLuce * 12,               // dove sta il riflesso
       fase: rng() * 40,                     // nessun orbe in sincrono con un altro
       periodo: 4.6 + rng() * 1.6,           // respiro
       s1: rng() * TAU, s2: rng() * TAU, s3: rng() * TAU,   // semi del rumore
+      ratio: 1, luceR: 0.3, luceA: -30, car: !!car,       // forma degli occhi (alti/larghi) e misura e angolo del riflesso
     };
+    if (car) { p.ratio = 0.78 + rng() * 0.42; p.luceR = 0.22 + rng() * 0.18; p.luceA = -52 + rng() * 34; }
+    return p;
   }
 
   /* ---------- gli occhi del kit: pupille dipinte su una sfera (base tangente proiettata in ortografico) ---------- */
@@ -129,19 +165,33 @@ window.DGT_AVATAR_ORBE = (function () {
   }
   /** Misura e inclinazione delle pupille per stato (rapporti del kit). */
   function occhiConf(p, stato) {
-    const m = p.misura * (p.pupilla === 'ring' ? 1.12 : 1);
-    if (stato === 'lavoro') return { w: m * 0.97, h: m * 0.82, tilt: [0, 0] };
-    if (stato === 'attesa') return { w: m * 1.25, h: m * 1.25, tilt: [0, 0] };
+    const m = p.misura * (p.pupilla === 'ring' ? 1.12 : 1), q = p.ratio || 1;
+    if (stato === 'lavoro') return { w: m * 0.97, h: m * 0.82 * q, tilt: [0, 0] };
+    if (stato === 'attesa') return { w: m * 1.25, h: m * 1.25 * q, tilt: [0, 0] };
     if (stato === 'libero') return { w: m * 0.9, h: 0.028, tilt: [8, -8] };
     if (stato === 'errore') return { w: m * 1.1, h: m * 1.1, tilt: [0, 0] };
-    return { w: m, h: m, tilt: [0, 0] };
+    return { w: m, h: m * q, tilt: [0, 0] };
   }
   /** Lo sguardo di riposo per stato (senza vita): quello del markup e degli screenshot. */
   const sguardoRiposo = (p, stato) => ({ yaw: 0, pitch: p.pitch + (stato === 'lavoro' ? 3 : stato === 'libero' ? -3 : 0), roll: 0 });
 
+  /** La tinta di un dipendente: per id ('indaco'), per indice (a rotazione: il modello assegna la meno usata alla creazione) o dal seme. */
+  const tintaDi = x => typeof x === 'number' ? TINTE[((Math.round(x) % TINTE.length) + TINTE.length) % TINTE.length] : TINTE.find(t => t.id === x) || null;
+  const tonoDi = x => typeof x === 'number' ? TONI[((Math.round(x) % TONI.length) + TONI.length) % TONI.length] : TONI.find(t => t.id === x) || null;
+  const chiaveDi = seme => (seme || 'dipendente').trim().toLowerCase();
+  const tintaSeme = (seme, scelta) => ((scelta !== undefined && scelta !== null && tintaDi(scelta)) || TINTE[hash(chiaveDi(seme) + '#tinta') % TINTE.length]).c;
+  const tonoSeme = (seme, scelta) => ((scelta !== undefined && scelta !== null && tonoDi(scelta)) || TONI[hash(chiaveDi(seme) + '#tono') % TONI.length]).c;
+
   /** Il markup dell'orbe: un <svg> inline nella posa di riposo; il motore sotto lo muove. Colori e volume della pelle stanno nel CSS (variabili --av-*). */
-  function html(seme, stato) {
-    const p = forma(seme);
+  /** opz (facoltativo, proposta 2026-09-05): identita 'nessuna'|'tinta'|'dipartimento'|'toni' (predefinito: quello della
+      pagina, html[data-identita]); carattere true/false (predefinito: html[data-carattere]); tinta = id o indice in TINTE
+      (predefinito: dal seme); tono = id o indice in TONI; dip = nome della tinta del dipartimento. */
+  function html(seme, stato, opz) {
+    opz = opz || {};
+    const ds = typeof document !== 'undefined' ? document.documentElement.dataset : {};
+    const car = opz.carattere !== undefined ? !!opz.carattere : ds.carattere === '1';
+    const modo = opz.identita !== undefined ? opz.identita : (ds.identita || 'nessuna');
+    const p = forma(seme, car);
     const volto = VOLTO[stato] || VOLTO.libero;
     const o = occhiConf(p, stato), poses = posaOcchi(sguardoRiposo(p, stato), p.r, p.split);
     /* la pupilla in spazio unitario (raggio 1): la matrice la porta a misura; le X dell'errore sono due tacche 1,8 × 0,4 */
@@ -152,14 +202,15 @@ window.DGT_AVATAR_ORBE = (function () {
     const occhio = i => `<g class="occhio${anello ? ' anello' : ''}" transform="${matrice(poses[i], o.w, o.h, o.tilt[i], 1, p.r)}">${dentro}</g>`;
     /* --volto colore degli occhi (i neutri leggono --av-occhi-neutri: neri sul corpo chiaro), --bordo-c contorno nero (in spazio unitario) se l'occhio è colorato sul corpo chiaro */
     const neutro = volto === '#FCFCFC';
-    const vars = `--volto:${neutro ? 'var(--av-occhi-neutri,#FCFCFC)' : volto};--bordo-c:${neutro ? 0 : 0.25}`;
+    const vars = `--volto:${neutro ? 'var(--av-occhi-neutri,#FCFCFC)' : volto};--bordo-c:${neutro ? 0 : 0.25};--av-tinta:${tintaSeme(seme, opz.tinta)};--av-tono:${tonoSeme(seme, opz.tono)}`;
+    const attrs = (modo && modo !== 'nessuna' ? ` data-modo="${modo}"` : '') + (opz.dip ? ` data-dip="${String(opz.dip).replace(/"/g, '&quot;')}"` : '') + (car ? ' data-carattere="1"' : '');
     const lx = r2(p.luce), ly = r2(-0.42 * p.r);
-    return `<svg class="ava orbe ${stato}" viewBox="${VIEWBOX}" aria-hidden="true" focusable="false" style="${vars}" data-seme="${String(seme || '').replace(/"/g, '&quot;')}" data-stato="${stato}">`
+    return `<svg class="ava orbe ${stato}" viewBox="${VIEWBOX}" aria-hidden="true" focusable="false" style="${vars}" data-seme="${String(seme || '').replace(/"/g, '&quot;')}" data-stato="${stato}"${attrs}>`
       + `<circle class="alone" r="122"/>`
       + `<g class="tutto">`
       + `<circle class="bagliore" r="${r2(p.r + 9)}"/>`
-      + `<g class="corpo"><circle class="pelle" r="${r2(p.r)}"/><circle class="orlo" r="${r2(p.r)}"/>`
-      + `<ellipse class="luce" cx="${lx}" cy="${ly}" rx="${r2(p.r * 0.3)}" ry="${r2(p.r * 0.17)}" transform="rotate(-30 ${lx} ${ly})"/>`
+      + `<g class="corpo"><circle class="pelle" r="${r2(p.r)}"/><circle class="ombra" r="${r2(p.r)}"/><circle class="orlo" r="${r2(p.r)}"/>`
+      + `<ellipse class="luce" cx="${lx}" cy="${ly}" rx="${r2(p.r * p.luceR)}" ry="${r2(p.r * p.luceR * 0.57)}" transform="rotate(${r2(p.luceA)} ${lx} ${ly})"/>`
       + `<ellipse class="riflesso" cx="0" cy="${r2(p.r * 0.66)}" rx="${r2(p.r * 0.5)}" ry="${r2(p.r * 0.16)}"/></g>`
       + `<g class="occhi">${occhio(0)}${occhio(1)}</g>`
       + `</g></svg>`;
@@ -190,6 +241,16 @@ window.DGT_AVATAR_ORBE = (function () {
 [data-pelle="perla"]{--av-corpo:url(#av-orbe-corpo-perla);--av-orlo:url(#av-orbe-orlo);--av-orlo-w:4;--av-luce:.55;--av-riflesso:.22;--av-bagliore:.6;--av-occhi-neutri:#FCFCFC;--av-bordo:0;--av-alone:none}
 [data-pelle="grigio"]{--av-corpo:url(#av-orbe-corpo-grigio);--av-orlo:url(#av-orbe-orlo);--av-orlo-w:3;--av-luce:.4;--av-riflesso:.16;--av-bagliore:.3;--av-occhi-neutri:#FCFCFC;--av-bordo:0;--av-alone:none}
 [data-pelle="alone"]{--av-corpo:url(#av-orbe-corpo-perla);--av-orlo:url(#av-orbe-orlo);--av-orlo-w:2;--av-luce:.4;--av-riflesso:.16;--av-bagliore:0;--av-occhi-neutri:#FCFCFC;--av-bordo:0;--av-alone:block}
+/* ---- l'identità (proposta 2026-09-05, opzionale): data-modo sull'SVG, dato da identita() o da html(seme, stato, {identita}).
+   Il corpo diventa un colore pieno (--av-base) e sopra ci sta la stessa ombreggiatura della perla (gradiente bianco → nero
+   trasparente): volume, luci, orlo e bagliore restano quelli. Tinta del dipendente (--av-tinta, inline: dal seme o assegnata),
+   tono di grigio (--av-tono, inline), tinta del dipartimento (data-dip = nome della tinta). ---- */
+.ava.orbe .corpo>.ombra{display:none;fill:url(#av-orbe-ombra)}
+svg.ava.orbe[data-modo] .corpo>.ombra{display:block}
+svg.ava.orbe[data-modo] .corpo>.pelle{fill:var(--av-base,#2A2A2A)}
+svg.ava.orbe[data-modo="tinta"]{--av-base:var(--av-tinta)}
+svg.ava.orbe[data-modo="toni"]{--av-base:var(--av-tono)}
+${TINTE.map(t => `svg.ava.orbe[data-modo="dipartimento"][data-dip="${t.id}"]{--av-base:${t.c}}`).join('\n')}
 [data-pelle="chiaro"]{--av-corpo:url(#av-orbe-corpo-chiaro);--av-orlo:url(#av-orbe-orlo-scuro);--av-orlo-w:3;--av-luce:.9;--av-riflesso:0;--av-bagliore:0;--av-occhi-neutri:#0A0A0A;--av-bordo:1;--av-alone:none;--av-inv-corpo:url(#av-orbe-corpo-perla);--av-inv-orlo:url(#av-orbe-orlo);--av-inv-orlo-w:4;--av-inv-luce:.55}
 `;
   let pronto = false;
@@ -213,6 +274,7 @@ window.DGT_AVATAR_ORBE = (function () {
 <radialGradient id="av-orbe-luce" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FCFCFC"/><stop offset=".5" stop-color="#FCFCFC" stop-opacity=".55"/><stop offset="1" stop-color="#FCFCFC" stop-opacity="0"/></radialGradient>
 <radialGradient id="av-orbe-riflesso" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FCFCFC" stop-opacity=".9"/><stop offset="1" stop-color="#FCFCFC" stop-opacity="0"/></radialGradient>
 <radialGradient id="av-orbe-bagliore" cx="50%" cy="50%" r="50%"><stop offset=".84" stop-color="#FCFCFC" stop-opacity="0"/><stop offset=".9" stop-color="#FCFCFC" stop-opacity=".5"/><stop offset="1" stop-color="#FCFCFC" stop-opacity="0"/></radialGradient>
+<radialGradient id="av-orbe-ombra" cx="34%" cy="26%" r="84%"><stop offset="0" stop-color="#FCFCFC" stop-opacity=".38"/><stop offset=".28" stop-color="#FCFCFC" stop-opacity=".08"/><stop offset=".62" stop-color="#050505" stop-opacity=".5"/><stop offset="1" stop-color="#050505" stop-opacity=".85"/></radialGradient>
 <radialGradient id="av-orbe-alone" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FCFCFC" stop-opacity=".2"/><stop offset=".55" stop-color="#FCFCFC" stop-opacity=".1"/><stop offset="1" stop-color="#FCFCFC" stop-opacity="0"/></radialGradient>
 </defs>`;
       document.body ? document.body.prepend(svg) : document.addEventListener('DOMContentLoaded', () => document.body.prepend(svg));
@@ -238,6 +300,24 @@ window.DGT_AVATAR_ORBE = (function () {
     return pelleDi();
   }
 
+  /** Il modo dell'identità (nessuna, tinta, dipartimento, toni): diventa il predefinito della pagina (html[data-identita])
+      e si applica subito agli orbi già disegnati dentro `radice` (tutto il documento se manca). */
+  function identita(nome, radice) {
+    if (typeof document === 'undefined') return 'nessuna';
+    if (nome !== undefined) {
+      const id = IDENTITA.some(x => x.id === nome) ? nome : 'nessuna';
+      document.documentElement.dataset.identita = id;
+      (radice || document).querySelectorAll('svg.orbe').forEach(s => { if (id === 'nessuna') delete s.dataset.modo; else s.dataset.modo = id; });
+    }
+    return document.documentElement.dataset.identita || 'nessuna';
+  }
+  /** Gli occhi e il riflesso «con carattere» per gli orbi disegnati da qui in avanti (quelli già in pagina vanno ridisegnati). */
+  function carattere(on) {
+    if (typeof document === 'undefined') return false;
+    if (on !== undefined) document.documentElement.dataset.carattere = on ? '1' : '0';
+    return document.documentElement.dataset.carattere === '1';
+  }
+
   /* ---------- il motore: un solo requestAnimationFrame, funzioni continue del tempo ---------- */
   const ridotto = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
   const vivi = new Map();   // svg → stato vivo
@@ -247,7 +327,7 @@ window.DGT_AVATAR_ORBE = (function () {
 
   function registra(svg) {
     if (vivi.has(svg) || !svg.isConnected || !svg.classList.contains('orbe')) return;
-    const seme = svg.dataset.seme, stato = svg.dataset.stato, p = forma(seme);
+    const seme = svg.dataset.seme, stato = svg.dataset.stato, p = forma(seme, svg.dataset.carattere === '1');
     const oc = svg.querySelectorAll('.occhio');
     const v = { svg, p, stato, tutto: svg.querySelector('.tutto'), corpo: svg.querySelector('.corpo'), occhi: svg.querySelector('.occhi'), oS: oc[0], oD: oc[1],
       rng: M.createRng(hash((seme || '') + '#battito')), inizio: -1, visibile: true,
@@ -330,5 +410,5 @@ window.DGT_AVATAR_ORBE = (function () {
 
   const semi = (ruolo, n) => Array.from({ length: n || 6 }, (_, i) => i ? `${ruolo} ·${i + 1}` : ruolo);
 
-  return { html: (seme, stato) => { prepara(); return html(seme, stato); }, anima, semi, forma, pelle, PELLI, CORNICE, fermo, riprendi, fotogramma, vivi: () => vivi.size };
+  return { html: (seme, stato, opz) => { prepara(); return html(seme, stato, opz); }, anima, semi, forma, pelle, PELLI, identita, carattere, IDENTITA, TINTE, TONI, tintaDi, tonoDi, CORNICE, fermo, riprendi, fotogramma, vivi: () => vivi.size };
 })();

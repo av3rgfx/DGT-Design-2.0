@@ -601,6 +601,42 @@ Quattro correzioni dell'utente sulle schermate viste da uno schermo largo, più 
    è l'icona `i-fire`, disegnata nello sprite di DGT (`comune.js`; lo specimen ha il suo sprite). Regola fondamentale
    in `CLAUDE.md` e in `SYSTEM-DESIGN.md` (regola 16).
 
+### Versione 10: l'identità degli orbi (2026-09-05, sessione successiva; proposta in attesa di scelta)
+
+Correzione dell'utente sulle pagine viste: «quando ci sono molti avatar vicini, o anche quelli piccoli messi in fila, non
+rendono l'idea di diversi dipendenti che lavorano, perché sono tutti uguali; magari di diversi colori, per distinguerli
+almeno un minimo; proponimi altre soluzioni se ce ne sono di migliori». Diagnosi: dalla versione 7b l'orbe è una sola
+perla nera per tutti e l'identità sta negli occhi (tre forme di pupilla, misura 0,16–0,185 del raggio, distanza 15,5–19°)
+e nel riflesso, che sotto i 36 px non si leggono; nella coda, nel diario, nelle pile delle card obiettivo e nella riga «al
+lavoro» tre dipendenti diversi sono tre punti neri uguali. Costruite quattro soluzioni per il corpo più una per gli occhi,
+tutte **opzionali e spente di default** (la Console non cambia finché non si sceglie), a confronto in `avatar-identita.html`
+e nel suo artefatto (https://claude.ai/code/artifact/690baac8-2de3-48e3-bb98-98024bc7312f): i cinque modi in card, la prova sugli undici vicini (in fila a 26 px, impilati a 28, la coda a
+32, le card a 48, con in fondo la combinazione consigliata), tutti i fondi, e la Console vera con il selettore.
+
+| Modo | Che cos'è | Per | Contro |
+|---|---|---|---|
+| **Oggi: una perla sola** (`identita=nessuna`) | il corpo nero lucido di tutti | un solo oggetto, fedele all'orbe di riferimento e alla regola del solo accento | in fila e impilati indistinguibili |
+| **Perle colorate** (`identita=tinta`) | otto tinte scure della stessa famiglia (indaco, corallo, ambra, verdeacqua, prugna, petrolio, bordeaux, nera), assegnate a rotazione alla creazione, cambiabili nell'editor | distingue ogni dipendente a ogni misura; il lime e il rosa degli stati restano gli unici colori vivi | porta il colore in un sistema a un solo accento; oltre otto le tinte tornano; un colore senza significato può sembrare uno stato |
+| **La tinta del dipartimento** (`identita=dipartimento`) | quattro perle con le tinte già nel modello (indaco Sviluppo, corallo Marketing, ambra Vendite, verdeacqua Amministrazione) | il colore dice qualcosa | dentro un dipartimento gli orbi restano uguali: non risolve le pile né la pagina Dipartimento |
+| **Toni di perla** (`identita=toni`) | quattro perle dal nero al grigio argento, dal seme | niente colore | a 26–28 px quasi non si distinguono; le chiare abbassano il contrasto degli occhi bianchi |
+| **Occhi e riflesso con carattere** (`carattere=1`) | le stesse estrazioni dal seme su intervalli più larghi (misura 0,13–0,215, distanza 12,5–21,5°, altezza −12…+1°, occhi tondi o schiacciati) e il riflesso con misura e angolo propri | individualità vera dove l'avatar è grande; si somma a qualunque modo | a 26–32 px non si vede |
+
+**Raccomandazione**: **perle colorate con carattere** (`?identita=tinta&carattere=1`): la tinta separa i dipendenti dove
+sono piccoli e vicini, il carattere dà a ognuno una faccia dove sono grandi. Il costo per il sistema è un'eccezione
+dichiarata alla regola 4 («un solo accento»): le tinte del corpo sono scure, desaturate e mai lime, gialle o rosa, così
+gli occhi di stato restano il segnale del titolare. Nella coda di oggi due orbi uguali sono giusti: sono la stessa persona
+(Nora e il Social media manager con le loro revisioni).
+
+**Come funziona** (`avatar-orbe.js`): il corpo diventa un colore pieno (`--av-base`) e sopra ci sta la stessa
+ombreggiatura della perla (`#av-orbe-ombra`, gradiente bianco → nero trasparente), così volume, luci, orlo e bagliore
+restano quelli; il modo sta sull'SVG (`data-modo`, da `identita(nome, radice)` o da `html(seme, stato, {identita,
+carattere, tinta, dip})`), la tinta e il tono in due variabili inline (`--av-tinta`, `--av-tono`: dal seme, o assegnate),
+la tinta del dipartimento in `data-dip`. `forma(seme, carattere)` tiene fase, periodi e semi del rumore di prima. Se si
+sceglie una tinta per dipendente, il passo successivo è nel modello: `e.tinta` assegnata a rotazione alla creazione
+(`aggiungi`), la scelta nell'editor accanto alle sei varianti dell'avatar, `av()` in `direzione-a.js` che la passa
+all'orbe, `?identita=` in `direzione-a.html`. Gli screenshot della Console non cambiano: senza modo l'orbe è quello di
+prima (il riflesso ha la stessa misura, il markup ha in più il cerchio dell'ombra, spento).
+
 ## 5. File
 
 | File | Ruolo |
@@ -612,6 +648,7 @@ Quattro correzioni dell'utente sulle schermate viste da uno schermo largo, più 
 | `avatar/avatar-orbe.js` | la famiglia «orbe» (versioni 5b, 5c, 7, 7b, 7c): cerchi dal seme con le pupille e lo sguardo del kit, un solo motore `requestAnimationFrame` con funzioni continue del tempo, sguardo che segue il puntatore; senza disco, con le pelli (`pelle('perla'|'grigio'|'chiaro'|'alone'|'disco')`, solo variabili CSS; perla predefinita); `fermo(t)`, `riprendi()`, `fotogramma(svg, t)` per gli screenshot |
 | `confronto-avatar.html` | le due famiglie a confronto nelle viste della Console |
 | `avatar-pelli.html` | le quattro pelli dell'orbe senza disco a confronto su tutti i fondi della Console, con il selettore che cambia la pelle |
+| `avatar-identita.html` | l'identità degli orbi (versione 10, proposta): perle colorate, tinta del dipartimento, toni, carattere degli occhi a confronto sugli undici vicini, sui fondi e nella Console |
 | `avatar/avatar-motore.js` | motore del kit impacchettato (generato da `build-motore.js`, non si modifica a mano) |
 | `avatar/vendor-avatars/` | sorgenti del motore del kit, verbatim |
 | `direzione-b.js` / `.html` | Registro operativo |
