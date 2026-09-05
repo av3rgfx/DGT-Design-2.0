@@ -188,7 +188,7 @@ Esperto); contenuti sintetici di DGT; documenti in italiano.
 - Gli artefatti si ripubblicano allo stesso URL; se lo strumento rifiuta perché «esiste una versione più recente»,
   rifare `read` sull'URL (e leggere per intero la copia salvata se lo chiede) e poi pubblicare di nuovo, mai forzare.
 
-## Cosa manca e prossimo passo (da decidere con l'utente all'avvio)
+## Cosa manca e prossimo passo (deciso con l'utente a fine sessione)
 
 Pagine fatte nella direzione A: home, Richieste, Dipartimento, tendina Dipendente, pagina Dipendente, pagina
 Esecuzione. Candidati per la prossima sessione, in ordine di priorità proposto a fine sessione (l'utente sceglie):
@@ -204,8 +204,9 @@ Esecuzione. Candidati per la prossima sessione, in ordine di priorità proposto 
 4. **Manutenzione**: descrivere la sezione «moto» dello specimen in `DESIGN.md`; estrarre i componenti di
    `direzione-a.js` in `schermate/componenti.js` (utile prima di aggiungere il mobile, che riusa card e pillole).
 
-Raccomandazione: 1 e poi 2 nella stessa sessione se il giro di correzioni è breve; altrimenti 1 e 4, e il mobile
-nella successiva con una sessione intera.
+**Decisione dell'utente (2026-09-05): la 1 e poi la 2** («Va bene la tua proposta la 1 e la 2»). Quindi: prima il giro
+di correzioni su Esecuzione e Dipendente, poi le approvazioni da mobile con la struttura proposta in poche righe prima
+di costruire; se il mobile non sta nella sessione, si divide e la metà passa alla successiva.
 
 ## Possibili prossimi passi (non decisi dall'utente)
 
@@ -217,13 +218,24 @@ nella successiva con una sessione intera.
 - Eliminazione di un dipendente (la pausa c'è; l'eliminazione no, non richiesta).
 - Estrarre i componenti di `direzione-a.js` in un file condiviso `schermate/componenti.js`.
 
-### Prompt di avvio suggerito per la prossima sessione
+### Prompt di avvio per la prossima sessione (concordato con l'utente)
 
 ```
-Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md. Lavoriamo nella direzione A · Console (schermate/direzioni/direzione-a.js,
-dati.js, comune.js, avatar/): non cambiare la cornice, i componenti o i colori del sistema di design; niente emoji.
-Controlla lo stato della PR #6. Apri la pagina dell'Esecuzione (direzione-a.html?pagina=esecuzione&id=4) e la pagina
-del Dipendente (?pagina=dipendente&id=4): ecco le mie correzioni: […]. Poi il prossimo passo scelto è [le approvazioni
-da mobile / la pagina dei costi / la manutenzione]: proponimi la struttura in poche righe, poi procedi con screenshot,
-artefatto, documenti, commit e push.
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md. Controlla la PR #6: se è unita riparti da main con un branch nuovo,
+altrimenti continua sullo stesso branch. Lavoriamo nella direzione A · Console (schermate/direzioni/direzione-a.js,
+dati.js, comune.js, avatar/): non cambiare la cornice, i componenti o i colori del sistema di design; niente emoji,
+solo le icone dello sprite.
+
+Lavoro 1, correzioni. Apri la pagina dell'Esecuzione (direzione-a.html?pagina=esecuzione&id=4, poi &id=3 e &id=5)
+e la pagina del Dipendente (?pagina=dipendente&id=4, poi &tendina=dossier) con DIREZIONI.md «Versione 8» e
+«Versione 6». Ecco le mie correzioni: […]. Applicale, rigenera gli screenshot e l'artefatto della Console, aggiorna
+DIREZIONI.md, commit e push.
+
+Lavoro 2, le approvazioni da mobile: il titolare approva dal telefono. Parti dalle tre schermate mobile dello
+specimen (design-system/specimen.html: cornice 300×620, barra di stato, navigazione a pillola in basso, agenda) e
+dalle richieste già nel modello (dati.js: richieste, tendina «Da approvare», pagina Richieste). Proponimi la
+struttura in poche righe (schermate, cosa si vede, cosa si tocca) e aspetta il mio ok. Poi procedi: dati in dati.js,
+pagina in direzione-a.js (o un file mobile a parte, se è meglio), screenshot con design-system/tools/screenshot-page.js,
+artefatto con build-unico.js, aggiornamento di DIREZIONI.md, SYSTEM-DESIGN.md e PROSSIMA-SESSIONE.md, commit e push.
+Se il compito è grande dividilo: la metà la finiamo nella prossima sessione.
 ```
