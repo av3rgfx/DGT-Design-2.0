@@ -8,9 +8,14 @@ Stato al 2026-09-05, fine della sessione sull'**orbe senza disco** (versione 7 d
 
 - **Aggiornamento 2026-09-05 (sessione in corso)**: la PR #6 è unita in `main`; si lavora sul branch
   `claude/direzione-a-corrections-mobile-2x5j8x` (da `main`). Prima correzione dell'utente: gli avatar piccoli o vicini
-  sono tutti uguali → costruita la proposta «identità degli orbi» (`schermate/direzioni/avatar-identita.html`, artefatto
-  https://claude.ai/code/artifact/690baac8-2de3-48e3-bb98-98024bc7312f; DIREZIONI.md «Versione 10»), **in attesa della scelta dell'utente**; la
-  raccomandazione è «perle colorate con carattere». Poi le approvazioni da mobile (struttura proposta, in attesa dell'ok).
+  sono tutti uguali → proposta «identità degli orbi» in tre tornate (`schermate/direzioni/avatar-identita.html`, artefatto
+  https://claude.ai/code/artifact/690baac8-2de3-48e3-bb98-98024bc7312f; DIREZIONI.md «Versione 10»): scelte le perle
+  colorate; poi «colori più accesi, occhi come lilguy.net, forse piatti» → configuratore (corpo perla/piatta/orlo, palette
+  scura/vivace/pastello, occhi kit/punti/lilguy/neri/colorati, identità) con nove strade; poi l'utente ha ristretto a
+  **strada 1** (vivace piatto, occhi lilguy: sclera sempre bianca, pupilla grande di stato) e **strada 8** (nero, occhi
+  colorati: X rosa in errore, palpebre ad arco da dormiente), entrambe riviste. Tutto in `avatar/avatar-orbe.js`
+  (`aspetto()`, `html(seme, stato, opz)`), opzionale e spento di default. **In attesa della scelta finale**; poi portare la
+  combinazione nel prodotto (DIREZIONI.md, «Da fare alla scelta»). Le approvazioni da mobile: struttura proposta, in attesa dell'ok.
 - Branch precedente: `claude/avatar-execution-page-nv8dm4` (da `main`, che contiene le PR #1, #3, #4 e #5), chiuso con la
   **PR #6** verso `main` (https://github.com/av3rgfx/DGT-Design-2.0/pull/6), unita.
 - I tre artefatti della direzione A qui sotto sono stati ripubblicati a fine sessione e corrispondono all'ultimo
