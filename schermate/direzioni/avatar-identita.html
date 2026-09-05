@@ -82,6 +82,12 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
   </section>
 
   <section class="v-sec">
+    <h2>Tre varianti per lo stato <span class="chip">strada 1 · Nora nei cinque stati a 96 px · gli undici a 40 · tre al lavoro a 48</span><span class="chip lime">l'anello e il gesto si muovono: guardali qui, non nello screenshot</span></h2>
+    <div class="v-strade" id="segnali"></div>
+    <p class="v-note">Con la strada 1 scelta, gli occhi non portano più lo stato. Qui tre modi per dirlo: il <b>punto</b> sul bordo della casella (fermo, si legge a ogni misura, ma è un segno in più); l'<b>anello vivo</b> nel colore dello stato (si muove, si legge anche a 26 px, tiene il colore fuori dalla faccia); il <b>gesto</b> del corpo (niente segni: il disco batte un ritmo, salta, si sgonfia, oscilla, dorme; sulle catture ferme non si vede). In tutte restano le forme degli occhi: X in errore, palpebre chiuse da libero.</p>
+  </section>
+
+  <section class="v-sec">
     <div class="v-sel" id="sel"></div>
     <h2>La prova vera con la combinazione scelta <span class="chip">26 in fila · 28 impilati · 32 in coda · 48 nelle card</span></h2>
     <div class="v-prova" id="prova"></div>
@@ -115,7 +121,7 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
   const O = DGT_AVATAR_ORBE;
   const q = new URLSearchParams(location.search);
   /* la combinazione del configuratore (e della Console in basso): ?identita=tinta&palette=vivace&corpo=piatta&occhi=lilguy&carattere=1 */
-  O.aspetto({ identita: q.get('identita') || 'tinta', palette: q.get('palette') || 'vivace', finitura: q.get('corpo') || 'piatta', occhi: q.get('occhi') || 'lilguy', carattere: q.get('carattere') === '1' });
+  O.aspetto({ identita: q.get('identita') || 'tinta', palette: q.get('palette') || 'vivace', finitura: q.get('corpo') || 'piatta', occhi: q.get('occhi') || 'lilguy', segnale: q.get('segnale') || 'nessuno', carattere: q.get('carattere') === '1' });
   const m = DGT_DATI.modello(11), m40 = DGT_DATI.modello(40);
   const STRADE = [
     { nome: 'Vivace piatto, occhi lilguy', o: { identita: 'tinta', palette: 'vivace', finitura: 'piatta', occhi: 'lilguy' }, desc: 'Il riferimento portato sui colori: dischi pieni e vivaci, occhi grandi con la sclera sempre bianca e la pupilla grande, sempre nera; X in errore, palpebre chiuse ad arco quando dorme. Lo stato non passa dal colore degli occhi.' },
@@ -129,7 +135,7 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
     { nome: 'Nero piatto, occhi colorati', o: { identita: 'nessuna', palette: 'vivace', finitura: 'piatta', occhi: 'colorati' }, desc: 'Come la precedente, senza volume: il disco scuro dei pulsanti della Console con due occhi colorati. La più grafica.' },
   ];
   const par = o => `corpo=${o.finitura} · palette=${o.palette} · occhi=${o.occhi}${o.identita === 'nessuna' ? ' · senza tinta' : ''}`;
-  const opzDi = (e, o, mm) => Object.assign({ tinta: e.id - 1, dip: (mm || m).dipDi(e).tinta, carattere: false }, o);
+  const opzDi = (e, o, mm) => Object.assign({ tinta: e.id - 1, dip: (mm || m).dipDi(e).tinta, carattere: false, segnale: 'nessuno' }, o);
   const av = (e, cls, o, stato, mm) => `<span class="av${cls ? ' ' + cls : ''}">${DGT_AVATAR.html((mm || m).semeDi(e), stato || e.stato, opzDi(e, o, mm))}</span>`;
   const nora = m.byId[4], LAV = [1, 4, 7].map(id => m.byId[id]);
   /* 1. le nove strade (fisse, ognuna con la sua combinazione) */
@@ -142,6 +148,19 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
       <p>${s.desc}</p>
       <span class="scegli" data-strada="${i}">Vedi nella Console</span>
     </div>`).join('');
+  /* 1b. le tre varianti per lo stato, sulla strada 1 */
+  const S1 = { identita: 'tinta', palette: 'vivace', finitura: 'piatta', occhi: 'lilguy' };
+  const STATI5 = ['lavoro', 'attesa', 'errore', 'pianificato', 'libero'];
+  document.getElementById('segnali').innerHTML = O.SEGNALI.filter(x => x.id !== 'nessuno').map((sg, i) => { const o = Object.assign({ segnale: sg.id }, S1); return `<div class="v-str seg" data-seg="${sg.id}">
+      <span class="n">${String.fromCharCode(65 + i)}</span>
+      <div class="top"><h3>${sg.nome}<small>?segnale=${sg.id}</small></h3></div>
+      <div class="v-cell card" style="min-height:120px;justify-content:space-around;padding:16px 10px">${STATI5.map(st => av(nora, 'xl', o, st)).join('')}</div>
+      <div class="v-cell nero fila" style="gap:6px">${m.dipendenti.map(e => av(e, 'md', o)).join('')}</div>
+      <div class="v-cell lime" style="min-height:64px">${LAV.map(e => av(e, '', o, 'lavoro')).join('')}<span class="pair" style="margin-left:14px">${[2, 3].map(id => av(m.byId[id], 'xs', o)).join('')}</span></div>
+      <p>${sg.desc}</p>
+      <span class="scegli" data-segnale="${sg.id}">Vedi nella Console</span>
+    </div>`; }).join('');
+  DGT_AVATAR.anima(document.getElementById('segnali'));
   /* 2. la combinazione corrente: prova, fondi, Console */
   const attesa = m.richiesteDi('attesa').slice().sort((a, b) => (b.giorno - a.giorno) || (a.min - b.min));
   const PILE = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11]];
@@ -161,7 +180,7 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
     });
   }
   function tutto() {
-    const a = O.aspetto(), o = { identita: a.identita, palette: a.palette, finitura: a.finitura, occhi: a.occhi, carattere: a.carattere };
+    const a = O.aspetto(), o = { identita: a.identita, palette: a.palette, finitura: a.finitura, occhi: a.occhi, segnale: a.segnale, carattere: a.carattere };
     document.getElementById('prova').innerHTML = `<div class="v-cell nero fila con"><span class="lb">In fila a 26 px · coda, diario, storico</span>${m.dipendenti.map(e => av(e, 'xxs', o)).join('')}</div>`
       + `<div class="v-cell card pile con"><span class="lb">Impilati a 28 px</span>${PILE.map(ids => `<span class="pair">${ids.map(id => av(m.byId[id], 'xs', o)).join('')}</span>`).join('')}</div>`
       + `<div class="v-cell tendina con"><span class="lb">La coda a 32 px</span>${attesa.map(r => av(m.byId[r.chi], 'q', o, 'attesa')).join('')}</div>`
@@ -195,14 +214,17 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
   function barra_() {
     const a = O.aspetto();
     sel.innerHTML = grp('Corpo', 'finitura', O.FINITURE, a.finitura) + grp('Palette', 'palette', O.PALETTE, a.palette) + grp('Occhi', 'occhi', O.OCCHI, a.occhi)
+      + grp('Stato', 'segnale', O.SEGNALI, a.segnale)
       + grp('Identità', 'identita', O.IDENTITA.filter(x => x.id !== 'toni'), a.identita)
       + `<span class="g"><span>Carattere</span><span class="pill car${a.carattere ? ' on' : ''}" data-k="carattere" data-v="${a.carattere ? '0' : '1'}">occhi e riflesso dal seme · ${a.carattere ? 'sì' : 'no'}</span></span>`;
-    document.querySelectorAll('.v-str').forEach(n => { const s = STRADE[+n.dataset.i]; const on = ['identita', 'palette', 'finitura', 'occhi'].every(k => s.o[k] === a[k]); n.classList.toggle('on', on); n.querySelector('.scegli').textContent = on ? 'Nella Console' : 'Vedi nella Console'; });
+    document.querySelectorAll('.v-str.seg').forEach(n => { const on = n.dataset.seg === a.segnale; n.classList.toggle('on', on); n.querySelector('.scegli').textContent = on ? 'Nella Console' : 'Vedi nella Console'; });
+    document.querySelectorAll('.v-str:not(.seg)').forEach(n => { const s = STRADE[+n.dataset.i]; const on = ['identita', 'palette', 'finitura', 'occhi'].every(k => s.o[k] === a[k]); n.classList.toggle('on', on); n.querySelector('.scegli').textContent = on ? 'Nella Console' : 'Vedi nella Console'; });
   }
   tutto();
   document.addEventListener('click', ev => {
-    const s = ev.target.closest('[data-strada]'), p = ev.target.closest('[data-k]');
-    if (s) { O.aspetto(STRADE[+s.dataset.strada].o); tutto(); document.getElementById('sel').scrollIntoView({ behavior: 'smooth' }); }
+    const s = ev.target.closest('[data-strada]'), p = ev.target.closest('[data-k]'), sg = ev.target.closest('[data-segnale]');
+    if (sg) { O.aspetto(Object.assign({ segnale: sg.dataset.segnale }, S1)); tutto(); document.getElementById('sel').scrollIntoView({ behavior: 'smooth' }); }
+    else if (s) { O.aspetto(STRADE[+s.dataset.strada].o); tutto(); document.getElementById('sel').scrollIntoView({ behavior: 'smooth' }); }
     else if (p) { const o = {}; o[p.dataset.k] = p.dataset.k === 'carattere' ? p.dataset.v === '1' : p.dataset.v; O.aspetto(o); tutto(); }
   });
 </script>

@@ -12,9 +12,10 @@ Stato al 2026-09-05, fine della sessione sull'**orbe senza disco** (versione 7 d
   https://claude.ai/code/artifact/690baac8-2de3-48e3-bb98-98024bc7312f; DIREZIONI.md «Versione 10»). **Scelta: la strada 1**
   (vivace piatto, occhi lilguy: sclera bianca, pupilla grande sempre nera), **portata nel prodotto**: tinta nel modello
   (`m.tintaDi`, `m.tintaLibera`, `e.tinta`), riga «Colore» nell'editor, `av()` passa tinta e dipartimento, aspetto impostato in
-  `direzione-a.html`; screenshot rigenerati; artefatto della Console a un indirizzo nuovo (sotto). **Aperto: come mostrare lo
-  stato** senza il colore degli occhi (candidati in DIREZIONI.md, «Versione 10», «Quarta tornata»; la mia preferenza è un
-  punto di stato sul bordo della casella). Poi le approvazioni da mobile (struttura proposta, in attesa dell'ok).
+  `direzione-a.html`; screenshot rigenerati; artefatto della Console a un indirizzo nuovo (sotto). **Lo stato**: tre varianti
+  costruite e in confronto (`?segnale=punto|anello|gesto`, sezione «Tre varianti per lo stato» nella pagina di confronto;
+  DIREZIONI.md «Settima tornata»): il punto sul bordo, l'anello vivo animato, il gesto del corpo. **In attesa della scelta**;
+  la Console tiene `nessuno`. Poi portare la scelta in `direzione-a.html` e in SYSTEM-DESIGN.md (riga avatar, regola 19). Poi le approvazioni da mobile (struttura proposta, in attesa dell'ok).
 - Branch precedente: `claude/avatar-execution-page-nv8dm4` (da `main`, che contiene le PR #1, #3, #4 e #5), chiuso con la
   **PR #6** verso `main` (https://github.com/av3rgfx/DGT-Design-2.0/pull/6), unita.
 - I tre artefatti della direzione A qui sotto sono stati ripubblicati a fine sessione e corrispondono all'ultimo

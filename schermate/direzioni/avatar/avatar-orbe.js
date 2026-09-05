@@ -109,6 +109,14 @@ window.DGT_AVATAR_ORBE = (function () {
     { id: 'piatta', nome: 'Piatta',           desc: 'Un disco di colore pieno, senza volume né luci: come il riferimento, e come i cerchi e le pillole della Console.' },
     { id: 'orlo',   nome: 'Piatta con orlo',  desc: 'Il disco piatto con un orlo scuro sottile, che lo separa dalle superfici dello stesso colore (card lime, pillole chiare).' },
   ];
+  /* Il segnale di stato (settima tornata, 2026-09-05): con la sclera bianca e la pupilla nera lo stato non passa più dagli occhi.
+     Tre varianti a confronto: un punto sul bordo della casella; un anello vivo attorno al disco; solo il gesto del corpo. */
+  const SEGNALI = [
+    { id: 'nessuno', nome: 'Nessuno',    desc: 'Lo stato sta nei chip delle card e nelle sole forme degli occhi: X in errore, palpebre chiuse da libero, occhi più grandi da approvare.' },
+    { id: 'punto',   nome: 'Punto',      desc: 'Un punto di stato sul bordo della casella, in basso a destra, come il punto rosso della campanella: lime al lavoro, giallo da approvare, rosa in errore, nulla da fermo. Fermo, si legge anche a 26 px.' },
+    { id: 'anello',  nome: 'Anello vivo', desc: 'Un anello sottile attorno al disco, nel colore dello stato, che si muove: al lavoro un arco lime gira intorno; da approvare onde gialle si allargano e svaniscono; in errore un tratteggio rosa pulsa; pianificato un anello grigio di tacche gira piano; da libero niente.' },
+    { id: 'gesto',   nome: 'Gesto',      desc: 'Niente segni: il corpo dice lo stato con un gesto suo. Al lavoro batte un ritmo con squash e stretch e lo sguardo scandisce; da approvare salta ogni tre secondi guardando in alto verso il titolare; in errore si sgonfia, si inclina e sospira; pianificato oscilla come un pendolo; da libero dorme con il respiro profondo.' },
+  ];
   const OCCHI = [
     { id: 'kit',      nome: 'Attuali',        desc: 'Le pupille del kit dipinte sulla sfera, piccole e appena sotto il centro.' },
     { id: 'punti',    nome: 'Punti grandi',   desc: 'Le stesse pupille di un solo colore, ma grandi il doppio e all\'altezza del centro, distanti: si leggono anche a 26 px.' },
@@ -246,6 +254,7 @@ window.DGT_AVATAR_ORBE = (function () {
     const palette = fra(PALETTE, opz.palette !== undefined ? opz.palette : ds.palette, 'scura');
     const finitura = fra(FINITURE, opz.finitura !== undefined ? opz.finitura : ds.finitura, 'perla');
     const stile = fra(OCCHI, opz.occhi !== undefined ? opz.occhi : ds.occhi, 'kit');
+    const segnale = fra(SEGNALI, opz.segnale !== undefined ? opz.segnale : ds.segnale, 'nessuno');
     const p = forma(seme, car); p.occhi = stile;
     const volto = VOLTO[stato] || VOLTO.libero;
     const o = occhiConf(p, stato), poses = posaOcchiDi(p, sguardoRiposo(p, stato));
@@ -277,7 +286,19 @@ window.DGT_AVATAR_ORBE = (function () {
     const tinta = tintaSeme(seme, opz.tinta);
     const vars = `--volto:${neutro ? 'var(--av-occhi-neutri,#FCFCFC)' : volto};--bordo-c:${neutro ? 0 : 0.25};--av-tono:${tonoSeme(seme, opz.tono)}`;
     const attrs = (modo && modo !== 'nessuna' ? ` data-modo="${modo}"` : '') + ` data-tinta="${tinta.id}"` + (opz.dip ? ` data-dip="${String(opz.dip).replace(/"/g, '&quot;')}"` : '')
-      + (palette !== 'scura' ? ` data-palette="${palette}"` : '') + (finitura !== 'perla' ? ` data-finitura="${finitura}"` : '') + (stile !== 'kit' ? ` data-occhi="${stile}"` : '') + (car ? ' data-carattere="1"' : '');
+      + (palette !== 'scura' ? ` data-palette="${palette}"` : '') + (finitura !== 'perla' ? ` data-finitura="${finitura}"` : '') + (stile !== 'kit' ? ` data-occhi="${stile}"` : '') + (segnale !== 'nessuno' ? ` data-segnale="${segnale}"` : '') + (car ? ' data-carattere="1"' : '');
+    /* il segnale di stato, fuori dal corpo (non respira e non salta con lui): il punto sul bordo o l'anello vivo */
+    const SEGC = { lavoro: '#B8FC64', attesa: '#FCDC64', errore: '#F9A3A3', pianificato: 'rgb(252 252 252/.4)' };
+    let segno = '';
+    if (segnale === 'punto' && SEGC[stato] && stato !== 'pianificato') segno = `<g class="segnale" style="--segnale-c:${SEGC[stato]}"><circle class="punto" cx="${r2(p.r * 0.74)}" cy="${r2(p.r * 0.74)}" r="15"/></g>`;
+    else if (segnale === 'anello' && SEGC[stato]) {
+      const R = r2(p.r + 13);
+      const dentro = stato === 'lavoro' ? `<g class="giro" transform="rotate(-90)"><circle class="arco fondo" r="${R}" pathLength="100"/><circle class="arco" r="${R}" pathLength="100"/></g>`
+        : stato === 'attesa' ? `<circle class="onda" r="${r2(p.r + 6)}" opacity=".9"/><circle class="onda" r="${r2(p.r + 16)}" opacity=".45" stroke-width="3"/>`
+        : stato === 'errore' ? `<circle class="tratto" r="${R}" pathLength="100"/>`
+        : `<g class="giro"><circle class="tacche" r="${R}" pathLength="100"/></g>`;
+      segno = `<g class="segnale" style="--segnale-c:${SEGC[stato]}">${dentro}</g>`;
+    }
     const lx = r2(p.luce), ly = r2(-0.42 * p.r);
     return `<svg class="ava orbe ${stato}" viewBox="${VIEWBOX}" aria-hidden="true" focusable="false" style="${vars}" data-seme="${String(seme || '').replace(/"/g, '&quot;')}" data-stato="${stato}"${attrs}>`
       + `<circle class="alone" r="122"/>`
@@ -287,7 +308,7 @@ window.DGT_AVATAR_ORBE = (function () {
       + `<ellipse class="luce" cx="${lx}" cy="${ly}" rx="${r2(p.r * p.luceR)}" ry="${r2(p.r * p.luceR * 0.57)}" transform="rotate(${r2(p.luceA)} ${lx} ${ly})"/>`
       + `<ellipse class="riflesso" cx="0" cy="${r2(p.r * 0.66)}" rx="${r2(p.r * 0.5)}" ry="${r2(p.r * 0.16)}"/></g>`
       + `<g class="occhi">${occhio(0)}${occhio(1)}</g>`
-      + `</g></svg>`;
+      + `</g>${segno}</svg>`;
   }
 
   /* ---------- foglio di stile e gradienti, una volta per pagina ---------- */
@@ -346,6 +367,15 @@ html[data-pelle][data-finitura="piatta"] .pair .av:has(>svg.orbe)+.av,html[data-
 svg.ava.orbe[data-occhi="lilguy"]{--sclera:#FCFCFC;--pupilla:#0A0A0A}
 svg.ava.orbe[data-occhi="neri"]{--sclera:#0A0A0A;--pupilla:var(--volto);--av-sclera-bordo:0;--palpebra:var(--volto)}
 svg.ava.orbe[data-occhi="colorati"]{--sclera:var(--av-tinta-c,#FCFCFC);--pupilla:#FCFCFC}
+/* ---- il segnale di stato: il punto sul bordo (con un bordo nero che lo stacca dal disco e dalla card lime) e l'anello vivo
+   (arco al lavoro con un fondo nero sottile, onde da approvare, tratteggio in errore, tacche pianificato) ---- */
+.ava.orbe .segnale{pointer-events:none}
+.ava.orbe .segnale .punto{fill:var(--segnale-c);stroke:#0A0A0A;stroke-width:4;paint-order:stroke}
+.ava.orbe .segnale circle:not(.punto){fill:none;stroke:var(--segnale-c);stroke-width:5;stroke-linecap:round}
+.ava.orbe .segnale .arco{stroke-dasharray:26 74}
+.ava.orbe .segnale .arco.fondo{stroke:#0A0A0A;stroke-width:9}
+.ava.orbe .segnale .tratto{stroke-dasharray:4 4;stroke-width:4}
+.ava.orbe .segnale .tacche{stroke-dasharray:1.2 5.05;stroke-width:4;stroke-linecap:butt}
 /* i punti grandi su un corpo colorato: un contorno sottile perché bianco e rosa si leggano anche sulle tinte chiare */
 svg.ava.orbe[data-occhi="punti"][data-modo] .occhio path,svg.ava.orbe[data-occhi="punti"][data-modo] .occhio rect{stroke:#0A0A0A;stroke-width:.14;paint-order:stroke}
 [data-pelle="chiaro"]{--av-corpo:url(#av-orbe-corpo-chiaro);--av-orlo:url(#av-orbe-orlo-scuro);--av-orlo-w:3;--av-luce:.9;--av-riflesso:0;--av-bagliore:0;--av-occhi-neutri:#0A0A0A;--av-bordo:1;--av-alone:none;--av-inv-corpo:url(#av-orbe-corpo-perla);--av-inv-orlo:url(#av-orbe-orlo);--av-inv-orlo-w:4;--av-inv-luce:.55}
@@ -418,9 +448,10 @@ svg.ava.orbe[data-occhi="punti"][data-modo] .occhio path,svg.ava.orbe[data-occhi
       if (o.palette !== undefined) { ds.palette = fra(PALETTE, o.palette, 'scura'); (radice || document).querySelectorAll('svg.orbe').forEach(s => { if (ds.palette === 'scura') delete s.dataset.palette; else s.dataset.palette = ds.palette; }); }
       if (o.finitura !== undefined) { ds.finitura = fra(FINITURE, o.finitura, 'perla'); (radice || document).querySelectorAll('svg.orbe').forEach(s => { if (ds.finitura === 'perla') delete s.dataset.finitura; else s.dataset.finitura = ds.finitura; }); }
       if (o.occhi !== undefined) ds.occhi = fra(OCCHI, o.occhi, 'kit');
+      if (o.segnale !== undefined) ds.segnale = fra(SEGNALI, o.segnale, 'nessuno');
       if (o.carattere !== undefined) ds.carattere = o.carattere ? '1' : '0';
     }
-    return { identita: ds.identita || 'nessuna', palette: ds.palette || 'scura', finitura: ds.finitura || 'perla', occhi: ds.occhi || 'kit', carattere: ds.carattere === '1' };
+    return { identita: ds.identita || 'nessuna', palette: ds.palette || 'scura', finitura: ds.finitura || 'perla', occhi: ds.occhi || 'kit', segnale: ds.segnale || 'nessuno', carattere: ds.carattere === '1' };
   }
   /** Gli occhi e il riflesso «con carattere» per gli orbi disegnati da qui in avanti (quelli già in pagina vanno ridisegnati). */
   function carattere(on) {
@@ -441,9 +472,11 @@ svg.ava.orbe[data-occhi="punti"][data-modo] .occhio path,svg.ava.orbe[data-occhi
     const seme = svg.dataset.seme, stato = svg.dataset.stato, p = forma(seme, svg.dataset.carattere === '1');
     p.occhi = fra(OCCHI, svg.dataset.occhi, 'kit');
     const oc = svg.querySelectorAll('.occhio');
+    const segnale = fra(SEGNALI, svg.dataset.segnale, 'nessuno'), segEl = svg.querySelector('.segnale');
     const v = { svg, p, stato, tutto: svg.querySelector('.tutto'), corpo: svg.querySelector('.corpo'), occhi: svg.querySelector('.occhi'), oS: oc[0], oD: oc[1],
       rng: M.createRng(hash((seme || '') + '#battito')), inizio: -1, visibile: true,
-      segue: !!(svg.parentElement && svg.parentElement.hasAttribute('data-segue')), tyaw: 0, tpit: 0, fyaw: 0, fpit: 0 };
+      segue: !!(svg.parentElement && svg.parentElement.hasAttribute('data-segue')), tyaw: 0, tpit: 0, fyaw: 0, fpit: 0,
+      segnale, giro: segEl ? segEl.querySelector('.giro') : null, onde: segEl ? [...segEl.querySelectorAll('.onda')] : [], tratto: segEl ? segEl.querySelector('.tratto') : null };
     if (!v.tutto || !v.corpo || !v.oS || !v.oD) return;
     v.prossimo = ora() + 1.2 + v.rng() * 3.4;   // primo battito
     vivi.set(svg, v);
@@ -464,7 +497,7 @@ svg.ava.orbe[data-occhi="punti"][data-modo] .occhio path,svg.ava.orbe[data-occhi
   /** La posa dell'orbe al tempo t: tutto continuo, niente scatti. Lo sguardo è quello del kit: yaw, pitch, roll della testa. */
   function posa(v, t) {
     const p = v.p, st = v.stato, T = t + p.fase;
-    let per = p.periodo, amp = 0.016, tx = 0, ty = 2.2 * rumore(T, 5.7, p.s3), rot = 0, sc = 1, op = 1, apre = 1;
+    let per = p.periodo, amp = 0.016, tx = 0, ty = 2.2 * rumore(T, 5.7, p.s3), rot = 0, sc = 1, sx = 1, sy = 1, op = 1, apre = 1;
     let yaw = 0, pitch = p.pitch, roll = 0, deriva = 1, batte = true;
     const o = occhiConf(p, st);
     if (st === 'lavoro') { per *= 0.72; yaw = Math.sin(TAU * T / 1.8) * 13; pitch += 3; deriva = 0.35; }
@@ -476,10 +509,29 @@ svg.ava.orbe[data-occhi="punti"][data-modo] .occhio path,svg.ava.orbe[data-occhi
     yaw += (rumore(T, 10.7, p.s1) * 4.8 + rumore(T, 3.9, p.s2) * 1.4) * deriva;
     pitch += (rumore(T, 8.7, p.s2) * 3.6 + rumore(T, 4.7, p.s3) * 1.1) * deriva;
     roll += rumore(T, 12.9, p.s3) * 1.6 * deriva;
+    if (v.segnale === 'gesto') {
+      /* il gesto: lo stato lo dice il corpo, con squash e stretch (settima tornata) */
+      if (st === 'lavoro') { const b = Math.sin(TAU * T / 0.5); ty -= 4 * Math.max(0, b); sy *= 1 + 0.05 * b; sx *= 1 - 0.035 * b; yaw = Math.sin(TAU * T / 1.4) * 17; pitch -= 9 * impulso(T, 4.2, 0.7); }
+      else if (st === 'attesa') {
+        const perS = 3.2, dur = 0.85, f = ((T % perS) + perS) % perS;
+        if (f < dur) { const u = f / dur, h = Math.sin(Math.PI * u); ty -= 18 * h; sy *= 1 - 0.09 * Math.cos(TAU * u); sx *= 1 + 0.07 * Math.cos(TAU * u); pitch += 16 * h; apre = 1 + 0.12 * h; }
+        else { const q = f - dur, s = liscia(Math.min(1, q / 0.6)); const rb = (1 - s) * Math.sin(TAU * q / 0.3) * 0.045; sy *= 1 + rb; sx *= 1 - rb; }
+      }
+      else if (st === 'errore') { sc *= 0.96; rot -= 5; const g = impulso(T, 3.4, 1.4); sy *= 1 - 0.05 * g; ty += 3 * g; }
+      else if (st === 'pianificato') { tx = 9 * Math.sin(TAU * T / 2.6); rot = 9 * Math.sin(TAU * T / 2.6); }
+      else if (st === 'libero') { const b = Math.sin(TAU * T / 4.6); sy *= 1 + 0.035 * b; sx *= 1 - 0.02 * b; ty += 2; }
+    }
+    if (v.segnale === 'anello') {
+      /* l'anello vivo: l'arco gira al lavoro, le onde si allargano da approvare, il tratteggio pulsa in errore, le tacche girano piano */
+      if (st === 'lavoro' && v.giro) v.giro.setAttribute('transform', `rotate(${r2(((T * 70) % 360) - 90)})`);
+      else if (st === 'attesa') v.onde.forEach((o, i) => { const f = (((T / 2.2) + i * 0.5) % 1 + 1) % 1; o.setAttribute('r', r2(p.r + 4 + 22 * f)); o.setAttribute('opacity', r2((1 - f) * 0.9)); o.setAttribute('stroke-width', r2(6 * (1 - f) + 1.5)); });
+      else if (st === 'errore' && v.tratto) v.tratto.setAttribute('opacity', r2(0.55 + 0.45 * Math.sin(TAU * T / 1.3)));
+      else if (st === 'pianificato' && v.giro) v.giro.setAttribute('transform', `rotate(${r2((T * 12) % 360)})`);
+    }
     if (v.segue) { v.fyaw += (v.tyaw - v.fyaw) * 0.14; v.fpit += (v.tpit - v.fpit) * 0.14; yaw += v.fyaw; pitch += v.fpit; }
     const k = batte ? 0.08 + 0.92 * palpebra(v, t) : 1;
     const respiro = 1 + amp * Math.sin(TAU * T / per);
-    v.tutto.setAttribute('transform', `translate(${r2(tx)} ${r2(ty)}) rotate(${r2(rot)}) scale(${r2(sc)})`);
+    v.tutto.setAttribute('transform', `translate(${r2(tx)} ${r2(ty)}) rotate(${r2(rot)}) scale(${r2(sc * sx)} ${r2(sc * sy)})`);
     v.corpo.setAttribute('transform', `scale(${r2(respiro)})`);
     v.occhi.setAttribute('opacity', r2(op));
     const g = { yaw, pitch, roll }, poses = posaOcchiDi(p, g);
@@ -529,5 +581,5 @@ svg.ava.orbe[data-occhi="punti"][data-modo] .occhio path,svg.ava.orbe[data-occhi
 
   const semi = (ruolo, n) => Array.from({ length: n || 6 }, (_, i) => i ? `${ruolo} ·${i + 1}` : ruolo);
 
-  return { html: (seme, stato, opz) => { prepara(); return html(seme, stato, opz); }, anima, semi, forma, pelle, PELLI, identita, carattere, aspetto, IDENTITA, PALETTE, FINITURE, OCCHI, TINTE, TONI, tintaDi, tonoDi, CORNICE, fermo, riprendi, fotogramma, vivi: () => vivi.size };
+  return { html: (seme, stato, opz) => { prepara(); return html(seme, stato, opz); }, anima, semi, forma, pelle, PELLI, identita, carattere, aspetto, IDENTITA, PALETTE, FINITURE, OCCHI, SEGNALI, TINTE, TONI, tintaDi, tonoDi, CORNICE, fermo, riprendi, fotogramma, vivi: () => vivi.size };
 })();
