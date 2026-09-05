@@ -48,6 +48,7 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
 .v-cell .lb{position:absolute;left:14px;top:9px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#9A9A9A}
 .v-cell.lime .lb,.v-cell.bianca .lb,.v-cell.tendina .lb{color:rgb(0 0 0/.5)}
 .v-cell.con{padding-top:30px;min-height:96px}
+.v-str .v-cell.card{padding-top:26px}
 .v-prova{display:grid;grid-template-columns:350px 300px 168px minmax(0,1fr);gap:6px}
 .v-fondi{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
 /* il configuratore, fisso in alto */
@@ -117,14 +118,14 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
   O.aspetto({ identita: q.get('identita') || 'tinta', palette: q.get('palette') || 'vivace', finitura: q.get('corpo') || 'piatta', occhi: q.get('occhi') || 'lilguy', carattere: q.get('carattere') === '1' });
   const m = DGT_DATI.modello(11), m40 = DGT_DATI.modello(40);
   const STRADE = [
-    { nome: 'Vivace piatto, occhi lilguy', o: { identita: 'tinta', palette: 'vivace', finitura: 'piatta', occhi: 'lilguy' }, desc: 'Il riferimento portato sui colori: dischi pieni e vivaci, occhi grandi nel colore dello stato con la pupilla nera e un contorno sottile che li fa leggere su ogni corpo.' },
+    { nome: 'Vivace piatto, occhi lilguy', o: { identita: 'tinta', palette: 'vivace', finitura: 'piatta', occhi: 'lilguy' }, desc: 'Il riferimento portato sui colori: dischi pieni e vivaci, occhi grandi con la sclera sempre bianca e la pupilla grande che porta lo stato: nera da fermo, lime al lavoro, gialla da approvare, X rosa in errore, chiusa ad arco quando dorme.' },
     { nome: 'Vivace piatto, occhi neri', o: { identita: 'tinta', palette: 'vivace', finitura: 'piatta', occhi: 'neri' }, desc: 'Gli stessi dischi, occhi neri con la pupilla grande nel colore dello stato: il contrasto più alto su corpi accesi, lo stato si legge dalla pupilla.' },
     { nome: 'Vivace piatto, punti grandi', o: { identita: 'tinta', palette: 'vivace', finitura: 'piatta', occhi: 'punti' }, desc: 'La strada più vicina a oggi: le pupille di un solo colore, ma grandi il doppio e al centro. Più sobria, meno «creatura».' },
     { nome: 'Pastello piatto, occhi lilguy', o: { identita: 'tinta', palette: 'pastello', finitura: 'piatta', occhi: 'lilguy' }, desc: 'Colori chiari e morbidi come le pillole della Console: si staccano dal nero senza competere con il lime; le pupille nere fanno il resto.' },
     { nome: 'Pastello con orlo, occhi neri', o: { identita: 'tinta', palette: 'pastello', finitura: 'orlo', occhi: 'neri' }, desc: 'I pastelli con un orlo scuro sottile, che li separa dalle pillole chiare e dalla card lime; occhi neri con pupilla di stato.' },
     { nome: 'Vivace perla, occhi lilguy', o: { identita: 'tinta', palette: 'vivace', finitura: 'perla', occhi: 'lilguy' }, desc: 'I colori vivaci con il volume di oggi: ombreggiatura, riflesso e orlo di luce sopra la tinta. Più materico, più vicino all\'orbe.' },
     { nome: 'Perla scura, occhi lilguy', o: { identita: 'tinta', palette: 'scura', finitura: 'perla', occhi: 'lilguy' }, desc: 'La proposta della prima tornata con i soli occhi cambiati: la distinzione viene dagli occhi grandi e dalla perla appena colorata.' },
-    { nome: 'Nero, occhi colorati', o: { identita: 'nessuna', palette: 'vivace', finitura: 'perla', occhi: 'colorati' }, desc: 'Il riferimento alla lettera: corpo nero per tutti, l\'identità sta nel colore degli occhi e lo stato nella pupilla. La Console resta nera; lo stato si legge meno da lontano.' },
+    { nome: 'Nero, occhi colorati', o: { identita: 'nessuna', palette: 'vivace', finitura: 'perla', occhi: 'colorati' }, desc: 'Il riferimento alla lettera: corpo nero per tutti, l\'identità sta nel colore degli occhi e lo stato nella pupilla grande; in errore gli occhi diventano due X rosa, da libero due archi chiusi. La Console resta nera.' },
     { nome: 'Nero piatto, occhi colorati', o: { identita: 'nessuna', palette: 'vivace', finitura: 'piatta', occhi: 'colorati' }, desc: 'Come la precedente, senza volume: il disco scuro dei pulsanti della Console con due occhi colorati. La più grafica.' },
   ];
   const par = o => `corpo=${o.finitura} · palette=${o.palette} · occhi=${o.occhi}${o.identita === 'nessuna' ? ' · senza tinta' : ''}`;
@@ -137,6 +138,7 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
       <div class="top">${av(nora, 'xl', s.o)}<h3>${s.nome}<small>${par(s.o)}</small></h3></div>
       <div class="v-cell nero fila">${m.dipendenti.map(e => av(e, 'xxs', s.o)).join('')}</div>
       <div class="v-cell lime" style="min-height:64px">${LAV.map(e => av(e, '', s.o, 'lavoro')).join('')}<span class="pair" style="margin-left:14px">${[2, 3].map(id => av(m.byId[id], 'xs', s.o)).join('')}</span></div>
+      <div class="v-cell card" style="min-height:64px;justify-content:space-around"><span class="lb">Nora nei cinque stati</span>${['lavoro', 'attesa', 'errore', 'pianificato', 'libero'].map(st => av(nora, 'md', s.o, st)).join('')}</div>
       <p>${s.desc}</p>
       <span class="scegli" data-strada="${i}">Vedi nella Console</span>
     </div>`).join('');

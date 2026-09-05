@@ -648,6 +648,17 @@ sfera. `forma(seme)` estrae i parametri lilguy da un generatore a parte (`#lilgu
 Pagina di confronto `avatar-identita.html` (`?identita=&palette=&corpo=&occhi=&carattere=`), artefatto
 https://claude.ai/code/artifact/690baac8-2de3-48e3-bb98-98024bc7312f. Screenshot: `screenshot/avatar-identita.png`.
 
+**Terza tornata.** «Mi piacciono la 1 e la 8. Per la 8: occhi a X in errore, pupille grandi in ogni avatar, un dormiente
+che si capisca. Per la 1: sclera sempre bianca e pupille sempre grandi». Fatto in entrambe: la pupilla è grande sempre
+(0,6–0,7 dell'occhio, tonda o ovale piena, mai a fessura); da **libero** l'occhio è chiuso, una **palpebra ad arco** larga
+quanto l'occhio nel colore della sclera (dello stato per gli occhi neri), con un lento cenno del capo oltre al respiro
+profondo; con gli occhi **colorati** in errore la sclera sparisce e restano due **X rosa** grandi. Nello stile **lilguy** la
+sclera è **sempre bianca** e lo stato passa alla pupilla: nera da fermo, lime al lavoro, gialla da approvare, X rosa in
+errore, con un contorno sottile perché lime e giallo si leggano sul bianco (contorno anche alle pupille degli occhi
+colorati). La tinta «grigio» delle palette vivace e pastello è più chiara (`#9E9E9E`, `#BEBEBE`), perché con gli occhi
+colorati è il colore degli occhi sul nero. Le due opzioni riviste sono le strade 1 e 8 della pagina; **in attesa della
+scelta finale**.
+
 **Da fare alla scelta**: portare la combinazione nel prodotto (tinta nel modello dati, assegnata alla creazione come la
 meno usata e scelta nell'editor del dipendente accanto all'avatar; `av()` in `direzione-a.js` passa tinta e dipartimento;
 `direzione-a.html` imposta l'aspetto), aggiornare `SYSTEM-DESIGN.md` (riga «Avatar del dipendente AI», regola sul colore) e

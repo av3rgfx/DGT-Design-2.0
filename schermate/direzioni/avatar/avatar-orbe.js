@@ -97,7 +97,7 @@ window.DGT_AVATAR_ORBE = (function () {
     { id: 'prugna',     nome: 'Prugna',     scura: '#4B2A6B', vivace: '#C66CFF', pastello: '#E0B7FF' },
     { id: 'petrolio',   nome: 'Petrolio',   scura: '#174C5F', vivace: '#3AB8FF', pastello: '#A8D8FF' },
     { id: 'bordeaux',   nome: 'Bordeaux',   scura: '#6A2445', vivace: '#FF5BA6', pastello: '#FFB4D5' },
-    { id: 'neutro',     nome: 'Grigio',     scura: '#2A2A2A', vivace: '#5A5A5A', pastello: '#9C9C9C' },
+    { id: 'neutro',     nome: 'Grigio',     scura: '#2A2A2A', vivace: '#9E9E9E', pastello: '#BEBEBE' },
   ].map(t => Object.assign(t, { c: t.scura }));
   const PALETTE = [
     { id: 'scura',    nome: 'Scura',    desc: 'Le perle scure della prima proposta: colore appena percepibile, il nero resta il tono dominante.' },
@@ -167,7 +167,7 @@ window.DGT_AVATAR_ORBE = (function () {
     p.lgForma = f < 0.4 ? 'cerchio' : f < 0.65 ? 'ovale' : f < 0.85 ? 'gatto' : 'ghianda';
     p.lgPup = q < 0.5 ? 'tonda' : q < 0.8 ? 'fessura' : 'larga';
     p.lgMis = 0.29 + lg() * 0.05;            // raggio dell'occhio in frazione del raggio del corpo (il riferimento: circa un terzo)
-    p.lgPupMis = 0.36 + lg() * 0.16;         // raggio della pupilla in frazione dell'occhio
+    p.lgPupMis = 0.6 + lg() * 0.1;           // raggio della pupilla in frazione dell'occhio: grande sempre (terza tornata)
     p.lgTilt = 9 + lg() * 7;                 // inclinazione degli occhi a gatto
     p.lgSplit = 23 + lg() * 2.5;             // semi-distanza degli occhi grandi, in gradi (sin → 0,39–0,43 del raggio)
     p.occhi = 'kit';
@@ -214,7 +214,6 @@ window.DGT_AVATAR_ORBE = (function () {
       const e = p.lgMis, sh = p.lgForma === 'ovale' ? 1.15 : p.lgForma === 'gatto' ? 1.2 : 1, sw = p.lgForma === 'gatto' ? 0.9 : 1;
       const tilt = p.lgForma === 'gatto' ? [p.lgTilt, -p.lgTilt] : [0, 0];
       if (stato === 'attesa') return { w: e * sw * 1.15, h: e * sh * 1.15, tilt };
-      if (stato === 'libero') return { w: e * sw, h: e * sh * 0.4, tilt };
       return { w: e * sw, h: e * sh, tilt };
     }
     const m = p.misura * (p.pupilla === 'ring' ? 1.12 : 1) * (p.occhi === 'punti' ? 1.75 : 1), q = p.ratio || 1;
@@ -255,11 +254,15 @@ window.DGT_AVATAR_ORBE = (function () {
     if (famLG(p)) {
       /* gli occhi grandi: il «bianco» (sclera) in spazio unitario e dentro la pupilla, che si sposta con lo sguardo; le X dell'errore al posto della pupilla */
       const pm = p.lgPupMis;
-      const pup = stato === 'errore' ? `<g transform="scale(${r2(pm * 1.15)})">${X}</g>`
-        : p.lgPup === 'fessura' ? `<ellipse rx="${r2(pm * 0.42)}" ry="${r2(pm * 1.05)}"/>`
-        : p.lgPup === 'larga' ? `<ellipse rx="${r2(pm * 1.05)}" ry="${r2(pm * 0.68)}"/>` : `<circle r="${r2(pm)}"/>`;
+      const pup = stato === 'errore' ? `<g transform="scale(${r2(pm * 1.2)})">${X}</g>`
+        : p.lgPup === 'fessura' ? `<ellipse rx="${r2(pm * 0.8)}" ry="${r2(pm * 1.06)}"/>`
+        : p.lgPup === 'larga' ? `<ellipse rx="${r2(pm * 1.06)}" ry="${r2(pm * 0.82)}"/>` : `<circle r="${r2(pm)}"/>`;
       const sclera = SCLERA[p.lgForma] ? `<path class="sclera" d="${SCLERA[p.lgForma]}"/>` : `<circle class="sclera" r="1"/>`;
-      occhio = i => `<g class="occhio lg" transform="${matrice(poses[i], o.w, o.h, o.tilt[i], 1, p.r)}">${sclera}<g class="pupilla">${pup}</g></g>`;
+      /* da libero l'occhio è chiuso: una palpebra ad arco larga quanto l'occhio (terza tornata: «non si capisce che dorme»);
+         in errore con gli occhi colorati la sclera sparisce e resta la X grande (il segno di errore di sempre) */
+      if (stato === 'libero') occhio = i => `<g class="occhio lg chiuso" transform="${matrice(poses[i], o.w, o.h, o.tilt[i], 1, p.r)}"><path class="palpebra" d="M-1 -.12Q0 .82 1 -.12"/></g>`;
+      else if (stato === 'errore' && stile === 'colorati') occhio = i => `<g class="occhio lg x" transform="${matrice(poses[i], o.w, o.h, o.tilt[i], 1, p.r)}"><g class="pupilla"><g transform="scale(.95)">${X}</g></g></g>`;
+      else occhio = i => `<g class="occhio lg" transform="${matrice(poses[i], o.w, o.h, o.tilt[i], 1, p.r)}">${sclera}<g class="pupilla">${pup}</g></g>`;
     } else {
       /* la pupilla del kit in spazio unitario (raggio 1): la matrice la porta a misura; le X dell'errore sono due tacche 1,8 × 0,4 */
       const dentro = stato === 'errore' ? X : `<path d="${p.pupilla === 'square' ? M.UNIT_SQUARE : M.UNIT_CIRCLE}"/>`;
@@ -269,7 +272,7 @@ window.DGT_AVATAR_ORBE = (function () {
     /* --volto colore degli occhi (i neutri leggono --av-occhi-neutri: neri sul corpo chiaro), --bordo-c contorno nero (in spazio unitario) se l'occhio è colorato sul corpo chiaro */
     const neutro = volto === '#FCFCFC';
     const tinta = tintaSeme(seme, opz.tinta);
-    const vars = `--volto:${neutro ? 'var(--av-occhi-neutri,#FCFCFC)' : volto};--bordo-c:${neutro ? 0 : 0.25};--av-tono:${tonoSeme(seme, opz.tono)}`;
+    const vars = `--volto:${neutro ? 'var(--av-occhi-neutri,#FCFCFC)' : volto};--volto-p:${neutro ? '#0A0A0A' : volto};--bordo-c:${neutro ? 0 : 0.25};--av-tono:${tonoSeme(seme, opz.tono)}`;
     const attrs = (modo && modo !== 'nessuna' ? ` data-modo="${modo}"` : '') + ` data-tinta="${tinta.id}"` + (opz.dip ? ` data-dip="${String(opz.dip).replace(/"/g, '&quot;')}"` : '')
       + (palette !== 'scura' ? ` data-palette="${palette}"` : '') + (finitura !== 'perla' ? ` data-finitura="${finitura}"` : '') + (stile !== 'kit' ? ` data-occhi="${stile}"` : '') + (car ? ' data-carattere="1"' : '');
     const lx = r2(p.luce), ly = r2(-0.42 * p.r);
@@ -328,10 +331,13 @@ svg.ava.orbe[data-finitura]:not([data-modo]) .corpo>.pelle{fill:#1E1E1E}
 svg.ava.orbe[data-finitura="orlo"] .corpo>.orlo{stroke:rgb(0 0 0/.3);stroke-width:5}
 /* ---- gli occhi grandi (stili lilguy, neri, colorati): sclera e pupilla dai colori dello stile; un contorno sottile alla sclera perché si legga su ogni corpo ---- */
 .ava.orbe .occhio.lg .sclera{fill:var(--sclera,var(--volto));stroke:#0A0A0A;stroke-width:var(--av-sclera-bordo,.07);paint-order:stroke}
-.ava.orbe .occhio.lg .pupilla circle,.ava.orbe .occhio.lg .pupilla ellipse,.ava.orbe .occhio.lg .pupilla rect{fill:var(--pupilla,#0A0A0A);stroke:none}
-svg.ava.orbe[data-occhi="lilguy"]{--sclera:var(--volto);--pupilla:#0A0A0A}
-svg.ava.orbe[data-occhi="neri"]{--sclera:#0A0A0A;--pupilla:var(--volto);--av-sclera-bordo:0}
-svg.ava.orbe[data-occhi="colorati"]{--sclera:var(--av-tinta-c,#FCFCFC);--pupilla:var(--volto)}
+.ava.orbe .occhio.lg .pupilla circle,.ava.orbe .occhio.lg .pupilla ellipse,.ava.orbe .occhio.lg .pupilla rect{fill:var(--pupilla,#0A0A0A);stroke:#0A0A0A;stroke-width:var(--av-pupilla-bordo,0);paint-order:stroke}
+/* l'occhio chiuso (libero): la palpebra è un arco largo quanto l'occhio, nel colore della sclera (o dello stato per gli occhi neri) */
+.ava.orbe .occhio.lg .palpebra{fill:none;stroke:var(--palpebra,var(--sclera,var(--volto)));stroke-width:.34;stroke-linecap:round}
+/* lilguy (terza tornata): sclera sempre bianca; lo stato sta nella pupilla, nera da fermo, lime al lavoro, gialla da approvare, X rosa in errore, con un contorno sottile */
+svg.ava.orbe[data-occhi="lilguy"]{--sclera:#FCFCFC;--pupilla:var(--volto-p,#0A0A0A);--av-pupilla-bordo:.1}
+svg.ava.orbe[data-occhi="neri"]{--sclera:#0A0A0A;--pupilla:var(--volto);--av-sclera-bordo:0;--palpebra:var(--volto)}
+svg.ava.orbe[data-occhi="colorati"]{--sclera:var(--av-tinta-c,#FCFCFC);--pupilla:var(--volto);--av-pupilla-bordo:.1}
 svg.ava.orbe[data-occhi="colorati"].errore{--pupilla:#F9A3A3}
 /* i punti grandi su un corpo colorato: un contorno sottile perché bianco e rosa si leggano anche sulle tinte chiare */
 svg.ava.orbe[data-occhi="punti"][data-modo] .occhio path,svg.ava.orbe[data-occhi="punti"][data-modo] .occhio rect{stroke:#0A0A0A;stroke-width:.14;paint-order:stroke}
@@ -458,7 +464,7 @@ svg.ava.orbe[data-occhi="punti"][data-modo] .occhio path,svg.ava.orbe[data-occhi
     else if (st === 'attesa') { deriva = 0.2; const g = impulso(T, 6.2, 1.9); ty -= 7 * g; pitch += 12 * g; apre = 1 + 0.12 * g; }
     else if (st === 'errore') { sc = 0.975; ty += 4; deriva = 0; batte = false; const g = impulso(T, 7.5, 1.6); rot = 4.5 * g * Math.sin(TAU * (((T % 7.5) + 7.5) % 7.5) / 0.8); op = 0.78 + 0.22 * Math.sin(TAU * T / 2.6); }
     else if (st === 'pianificato') { tx = 5 * Math.sin(TAU * T / 7.2); rot = 2.5 * Math.sin(TAU * T / 7.2); yaw = Math.sin(TAU * T / 4) * 3.5; pitch += Math.sin(TAU * T / 2) * 1.5; const g = impulso(T, 10.5, 2.2); yaw += 14 * g; pitch += 10 * g; }
-    else if (st === 'libero') { per *= 1.45; amp = 0.026; ty += 5; yaw = Math.sin(TAU * T / 3) * 2; pitch -= 3; deriva = 0; batte = false; }
+    else if (st === 'libero') { per *= 1.45; amp = 0.026; ty += 5 + 2.5 * Math.sin(TAU * T / per); rot = 2.2 * Math.sin(TAU * T / (per * 2)); yaw = Math.sin(TAU * T / 3) * 2; pitch -= 3; deriva = 0; batte = false; }
     /* la vita del kit: deriva dello sguardo a due armoniche e un roll leggero */
     yaw += (rumore(T, 10.7, p.s1) * 4.8 + rumore(T, 3.9, p.s2) * 1.4) * deriva;
     pitch += (rumore(T, 8.7, p.s2) * 3.6 + rumore(T, 4.7, p.s3) * 1.1) * deriva;
