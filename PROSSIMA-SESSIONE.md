@@ -14,8 +14,9 @@ Stato al 2026-09-05, fine della sessione sull'**orbe senza disco** (versione 7 d
   (`m.tintaDi`, `m.tintaLibera`, `e.tinta`), riga «Colore» nell'editor, `av()` passa tinta e dipartimento, aspetto impostato in
   `direzione-a.html`; screenshot rigenerati; artefatto della Console a un indirizzo nuovo (sotto). **Lo stato**: tre varianti
   costruite e in confronto (`?segnale=punto|anello|gesto`, sezione «Tre varianti per lo stato» nella pagina di confronto;
-  DIREZIONI.md «Settima tornata»): il punto sul bordo, l'anello vivo animato, il gesto del corpo. **In attesa della scelta**;
-  la Console tiene `nessuno`. Poi portare la scelta in `direzione-a.html` e in SYSTEM-DESIGN.md (riga avatar, regola 19). Poi le approvazioni da mobile (struttura proposta, in attesa dell'ok).
+  DIREZIONI.md «Settima tornata»): il punto sul bordo, l'anello vivo animato, il gesto del corpo. **Scelta: punto come standard,
+  gesto nelle pile** (card dei dipartimenti e degli obiettivi, coppie dell'agenda: `pair()` passa `{ segnale: 'gesto' }`); portata
+  nel prodotto (`direzione-a.html`, SYSTEM-DESIGN.md riga avatar e regola 19), screenshot rigenerati. Poi le approvazioni da mobile (struttura proposta, in attesa dell'ok).
 - Branch precedente: `claude/avatar-execution-page-nv8dm4` (da `main`, che contiene le PR #1, #3, #4 e #5), chiuso con la
   **PR #6** verso `main` (https://github.com/av3rgfx/DGT-Design-2.0/pull/6), unita.
 - I tre artefatti della direzione A qui sotto sono stati ripubblicati a fine sessione e corrispondono all'ultimo

@@ -575,12 +575,14 @@ window.DIREZIONE_A = (function () {
   const dots = lv => `<span class="dots l${lv}">${S(5)}</span>`;
   /* Avatar generato dal seme (ruolo o seme scelto) nello stato del dipendente; `stato` lo forza (es. la richiesta che aspetta), `extra` aggiunge attributi (data-anima, data-segue). */
   /* l'orbe riceve la tinta del dipendente e quella del suo dipartimento (versione 10): il modo con cui le usa lo decide l'aspetto della pagina */
-  const av = (m, e, size, stato, extra) => { const d = m.dipDi(e); return `<span class="av${size ? ' ' + size : ''}"${extra ? ' ' + extra : ''}>${window.DGT_AVATAR.html(m.semeDi(e), stato || e.stato, { tinta: m.tintaDi ? m.tintaDi(e) : undefined, dip: d ? d.tinta : undefined })}</span>`; };
+  const av = (m, e, size, stato, extra, opz) => { const d = m.dipDi(e); return `<span class="av${size ? ' ' + size : ''}"${extra ? ' ' + extra : ''}>${window.DGT_AVATAR.html(m.semeDi(e), stato || e.stato, Object.assign({ tinta: m.tintaDi ? m.tintaDi(e) : undefined, dip: d ? d.tinta : undefined }, opz || {}))}</span>`; };
   const pair = (m, ids, size, max) => {
     const lst = ids.map(id => m.byId[id]).filter(Boolean);
     const shown = max ? lst.slice(0, max) : lst;
     const rest = lst.length - shown.length;
-    return `<span class="pair">${shown.map(e => av(m, e, size)).join('')}${rest > 0 ? `<span class="more">+${rest}</span>` : ''}</span>`;
+    /* nelle pile (card dei dipartimenti e degli obiettivi, coppie della barra agenda) lo stato è il gesto del corpo, non il punto:
+       i punti si sovrapporrebbero ai vicini (scelta dell'utente, 2026-09-05) */
+    return `<span class="pair">${shown.map(e => av(m, e, size, undefined, undefined, { segnale: 'gesto' })).join('')}${rest > 0 ? `<span class="more">+${rest}</span>` : ''}</span>`;
   };
   const iconaTipo = { post: 'i-mega', documento: 'i-doc', lista: 'i-list', proposta: 'i-receipt', revisione: 'i-bolt' };
   const nomeTipo = { post: 'Post', documento: 'Documento', lista: 'Lista', proposta: 'Proposta', revisione: 'Revisione' };

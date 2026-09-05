@@ -121,7 +121,7 @@ html,body{margin:0;background:#000;color:#FCFCFC;font:400 15px/20px "Urbanist",-
   const O = DGT_AVATAR_ORBE;
   const q = new URLSearchParams(location.search);
   /* la combinazione del configuratore (e della Console in basso): ?identita=tinta&palette=vivace&corpo=piatta&occhi=lilguy&carattere=1 */
-  O.aspetto({ identita: q.get('identita') || 'tinta', palette: q.get('palette') || 'vivace', finitura: q.get('corpo') || 'piatta', occhi: q.get('occhi') || 'lilguy', segnale: q.get('segnale') || 'nessuno', carattere: q.get('carattere') === '1' });
+  O.aspetto({ identita: q.get('identita') || 'tinta', palette: q.get('palette') || 'vivace', finitura: q.get('corpo') || 'piatta', occhi: q.get('occhi') || 'lilguy', segnale: q.get('segnale') || 'punto', carattere: q.get('carattere') === '1' });
   const m = DGT_DATI.modello(11), m40 = DGT_DATI.modello(40);
   const STRADE = [
     { nome: 'Vivace piatto, occhi lilguy', o: { identita: 'tinta', palette: 'vivace', finitura: 'piatta', occhi: 'lilguy' }, desc: 'Il riferimento portato sui colori: dischi pieni e vivaci, occhi grandi con la sclera sempre bianca e la pupilla grande, sempre nera; X in errore, palpebre chiuse ad arco quando dorme. Lo stato non passa dal colore degli occhi.' },

@@ -9,7 +9,8 @@ Repository di design del prodotto DGT (sistema operativo aziendale per agenti AI
 - Non copiare logo, foto o marchi di terzi: contenuti di DGT, avatar con iniziali per le persone.
 - **Avatar dei dipendenti AI** (scelta del 2026-09-05, «strada 1» in `schermate/direzioni/DIREZIONI.md`, versione 10): disco
   piatto nella tinta del dipendente (otto tinte vivaci, assegnate alla creazione, cambiabili nell'editor) con due occhi grandi,
-  sclera bianca e pupilla nera sempre; lo stato non passa dal colore degli occhi. Regola 19 in `SYSTEM-DESIGN.md`.
+  sclera bianca e pupilla nera sempre; lo stato non passa dal colore degli occhi ma da un punto sul bordo della casella
+  (lime, giallo, rosa), e nelle pile di avatar dal gesto del corpo. Regola 19 in `SYSTEM-DESIGN.md`.
 - **Niente emoji**, né nel prodotto né nel sistema di design (regola fondamentale, 2026-09-04): al loro posto le icone del
   sistema, disegnate per DGT nello sprite (`schermate/direzioni/comune.js`; lo specimen ha il suo). La fiamma delle pillole
   «caldo», «urgenti», «da approvare», «in ritardo» è l'icona `i-fire`.

@@ -687,7 +687,11 @@ dice lo stato con squash e stretch (`scale(sx sy)` su `.tutto`): al lavoro batte
 e un cenno ogni 4 s; da approvare salta ogni 3,2 s (accovacciata, salto di 18 con stiramento, atterraggio e assestamento
 smorzato) guardando in alto; in errore si sgonfia al 96 %, si inclina di 5° e sospira ogni 3,4 s; pianificato oscilla come un
 pendolo (±9, ±9°); da libero dorme con il respiro profondo. Il segnale sta fuori da `.tutto` (non respira né salta con il
-corpo). La Console tiene `segnale: 'nessuno'` finché l'utente non sceglie (`?segnale=punto|anello|gesto` per provare).
+corpo). **Scelta dell'utente**: «punto come standard, ma per gli avatar piccoli delle card dei dipartimenti voglio gesto».
+Portata nel prodotto: `direzione-a.html` imposta `segnale: 'punto'`; `pair()` in `direzione-a.js` (le pile: card dei dipartimenti
+e degli obiettivi, coppie della barra agenda) passa `{ segnale: 'gesto' }` a ogni avatar impilato, perché i punti si
+sovrapporrebbero ai vicini. `?segnale=nessuno|anello|gesto` per provare gli altri. `SYSTEM-DESIGN.md`: riga avatar e regola 19
+aggiornate. Screenshot della Console rigenerati.
 
 **Scelta dell'utente: la strada 1** («Scelgo la 1»): vivace piatto, occhi lilguy con sclera bianca e pupilla nera.
 **Portata nel prodotto** nella stessa sessione: in `dati.js` la tinta è del dipendente (`e.tinta`; `m.tintaDi(e)` la dà, a
