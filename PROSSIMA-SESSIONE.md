@@ -20,8 +20,9 @@ Stato al 2026-09-04, fine della sessione sull'**orbe senza disco** (versione 7 d
   (`node build-unico.js avatar-pelli.html /percorso/pelli.html`; è un URL nuovo: il primo,
   https://claude.ai/code/artifact/a196c232-35ce-4bf0-ae6c-e472ca0c87f3, tiene la prima versione con «chiaro» e non si
   aggiorna senza rileggere per intero la copia salvata dallo strumento).
-- Artefatto delle due famiglie di avatar a confronto (kit e orbe, con la pelle chiara): https://claude.ai/code/artifact/4bc0c3ee-d1a0-41dc-a6d9-ef4f2b8360bd
-  (`node build-unico.js confronto-avatar.html /percorso/avatar.html`).
+- Artefatto delle due famiglie di avatar a confronto (kit e orbe perla): https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526
+  (`node build-unico.js confronto-avatar.html /percorso/avatar.html`; indirizzo nuovo dal 2026-09-05: il vecchio
+  4bc0c3ee non si aggiornava senza rileggere per intero la copia live, come era successo per le pelli).
 - Artefatto del confronto A/B/C (selettore 11/40): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
   (`node build-unico.js confronto.html /percorso/confronto.html`; non ripubblicato in questa sessione: le direzioni B
   e C non usano gli orbi).
