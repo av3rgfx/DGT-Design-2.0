@@ -671,6 +671,10 @@ stato, non porta informazione da solo».
 **Quinta tornata.** «Per l'opzione 8 proviamo a mettere le pupille bianche». Fatto: nello stile colorati la pupilla è
 bianca in ogni stato, X compresa; le palpebre chiuse restano nel colore della tinta.
 
+**Sesta tornata.** «Proviamo invece a togliere le pupille all'opzione 8». Fatto: nello stile colorati l'occhio è una
+forma piena nel colore del dipendente, senza pupilla; in errore l'occhio stesso è una X colorata (`.occhio.lg.x .segno`),
+da libero la palpebra chiusa; la coppia scivola verso lo sguardo come nel widget del riferimento.
+
 **Da fare alla scelta**: portare la combinazione nel prodotto (tinta nel modello dati, assegnata alla creazione come la
 meno usata e scelta nell'editor del dipendente accanto all'avatar; `av()` in `direzione-a.js` passa tinta e dipartimento;
 `direzione-a.html` imposta l'aspetto), aggiornare `SYSTEM-DESIGN.md` (riga «Avatar del dipendente AI», regola sul colore) e

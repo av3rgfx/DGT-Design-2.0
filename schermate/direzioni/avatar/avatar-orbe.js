@@ -114,7 +114,7 @@ window.DGT_AVATAR_ORBE = (function () {
     { id: 'punti',    nome: 'Punti grandi',   desc: 'Le stesse pupille di un solo colore, ma grandi il doppio e all\'altezza del centro, distanti: si leggono anche a 26 px.' },
     { id: 'lilguy',   nome: 'Lilguy',         desc: 'Come il riferimento: occhi grandi un terzo del volto, sclera sempre bianca con la pupilla grande e sempre nera; forma dal seme (tondi, ovali, a gatto, a ghianda), pupilla tonda o ovale; X in errore, palpebre chiuse da libero.' },
     { id: 'neri',     nome: 'Neri',           desc: 'Le stesse forme del riferimento ma invertite: occhi neri con la pupilla grande nel colore dello stato. Si vedono su qualunque corpo, anche vivace.' },
-    { id: 'colorati', nome: 'Colorati',       desc: 'Il riferimento alla lettera: occhi nel colore del dipendente sul corpo nero, pupilla grande e sempre bianca. L\'identità passa dagli occhi, il corpo resta la perla nera; X in errore, palpebre chiuse da libero.' },
+    { id: 'colorati', nome: 'Colorati',       desc: 'Occhi pieni nel colore del dipendente sul corpo nero, senza pupilla: forma dal seme (tondi, ovali, a gatto, a ghianda). L\'identità passa dagli occhi, il corpo resta la perla nera; in errore l\'occhio è una X, da libero una palpebra chiusa.' },
   ];
   const TONI = [
     { id: 'nero',    c: '#2A2A2A', nome: 'Perla nera' },
@@ -260,7 +260,11 @@ window.DGT_AVATAR_ORBE = (function () {
       const sclera = SCLERA[p.lgForma] ? `<path class="sclera" d="${SCLERA[p.lgForma]}"/>` : `<circle class="sclera" r="1"/>`;
       /* da libero l'occhio è chiuso: una palpebra ad arco larga quanto l'occhio (terza tornata: «non si capisce che dorme»);
          in errore la pupilla è una X (quarta tornata: le pupille sono sempre nere, lo stato si mostrerà in un altro modo) */
+      /* colorati (sesta tornata): senza pupilla, l'occhio è una forma piena nel colore del dipendente; in errore l'occhio stesso è una X */
+      const pieno = stile === 'colorati';
       if (stato === 'libero') occhio = i => `<g class="occhio lg chiuso" transform="${matrice(poses[i], o.w, o.h, o.tilt[i], 1, p.r)}"><path class="palpebra" d="M-1 -.12Q0 .82 1 -.12"/></g>`;
+      else if (pieno && stato === 'errore') occhio = i => `<g class="occhio lg x" transform="${matrice(poses[i], o.w, o.h, o.tilt[i], 1, p.r)}"><g class="segno" transform="scale(.95)">${X}</g></g>`;
+      else if (pieno) occhio = i => `<g class="occhio lg" transform="${matrice(poses[i], o.w, o.h, o.tilt[i], 1, p.r)}">${sclera}</g>`;
       else occhio = i => `<g class="occhio lg" transform="${matrice(poses[i], o.w, o.h, o.tilt[i], 1, p.r)}">${sclera}<g class="pupilla">${pup}</g></g>`;
     } else {
       /* la pupilla del kit in spazio unitario (raggio 1): la matrice la porta a misura; le X dell'errore sono due tacche 1,8 × 0,4 */
@@ -333,6 +337,7 @@ svg.ava.orbe[data-finitura="orlo"] .corpo>.orlo{stroke:rgb(0 0 0/.3);stroke-widt
 .ava.orbe .occhio.lg .pupilla circle,.ava.orbe .occhio.lg .pupilla ellipse,.ava.orbe .occhio.lg .pupilla rect{fill:var(--pupilla,#0A0A0A);stroke:#0A0A0A;stroke-width:var(--av-pupilla-bordo,0);paint-order:stroke}
 /* l'occhio chiuso (libero): la palpebra è un arco largo quanto l'occhio, nel colore della sclera (o dello stato per gli occhi neri) */
 .ava.orbe .occhio.lg .palpebra{fill:none;stroke:var(--palpebra,var(--sclera,var(--volto)));stroke-width:.34;stroke-linecap:round}
+.ava.orbe .occhio.lg .segno rect{fill:var(--sclera,var(--volto))}
 /* lilguy e colorati (quarta e quinta tornata): la pupilla ha un solo colore in ogni stato, nera sulla sclera bianca di lilguy, bianca
    sull'occhio colorato di colorati; lo stato non passa più dal colore degli occhi (X in errore e palpebre chiuse da libero restano forme). */
 svg.ava.orbe[data-occhi="lilguy"]{--sclera:#FCFCFC;--pupilla:#0A0A0A}
