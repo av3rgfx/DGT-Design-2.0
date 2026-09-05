@@ -663,7 +663,8 @@ window.DGT_DATI = (function () {
     approvazioni.push({ id: 'apx2', chi: lav[4].id, cosa: 'Consegna parziale 2', cliente: lav[4].att.cliente, ora: '09:31', tipo: 'documento' });
     const NOTE = ['Consegna secondo il brief.', 'Prima versione completa, pronta per la revisione.', 'Rispetta i vincoli di lunghezza e tono.'];
     const TIPI = ['post', 'documento', 'lista', 'proposta'];
-    const richieste = approvazioni.map((a, i) => ({ ...a, stato: 'attesa', costo: 3 + (i % 7), passi: ['Brief', 'Bozza', 'Revisione'], nota: NOTE[i % 3], testo: 'Contenuto della consegna «' + a.cosa + '» per ' + a.cliente + '.', allegato: 'Documento: ' + (2 + i) + ' pagine', tipo: TIPI[i % 4] }));
+    const ALLEGATO = (tipo, i) => tipo === 'post' ? 'Immagine 1200×1200' : tipo === 'lista' ? 'Foglio: ' + (40 + i * 20) + ' righe' : 'Documento: ' + (2 + i) + ' pagine';
+    const richieste = approvazioni.map((a, i) => ({ ...a, stato: 'attesa', costo: 3 + (i % 7), passi: ['Brief', 'Bozza', 'Revisione'], nota: NOTE[i % 3], testo: 'Contenuto della consegna «' + a.cosa + '» per ' + a.cliente + '.', allegato: ALLEGATO(TIPI[i % 4], i), tipo: TIPI[i % 4] }));
     richieste.forEach((r, i) => { r.giorno = 0; r.min = 9 * 60 + i * 11; });
     const GG = [0, 0, 1, 1, 2, 3, 3, 6, 7, 9, 12, 20, 26, 34];
     const ETI = ['', 'ieri', 'mar 2 set', 'lun 1 set', 'dom 31 ago', 'sab 30 ago', '29 ago', '28 ago', '26 ago', '23 ago', '15 ago', '9 ago', '1 ago'];
@@ -674,7 +675,7 @@ window.DGT_DATI = (function () {
         const hh = 8 + ((i * 3 + k * 5) % 10), mm = (i * 17 + k * 23) % 60;
         const hm = (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm;
         const eti = g === 0 ? hm : g === 1 ? 'ieri ' + hm : (ETI[Math.min(ETI.length - 1, j)] || 'ago');
-        richieste.push({ id: 'st' + i + k, chi: e.id, cosa: k ? e.att.titolo + ' (v' + (i % 3 + 1) + ')' : e.att.titolo, cliente: CLIENTI[(i + k * 3) % CLIENTI.length], ora: eti, giorno: g, min: hh * 60 + mm, tipo: TIPI[(i + k) % 4], stato: st, decisa: eti, regola: (i + k) % 6 === 0 ? 'Report interni' : '', costo: 2 + ((i + k) % 9), passi: ['Brief', 'Bozza', 'Revisione'], nota: NOTE[(i + k) % 3], testo: 'Contenuto della consegna «' + e.att.titolo + '».', allegato: 'Documento: 3 pagine', commento: st === 'modifiche' ? 'Aggiungi le priorità.' : st === 'rifiutata' ? 'Fuori brief, ripartire.' : '' });
+        richieste.push({ id: 'st' + i + k, chi: e.id, cosa: k ? e.att.titolo + ' (v' + (i % 3 + 1) + ')' : e.att.titolo, cliente: CLIENTI[(i + k * 3) % CLIENTI.length], ora: eti, giorno: g, min: hh * 60 + mm, tipo: TIPI[(i + k) % 4], stato: st, decisa: eti, regola: (i + k) % 6 === 0 ? 'Report interni' : '', costo: 2 + ((i + k) % 9), passi: ['Brief', 'Bozza', 'Revisione'], nota: NOTE[(i + k) % 3], testo: 'Contenuto della consegna «' + e.att.titolo + '».', allegato: ALLEGATO(TIPI[(i + k) % 4], 1), commento: st === 'modifiche' ? 'Aggiungi le priorità.' : st === 'rifiutata' ? 'Fuori brief, ripartire.' : '' });
       }
     });
     const diario = [];
@@ -765,6 +766,17 @@ window.DGT_DATI = (function () {
         else if (esito === 'modifiche') rv.effetto = 'Modifiche chieste dal titolare';
         else rv.effetto = motivo ? '«' + motivo + '»' : 'Rifiutata dal titolare';
         rv.verso = '';
+      },
+      /* Decisione del titolare su una richiesta (versione 11, 2026-09-05: qui, non più dentro `monta` in direzione-a.js, così la
+         Console e il telefono condividono lo stato). stato: approvata | modifiche | rifiutata; `commento` è il motivo (obbligatorio
+         per il rifiuto dal telefono e per le revisioni); per una revisione `esitoRevisione` è prova | applicata | modifiche |
+         rifiutata (predefinito: applicata se approvata, altrimenti lo stato). Ritorna la richiesta, o null se non esiste. */
+      decidi: (id, stato, commento, esitoRevisione) => {
+        const r = m.richieste.find(x => x.id === id); if (!r) return null;
+        const [hh, mm] = azienda.ora.split(':').map(Number);
+        r.stato = stato; r.decisa = azienda.ora; r.giorno = 0; r.min = hh * 60 + mm; if (commento) r.commento = commento;
+        if (r.tipo === 'revisione') out.decidiRevisione(r, esitoRevisione || (stato === 'approvata' ? 'applicata' : stato), commento);
+        return r;
       },
     };
     const dossier = {}, esecuzioni = {};

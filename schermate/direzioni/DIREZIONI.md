@@ -705,42 +705,72 @@ l'anello del fondo con 9 px di sovrapposizione. Screenshot della Console rigener
 nuovo, https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34 (il vecchio 93d18853 tiene la versione con la perla nera). `SYSTEM-DESIGN.md`: riga «Avatar del
 dipendente AI» riscritta e regola 19. **Aperto**: come mostrare lo stato (vedi «Quarta tornata»).
 
-### Versione 11 (prossima sessione): le approvazioni da mobile, struttura proposta e accettata (2026-09-05)
+### Versione 11: le approvazioni da mobile, prima metà (2026-09-05, sessione successiva)
 
-Il titolare approva dal telefono. Cornice mobile dello specimen (300 × 620, barra di stato, navigazione a pillola nera in
-basso con i quattro cerchi del rail della Console e, al posto del cerchio lime del video, la **campanella lime con il numero
-da approvare**). Tre schermate:
+Struttura proposta all'inizio della sessione precedente e accettata dall'utente («si procederà con le approvazioni da mobile
+come proposto»). Il titolare approva dal telefono. Cornice mobile dello specimen (300 × 620, bezel nero r52, schermo r44,
+barra di stato con l'ora dell'azienda, isola nera, segnale, rete e batteria), navigazione a pillola nera in basso con i quattro
+cerchi del rail della Console (elenco, organizzazione, chat, agenda) e, al posto del cerchio lime del video, la **campanella
+lime con il numero da approvare** (badge nero come il marcatore dell'ora). Tre schermate previste; **in questa sessione le prime
+due**, per post, documento, lista e proposta, con il rifiuto con motivo.
 
-1. **Da approvare** (fondo chiaro `#E0E0E0` come la schermata WORKSPACE): titolo con il conteggio; la richiesta corrente
-   come card lime grande (avatar del dipendente, cosa, chi · cliente · ora, chip del tipo) e sotto i quattro cerchi della
-   tendina della Console (apri, commenta, approva lime, rifiuta rossa); poi «In coda» con le altre richieste come righe; in
-   fondo la riga «Riepilogo di oggi». Si tocca: approva o rifiuta al volo, la card o una riga per aprire la richiesta, il
-   riepilogo.
-2. **Richiesta** (la tendina estesa in colonna, su fondo nero): indietro, chip del tipo, titolo, «2 di 4»; il documento in
-   una card bianca (testo e allegato); «Chi la propone» (avatar, consegnata alle, costo, passi a chip); la nota del
-   dipendente; barra fissa in basso con Approva lime larga, Chiedi modifiche, Rifiuta rossa. Rifiuta apre il campo del
-   motivo, obbligatorio. Per una revisione le due versioni una sotto l'altra con le differenze e le quattro decisioni. Decisa
-   una richiesta entra la successiva; le frecce scorrono la coda.
-3. **Riepilogo di oggi** (il pannello Riepilogo della terza schermata dello specimen, chiaro `#F4F4F4`): consegne, spesa,
-   obiettivo del mese nella card lime con la matita, le voci del diario sulla linea del tempo con i badge, la riga lime che
-   riporta alle richieste. È anche lo stato vuoto: a coda finita la prima schermata mostra «Niente da approvare» e questo
-   riepilogo.
+1. **Da approvare** (fondo chiaro `#E0E0E0`, la schermata WORKSPACE dello specimen): riga con il logo DGT, il cerchio bianco dei
+   filtri e le iniziali del titolare; titolo «DA APPROVARE» 30/36 come WORKSPACE; due numeri 26/300 con badge (da approvare con
+   la campanella rosa, approvate oggi con la freccia lime; il terzo, «spesi oggi», non sta in 256 px e va nel Riepilogo); la
+   **richiesta corrente come card lime** (la card attività a misura di telefono, r24: striscia con avatar 40, etichetta e
+   dipartimento; intaglio con la campanella con il punto rosso e la freccia «apri»; icona del tipo in cerchio 48, titolo 20/24
+   su due righe, cliente · ora; riga «Decidi» con il chip del tipo, costo e passi; sotto i **quattro cerchi della tendina della
+   Console**: apri (occhio), commenta, approva nera, rifiuta rossa, con «1 di 2» in mezzo); **«In coda»** con il conteggio e le
+   richieste come righe bianche 48 (`.qrow`, la corrente lime); in fondo la riga **«Riepilogo di oggi»** (cerchio nero con la
+   bacchetta, inerte fino alla sessione successiva). La card, le righe e l'occhio aprono la richiesta; la spunta approva al
+   volo; la X apre la richiesta con il campo del motivo già pronto: **il rifiuto vuole sempre un motivo**.
+2. **Richiesta** (la tendina estesa in colonna, su fondo nero): indietro e le frecce che scorrono la coda con «1 di 2»; chip del
+   tipo, del costo e dei passi; titolo 24/28; «chi · cliente · consegnata alle»; il **documento in una card bianca** r24 (chip
+   dell'allegato, o «LinkedIn · bozza» per il post, cliente, testo 14/21; per il post il riquadro dell'immagine); **«Chi la
+   propone»** (card scura r24: avatar 40, etichetta, dipartimento, consegnata alle, costo, passi a chip); **la nota del
+   dipendente**; in basso la **barra fissa** con Approva lime larga, il cerchio della matita (Chiedi modifiche) e il cerchio
+   rosso (Rifiuta), con una dissolvenza nera sopra. **Rifiuta** trasforma la barra: etichetta «Motivo del rifiuto,
+   obbligatorio», campo a pillola bianca (bordo rosso se vuoto alla conferma, Invio conferma, Esc annulla), pillole «Rifiuta»
+   rossa e «Annulla». Decisa una richiesta entra la successiva; a coda finita «Niente da approvare» (lo stato vuoto disegnato è
+   della sessione successiva).
+3. **Riepilogo di oggi**: sessione successiva.
 
-Dove vive: un file a parte in `schermate/direzioni/` (`mobile.html` + `mobile.js`), stessi `comune.js`, `dati.js`, `avatar/`;
-la decisione sulla richiesta passa da `monta` in `direzione-a.js` a `dati.js` come funzione del modello (`m.decidi`), così
-telefono e Console condividono lo stato. La pagina mostra i tre telefoni affiancati come lo specimen, tutti cliccabili, con
-i parametri `?schermata=1|2|3&richiesta=0`. I componenti si riusano con le stesse classi della Console (`.dirA`).
-**Divisione**: prima sessione le schermate 1 e 2 per post, documento, lista e proposta, con il rifiuto con motivo, screenshot
-(`design-system/tools/screenshot-elementi.js` per le cornici), artefatto, documenti; sessione successiva la revisione sul
-telefono, il Riepilogo, la prova a quaranta e lo stato vuoto.
+Dove vive: `mobile.html` + `mobile.js` (`DGT_MOBILE`), stessi `comune.js`, `dati.js`, `avatar/` e i componenti della Console
+(`DIREZIONE_A.css`, classi `.dirA`: `.rb`, `.pill`, `.chip`, `.av`, `.ncard`/`.nt`, `.task`, `.qrow`, `.badge`; da `direzione-a.js`
+sono esportati `av`, `iconaTipo`, `nomeTipo`; le variabili della Console sono ridichiarate su `.m-page`). La **decisione sulla
+richiesta** è passata da `monta` in `direzione-a.js` a `dati.js` come **`m.decidi(id, stato, commento, esitoRevisione)`** (la
+Console la chiama per approva, modifiche, rifiuta, «approva tutte» e le revisioni): telefono e Console condividono lo stato. La
+pagina mostra i due telefoni affiancati come lo specimen, cliccabili; i telefoni condividono il modello e la richiesta corrente:
+la riga toccata su uno si apre sull'altro, la decisione presa su uno si vede su entrambi. Parametri: `?schermata=1|2` (un solo
+telefono), `?richiesta=0` (indice nella coda), `?n=40`, e i parametri dell'avatar della Console. I telefoni sono 300 × 620 come
+nello specimen; la pagina li mostra con `zoom: 1.25`. Gli avatar sono gli orbi della versione 10 con lo stesso aspetto della
+Console (tinta, occhi lilguy, punto di stato: nella richiesta lo stato è sempre «da approvare», punto giallo); il titolare tiene
+le iniziali su disco bianco. Icone `i-signal` e `i-wifi` aggiunte allo sprite di `comune.js` per la barra di stato (dallo
+specimen). **Fuori dalla coda del telefono** le richieste di tipo `revisione` (`DGT_MOBILE.coda`): la campanella e i numeri del
+telefono le escludono finché le due versioni a confronto non sono disegnate sul telefono (sessione successiva); la Console le
+tiene (4 da approvare nella Console, 2 sul telefono).
+
+Correzioni fatte costruendo: il chip del tipo è nella riga «Decidi» (nella riga cliente · ora sforava); con il campo del motivo
+la barra delle azioni sforava di 18 px e il fuoco sull'input faceva scorrere lo schermo di lato (colonna `minmax(0,1fr)`,
+«Rifiuta» al posto di «Conferma il rifiuto», `focus({ preventScroll: true })`; la prova cliccata controlla lo sforo orizzontale
+di ogni schermo a ogni passo). A quaranta l'allegato generato segue il tipo (immagine, foglio, documento).
+
+Screenshot: `screenshot/mobile.png` (la pagina), `mobile-1-da-approvare.png`, `mobile-1-coda.png` (scorsa alla coda),
+`mobile-2-richiesta.png` (documento), `mobile-2-richiesta-post.png`, `mobile-2-rifiuto.png` (cornici catturate con
+`design-system/tools/screenshot-elementi.js`, `SCALE=2 H=1100`, `CLICK` per il rifiuto, `EVAL` per lo scorrimento). Artefatto:
+https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9. **Sessione successiva**: la schermata Riepilogo di oggi (anche come stato
+vuoto, a coda finita), la revisione di performance sul telefono (le due versioni una sotto l'altra con le differenze e le
+quattro decisioni; poi le revisioni entrano nella coda del telefono), la prova a quaranta, il giudizio dell'utente su queste due
+schermate.
 
 ## 5. File
 
 | File | Ruolo |
 |---|---|
-| `dati.js` | modello sintetico (11 e 40) condiviso; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`), le richieste di tipo `revisione` e l'esecuzione (`esecuzioneDi`: sei scritte a mano, le altre generate) |
+| `dati.js` | modello sintetico (11 e 40) condiviso; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`), le richieste di tipo `revisione` e l'esecuzione (`esecuzioneDi`: sei scritte a mano, le altre generate); dal 2026-09-05 la decisione del titolare (`decidi`), condivisa fra Console e telefono |
 | `comune.js` | sprite di icone di DGT, prefisso CSS, utilità |
 | `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo); cliccabile |
+| `mobile.js` / `.html` | le approvazioni da mobile (versione 11, prima metà): cornice del telefono dello specimen, schermate «Da approvare» e «Richiesta» con il rifiuto con motivo, due telefoni affiancati che condividono il modello e la richiesta corrente; `DGT_MOBILE.monta`, `coda`; `?schermata=1|2&richiesta=0` |
 | `avatar/avatar-dgt.js` | involucro degli avatar nel linguaggio della Console (colori, stati, simboli statici, animazione); `usa('orbe'|'kit')` sceglie la famiglia |
 | `avatar/avatar-orbe.js` | la famiglia «orbe» (versioni 5b, 5c, 7, 7b, 7c): cerchi dal seme con le pupille e lo sguardo del kit, un solo motore `requestAnimationFrame` con funzioni continue del tempo, sguardo che segue il puntatore; senza disco, con le pelli (`pelle('perla'|'grigio'|'chiaro'|'alone'|'disco')`, solo variabili CSS; perla predefinita); `fermo(t)`, `riprendi()`, `fotogramma(svg, t)` per gli screenshot |
 | `confronto-avatar.html` | le due famiglie a confronto nelle viste della Console |
@@ -752,6 +782,6 @@ telefono, il Riepilogo, la prova a quaranta e lo stato vuoto.
 | `direzione-c.js` / `.html` | Mappa viva |
 | `confronto.html` | pagina di confronto con tab e selettore 11/40 |
 | `build-unico.js` | genera il file unico per l'artefatto (`node build-unico.js direzione-a.html out.html`) |
-| `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`; per gli elementi `screenshot-elementi.js`) |
+| `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`); le cornici del telefono (`mobile-*.png`) con `screenshot-elementi.js` |
 
 Per gli screenshot: `design-system/tools/screenshot-page.js` (vedi `design-system/tools/README.md`).

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nova Studio Mobile</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600&display=swap">
+<style>html,body{margin:0;background:#000}</style>
+</head>
+<body>
+<div class="dirA" id="root"></div>
+<script src="comune.js"></script>
+<script src="avatar/avatar-motore.js"></script>
+<script src="avatar/avatar-dgt.js"></script>
+<script src="avatar/avatar-orbe.js"></script>
+<script src="dati.js"></script>
+<script src="direzione-a.js"></script>
+<script src="mobile.js"></script>
+<script>
+  // Parametri: ?schermata=1|2 (un solo telefono su quella schermata; predefinito 1,2: i due telefoni affiancati) ?richiesta=0 (indice nella coda)
+  // ?n=11|40 e gli stessi parametri dell'avatar della Console (?avatar= ?pelle= ?identita= ?palette= ?corpo= ?occhi= ?segnale= ?carattere=)
+  const q = new URLSearchParams(location.search);
+  DGT_UI.iconeInserisci();
+  DGT_AVATAR.usa(q.get('avatar') || 'orbe');
+  DGT_AVATAR.pelle(q.get('pelle') || 'perla');
+  // lo stesso aspetto degli avatar della Console (versione 10, «strada 1»): dischi piatti nella tinta del dipendente, occhi lilguy, punto di stato
+  DGT_AVATAR_ORBE.aspetto({ identita: q.get('identita') || 'tinta', palette: q.get('palette') || 'vivace', finitura: q.get('corpo') || 'piatta', occhi: q.get('occhi') || 'lilguy', segnale: q.get('segnale') || 'punto', carattere: q.get('carattere') === '1' });
+  DGT_UI.stile('css-a', DIREZIONE_A.css);   // i componenti della Console (classi .dirA)
+  DGT_UI.stile('css-m', DGT_MOBILE.css);    // le cornici del telefono e le due schermate
+  const modello = DGT_DATI.modello(DGT_DATI.nDaUrl());
+  const schermate = (q.get('schermata') || '1,2').split(',').map(Number).filter(s => s === 1 || s === 2);
+  DGT_MOBILE.monta(document.getElementById('root'), modello, { schermate, richiesta: +(q.get('richiesta') || 0) });
+</script>
+</body>
+</html>

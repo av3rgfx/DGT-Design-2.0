@@ -1,36 +1,35 @@
 # Prossima sessione — passaggio di consegne
 
-Stato al 2026-09-05, fine della sessione sull'**identità degli orbi** (versione 10 della direzione A · Console: le tinte, gli
-occhi «lilguy», il punto di stato e il gesto nelle pile). Tutto è committato e pushato sul branch indicato sotto, con la
-**PR #7** aperta verso `main`. **Prossimo passo deciso dall'utente: le approvazioni da mobile**, con la struttura proposta e
-accettata (sotto, «Come riprendere»).
+Stato al 2026-09-05, fine della sessione sulle **approvazioni da mobile, prima metà** (versione 11 della direzione A · Console:
+le schermate «Da approvare» e «Richiesta» sul telefono, per post, documento, lista e proposta, con il rifiuto con motivo). Tutto
+è committato e pushato sul branch indicato sotto. **Prossimo passo**: la seconda metà del mobile (Riepilogo di oggi, la revisione
+sul telefono, lo stato vuoto, la prova a quaranta), dopo il giudizio dell'utente sulle due schermate costruite.
 
 ## Stato
 
-- Branch: `claude/direzione-a-corrections-mobile-2x5j8x` (da `main`, che contiene le PR #1, #3, #4, #5 e #6). A fine sessione
-  è aperta la **PR #7** verso `main` (https://github.com/av3rgfx/DGT-Design-2.0/pull/7): se all'avvio della prossima sessione
-  risulta già unita, ripartire da `main` con un branch nuovo; se è ancora aperta, continuare sullo stesso branch e la PR si
-  aggiorna da sola.
+- Branch: `claude/approvazioni-mobile-direzione-a-t5290b` (da `main`, che contiene le PR #1, #3, #4, #5, #6 e #7). La PR #7 è
+  stata unita all'inizio di questa sessione. **Nessuna PR aperta per questo branch** (l'utente non l'ha chiesta): all'avvio
+  della prossima sessione aprirla verso `main` se serve, oppure continuare sullo stesso branch; se nel frattempo è stata unita,
+  ripartire da `main` con un branch nuovo.
+- Artefatto del **mobile** (`mobile.html`: i due telefoni affiancati, «Da approvare» e «Richiesta», cliccabili):
+  https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9. Si rigenera con
+  `node schermate/direzioni/build-unico.js mobile.html /percorso/nova-studio-mobile.html`.
 - Artefatto della **Console** (direzione A cliccabile: home, tendine, Richieste, Dipartimento, editor del dipendente, pagina
-  del Dipendente, pagina dell'Esecuzione, avatar della versione 10):
-  https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34 (indirizzo nuovo dal 2026-09-05; i precedenti
-  93d18853 e 8a8a273e tengono le versioni con la perla nera e senza il punto di stato). Si rigenera con
-  `node schermate/direzioni/build-unico.js direzione-a.html /percorso/console.html`.
-- Artefatto dell'**identità degli orbi** (`avatar-identita.html`: nove strade, tre varianti per lo stato, configuratore con
-  corpo, palette, occhi, stato e identità, la prova sugli undici vicini e la Console vera):
-  https://claude.ai/code/artifact/1fc2ee53-3c23-4462-922a-cd581a90b6d6 (il precedente 690baac8 tiene la versione prima
-  della scelta dello stato).
-- Artefatti precedenti, non toccati: pelli dell'orbe https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569
+  del Dipendente, pagina dell'Esecuzione, avatar della versione 10): https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34
+  (non ripubblicato in questa sessione: la Console non cambia aspetto; `decidi` è passata nel modello senza effetti visibili).
+  Si rigenera con `node schermate/direzioni/build-unico.js direzione-a.html /percorso/console.html`.
+- Artefatti precedenti, non toccati: identità degli orbi https://claude.ai/code/artifact/1fc2ee53-3c23-4462-922a-cd581a90b6d6
+  (`avatar-identita.html`), pelli dell'orbe https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569
   (`avatar-pelli.html`), le due famiglie kit/orbe https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526
   (`confronto-avatar.html`), confronto A/B/C https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
   (`confronto.html`), specimen https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b (`DESIGN.md` non descrive
-  ancora la sezione «moto» dello specimen: da fare). Queste pagine usano l'orbe con i predefiniti del motore (perla nera,
-  pupille del kit), non l'aspetto della Console.
-- Documento unico: `SYSTEM-DESIGN.md` (sezione 6, riga «Avatar del dipendente AI» riscritta per la versione 10; sezione 10,
-  regole 1–19). Studio e versioni della direzione A: `schermate/direzioni/DIREZIONI.md` (sezione 4: «Versione 10» con le
-  sette tornate sull'identità e le scelte; «Versione 11» con la struttura del mobile da costruire).
-- Regola in `CLAUDE.md`: avatar = disco piatto nella tinta del dipendente, occhi grandi con sclera bianca e pupilla nera,
-  stato dal punto sul bordo (nelle pile dal gesto). Niente emoji resta regola fondamentale.
+  ancora la sezione «moto» dello specimen: da fare).
+- Documento unico: `SYSTEM-DESIGN.md` (sezione 6, riga «Mobile» con la parte DGT; sezione 10, regole 1–20; sezione 11 con
+  l'artefatto del mobile). Studio e versioni della direzione A: `schermate/direzioni/DIREZIONI.md` (sezione 4: «Versione 11»
+  con quanto costruito, le correzioni e quanto resta; sezione 5, tabella dei file con `mobile.js` / `.html`).
+- Screenshot nuovi in `schermate/direzioni/screenshot/`: `mobile.png` (la pagina), `mobile-1-da-approvare.png`,
+  `mobile-1-coda.png`, `mobile-2-richiesta.png`, `mobile-2-richiesta-post.png`, `mobile-2-rifiuto.png`.
+- Regole in `CLAUDE.md`: invariate (direzione A, avatar della versione 10, niente emoji).
 
 ## Decisioni dell'utente (in ordine)
 
@@ -51,164 +50,131 @@ accettata (sotto, «Come riprendere»).
     onde (versione 5c).
 13. La pagina del Dipendente dal brief dell'utente (versione 6): identità, soul prompt con versioni e confronto,
     modello e criterio, strumenti, budget e permessi, colloquio, metriche; la revisione di performance come richiesta
-    al titolare con evidenze. Costruita nella sessione precedente; **l'utente non ha ancora dato un giudizio** (in
-    questa sessione ha chiesto solo l'avatar e l'esecuzione).
-14. **2026-09-04, questa sessione, lavoro 1**: «l'avatar sembra un'icona animata; deve essere un avatar, senza quel
-    contorno bianco; dammi più soluzioni per la visibilità sul fondo; vale per tutte le pagine». Fatto: disco e anello
-    tolti; quattro pelli costruite (chiaro, perla nera, grigio, alone) più la vecchia «disco» per il confronto, nella
-    pagina `avatar-pelli.html` e nel suo artefatto. **Scelta fatta in sessione: «chiaro»** (orbe chiaro con occhi
-    neri sul nero, perla nera con occhi bianchi sulle superfici chiare e lime), perché è la più visibile e la più
-    vicina all'orbe di riferimento. **Superata dalla decisione 16**: l'utente ha scartato «chiaro» («Chiaro non va
-    bene»); la predefinita è «perla» (primo elemento di `PELLI` in `avatar-orbe.js` e `DGT_AVATAR.pelle(q.get('pelle')
-    || 'perla')` in `direzione-a.html`).
-15. **Lavoro 2**: la pagina dell'Esecuzione (passi, log, output) dall'«occhio» delle card al lavoro; struttura proposta
-    e costruita nella stessa sessione (versione 8). **Da confermare dall'utente** (non ancora giudicata).
+    al titolare con evidenze. **L'utente non ha ancora dato un giudizio.**
+14. **2026-09-04, lavoro 1**: «l'avatar sembra un'icona animata; deve essere un avatar, senza quel contorno bianco»: disco
+    e anello tolti; quattro pelli a confronto (`avatar-pelli.html`). Scelta «chiaro», poi superata dalla decisione 16.
+15. **Lavoro 2**: la pagina dell'Esecuzione (passi, log, output) dall'«occhio» delle card al lavoro (versione 8). **Da
+    confermare dall'utente** (non ancora giudicata).
 16. **Seconda tornata sull'avatar**: «Chiaro non va bene. Poi vorrei renderli tondi e meno ovali. E le animazioni non
-    mi piacciono, sono scadenti e poco fluide». Fatto (versione 7b): pelle **perla** predefinita (nero lucido con
-    riflesso, luce riflessa, orlo e bagliore, un solo colore su ogni fondo), **corpi tondi** (cerchi; via superellisse,
-    inclinazione, rigonfiamento, squash e stretch), **moti continui** (via i keyframe CSS; un solo
-    `requestAnimationFrame` per pagina con funzioni del tempo: respiro, galleggiamento, sguardo con proiezione sferica,
-    palpebre con easing, un moto quieto per stato). Giudizio: «Così già meglio».
-17. **Terza tornata**: «preferivo gli occhi del kit di riferimento, nel quale hanno occhi più grossi e i movimenti
-    degli occhi più carini». Fatto (versione 7c): le pupille del kit per seme (`deriveRole(seme).pupil`: tonda,
-    quadrato morbido, anello; 0,16–0,185 del raggio), dipinte sulla sfera con la base tangente del kit (yaw, pitch,
-    roll della testa: l'occhio lontano si stringe da solo) e con i suoi moti dello sguardo. Giudizio: «va bene adesso».
-18. **Correzioni della cornice** (versione 9): le tendine e le pillole fisse «spostate» sugli schermi larghi e la Console
-    che non si adattava → `zoom` alla larghezza dello schermo, in su e in giù; l'avatar ripetuto nel selettore della
-    card del lavoro → chip di stato; il «+1» sotto gli avatar nella card dell'obiettivo → badge dopo la pila;
-    **niente emoji** nel prodotto e nel sistema (regola fondamentale in `CLAUDE.md`, `i-fire` al posto della fiamma).
-
-19. **2026-09-05, l'identità degli orbi** («molti avatar vicini, o piccoli in fila, non rendono l'idea di diversi
-    dipendenti: sono tutti uguali; magari di diversi colori»). Prima tornata: perle colorate, tinta del dipartimento, toni
-    di grigio, carattere degli occhi → **perle colorate**.
-20. Seconda tornata: «colori più accesi e vivaci; gli occhi non si vedono bene, ricreare gli occhi di lilguy.net; forse
-    piatti senza 3D; più opzioni e varianti» → configuratore con corpo (perla, piatto, orlo), palette (scura, vivace,
-    pastello), occhi (attuali, punti grandi, lilguy, neri, colorati) e nove strade preimpostate. Il riferimento studiato dal
-    widget del sito, ricostruito in locale: occhi enormi al centro, bianco colorato e pupilla a contrasto.
-21. Terza tornata: ristrette a **strada 1** (vivace piatto, lilguy) e **strada 8** (nero, occhi colorati); pupille grandi
-    sempre, dormiente con le palpebre chiuse ad arco, X in errore; nella 1 sclera sempre bianca. Quarta: **pupille sempre
-    nere** in entrambe («troveremo un modo diverso per visualizzare lo stato»). Quinta e sesta: nella 8 pupille bianche,
-    poi **senza pupille** (occhi pieni colorati).
-22. **«Scelgo la 1»**: portata nel prodotto (tinta nel modello, riga «Colore» nell'editor, `av()` passa tinta e dipartimento,
-    aspetto in `direzione-a.html`, dischi che riempiono la casella, pile con l'anello del fondo).
-23. Lo stato: tre varianti («una come hai proposto tu, le altre con animazioni premium dinamiche dell'avatar») → **punto**
-    sul bordo, **anello vivo** animato, **gesto** del corpo con squash e stretch.
-24. **«Punto come standard, ma per gli avatar piccoli delle card dei dipartimenti voglio gesto»**: applicato a tutte le
-    pile (card dei dipartimenti e degli obiettivi, coppie della barra agenda), che passano tutte da `pair()`.
-25. La struttura delle **approvazioni da mobile** proposta all'inizio della sessione è accettata («si procederà con le
-    approvazioni da mobile come proposto»). Restano non giudicate la pagina dell'Esecuzione (versione 8) e la pagina del
-    Dipendente (versione 6): l'utente non ha dato correzioni.
+    mi piacciono, sono scadenti e poco fluide» → pelle **perla**, **corpi tondi**, **moti continui** (versione 7b). «Così
+    già meglio».
+17. **Terza tornata**: «preferivo gli occhi del kit di riferimento» → le pupille del kit sulla sfera (versione 7c). «va
+    bene adesso».
+18. **Correzioni della cornice** (versione 9): la Console si scala con `zoom` alla larghezza dello schermo; chip di stato al
+    posto dell'avatar ripetuto; il «+N» dopo la pila; **niente emoji** nel prodotto e nel sistema (regola fondamentale in
+    `CLAUDE.md`, `i-fire` al posto della fiamma).
+19. **2026-09-05, l'identità degli orbi**: perle colorate → colori vivaci, occhi di lilguy.net ricreati, corpi piatti →
+    strade 1 e 8 → pupille sempre nere → **«Scelgo la 1»** (vivace piatto, occhi lilguy con sclera bianca e pupilla nera,
+    tinta del dipendente). Lo stato: tre varianti → **punto** sul bordo come standard, **gesto** nelle pile (versione 10).
+20. La struttura delle **approvazioni da mobile** proposta è accettata («si procederà con le approvazioni da mobile come
+    proposto»).
+21. **2026-09-05, questa sessione**: costruita la **prima metà del mobile** come da struttura (schermate 1 e 2 per post,
+    documento, lista e proposta, rifiuto con motivo, `m.decidi` nel modello). **L'utente non ha ancora visto né giudicato le
+    due schermate**: la sessione si è fermata, come chiesto, dopo averle mostrate. Scelte fatte in costruzione, da confermare:
+    il rifiuto chiede sempre il motivo (anche dalla card della prima schermata); approvare è al volo; due numeri invece di tre
+    sulla prima schermata («spesi oggi» va nel Riepilogo); le revisioni di performance restano fuori dalla coda del telefono
+    finché il confronto non è disegnato (la Console dice 4 da approvare, il telefono 2); i due telefoni affiancati condividono
+    modello e richiesta corrente.
 
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
-Esperto; il riferimento lilguy.net è stato studiato, non copiato: occhi ridisegnati nel linguaggio del sistema);
-contenuti sintetici di DGT; documenti in italiano.
+Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti sintetici di DGT; documenti in italiano.
 
-## Come riprendere: le approvazioni da mobile
+## Come riprendere: la seconda metà del mobile
 
-1. Leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezioni 6 e 10) e `schermate/direzioni/DIREZIONI.md` («Versione 10» e «Versione
-   11»). Controllare la PR #7 (vedi «Stato»).
-2. Aprire `schermate/direzioni/direzione-a.html` per la Console com'è oggi; `design-system/specimen.html`, sezione «(02) DGT —
-   App mobile», per le tre cornici del telefono (`.phone`, `.screen.lightbg|.daily|.callscr`, `.sb` barra di stato, `.nav`,
-   `.bnav` navigazione a pillola con `.meet` lime e `.tabs`, il Riepilogo `.summary` con `.tline` e `.dcard`; i colori: `--light`
-   `#E0E0E0`, `--summary` `#F4F4F4`, `--docs` `#E4E4E4`, lime `#B8FC64`, `--lime-deep` `#A8E65D`, `--hangup` `#F15E60`, `--badge-red`
-   `#F9A3A3`, raggi `--r-card` 28, `--r-inner` 22). Le richieste sono in `dati.js` (`richieste11`, `m.richiesteDi('attesa')`,
-   `inAttesa` ordina le più vecchie prima; i tipi post, documento, lista, proposta, revisione; `decidi()` è dentro `monta` in
-   `direzione-a.js`, riga ~1425, con `m.decidiRevisione` per le revisioni); la tendina «Da approvare» e quella estesa sono
-   `tendinaAperta`, `cardRichiestaCorrente`, `tendinaEstesa` in `direzione-a.js` (~riga 700).
-3. **La struttura accettata** (dettagli in `DIREZIONI.md`, «Versione 11»): cornice del telefono dello specimen con la
-   navigazione a pillola (quattro cerchi del rail + campanella lime con il numero da approvare); tre schermate: **Da
-   approvare** (fondo chiaro, card lime della richiesta corrente con i quattro cerchi apri/commenta/approva/rifiuta, «In
-   coda», riga «Riepilogo di oggi»), **Richiesta** (la tendina estesa in colonna su fondo nero: documento, chi la propone,
-   nota, barra fissa Approva/Chiedi modifiche/Rifiuta con il motivo obbligatorio; per una revisione le due versioni con le
-   differenze), **Riepilogo di oggi** (il pannello Riepilogo dello specimen; anche stato vuoto). Un file a parte
-   (`mobile.html` + `mobile.js`) con gli stessi `comune.js`, `dati.js`, `avatar/`; `decidi` spostata in `dati.js` come `m.decidi`
-   così telefono e Console condividono lo stato; i tre telefoni affiancati come lo specimen, tutti cliccabili,
-   `?schermata=1|2|3&richiesta=0`.
-4. **Divisione**: in questa sessione le schermate 1 e 2 per post, documento, lista e proposta, con il rifiuto con motivo;
-   screenshot delle cornici con `design-system/tools/screenshot-elementi.js`; artefatto (`build-unico.js mobile.html`);
-   `DIREZIONI.md` (Versione 11), `SYSTEM-DESIGN.md` (sezione 6 riga «Mobile», sezione 10), README, questo file; commit e
-   push. Nella sessione successiva la revisione sul telefono, il Riepilogo, la prova a quaranta e lo stato vuoto.
-5. Gli avatar nel mobile: gli stessi orbi della Console (`DGT_AVATAR.html(seme, stato, { tinta, dip })` via una `av()` come
-   quella di `direzione-a.js`), con l'aspetto impostato all'apertura come in `direzione-a.html` (`DGT_AVATAR_ORBE.aspetto({
-   identita: 'tinta', palette: 'vivace', finitura: 'piatta', occhi: 'lilguy', segnale: 'punto' })`); nelle pile `{ segnale:
-   'gesto' }`. Il CSS di `.av` vive dentro `.dirA .a-app`: fuori dalla Console va ridichiarato (vedi `avatar-identita.html`).
+1. Leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezioni 6 e 10, regole 19 e 20) e `schermate/direzioni/DIREZIONI.md` («Versione 11»).
+   Controllare il branch (vedi «Stato»). Aprire `schermate/direzioni/mobile.html` (i due telefoni; `?schermata=2&richiesta=1`
+   per il post) e `direzione-a.html` per la Console.
+2. **Raccogliere il giudizio dell'utente** sulle due schermate (screenshot in `schermate/direzioni/screenshot/mobile-*.png`,
+   artefatto in «Stato») e correggere prima di andare avanti.
+3. **Riepilogo di oggi** (schermata 3, `#F4F4F4`): il pannello Riepilogo dello specimen sul telefono (`.summary`, `.tline` con i
+   badge rotondi, `.dcard`), con consegne (miniature), approvate oggi, spesa di oggi, obiettivo del mese nella card lime con la
+   matita, le voci del diario sulla linea del tempo, e la riga lime che riporta alle richieste. In `direzione-a.js` c'è già
+   `riepilogo(m)` (tendina della Console) da tradurre in colonna. La riga «Riepilogo di oggi» della prima schermata e la
+   campanella/tab già portano `data-az="schermata" data-s="3"`: basta aggiungere il ramo in `monta` e il terzo telefono
+   (`schermate: [1, 2, 3]`, `NOMI[3]`). È anche lo **stato vuoto**: a coda finita la prima schermata mostra «Niente da
+   approvare» (oggi un riquadro tratteggiato, `.m-vuoto`) e sotto il riepilogo.
+4. **La revisione sul telefono**: le richieste di tipo `revisione` entrano nella coda (`DGT_MOBILE.coda` toglie il filtro);
+   nella schermata Richiesta le due versioni una sotto l'altra con le differenze (`lcs`, `parole`, `differenze` sono dentro
+   `direzione-a.js`: esportarle o spostarle in `comune.js`), i tre blocchi Perché / Cosa ci aspettiamo / Rischi (`rv.perche`,
+   `rv.attese`, `rv.rischi`, `rv.prova`) e le quattro decisioni (prova, applica, modifiche, rifiuta con motivo) via
+   `m.decidi(id, stato, motivo, esito)`. Le due revisioni del modello: `rv1` (prompt v7 → v8 di Nora) e `rv2` (modello
+   Standard → Esperto del Social media manager).
+5. **Prova a quaranta**: `mobile.html?n=40` (7 in coda, i tipi ruotano; l'allegato segue il tipo). Controllare le righe della
+   coda, i titoli lunghi, i numeri a due cifre nel badge della campanella.
+6. Poi: screenshot delle cornici (`screenshot-elementi.js`, `SCALE=2 H=1100`, `CLICK`/`EVAL`), artefatto (`build-unico.js
+   mobile.html`; pubblicare a un indirizzo nuovo se l'aggiornamento in loco viene rifiutato), `DIREZIONI.md` (Versione 11 o 12),
+   `SYSTEM-DESIGN.md` (riga Mobile, regola 20), README, questo file, commit e push.
 
-Punti aperti ereditati (non chiesti dall'utente, da non toccare senza richiesta): i filtri inerti delle sezioni Passi,
-Output e Costo dell'Esecuzione; «Sposta», «Ripeti» e le frecce dei passi senza tendina del passo; lo stato vuoto del
-dipendente appena creato («Nessuna esecuzione»); la pagina del Dipendente (versione 6) e quella dell'Esecuzione (versione
-8) mai giudicate.
+Punti aperti ereditati (non chiesti dall'utente, da non toccare senza richiesta): i filtri inerti delle sezioni Passi, Output e
+Costo dell'Esecuzione; «Sposta», «Ripeti» e le frecce dei passi senza tendina del passo; lo stato vuoto del dipendente appena
+creato («Nessuna esecuzione»); la pagina del Dipendente (versione 6) e quella dell'Esecuzione (versione 8) mai giudicate; sul
+telefono i cerchi «commenta», «filtri» e «ordina» e le tab organizzazione / chat / agenda sono inerti.
 
 ## Strumenti (`design-system/tools/`)
 
 - `screenshot-page.js` — cattura a pagina intera (`FULL_PAGE=0` per il solo viewport; il quarto argomento è l'altezza del
-  viewport: 1120 per far stare il dossier).
+  viewport: 1120 per far stare il dossier, 1100 per la pagina del mobile).
   `export PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css` e poi
-  `node screenshot-page.js "../../schermate/direzioni/direzione-a.html?pagina=esecuzione&id=4&tendina=chiusa" /percorso/a.png`.
-- `screenshot-elementi.js` (nuovo, 2026-09-05) — cattura elementi per selettore (`node screenshot-elementi.js pagina.html
-  prefisso '#sel1' '.sel2'`); `MOTION=no-preference` per gli avatar in moto, `SCALE=2`, `CLICK="sel|sel"`. Per le cornici del
-  telefono e le card.
+  `node screenshot-page.js "../../schermate/direzioni/mobile.html" /percorso/mobile.png 1440 1100`.
+- `screenshot-elementi.js` — cattura elementi per selettore (`node screenshot-elementi.js pagina.html prefisso '#sel1' '.sel2'`);
+  `MOTION=no-preference` per gli avatar in moto, `SCALE=2`, `W=1440`, **`H=1100`** (nuovo: l'altezza del viewport; va alzata
+  finché la pagina non scorre, altrimenti le catture dopo un clic si spostano), `CLICK="sel|sel"`, **`EVAL="codice"`** (nuovo:
+  JavaScript eseguito prima della cattura, per esempio `document.querySelector('.m-tel[data-n="1"] .m-scroll').scrollTop = 9999`
+  per la coda). Le cornici del telefono: `'.m-tel[data-n="1"]'`, `'.m-tel[data-n="2"]'`.
 - `fetch-fonts.py` — Urbanist locale per Chromium headless (`SSL_CERT_FILE=/root/.ccr/ca-bundle.crt python3 fetch-fonts.py
   /percorso/fonts.css`): va rifatto a ogni sessione, il file non è nel repository.
 - `schermate/direzioni/avatar/build-motore.js` — rigenera `avatar-motore.js` dai sorgenti del kit.
 - `schermate/direzioni/build-unico.js` — file unico per gli artefatti (incorpora anche gli script in `avatar/`).
-- Pellicola degli avatar: una pagina con più copie di un orbe per stato e un `data-t` per copia, `DGT_AVATAR_ORBE.fermo(0)` e
-  poi `fotogramma(svg, t)`; cattura con `screenshot-elementi.js` e `MOTION=no-preference`. Tenuta fuori dal repository:
-  dieci righe da rifare al bisogno.
-- Prova cliccata: uno script Playwright (`reducedMotion: 'no-preference'`) che apre la Console, clicca le azioni e verifica il
-  DOM e gli errori di console; fuori dal repository, da rifare al bisogno.
+- Prova cliccata del mobile: uno script Playwright (`reducedMotion: 'no-preference'`) che apre `mobile.html`, tocca la riga della
+  coda, indietro, le frecce, rifiuta dalla card (campo del motivo a fuoco), conferma vuota (bordo rosso), motivo + Invio,
+  approva dall'altro telefono (coda vuota), e a ogni passo controlla che nessun `.m-scr` abbia `scrollWidth > clientWidth`
+  (sforo orizzontale) e che la console sia pulita. Prova di regressione della Console: approva dalla tendina, rifiuta una
+  revisione con motivo, «approva tutte». Entrambi fuori dal repository: venti righe da rifare al bisogno.
 
 ## Note tecniche apprese
 
 - Playwright globale (`NODE_PATH=/opt/node22/lib/node_modules`, `PLAYWRIGHT_MODULE=playwright`), Chromium in
-  `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`; Google Fonts bloccato: gli script servono un CSS locale. La
-  navigazione di Chromium verso siti esterni attraverso il proxy viene resettata: per studiare un sito si scaricano gli
-  asset con `curl` e si serve la copia in locale (`http-server` su localhost, che è fuori dal proxy).
-- La Console gira da `file://` e come file unico: **niente moduli ESM**. Il kit avatar è impacchettato in uno script classico.
-- Gli screenshot usano `reducedMotion: 'reduce'`, quindi gli avatar sono al fotogramma fisso; il gesto nelle pile e il moto
-  in genere si vedono solo nell'artefatto o con `MOTION=no-preference`.
-- **L'orbe della versione 10** (`avatar/avatar-orbe.js`): l'aspetto della pagina sta in `html[data-identita|palette|finitura|
-  occhi|segnale|carattere]` (`aspetto({…}, radice)`), e `html(seme, stato, opz)` lo stampa sull'SVG (`data-modo`, `data-tinta`,
-  `data-palette`, `data-finitura`, `data-occhi`, `data-segnale`, `data-dip`). Il corpo con identità è un colore pieno (`--av-base`
-  da `--av-tinta-c` per palette e tinta, generato nel CSS per le otto tinte × tre palette) con sopra `.ombra` (l'ombreggiatura
-  della perla), che la finitura piatta spegne insieme a luci, orlo e bagliore; con il corpo piatto `--av-scala` è 128 % (il
-  disco riempie la casella) e le pile riprendono l'anello del fondo con 9 px di sovrapposizione. Gli occhi grandi sono
-  `.occhio.lg` con `.sclera` (cerchio unitario o il tracciato della ghianda) e `.pupilla` traslata verso lo sguardo
-  (`pupillaXY`), in geometria piana (`posaPiana`: la coppia scivola di poco verso lo sguardo); `forma(seme)` estrae i
-  parametri lilguy da un generatore a parte (`#lilguy`). Da libero l'occhio è la palpebra ad arco (`.palpebra`); in errore la
-  pupilla è una X. Il segnale di stato sta fuori da `.tutto` (`.segnale`: `.punto`, o `.giro/.arco`, `.onda`, `.tratto`, `.tacche`
-  per l'anello vivo); il gesto è un ramo di `posa()` che aggiunge squash e stretch (`scale(sx sy)` su `.tutto`).
-- Il modello dà la tinta con `m.tintaDi(e)` (`e.tinta` o rotazione sull'id) e la meno usata con `m.tintaLibera()`; `TINTE_ID`
-  in `dati.js` ha gli stessi nomi di `TINTE` in `avatar-orbe.js`, i colori stanno solo nel sistema.
-- Gli occhi del kit (7c), le pelli (variabili CSS su `[data-pelle]`), `.av:has(>svg.orbe)`, il CSS di `.av` dentro `.dirA .a-app`,
-  `DGT_UI.prefissa`, gli intagli con `--behind`, le tendine che coprono la destra, la barra dei passi, l'esecuzione in cache,
-  le differenze LCS e la Console che si scala con `zoom`: come nelle note della sessione precedente (vedi la storia di
-  questo file in git, commit `f3a5d53`).
-- Gli artefatti si ripubblicano allo stesso URL solo se lo strumento accetta; in questa sessione ha rifiutato ogni
-  aggiornamento in loco chiedendo di rileggere per intero la copia live (300–400 KB): si è scelto di pubblicare a un
-  indirizzo nuovo e aggiornare i collegamenti nei documenti (Console: 93d18853 → 8a8a273e → e6699f3a; identità degli orbi:
-  690baac8 → 1fc2ee53). Per un artefatto nuovo serve un percorso di file nuovo e un `favicon`. Mai forzare.
+  `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`; Google Fonts bloccato: gli script servono un CSS locale. Gli script di
+  prova vanno lanciati dalla radice del repository (i percorsi sono relativi).
+- La Console e il mobile girano da `file://` e come file unico: **niente moduli ESM**.
+- **Il mobile riusa la Console**: `mobile.html` carica `direzione-a.js` e mette in pagina `DIREZIONE_A.css` (classi `.dirA`) e
+  poi `DGT_MOBILE.css` (prefissato anch'esso con `.dirA`, così `.dirA .m-scr .task` vince su `.dirA .task`). Le variabili della
+  Console (`--lime`, `--ink`, `--docs`…) vivono su `.a-app`: il mobile le ridichiara su `.m-page` (più `--light`), e ridichiara
+  `box-sizing`, `svg{display:block}` e il cursore su `[data-az]`. `--behind` è `--light` sullo schermo chiaro e `--black` sul nero
+  (serve all'intaglio `.nt`).
+- **Lo schermo del telefono non deve poter scorrere di lato**: `.m-scr` ha `overflow:hidden`, ma un contenuto più largo lo rende
+  comunque scorrevole e il fuoco su un input lo scorre (è successo con la barra del motivo: pillole troppo larghe). Griglie con
+  `minmax(0,1fr)`, `min-width:0` sui figli, `focus({ preventScroll: true })`, e il controllo nella prova cliccata.
+- Le catture per elemento con `zoom` sulla pagina funzionano (Playwright legge il riquadro già scalato); il problema visto nelle
+  prime catture del rifiuto era lo scorrimento laterale dello schermo, non la cattura.
+- `m.decidi` mette `r.giorno = 0` e `r.min` dall'ora dell'azienda (prima era `10 * 60 + 42` scritto a mano in `direzione-a.js`).
+- L'orbe della versione 10 (`avatar/avatar-orbe.js`), le tinte (`m.tintaDi`, `TINTE_ID`), il CSS di `.av` sotto `.dirA`, gli
+  intagli con `--behind`, le tendine, la Console che si scala con `zoom`, le differenze LCS: come nelle note delle sessioni
+  precedenti (vedi la storia di questo file in git, commit `044e363` e `f3a5d53`).
+- Gli artefatti si ripubblicano allo stesso URL solo se lo strumento accetta; per un artefatto nuovo serve un percorso di file
+  nuovo e un `favicon`. Il file unico del mobile pesa circa 400 KB. Mai forzare.
 
 ## Cosa manca
 
-1. **Le approvazioni da mobile** (deciso): vedi «Come riprendere».
+1. **La seconda metà del mobile**: vedi «Come riprendere».
 2. **La pagina dei costi dell'azienda**: per dipartimento, dipendente, cliente, modello, strumento; riusa la card costo
    dell'esecuzione e le righe della spesa del mese.
 3. **Manutenzione**: descrivere la sezione «moto» dello specimen in `DESIGN.md`; estrarre i componenti di `direzione-a.js` in
-   `schermate/componenti.js` (il mobile riusa card, pillole e tendine: potrebbe essere il momento).
-4. Giudizio dell'utente sulle pagine dell'Esecuzione e del Dipendente; tendina del passo; stato vuoto del dipendente nuovo.
+   `schermate/componenti.js` (il mobile oggi importa tutta la Console per usarne il CSS e tre funzioni: è il momento buono).
+4. Giudizio dell'utente sulle pagine dell'Esecuzione e del Dipendente e sulle due schermate del mobile; tendina del passo;
+   stato vuoto del dipendente nuovo.
 
 ### Prompt di avvio suggerito per la prossima sessione
 
 ```
-Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md. Controlla la PR #7: se è unita riparti da main con un branch nuovo, altrimenti
-continua sullo stesso branch. Lavoriamo nella direzione A · Console (schermate/direzioni/direzione-a.js, dati.js, comune.js,
-avatar/): non cambiare la cornice, i componenti o i colori del sistema di design; niente emoji, solo le icone dello sprite;
-gli avatar sono quelli della versione 10 (tinta, occhi lilguy, punto di stato, gesto nelle pile).
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md. Controlla il branch claude/approvazioni-mobile-direzione-a-t5290b: se è stato
+unito in main riparti da main con un branch nuovo, altrimenti continua sullo stesso branch. Lavoriamo nella direzione A ·
+Console (schermate/direzioni/direzione-a.js, dati.js, comune.js, avatar/, mobile.js): non cambiare la cornice, i componenti o
+i colori del sistema di design; niente emoji, solo le icone dello sprite; gli avatar sono quelli della versione 10.
 
-Costruisci le approvazioni da mobile con la struttura già accettata (PROSSIMA-SESSIONE.md «Come riprendere», DIREZIONI.md
-«Versione 11»): prima metà, le schermate «Da approvare» e «Richiesta» per post, documento, lista e proposta, con il rifiuto
-con motivo, in mobile.html + mobile.js, la decisione spostata in dati.js come m.decidi. Poi screenshot delle cornici con
-design-system/tools/screenshot-elementi.js, artefatto con build-unico.js, aggiornamento di DIREZIONI.md, SYSTEM-DESIGN.md,
-README e PROSSIMA-SESSIONE.md, commit e push. Alla fine mostrami le schermate e fermati: il Riepilogo, la revisione sul
-telefono, la prova a quaranta e lo stato vuoto sono per la sessione dopo.
+Seconda metà delle approvazioni da mobile (PROSSIMA-SESSIONE.md «Come riprendere», DIREZIONI.md «Versione 11»): prima le mie
+correzioni alle schermate «Da approvare» e «Richiesta»; poi il Riepilogo di oggi (anche come stato vuoto), la revisione di
+performance sul telefono con le due versioni a confronto e le quattro decisioni, la prova a quaranta. Poi screenshot delle
+cornici con screenshot-elementi.js, artefatto con build-unico.js, aggiornamento di DIREZIONI.md, SYSTEM-DESIGN.md, README e
+PROSSIMA-SESSIONE.md, commit e push. Alla fine mostrami le schermate e fermati.
 ```

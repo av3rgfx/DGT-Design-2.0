@@ -2,7 +2,7 @@
 
 Documento unico del sistema di design di DGT (sistema operativo aziendale per agenti AI).
 Raccoglie tutto ciò che serve per progettare e costruire schermate coerenti: fonti, palette,
-tipografia, forme, componenti, schermate e strumenti di verifica. Aggiornato al 2026-09-04.
+tipografia, forme, componenti, schermate e strumenti di verifica. Aggiornato al 2026-09-05.
 
 ## 1. Che cos'è e da dove viene
 
@@ -29,7 +29,7 @@ DGT al posto di Google Meet. Contenuti sintetici, in italiano.
 | `design-system/reference/` | I due riferimenti dell'utente e il README che dice cosa se ne copia. |
 | `design-system/tools/` | `screenshot.js` (cattura desktop/mobile), `fetch-fonts.py` (Urbanist locale per gli ambienti senza Google Fonts), `wcag.py` (utilità di contrasto, non è una regola). |
 | `design-system/archive/` | Varianti precedenti (A e B). **Non fanno testo.** |
-| `schermate/direzioni/` | Schermate reali: tre direzioni per la vista principale, prova a 40, direzione scelta (`DIREZIONI.md`); dentro la direzione A le pagine Richieste, Dipartimento e Dipendente. |
+| `schermate/direzioni/` | Schermate reali: tre direzioni per la vista principale, prova a 40, direzione scelta (`DIREZIONI.md`); dentro la direzione A le pagine Richieste, Dipartimento, Dipendente ed Esecuzione; le approvazioni da mobile (`mobile.html`). |
 | `schermate/direzioni/avatar/` | Avatar dei dipendenti AI: motore del kit (verbatim in `vendor-avatars/`, impacchettato in `avatar-motore.js`) e involucro `avatar-dgt.js` con colori, stati e animazione della Console. |
 | `PRODUCT.md`, `CLAUDE.md` | Contesto di prodotto e istruzioni per le sessioni. |
 | `PROSSIMA-SESSIONE.md` | Passaggio di consegne: stato, decisioni, come riprendere. |
@@ -111,7 +111,7 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 | Card attività | 336×262, lime / `#4D4D4D` / scura; striscia con avatar 48, nome 15/500, ruolo 12; intaglio con campanella (punto rosso) e freccia; cerchio contornato 64 con icona; titolo 26; riga meta (coppia di avatar, data 500, "alle"); "Stato" 11; selettore a pillola 48 (bianca su lime, nera su grigio/scuro) con testo e chevron: nella card di un solo dipendente un chip di stato («In corso» lime, «Errore» rosa, l'ora) al posto dell'avatar, che sta già nella striscia; nelle card con più dipendenti (obiettivi) la pila di avatar e il badge «+N» dopo la pila, mai sotto (2026-09-04); mail vuota; video nero |
 | Videochiamata | 240 di altezza, gradiente grigio-caldo, avatar grande, controlli in vetro + rosso, espandi e chiudi |
 | Riepilogo | `#F4F4F4`, r28; cerchio nero con bacchetta, "Riepilogo" 26, freccia vuota; colonna orari 12 con badge rotondi 22 (lime "mi piace", rosa "stella") e linea `#C8C8C8`; card Documenti `#E4E4E4` r22 con intaglio per il download e due miniature 118 (`#D2D2D2`, foglio bianco, etichetta `#A7A7A7`); card Obiettivo con matita, testo 13/19 con parti in 500 (lime su mobile) |
-| Mobile | cornice 300×620 (bezel nero, r52), barra di stato "9:41", navigazione in basso a pillola nera 64 con quattro cerchi 44 (il primo bianco) e cerchio lime "video" a sinistra; WORKSPACE chiaro `#E0E0E0`; agenda nera con pannello lime, ore 38/300 ("14:00"), eventi bianchi, marcatore nero, blocco tratteggiato; videochiamata con Riepilogo |
+| Mobile | cornice 300×620 (bezel nero, r52), barra di stato "9:41", navigazione in basso a pillola nera 64 con quattro cerchi 44 (il primo bianco) e cerchio lime "video" a sinistra; WORKSPACE chiaro `#E0E0E0`; agenda nera con pannello lime, ore 38/300 ("14:00"), eventi bianchi, marcatore nero, blocco tratteggiato; videochiamata con Riepilogo. **DGT sul telefono (2026-09-05, versione 11, prima metà)**: la stessa cornice con l'ora dell'azienda; navigazione con i quattro cerchi del rail della Console e, al posto del video, la **campanella lime con il numero da approvare** (badge nero); **Da approvare** chiara (logo DGT, cerchio bianco dei filtri, iniziali del titolare; titolo 30/36; due numeri 26/300 con badge; la richiesta corrente come card lime r24 con striscia avatar 40, intaglio con campanella e freccia, icona del tipo 48, titolo 20/24, cliente · ora, riga «Decidi» con il chip tipo · costo · passi e i quattro cerchi 44 apri / commenta / approva nera / rifiuta rossa; «In coda» a righe bianche 48 con la corrente lime; riga «Riepilogo di oggi»); **Richiesta** nera (indietro e frecce della coda 44, chip 24, titolo 24/28, riga «chi · cliente · consegnata alle», documento bianco r24 con chip dell'allegato e testo 14/21, card scure r24 «Chi la propone» e «Nota del dipendente», barra fissa in basso: Approva lime 48 larga, matita, X rossa, con dissolvenza nera; il rifiuto trasforma la barra in etichetta 11 maiuscola, campo a pillola bianca 48 e pillole «Rifiuta» rossa / «Annulla») |
 | Campione colore | 220×220 r38, bordo 4 `#565656`, cursore con etichetta bianca |
 | Card sfida | `#4D4D4D` r30, icona in cerchio contornato 80 (lime), testo 14/20 centrato; una lime |
 | Passo del processo | cerchio contornato 64 con icona + pillola `#4D4D4D` 64; il primo lime; frecce tratteggiate |
@@ -223,18 +223,27 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     palpebre chiuse da libero) e dal **punto di stato** sul bordo della casella (lime, giallo, rosa; niente da fermo). Nelle
     **pile** di avatar il punto non c'è: lo stato lo dice il **gesto** del corpo (scelta del 2026-09-05, «settima tornata» in
     `DIREZIONI.md`).
+20. **Le approvazioni da mobile** (2026-09-05, versione 11, prima metà): il titolare approva dal telefono nella cornice mobile
+    dello specimen, con gli stessi componenti e lo stesso modello della Console (la decisione è `m.decidi` in `dati.js`: quello
+    che si decide sul telefono vale nella Console e viceversa). La navigazione in basso porta i quattro cerchi del rail e la
+    campanella lime con il numero da approvare; «Da approvare» è chiara come WORKSPACE, con la richiesta corrente come card
+    lime e la coda a righe; «Richiesta» è la tendina estesa in colonna su nero, con la barra fissa Approva / Chiedi modifiche /
+    Rifiuta. Approvare è al volo; **rifiutare chiede sempre il motivo** (anche dalla card: la X apre la richiesta con il campo
+    pronto). Le revisioni di performance restano alla Console finché il confronto delle versioni non è disegnato sul telefono.
+    Riepilogo di oggi, stato vuoto e prova a quaranta: sessione successiva.
 
 Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in
 `schermate/direzioni/DIREZIONI.md`, sezione 1. Sorgenti in `schermate/direzioni/` (`dati.js`, `comune.js`,
 `direzione-a.js`, `avatar/`). Dettaglio della versione 5 (dipendenti, editor, avatar), 5b/5c (orbe), 6 (pagina del
 Dipendente, revisione di performance), 7, 7b e 7c (orbe senza disco, le pelli; poi perla, corpi tondi e moti fluidi; poi
-gli occhi del kit) e 8 (pagina dell'Esecuzione) in `DIREZIONI.md`, sezione 4.
+gli occhi del kit), 8 (pagina dell'Esecuzione), 10 (l'identità degli orbi) e 11 (le approvazioni da mobile) in `DIREZIONI.md`, sezione 4.
 
 ## 11. Collegamenti
 
 - Confronto delle tre direzioni (artefatto): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
 - Direzione A cliccabile, tendine, pagine Richieste, Dipartimento, Dipendente (revisione di performance) ed Esecuzione, avatar ed editor (artefatto): https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34
+- Le approvazioni da mobile, schermate «Da approvare» e «Richiesta» sul telefono, cliccabili (artefatto): https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9
 - Avatar dei dipendenti, le due famiglie a confronto (artefatto): https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526
 - Le pelli dell'orbe senza disco, quattro soluzioni a confronto (artefatto): https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569
 - PR #3 verso `main` con schermate e documenti (unita): https://github.com/av3rgfx/DGT-Design-2.0/pull/3
