@@ -902,7 +902,9 @@ Screenshot: `a-costi.png` (la pagina a 11, tendina aperta), `a-costi-40.png`, `a
 (`screenshot-elementi.js`, `SCALE=2 H=3200`, `CLICK` sulle pillole): `a-costi-dipartimenti.png`, `-dipartimenti-oggi`,
 `-dipartimenti-anno`, `a-costi-dipendenti.png`, `-dipendenti-oggi`, `-dipendenti-anno`, `a-costi-clienti.png`, `-clienti-oggi`,
 `-clienti-anno`, `a-costi-modelli.png`, `-modelli-oggi`, `a-costi-strumenti.png`. Artefatto della Console ripubblicato allo stesso
-indirizzo: https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34. **L'utente non ha ancora giudicato la pagina.**
+indirizzo: https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34. Alla vista delle schermate **l'utente ha detto
+«bene»**, senza correzioni, e ha scelto la manutenzione come lavoro successivo (PR #10: https://github.com/av3rgfx/DGT-Design-2.0/pull/10).
+La prova cliccata è nel repository: `prove/costi.js`.
 
 ## 5. File
 
@@ -924,5 +926,6 @@ indirizzo: https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34.
 | `confronto.html` | pagina di confronto con tab e selettore 11/40 |
 | `build-unico.js` | genera il file unico per l'artefatto (`node build-unico.js direzione-a.html out.html`) |
 | `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`); le cornici del telefono (`mobile-*.png`, sedici catture delle versioni 11 e 12) e le sezioni della pagina Costi (`a-costi-*.png`, versione 13) con `screenshot-elementi.js` |
+| `prove/` | le prove cliccate con Playwright: `costi.js` (dal 2026-09-06, 48 verifiche della pagina dei Costi; legge `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH`). Le prove della Console e del mobile sono ancora da mettere nel repository (manutenzione) |
 
 Per gli screenshot: `design-system/tools/screenshot-page.js` (vedi `design-system/tools/README.md`).

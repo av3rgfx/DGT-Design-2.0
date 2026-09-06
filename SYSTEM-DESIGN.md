@@ -271,7 +271,7 @@ gli occhi del kit), 8 (pagina dell'Esecuzione), 10 (l'identità degli orbi), 11 
 - Branch della pagina del Dipendente e degli avatar senza segni dietro (versioni 5c e 6): `claude/avatar-orbe-employee-page-3nhqmk`, PR #5 (unita)
 - Branch dell'orbe senza disco, della pagina dell'Esecuzione e della cornice a tutto schermo (versioni 7–9): `claude/avatar-execution-page-nv8dm4`, PR #6: https://github.com/av3rgfx/DGT-Design-2.0/pull/6
 - Branch delle approvazioni da mobile, seconda metà (versione 12): `claude/mobile-approvals-v11-mgqf5d`, PR #9 (unita): https://github.com/av3rgfx/DGT-Design-2.0/pull/9
-- Branch della pagina dei Costi (versione 13): `claude/company-costs-page-llxcix`
+- Branch della pagina dei Costi (versione 13): `claude/company-costs-page-llxcix`, PR #10: https://github.com/av3rgfx/DGT-Design-2.0/pull/10
 
 - Artefatto pubblicato: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b
 - Branch di lavoro: `claude/dgt-design-system-fz5r1g`, PR #1 verso `main`: https://github.com/av3rgfx/DGT-Design-2.0/pull/1
