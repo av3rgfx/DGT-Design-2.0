@@ -125,15 +125,19 @@ con un'eccezione da confermare (decisione 28). Tutto è committato e pushato sul
     `.rev ul/li`, `.rev .k`): un padding sull'intero schermo, il titolo «Soul prompt v7 → v8» spezzato, il testo del prompt più
     grande. Con il telefono che carica solo i componenti la perdita sparisce e la schermata è come la descrive `mobile.js`. Tenuto
     come correzione (dettaglio e confronto in `DIREZIONI.md`, «Versione 14»); per tornare all'aspetto di prima basterebbe
-    `.m-scr.rev{padding:22px 24px 20px}` in `mobile.js`, ma sarebbe copiare un errore. **L'utente non ha ancora visto il
-    risultato.**
+    `.m-scr.rev{padding:22px 24px 20px}` in `mobile.js`, ma sarebbe copiare un errore. All'utente sono stati mostrati i due
+    ritagli prima/dopo: **non ha ancora dato un giudizio**.
+29. **Fine della sessione**: l'utente ha chiuso la sessione senza correzioni e senza rimettere in discussione la manutenzione
+    («bene, sessione conclusa»), chiedendo il passaggio di consegne, il prompt di avvio e la PR (#11). Restano da confermare la
+    revisione sul telefono (decisione 28) e i giudizi in sospeso delle decisioni 23 e 26; il prossimo lavoro resta quello scelto
+    nella decisione 27: **le pagine chat e agenda del rail**.
 
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti sintetici di DGT; documenti in italiano.
 
 ## Come riprendere: le pagine chat e agenda del rail
 
-Il lavoro di prodotto successivo, deciso dall'utente a fine sessione precedente (decisione 27) per dopo la manutenzione: i due cerchi
+Il lavoro di prodotto successivo, deciso dall'utente (decisione 27) e confermato alla chiusura di questa sessione (decisione 29): i due cerchi
 ancora inerti del rail della Console (`i-chat` e `i-cal`, i cerchi 4 e 5 in `cornice` di `direzione-a.js`, senza `data-az`) e le tab
 corrispondenti in basso sul telefono (`navigazione` in `mobile.js`: «Chat» e «Agenda», senza `data-az`).
 
@@ -244,7 +248,8 @@ non toccato.
 
 ```
 Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md. Controlla la PR #11: se è unita riparti da main con un branch nuovo, altrimenti
-continua sullo stesso branch. Lavoriamo nella direzione A · Console (schermate/componenti.js, schermate/direzioni/direzione-a.js,
+continua sullo stesso branch (nella manutenzione è cambiata una cosa visibile, la schermata della revisione sul telefono: se ti
+sembra sbagliata dimmelo e la rimetto com'era). Lavoriamo nella direzione A · Console (schermate/componenti.js, schermate/direzioni/direzione-a.js,
 dati.js, comune.js, avatar/, mobile.js): non cambiare la cornice, i componenti o i colori del sistema di design; niente emoji, solo
 le icone dello sprite; gli avatar sono quelli della versione 10 (tinta, occhi lilguy, punto di stato, gesto nelle pile).
 
