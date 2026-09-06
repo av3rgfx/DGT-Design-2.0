@@ -90,6 +90,12 @@ la pagina dei costi o la manutenzione (vedi «Cosa manca»).
     colonna (pillola del numero sopra la frase); la spunta della card di una revisione applica al volo, come nella Console; la
     prova è la pillola bianca sopra l'applica lime.
 
+24. **Correzione dell'utente sulla versione 12** («ci sono componenti che si sovrappongono», cattura della campanella lime della
+    navigazione con sopra l'ora e il badge della linea del tempo): fatto. L'ora e i badge della linea del tempo hanno
+    `z-index: 1` (la linea grigia deve passarci dietro) e scavalcavano la barra in basso; ora il corpo che scorre è un piano a
+    sé (`.m-scroll` con `position: relative` e `z-index: 0`) e la fascia sfocata, la navigazione, la dissolvenza e la barra
+    delle azioni hanno z-index 2 e 3. Regola: la barra in basso sta sempre sopra il contenuto, che le passa sotto sfocato.
+
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti sintetici di DGT; documenti in italiano.
 
@@ -147,6 +153,10 @@ Console (`min(2, n)`) e non ha ancora un significato nel modello.
   poi `DGT_MOBILE.css` (prefissato anch'esso con `.dirA`, così `.dirA .m-scr .task` vince su `.dirA .task`). Le variabili della
   Console vivono su `.a-app`: il mobile le ridichiara su `.m-page` (più `--light`). `--behind` (l'intaglio `.nt`) è `--light`
   sullo schermo chiaro, `--summary` sul Riepilogo e sullo stato vuoto (`.m-scr.rie`), `--black` sul nero.
+- **Lo z-index dentro lo schermo del telefono**: tutto quello che sta in basso fisso (fascia sfocata, navigazione, dissolvenza,
+  barra delle azioni) ha uno z-index esplicito (2 e 3) e il corpo che scorre è un piano a sé (`.m-scroll` con
+  `position: relative` e `z-index: 0`). Senza il piano, un qualsiasi `z-index` dentro il contenuto (i badge della linea del
+  tempo) scavalca la barra, che è solo `position: absolute` senza z-index.
 - Le classi del mobile possono **incrociare per caso quelle della Console**: `.m-scr.rev` (la schermata della revisione) faceva
   scattare `.dirA .rev li b` (la pillola del numero nella card revisione della Console). Ora la pillola è dichiarata in
   `.m-det li b`; quando si aggiunge una classe corta al telefono, cercarla prima in `direzione-a.js`.

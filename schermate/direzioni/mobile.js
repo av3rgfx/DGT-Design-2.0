@@ -76,8 +76,9 @@ window.DGT_MOBILE = (function () {
 .m-sb .sig svg{width:14px;height:14px}
 .m-sb .sig i{display:block;height:9px;width:18px;border-radius:3px;border:1px solid currentColor}
 .m-sb .sig i::after{content:"";display:block;height:100%;width:80%;background:currentColor;border-radius:2px}
-/* il corpo scorre sotto la navigazione (o sotto la barra delle azioni) */
-.m-scroll{flex:1;min-height:0;overflow:auto;scrollbar-width:none;padding-bottom:96px}
+/* il corpo scorre sotto la navigazione (o sotto la barra delle azioni). position:relative con z-index 0 lo rende un piano a sé:
+   gli z-index di dentro (i badge e le ore della linea del tempo) restano dentro e non scavalcano la barra in basso. */
+.m-scroll{position:relative;z-index:0;flex:1;min-height:0;overflow:auto;scrollbar-width:none;padding-bottom:96px}
 .m-scroll::-webkit-scrollbar{display:none}
 .m-scr.rev .m-scroll{padding-bottom:150px}
 .m-scr.motivo .m-scroll{padding-bottom:200px}
@@ -170,8 +171,8 @@ window.DGT_MOBILE = (function () {
    Sotto la navigazione il contenuto che scorre è sfocato e appena scurito, con il bordo alto sfumato (correzione dell'utente,
    2026-09-05): la campanella lime resta distinta anche quando sotto passano la card lime o la riga lime della coda. Il vetro
    sfocato è già nel sistema (i pulsanti «glass» della videochiamata). */
-.m-navfondo{position:absolute;left:0;right:0;bottom:0;height:112px;background:rgb(0 0 0/.16);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);-webkit-mask-image:linear-gradient(180deg,transparent,#000 40px);mask-image:linear-gradient(180deg,transparent,#000 40px);pointer-events:none}
-.m-bnav{position:absolute;left:14px;right:14px;bottom:14px;height:64px;display:flex;align-items:center;gap:10px}
+.m-navfondo{position:absolute;left:0;right:0;bottom:0;z-index:2;height:112px;background:rgb(0 0 0/.16);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);-webkit-mask-image:linear-gradient(180deg,transparent,#000 40px);mask-image:linear-gradient(180deg,transparent,#000 40px);pointer-events:none}
+.m-bnav{position:absolute;left:14px;right:14px;bottom:14px;z-index:3;height:64px;display:flex;align-items:center;gap:10px}
 .m-bnav .meet{position:relative;width:52px;height:52px;border-radius:50%;background:var(--lime);display:grid;place-items:center;color:var(--ink);flex:none}
 .m-bnav .meet svg{width:20px;height:20px}
 .m-bnav .meet .n{position:absolute;top:-5px;right:-5px;min-width:22px;height:22px;padding:0 6px;border-radius:var(--r-pill);background:var(--ink);color:var(--white);font-size:12px;font-weight:500;display:grid;place-items:center;border:2px solid var(--light)}
@@ -227,11 +228,11 @@ window.DGT_MOBILE = (function () {
 .m-det ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
 .m-det li{display:grid;grid-template-columns:minmax(0,1fr);gap:5px;font-size:12px;line-height:17px;color:#DADADA}
 .m-det li b{justify-self:start;font-weight:500;color:var(--white);white-space:nowrap;background:rgb(255 255 255/.1);border-radius:var(--r-pill);padding:0 8px;height:22px;display:inline-flex;align-items:center;font-size:12px}
-.m-fade{position:absolute;left:0;right:0;bottom:0;height:130px;background:linear-gradient(180deg,transparent,var(--black) 45%);pointer-events:none}
+.m-fade{position:absolute;left:0;right:0;bottom:0;z-index:2;height:130px;background:linear-gradient(180deg,transparent,var(--black) 45%);pointer-events:none}
 .m-scr.rev .m-fade{height:190px;background:linear-gradient(180deg,transparent,var(--black) 38%)}
 .m-scr.motivo .m-fade{height:230px;background:linear-gradient(180deg,transparent,var(--black) 32%)}
 /* la barra delle azioni: una colonna a larghezza vincolata (niente sfori orizzontali: lo schermo non deve poter scorrere di lato) */
-.m-bar{position:absolute;left:14px;right:14px;bottom:14px;display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.m-bar{position:absolute;left:14px;right:14px;bottom:14px;z-index:3;display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
 .m-bar>*{min-width:0}
 .m-bar .row{display:flex;gap:8px;align-items:center;min-width:0}
 .m-bar .pill{height:48px;flex:1;justify-content:center;cursor:pointer;min-width:0;padding:0 16px}

@@ -818,6 +818,14 @@ il modello e la richiesta corrente.
    resta una pillola. Il Riepilogo a quaranta: 12 al lavoro, 427 € spesi, le miniature delle due consegne più recenti, il diario
    generato (cinque voci). Nessuno sforo orizzontale in nessuna schermata, nessun errore di console.
 
+**Correzione dell'utente alla prima vista** («ci sono componenti che si sovrappongono», con la cattura della campanella lime
+della navigazione sopra l'ora e il badge della linea del tempo): l'ora e i badge rotondi della linea del tempo hanno
+`z-index: 1` (serve perché la linea grigia passi dietro), e siccome il corpo che scorre non era un piano a sé finivano
+**sopra** la barra in basso invece che sotto la fascia sfocata. Ora il corpo che scorre è un piano a sé
+(`.m-scroll` con `position: relative` e `z-index: 0`: gli z-index di dentro restano dentro) e la fascia sfocata, la pillola
+della navigazione, la dissolvenza e la barra delle azioni hanno uno z-index esplicito (2 e 3). La regola che ne esce: **la
+barra in basso sta sempre sopra il contenuto che scorre**, e il contenuto le passa sotto sfocato.
+
 Scelte fatte costruendo, da confermare: lo stato vuoto prende il fondo del Riepilogo (le `dcard` `#E4E4E4` sul chiaro `#E0E0E0`
 non si vedrebbero); la data sta nella riga di navigazione e non nell'intestazione (con il chip accanto, «Riepilogo di oggi» a
 22 px si troncava); i tre numeri sotto l'intestazione al posto di una riga di testo (andava a capo); la spunta della card di una
