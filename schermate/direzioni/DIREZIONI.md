@@ -1099,6 +1099,14 @@ catture della revisione sul telefono senza avatar.
 attorno al centro (`scale`), non si allarga con una percentuale dentro una griglia; una percentuale in altezza dentro una
 riga automatica cresce solo verso il basso.
 
+**Prossimo lavoro, scelto dall'utente a fine sessione**: la **barra «Oggi in azienda»** (`barraAgenda` in `direzione-a.js`,
+`.a-sched` e `.tl`), la barra verde in cima alla Console. «Non capisco a primo impatto il suo utilizzo… mi dà l'idea che dica
+chi sta lavorando e chi ha un lavoro programmato? Ma non ne sono sicuro, in ogni caso non è ben chiaro»: la prossima sessione
+fa uno **studio e un'analisi UX** della barra e propone come renderla più chiara e utile. Il brief sta in
+`PROSSIMA-SESSIONE.md`, «Come riprendere». Da tenere presente: la barra viene dal riferimento e vale anche come **barra dei
+passi** nella pagina Esecuzione (dove, avendo le etichette, si legge molto meglio), e dalla versione 15 c'è la pagina Agenda
+con una pista proporzionale alle ore.
+
 ## 5. File
 
 | File | Ruolo |

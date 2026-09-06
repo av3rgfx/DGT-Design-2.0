@@ -4,7 +4,8 @@ Stato al 2026-09-06, fine della sessione delle **pagine Agenda e Chat** (version
 rail che erano inerti ora aprono due pagine vere, e sul telefono ci sono le tab corrispondenti più la conversazione), più la
 **correzione degli avatar decentrati** chiesta dall'utente a fine sessione (15a: l'avatar torna al centro della sua casella in tutto
 il prodotto). Le pagine che già esistevano non sono cambiate a parte quello: verificato byte per byte prima e dopo. Tutto è committato e pushato sul branch indicato sotto, con
-la PR aperta verso `main`. **Prossimo passo**: da scegliere (proposta in «Come riprendere»).
+la PR aperta verso `main`. **Prossimo passo**, scelto dall'utente: lo **studio UX della barra «Oggi in azienda»** (la barra
+verde in cima alla Console), che a colpo d'occhio non si capisce (vedi «Come riprendere»).
 
 ## Stato
 
@@ -163,31 +164,67 @@ la PR aperta verso `main`. **Prossimo passo**: da scegliere (proposta in «Come 
     di `(scala − 1) / 2` (vedi «Stato» e `DIREZIONI.md`, «Correzione 15a»). Corretto con una riga (`scale` al posto delle
     percentuali), screenshot e artefatti rifatti. **L'utente non ha ancora visto il risultato.**
 
+32. **Fine della sessione**: alla vista del prima/dopo l'utente ha detto **«bene»** e ha chiuso la sessione, chiedendo il
+    passaggio di consegne, il prompt di avvio e la PR. Ha scelto il lavoro della prossima sessione: **la barra «Oggi in azienda»**
+    (la parte verde in cima alla Console). Parole sue: «non capisco a primo impatto il suo utilizzo… mi dà l'idea che dica chi sta
+    lavorando e chi ha un lavoro programmato? Ma non ne sono sicuro, in ogni caso non è ben chiaro»; chiede **uno studio e
+    un'analisi UX** e un modo per renderla più chiara e utile. Dettaglio in «Come riprendere».
+
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti sintetici di DGT; documenti in italiano.
 
-## Come riprendere: il lavoro non è ancora scelto
+## Come riprendere: lo studio UX della barra «Oggi in azienda»
 
-Il rail della Console non ha più cerchi inerti e il telefono ha una sola tab spenta. Il prossimo lavoro lo sceglie l'utente; se non
-risponde, l'ordine proposto è questo.
+Il lavoro scelto dall'utente (decisione 32). La barra verde in cima alla Console — `barraAgenda(m)` in `direzione-a.js`, classi
+`.a-sched` e `.tl` — è la **barra agenda del riferimento** (case study, `design-system/reference/`), copiata così com'è fin dalla
+versione 1 e mai messa in discussione. L'utente la guarda e non capisce a che serve.
 
-1. Leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezioni 2, 6, 8 e 10) e `schermate/direzioni/DIREZIONI.md` (sezione 4 dalla versione 13,
-   sezione 5 con la tabella dei file). Controllare il branch e la PR (vedi «Stato»). Rifare i font locali (`fetch-fonts.py`) e
-   lanciare le **quattro** prove di `prove/` prima di toccare qualcosa: sono la base di confronto, insieme agli screenshot.
-2. **Se l'utente manda correzioni** (le pagine Agenda e Chat, la revisione sul telefono, la pagina dei Costi, il mobile),
-   applicarle prima: le scelte da confermare stanno nelle decisioni 23, 26, 28 e 30.
-3. **Proposta A — la tab «Dipartimenti» del telefono** (l'ultima inerte): l'organizzazione sul telefono, i quattro dipartimenti
-   come righe con la pila degli avatar e il numero al lavoro, e il dipartimento aperto con i suoi dipendenti; stesso modello,
-   stessi componenti, la pagina Dipartimento della Console come riferimento.
-4. **Proposta B — la tendina del passo** nell'Esecuzione (le frecce dei passi oggi non aprono niente): che cosa ha fatto il
-   dipendente in quel passo, gli strumenti chiamati con il costo, l'uscita del passo; è il punto aperto più vecchio.
-5. **Proposta C — i controlli ancora inerti**: cerca / filtri / scarica delle intestazioni, i filtri delle sezioni Passi, Output e
-   Costo dell'Esecuzione, le tre pillole della sezione «Spesa del mese» del Dipartimento, le frecce delle righe per modello.
-   Lavoro di rifinitura, tutto già disegnato: si tratta di collegarlo.
-6. Comunque vada: modello in `dati.js` senza toccare i numeri che le prove verificano; componenti nuovi solo se davvero mancano, e
-   allora in `componenti.js` se servono anche al telefono. Poi le prove (aggiornarle o aggiungerne), gli screenshot in
-   `screenshot/`, gli artefatti rigenerati e ripubblicati allo stesso indirizzo (lettura per intero prima, vedi «Note tecniche»),
-   `DIREZIONI.md` (versione 16), `SYSTEM-DESIGN.md`, i README, questo file, commit, push e PR.
+**Che cosa mostra oggi** (per non doverlo ricostruire): «Oggi in azienda», il chip con la data, poi dentro la pista lime, da
+sinistra a destra: l'**ultima esecuzione conclusa** (pillola bianca con la pila degli avatar e la durata, «38 min»); il segmento
+**in corso** (lime più scuro, «3 al lavoro», la pila di chi lavora, il tasto play) con il segno dell'ora corrente (10:42) sul suo
+bordo sinistro; poi un separatore, l'ora di un **pianificato** (15:00) e la pillola traslucida con la sua pila; lo stesso per le
+17:00. In fondo, fuori dalla pista, il cerchio che dalla versione 15 apre la pagina Agenda.
+
+**I sospetti da verificare nell'analisi** (non sono conclusioni: vanno confermati guardando la barra e il riferimento):
+- sembra una linea del tempo ma non lo è: le larghezze non sono proporzionali alle ore, il segmento «in corso» si allunga per
+  riempire lo spazio e i pianificati sono pillole di misura fissa;
+- il segno di «adesso» sta sul bordo del segmento verde, non in una posizione che voglia dire qualcosa;
+- niente dice che la prima pillola è **conclusa** e le ultime sono **da fare**: si legge «38 min», «15:00», «17:00» e delle pile
+  di avatar, e da lì nasce la lettura dell'utente («chi lavora e chi ha un lavoro programmato?»);
+- due verdi vicini (pista `--lime`, segmento `--lime-deep`) con poco contrasto fra loro;
+- la stessa barra, nella pagina Esecuzione (`barraPassi`), si legge molto meglio: lì ogni segmento ha **un'etichetta** («passo 3
+  di 7 · Carrello collegato al magazzino · 24 min»). È il confronto più utile che abbiamo in casa;
+- dalla versione 15 esiste la pagina Agenda con la barra del giorno vera (`.giorno .pista`, ore proporzionali): forse la barra in
+  cima deve dire *meno* e portare lì, non provare a dire tutto.
+
+**Che cosa produrre**, nell'ordine:
+1. **L'analisi**: che cosa dice oggi la barra, che cosa un titolare deve sapere a colpo d'occhio quando apre la Console (chi
+   lavora adesso, che cosa aspetta lui, che cosa parte dopo, se qualcosa è fermo), e che cosa di questo la barra dice davvero.
+   Poche righe per punto, con le catture a supporto (`screenshot-elementi.js` sul selettore `.a-sched`).
+2. **Due o tre strade**, disegnate **nella Console vera** (non mockup a parte) e catturate: per esempio (a) la stessa barra con
+   le etichette e i tre gruppi nominati; (b) una barra proporzionale alle ore, come la pista della pagina Agenda ridotta;
+   (c) una barra che dice solo lo stato dell'azienda adesso e porta all'Agenda per il resto. Per ognuna: che cosa risolve, che
+   cosa perde, che cosa costa.
+3. **Una raccomandazione** e, se l'utente non risponde, **la si applica** (è il suo modo di lavorare fin qui: «scegli tu se non
+   rispondo»). Le strade scartate restano scritte in `DIREZIONI.md`.
+
+**Vincoli.** La barra è un componente del sistema di design copiato dal riferimento: se cambia, cambia anche `SYSTEM-DESIGN.md`
+(sezione 6, la riga della barra agenda) e va detto chiaramente in `DIREZIONI.md` che cosa si è scostato dal riferimento e perché
+— è l'unica regola dell'utente che si tocca, quindi va motivata, non data per scontata. Restano fermi: niente emoji, solo le
+icone dello sprite; i colori e le forme del sistema; gli avatar della versione 10; un solo accento (il lime è l'attenzione del
+titolare). La barra è in tutte le pagine della Console e nella pagina Esecuzione come barra dei passi: qualunque cambio va
+guardato in tutte e due, e il telefono non ha la barra (ha la linea del tempo del Riepilogo, che può ispirare).
+
+**Il metodo di sempre**, prima e dopo: rifare i font locali (`fetch-fonts.py`), lanciare le **quattro** prove di `prove/` e
+catturare le pagine prima di toccare qualcosa (base di confronto); leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezioni 2, 6, 8 e 10)
+e `DIREZIONI.md` (sezione 4 dalla versione 13, sezione 5); controllare branch e PR (vedi «Stato»). **Se l'utente manda correzioni**
+(le pagine Agenda e Chat, gli avatar ricentrati, la pagina dei Costi, il mobile), applicarle prima: le scelte da confermare stanno
+nelle decisioni 23, 26, 28, 30 e 31. Alla fine: prove aggiornate, screenshot, artefatti ripubblicati allo stesso indirizzo
+(lettura per intero prima, vedi «Note tecniche»), `DIREZIONI.md` (versione 16), `SYSTEM-DESIGN.md`, i README, questo file, commit,
+push e PR.
+
+Lavori proposti ma non scelti, se la barra si chiude presto: la tab «Dipartimenti» del telefono (l'ultima inerte); la tendina del
+passo nell'Esecuzione; i controlli ancora inerti (cerca, filtri, scarica delle intestazioni, le pillole della «Spesa del mese»).
 
 Punti aperti ereditati (non chiesti dall'utente, da non toccare senza richiesta): la tendina del passo e i filtri inerti
 dell'Esecuzione; le tre pillole della sezione «Spesa del mese» del Dipartimento (la pagina dei Costi ha le sue, funzionanti); i
@@ -198,6 +235,8 @@ download e la matita delle card del Riepilogo sono inerti; il badge rosa «campa
 quello della riga WORKSPACE della Console (`min(2, n)`) e non ha ancora un significato nel modello; il badge «↓12%» del numero
 «spesi oggi» nella home è decorativo; `design-system/tokens.css` porta solo tre token di moto e un easing diverso da quello dello
 specimen (`cubic-bezier(.2,.8,.2,1)` contro `(.22,1,.36,1)`).
+Punto aperto che diventa il lavoro della prossima sessione: la barra «Oggi in azienda» non si spiega a colpo d'occhio
+(decisione 32).
 Punti aperti nuovi della versione 15: nell'agenda «Sposta» porta all'agenda ma non sposta davvero l'orario (il modello non ha una
 mutazione per farlo) e i giorni della settimana non si aprono; nella chat il dipendente non risponde da solo alla nota del titolare
 (il filo aggiunge solo la voce del titolare) e non c'è ricerca dentro il filo; il «non letto» si azzera aprendo il filo e non
@@ -271,8 +310,8 @@ sopravvive al ricaricamento della pagina.
 
 ## Cosa manca
 
-1. **Il lavoro della prossima sessione**: lo sceglie l'utente; le tre proposte stanno in «Come riprendere» (la tab «Dipartimenti»
-   del telefono, la tendina del passo, i controlli ancora inerti).
+1. **Lo studio UX della barra «Oggi in azienda»**: il lavoro scelto dall'utente per la prossima sessione (decisione 32, brief in
+   «Come riprendere»).
 2. **Il giudizio dell'utente** sulle pagine Agenda e Chat (versione 15, decisione 30), sugli avatar ricentrati (15a, decisione 31), sulla revisione sul telefono (decisione 28),
    sulle schermate del mobile (versioni 11 e 12, decisione 23), sulla pagina del Dipendente (versione 6) e su quella
    dell'Esecuzione (versione 8): in sospeso, non blocca. La pagina dei Costi ha avuto un «bene» (decisione 27).
@@ -283,14 +322,16 @@ sopravvive al ricaricamento della pagina.
 ```
 Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md. Controlla la PR #12: se è unita riparti da main con un branch nuovo, altrimenti
 continua sullo stesso branch. Lavoriamo nella direzione A · Console (schermate/componenti.js, schermate/direzioni/direzione-a.js,
-dati.js, comune.js, avatar/, mobile.js): non cambiare la cornice, i componenti o i colori del sistema di design; niente emoji, solo
-le icone dello sprite; gli avatar sono quelli della versione 10 (tinta, occhi lilguy, punto di stato, gesto nelle pile).
+dati.js, comune.js, avatar/, mobile.js): niente emoji, solo le icone dello sprite; gli avatar sono quelli della versione 10
+(tinta, occhi lilguy, punto di stato, gesto nelle pile); i colori restano quelli del sistema.
 
-Guarda le pagine Agenda e Chat della versione 15 e gli avatar (ricentrati nella casella, correzione 15a) e dimmi se vanno bene;
-se ci sono correzioni, falle prima di tutto il resto. Poi
-prendi il lavoro dalle proposte in «Come riprendere» (A: la tab Dipartimenti del telefono; B: la tendina del passo dell'Esecuzione;
-C: i controlli ancora inerti): scegli tu se non rispondo. Prima lancia le quattro prove di prove/ e fai gli screenshot delle pagine
-che esistono: non devono cambiare. Poi prove, screenshot, artefatti della Console e del mobile ripubblicati allo stesso indirizzo,
-DIREZIONI.md (versione 16), SYSTEM-DESIGN.md, README e PROSSIMA-SESSIONE.md, commit, push e PR. Alla fine mostrami cosa è cambiato
-e fermati.
+Lavoro della sessione: la barra «Oggi in azienda», la barra verde in cima alla Console. Non capisco a primo impatto a cosa serve:
+mi dà l'idea che dica chi sta lavorando e chi ha un lavoro programmato, ma non ne sono sicuro. Fammi prima uno studio e un'analisi
+UX (che cosa dice oggi, che cosa dovrei capire in un colpo d'occhio, dove si rompe), poi due o tre strade disegnate nella Console
+vera e catturate, con pro e contro, e una tua raccomandazione: se non rispondo scegli tu e applicala. La barra viene dal
+riferimento: se ti scosti, dimmi dove e perché. Guarda anche la barra dei passi dell'Esecuzione, che usa lo stesso componente.
+
+Prima lancia le quattro prove di prove/ e fai gli screenshot: sono la base di confronto. Poi prove, screenshot, artefatti della
+Console e del mobile ripubblicati allo stesso indirizzo, DIREZIONI.md (versione 16), SYSTEM-DESIGN.md, README e
+PROSSIMA-SESSIONE.md, commit, push e PR. Alla fine mostrami cosa è cambiato e fermati.
 ```
