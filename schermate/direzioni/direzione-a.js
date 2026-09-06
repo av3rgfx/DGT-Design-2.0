@@ -1527,6 +1527,6 @@ window.DIREZIONE_A = (function () {
     return st;
   }
 
-  /* av, iconaTipo e nomeTipo servono anche al telefono (mobile.js, versione 11) */
-  return { id: 'A', nome: 'Console', css: prefissa(css, '.dirA'), render, monta, av, iconaTipo, nomeTipo };
+  /* av, iconaTipo e nomeTipo servono anche al telefono (mobile.js, versione 11); differenze (le due versioni a confronto) dalla versione 12 */
+  return { id: 'A', nome: 'Console', css: prefissa(css, '.dirA'), render, monta, av, iconaTipo, nomeTipo, differenze };
 })();

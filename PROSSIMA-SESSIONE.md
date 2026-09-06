@@ -1,35 +1,38 @@
 # Prossima sessione — passaggio di consegne
 
-Stato al 2026-09-05, fine della sessione sulle **approvazioni da mobile, prima metà** (versione 11 della direzione A · Console:
-le schermate «Da approvare» e «Richiesta» sul telefono, per post, documento, lista e proposta, con il rifiuto con motivo). Tutto
-è committato e pushato sul branch indicato sotto. **Prossimo passo**: la seconda metà del mobile (Riepilogo di oggi, la revisione
-sul telefono, lo stato vuoto, la prova a quaranta), dopo il giudizio dell'utente sulle due schermate costruite.
+Stato al 2026-09-06, fine della sessione sulle **approvazioni da mobile, seconda metà** (versione 12 della direzione A · Console:
+la schermata «Riepilogo di oggi», lo stato vuoto a coda finita, la revisione di performance sul telefono con le due versioni a
+confronto e le quattro decisioni, le revisioni nella coda del telefono, la prova a quaranta). Tutto è committato e pushato sul
+branch indicato sotto. **Prossimo passo**: il giudizio dell'utente sulle tre schermate (nessuna è ancora stata giudicata), poi
+la pagina dei costi o la manutenzione (vedi «Cosa manca»).
 
 ## Stato
 
-- Branch: `claude/approvazioni-mobile-direzione-a-t5290b` (da `main`, che contiene le PR #1, #3, #4, #5, #6 e #7; la #7 è stata
-  unita all'inizio di questa sessione). A fine sessione è aperta la **PR #8** verso `main`
-  (https://github.com/av3rgfx/DGT-Design-2.0/pull/8): se all'avvio della prossima sessione risulta già unita, ripartire da `main`
-  con un branch nuovo; se è ancora aperta, continuare sullo stesso branch e la PR si aggiorna da sola.
-- Artefatto del **mobile** (`mobile.html`: i due telefoni affiancati, «Da approvare» e «Richiesta», cliccabili; ripubblicato
-  allo stesso indirizzo dopo la correzione della navigazione):
+- Branch: `claude/mobile-approvals-v11-mgqf5d` (da `main`, che contiene le PR #1, #3, #4, #5, #6, #7 e #8; la #8 era già unita
+  all'inizio di questa sessione). A fine sessione è aperta la **PR #9** verso `main`
+  (https://github.com/av3rgfx/DGT-Design-2.0/pull/9), con la versione 12 e la correzione dell'impilamento: se all'avvio della
+  prossima sessione risulta già unita, ripartire da `main` con un branch nuovo; se è ancora aperta, continuare sullo stesso
+  branch e la PR si aggiorna da sola.
+- Artefatto del **mobile** (`mobile.html`: i tre telefoni affiancati, «Da approvare», «Richiesta», «Riepilogo di oggi»,
+  cliccabili; ripubblicato allo stesso indirizzo con l'etichetta «Versione 12: seconda metà»):
   https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9. Si rigenera con
   `node schermate/direzioni/build-unico.js mobile.html /percorso/nova-studio-mobile.html`.
-- Artefatto della **Console** (direzione A cliccabile: home, tendine, Richieste, Dipartimento, editor del dipendente, pagina
-  del Dipendente, pagina dell'Esecuzione, avatar della versione 10): https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34
-  (non ripubblicato in questa sessione: la Console non cambia aspetto; `decidi` è passata nel modello senza effetti visibili).
-  Si rigenera con `node schermate/direzioni/build-unico.js direzione-a.html /percorso/console.html`.
+- Artefatto della **Console** (direzione A cliccabile): https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34
+  (non ripubblicato: la Console non cambia aspetto; `direzione-a.js` esporta in più `differenze`, `dati.js` ha
+  `azienda.scadenzaMese`). Si rigenera con `node schermate/direzioni/build-unico.js direzione-a.html /percorso/console.html`.
 - Artefatti precedenti, non toccati: identità degli orbi https://claude.ai/code/artifact/1fc2ee53-3c23-4462-922a-cd581a90b6d6
   (`avatar-identita.html`), pelli dell'orbe https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569
   (`avatar-pelli.html`), le due famiglie kit/orbe https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526
   (`confronto-avatar.html`), confronto A/B/C https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
   (`confronto.html`), specimen https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b (`DESIGN.md` non descrive
   ancora la sezione «moto» dello specimen: da fare).
-- Documento unico: `SYSTEM-DESIGN.md` (sezione 6, riga «Mobile» con la parte DGT; sezione 10, regole 1–20; sezione 11 con
-  l'artefatto del mobile). Studio e versioni della direzione A: `schermate/direzioni/DIREZIONI.md` (sezione 4: «Versione 11»
-  con quanto costruito, le correzioni e quanto resta; sezione 5, tabella dei file con `mobile.js` / `.html`).
-- Screenshot nuovi in `schermate/direzioni/screenshot/`: `mobile.png` (la pagina), `mobile-1-da-approvare.png`,
-  `mobile-1-coda.png`, `mobile-2-richiesta.png`, `mobile-2-richiesta-post.png`, `mobile-2-rifiuto.png`.
+- Documento unico: `SYSTEM-DESIGN.md` (sezione 6, riga «Mobile» con le due metà; sezione 10, regola 20 aggiornata; sezione 11
+  con l'artefatto del mobile). Studio e versioni della direzione A: `schermate/direzioni/DIREZIONI.md` (sezione 4: «Versione 12»
+  con quanto costruito e le scelte da confermare; sezione 5, tabella dei file).
+- Screenshot in `schermate/direzioni/screenshot/`: `mobile.png` (la pagina con i tre telefoni) e le cornici `mobile-1-da-approvare`,
+  `mobile-1-coda`, `mobile-1-vuoto`, `mobile-1-vuoto-fondo`, `mobile-2-richiesta`, `mobile-2-richiesta-post`, `mobile-2-rifiuto`,
+  `mobile-2-revisione`, `mobile-2-revisione-differenze`, `mobile-2-revisione-perche`, `mobile-2-revisione-modello`,
+  `mobile-3-riepilogo`, `mobile-3-riepilogo-fondo`, `mobile-40-coda`, `mobile-40-riepilogo` (`.png`).
 - Regole in `CLAUDE.md`: invariate (direzione A, avatar della versione 10, niente emoji).
 
 ## Decisioni dell'utente (in ordine)
@@ -69,119 +72,167 @@ sul telefono, lo stato vuoto, la prova a quaranta), dopo il giudizio dell'utente
     tinta del dipendente). Lo stato: tre varianti → **punto** sul bordo come standard, **gesto** nelle pile (versione 10).
 20. La struttura delle **approvazioni da mobile** proposta è accettata («si procederà con le approvazioni da mobile come
     proposto»).
-21. **2026-09-05, questa sessione**: costruita la **prima metà del mobile** come da struttura (schermate 1 e 2 per post,
-    documento, lista e proposta, rifiuto con motivo, `m.decidi` nel modello). **L'utente non ha ancora visto né giudicato le
-    due schermate**: la sessione si è fermata, come chiesto, dopo averle mostrate. Scelte fatte in costruzione, da confermare:
-    il rifiuto chiede sempre il motivo (anche dalla card della prima schermata); approvare è al volo; due numeri invece di tre
-    sulla prima schermata («spesi oggi» va nel Riepilogo); le revisioni di performance restano fuori dalla coda del telefono
-    finché il confronto non è disegnato (la Console dice 4 da approvare, il telefono 2); i due telefoni affiancati condividono
-    modello e richiesta corrente.
+21. **2026-09-05**: costruita la **prima metà del mobile** (schermate 1 e 2 per post, documento, lista e proposta, rifiuto con
+    motivo, `m.decidi` nel modello). Scelte fatte in costruzione, da confermare: il rifiuto chiede sempre il motivo (anche dalla
+    card della prima schermata); approvare è al volo; due numeri invece di tre sulla prima schermata («spesi oggi» va nel
+    Riepilogo); i telefoni affiancati condividono modello e richiesta corrente.
 22. **Prima correzione dell'utente sul mobile** («l'icona delle approvazioni ha lo stesso colore di alcune card e quando scorri
     non si distingue; invece di cambiare colore al pulsante, sfondo sfocato e leggermente oscurato nella parte bassa dove c'è la
-    navbar»): fatto, fascia `.m-navfondo` sotto la navigazione (blur 14, nero al 16 %, bordo alto sfumato). Le due schermate
-    per il resto non sono ancora state giudicate («bene» sul primo sguardo).
+    navbar»): fatto, fascia `.m-navfondo` sotto la navigazione (blur 14, nero al 16 %, bordo alto sfumato). La regola che ne
+    esce: un pulsante non cambia colore per distinguersi, è il fondo a farsi da parte.
+23. **2026-09-06, questa sessione**: costruita la **seconda metà del mobile** come da struttura (Riepilogo di oggi, stato vuoto,
+    revisione sul telefono, revisioni in coda, prova a quaranta). **L'utente non ha ancora visto né giudicato le tre schermate**:
+    la sessione si è fermata, come chiesto, dopo averle mostrate. Scelte fatte in costruzione, da confermare (dettaglio in
+    `DIREZIONI.md`, «Versione 12»): a coda finita la prima schermata prende il fondo del Riepilogo `#F4F4F4` (le card `#E4E4E4`
+    sul chiaro `#E0E0E0` non si vedrebbero) e la card «Niente da approvare» è bianca con il cerchio nero della spunta; nel
+    Riepilogo la data sta nella riga di navigazione come chip e sotto il titolo stanno i tre numeri della riga WORKSPACE (al
+    lavoro, da approvare, spesi oggi); le miniature delle consegne sono le due consegne di oggi più recenti; il diario mostra le
+    ultime cinque voci; nella revisione il titolo è corto («Soul prompt v7 → v8», «Da Standard a Esperto») e le evidenze stanno in
+    colonna (pillola del numero sopra la frase); la spunta della card di una revisione applica al volo, come nella Console; la
+    prova è la pillola bianca sopra l'applica lime.
+
+24. **Correzione dell'utente sulla versione 12** («ci sono componenti che si sovrappongono», cattura della campanella lime della
+    navigazione con sopra l'ora e il badge della linea del tempo): fatto. L'ora e i badge della linea del tempo hanno
+    `z-index: 1` (la linea grigia deve passarci dietro) e scavalcavano la barra in basso; ora il corpo che scorre è un piano a
+    sé (`.m-scroll` con `position: relative` e `z-index: 0`) e la fascia sfocata, la navigazione, la dissolvenza e la barra
+    delle azioni hanno z-index 2 e 3. Regola: la barra in basso sta sempre sopra il contenuto, che le passa sotto sfocato.
+
+25. **Fine della sessione**: l'utente ha scelto il **punto 2 di «Cosa manca», la pagina dei costi dell'azienda**, come lavoro
+    della prossima sessione. Il giudizio sulle tre schermate del mobile resta in sospeso e non blocca: se arrivano correzioni,
+    si applicano prima della pagina dei costi.
 
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti sintetici di DGT; documenti in italiano.
 
-## Come riprendere: la seconda metà del mobile
+## Come riprendere: la pagina dei costi dell'azienda
 
-1. Leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezioni 6 e 10, regole 19 e 20) e `schermate/direzioni/DIREZIONI.md` («Versione 11»).
-   Controllare il branch (vedi «Stato»). Aprire `schermate/direzioni/mobile.html` (i due telefoni; `?schermata=2&richiesta=1`
-   per il post) e `direzione-a.html` per la Console.
-2. **Raccogliere il giudizio dell'utente** sulle due schermate (screenshot in `schermate/direzioni/screenshot/mobile-*.png`,
-   artefatto in «Stato») e correggere prima di andare avanti. Una correzione è già arrivata e fatta (decisione 22: la fascia
-   sfocata sotto la navigazione); la regola che ne esce: un pulsante non cambia colore per distinguersi, è il fondo a farsi da
-   parte.
-3. **Riepilogo di oggi** (schermata 3, `#F4F4F4`): il pannello Riepilogo dello specimen sul telefono (`.summary`, `.tline` con i
-   badge rotondi, `.dcard`), con consegne (miniature), approvate oggi, spesa di oggi, obiettivo del mese nella card lime con la
-   matita, le voci del diario sulla linea del tempo, e la riga lime che riporta alle richieste. In `direzione-a.js` c'è già
-   `riepilogo(m)` (tendina della Console) da tradurre in colonna. La riga «Riepilogo di oggi» della prima schermata e la
-   campanella/tab già portano `data-az="schermata" data-s="3"`: basta aggiungere il ramo in `monta` e il terzo telefono
-   (`schermate: [1, 2, 3]`, `NOMI[3]`). È anche lo **stato vuoto**: a coda finita la prima schermata mostra «Niente da
-   approvare» (oggi un riquadro tratteggiato, `.m-vuoto`) e sotto il riepilogo.
-4. **La revisione sul telefono**: le richieste di tipo `revisione` entrano nella coda (`DGT_MOBILE.coda` toglie il filtro);
-   nella schermata Richiesta le due versioni una sotto l'altra con le differenze (`lcs`, `parole`, `differenze` sono dentro
-   `direzione-a.js`: esportarle o spostarle in `comune.js`), i tre blocchi Perché / Cosa ci aspettiamo / Rischi (`rv.perche`,
-   `rv.attese`, `rv.rischi`, `rv.prova`) e le quattro decisioni (prova, applica, modifiche, rifiuta con motivo) via
-   `m.decidi(id, stato, motivo, esito)`. Le due revisioni del modello: `rv1` (prompt v7 → v8 di Nora) e `rv2` (modello
-   Standard → Esperto del Social media manager).
-5. **Prova a quaranta**: `mobile.html?n=40` (7 in coda, i tipi ruotano; l'allegato segue il tipo). Controllare le righe della
-   coda, i titoli lunghi, i numeri a due cifre nel badge della campanella.
-6. Poi: screenshot delle cornici (`screenshot-elementi.js`, `SCALE=2 H=1100`, `CLICK`/`EVAL`), artefatto (`build-unico.js
-   mobile.html`; pubblicare a un indirizzo nuovo se l'aggiornamento in loco viene rifiutato), `DIREZIONI.md` (Versione 11 o 12),
-   `SYSTEM-DESIGN.md` (riga Mobile, regola 20), README, questo file, commit e push.
+Scelta dall'utente a fine sessione (decisione 25). È l'ultima pagina di prodotto che manca alla direzione A.
+
+1. Leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezioni 6 e 10, regole 19 e 20) e `schermate/direzioni/DIREZIONI.md` («Versione 11»
+   e «Versione 12»). Controllare il branch e la PR (vedi «Stato»). Aprire `direzione-a.html` per la Console (`?pagina=dipartimento`
+   per la sezione «Spesa del mese», `?pagina=esecuzione&id=4` per la sezione «Costo») e `mobile.html` per il telefono.
+2. **Se l'utente manda correzioni sulle tre schermate del mobile, applicarle prima** (scelte da confermare nella decisione 23).
+   Altrimenti non aspettare: il giudizio non blocca la pagina dei costi.
+3. **La pagina dei costi**, nella stessa cornice della Console (`cornice(m, opz, titolo, stats, railAttivo, corpo, nuovo)` in
+   `direzione-a.js`), titolo «COSTI», e i tre numeri della riga WORKSPACE: spesi oggi (`m.costoOggi`), spesa dei 30 giorni,
+   quanto resta del budget del mese. Sezioni proposte, ognuna con la sua intestazione e le pillole di filtro del periodo
+   (Oggi · 7 giorni · 30 giorni · Da inizio anno):
+   - **Per dipartimento**: quattro card (una per dipartimento, la forma della card lead o della card costo) con spesa del
+     periodo, numero di consegne approvate, ripartizione per modello e la freccia verso la pagina del Dipartimento.
+   - **Per dipendente**: righe `.crow` con avatar, etichetta, spesa del periodo, costo per esito utile, budget del mese con la
+     barra (`d.budget`), badge del confronto con i 30 giorni precedenti (`delta` in `direzione-a.js`), freccia verso la pagina
+     del Dipendente. Oltre sedici, la vista compatta come le altre pagine (regola 3).
+   - **Per cliente**: le righe già scritte nella pagina Dipartimento (sezione «Spesa del mese», il calcolo `perCliente`), qui su
+     tutta l'azienda.
+   - **Per modello**: la card costo dell'esecuzione (`.task.spesa` con `.ripart` e `.leg`) sull'intera azienda, più una riga per
+     modello con esecuzioni, costo medio e costo totale (`m.dossierDi(e).modello.uso` per ciascun dipendente, sommato).
+   - **Per strumento**: righe `.crow` come nella sezione Costo dell'Esecuzione, con chiamate e costo
+     (`m.esecuzioneDi(e).strumentiUso`, sommato per nome).
+   I dati ci sono già tutti nel modello, non serve inventarne: `m.richieste` (costo, cliente, chi, giorno, stato),
+   `e.att.costo` (le esecuzioni di oggi), `m.dossierDi(e).budget` e `.modello.uso`, `m.esecuzioneDi(e).passi` e `.strumentiUso`,
+   `m.MODELLI[x].costo`. Se serve un aggregatore, sta in `dati.js` accanto a `costoOggi`, non nella vista.
+4. **Da dove ci si arriva** (decisione da prendere e da segnare): un sesto cerchio nel rail con `i-euro`; il numero «spesi oggi»
+   della home che diventa cliccabile; il collegamento «Tutti i costi» nella sezione «Spesa del mese» della pagina Dipartimento e
+   nella sezione «Costo» dell'Esecuzione. Il rail oggi ha cinque cerchi (elenco, organizzazione, campanella, chat, calendario) in
+   `cornice`, e la pagina si aggiunge a `render` e a `monta` come `pagina: 'costi'` (`?pagina=costi`).
+5. Poi come sempre: prova cliccata, screenshot (`screenshot-page.js` a 1440 per la pagina intera, `screenshot-elementi.js` per le
+   sezioni), artefatto della Console da ripubblicare (questa volta cambia: c'è una pagina in più),
+   `DIREZIONI.md` (versione 13), `SYSTEM-DESIGN.md` (una regola nuova nella sezione 10 e la riga della pagina nella sezione 6),
+   README, questo file, commit e push.
 
 Punti aperti ereditati (non chiesti dall'utente, da non toccare senza richiesta): i filtri inerti delle sezioni Passi, Output e
 Costo dell'Esecuzione; «Sposta», «Ripeti» e le frecce dei passi senza tendina del passo; lo stato vuoto del dipendente appena
 creato («Nessuna esecuzione»); la pagina del Dipendente (versione 6) e quella dell'Esecuzione (versione 8) mai giudicate; sul
-telefono i cerchi «commenta», «filtri» e «ordina» e le tab organizzazione / chat / agenda sono inerti.
+telefono i cerchi «commenta», «filtri» e «ordina», le tab organizzazione / chat / agenda, il download e la matita delle card del
+Riepilogo sono inerti; il badge rosa «campanella 2» accanto al numero «da approvare» copia quello della riga WORKSPACE della
+Console (`min(2, n)`) e non ha ancora un significato nel modello.
 
 ## Strumenti (`design-system/tools/`)
 
 - `screenshot-page.js` — cattura a pagina intera (`FULL_PAGE=0` per il solo viewport; il quarto argomento è l'altezza del
   viewport: 1120 per far stare il dossier, 1100 per la pagina del mobile).
   `export PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css` e poi
-  `node screenshot-page.js "../../schermate/direzioni/mobile.html" /percorso/mobile.png 1440 1100`.
+  `node design-system/tools/screenshot-page.js schermate/direzioni/mobile.html /percorso/mobile.png 1440 1100` (dalla radice).
 - `screenshot-elementi.js` — cattura elementi per selettore (`node screenshot-elementi.js pagina.html prefisso '#sel1' '.sel2'`);
-  `MOTION=no-preference` per gli avatar in moto, `SCALE=2`, `W=1440`, **`H=1100`** (nuovo: l'altezza del viewport; va alzata
-  finché la pagina non scorre, altrimenti le catture dopo un clic si spostano), `CLICK="sel|sel"`, **`EVAL="codice"`** (nuovo:
-  JavaScript eseguito prima della cattura, per esempio `document.querySelector('.m-tel[data-n="1"] .m-scroll').scrollTop = 9999`
-  per la coda). Le cornici del telefono: `'.m-tel[data-n="1"]'`, `'.m-tel[data-n="2"]'`.
+  `MOTION=no-preference` per gli avatar in moto, `SCALE=2`, `W=1440`, `H=1100` (l'altezza del viewport: va alzata finché la
+  pagina non scorre, altrimenti le catture dopo un clic si spostano), `CLICK="sel|sel"`, `EVAL="codice"` (JavaScript eseguito
+  prima della cattura). Le cornici del telefono: `'.m-tel[data-n="1"]'`, `'.m-tel[data-n="2"]'`, `'.m-tel[data-n="3"]'`. Esempi
+  usati in questa sessione: lo scorrimento `EVAL='document.querySelector(".m-tel[data-n=\"1\"] .m-scroll").scrollTop = 9999'`; lo
+  stato vuoto `EVAL='for (let i = 0; i < 4; i++) document.querySelector(".m-tel[data-n=\"1\"] [data-az=\"approva\"]").click()'`
+  (ogni clic ridisegna, il selettore resta valido); il rifiuto `CLICK='.m-tel[data-n="2"] .m-bar [data-az="rifiuta"]'`.
 - `fetch-fonts.py` — Urbanist locale per Chromium headless (`SSL_CERT_FILE=/root/.ccr/ca-bundle.crt python3 fetch-fonts.py
   /percorso/fonts.css`): va rifatto a ogni sessione, il file non è nel repository.
 - `schermate/direzioni/avatar/build-motore.js` — rigenera `avatar-motore.js` dai sorgenti del kit.
 - `schermate/direzioni/build-unico.js` — file unico per gli artefatti (incorpora anche gli script in `avatar/`).
-- Prova cliccata del mobile: uno script Playwright (`reducedMotion: 'no-preference'`) che apre `mobile.html`, tocca la riga della
-  coda, indietro, le frecce, rifiuta dalla card (campo del motivo a fuoco), conferma vuota (bordo rosso), motivo + Invio,
-  approva dall'altro telefono (coda vuota), e a ogni passo controlla che nessun `.m-scr` abbia `scrollWidth > clientWidth`
-  (sforo orizzontale) e che la console sia pulita. Prova di regressione della Console: approva dalla tendina, rifiuta una
-  revisione con motivo, «approva tutte». Entrambi fuori dal repository: venti righe da rifare al bisogno.
+- Prove cliccate, fuori dal repository (trenta righe da rifare al bisogno, Playwright con `reducedMotion: 'reduce'`, font locali
+  via `page.route` su Google Fonts): **mobile** — apre `mobile.html`, controlla a ogni passo che nessun `.m-scr` abbia
+  `scrollWidth > clientWidth` e che la console sia pulita; tocca la riga della revisione, le frecce, rifiuta la revisione del
+  modello con motivo (conferma vuota = bordo rosso, poi motivo + Invio), prova la revisione del prompt, approva le altre due dalla
+  card fino allo stato vuoto, cattura le cornici. **Quaranta** — `?n=40`, conta la coda, scrive «12» nel badge della campanella,
+  apre la richiesta con il titolo più lungo. **Console** — approva dalla tendina, apre la revisione ed estende, rifiuta con motivo
+  (la tendina resta estesa sulla revisione successiva: comportamento della Console), riduce, apre il riepilogo, «Approva tutte»
+  dalla pagina Richieste.
 
 ## Note tecniche apprese
 
 - Playwright globale (`NODE_PATH=/opt/node22/lib/node_modules`, `PLAYWRIGHT_MODULE=playwright`), Chromium in
-  `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`; Google Fonts bloccato: gli script servono un CSS locale. Gli script di
-  prova vanno lanciati dalla radice del repository (i percorsi sono relativi).
+  `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`; Google Fonts bloccato: gli script servono un CSS locale. Gli script vanno
+  lanciati dalla radice del repository (i percorsi sono relativi); nel Bash della sessione la cartella di lavoro può cambiare fra
+  un comando e l'altro: usare percorsi assoluti.
 - La Console e il mobile girano da `file://` e come file unico: **niente moduli ESM**.
 - **Il mobile riusa la Console**: `mobile.html` carica `direzione-a.js` e mette in pagina `DIREZIONE_A.css` (classi `.dirA`) e
   poi `DGT_MOBILE.css` (prefissato anch'esso con `.dirA`, così `.dirA .m-scr .task` vince su `.dirA .task`). Le variabili della
-  Console (`--lime`, `--ink`, `--docs`…) vivono su `.a-app`: il mobile le ridichiara su `.m-page` (più `--light`), e ridichiara
-  `box-sizing`, `svg{display:block}` e il cursore su `[data-az]`. `--behind` è `--light` sullo schermo chiaro e `--black` sul nero
-  (serve all'intaglio `.nt`).
+  Console vivono su `.a-app`: il mobile le ridichiara su `.m-page` (più `--light`). `--behind` (l'intaglio `.nt`) è `--light`
+  sullo schermo chiaro, `--summary` sul Riepilogo e sullo stato vuoto (`.m-scr.rie`), `--black` sul nero.
+- **Lo z-index dentro lo schermo del telefono**: tutto quello che sta in basso fisso (fascia sfocata, navigazione, dissolvenza,
+  barra delle azioni) ha uno z-index esplicito (2 e 3) e il corpo che scorre è un piano a sé (`.m-scroll` con
+  `position: relative` e `z-index: 0`). Senza il piano, un qualsiasi `z-index` dentro il contenuto (i badge della linea del
+  tempo) scavalca la barra, che è solo `position: absolute` senza z-index.
+- Le classi del mobile possono **incrociare per caso quelle della Console**: `.m-scr.rev` (la schermata della revisione) faceva
+  scattare `.dirA .rev li b` (la pillola del numero nella card revisione della Console). Ora la pillola è dichiarata in
+  `.m-det li b`; quando si aggiunge una classe corta al telefono, cercarla prima in `direzione-a.js`.
 - **Lo schermo del telefono non deve poter scorrere di lato**: `.m-scr` ha `overflow:hidden`, ma un contenuto più largo lo rende
-  comunque scorrevole e il fuoco su un input lo scorre (è successo con la barra del motivo: pillole troppo larghe). Griglie con
-  `minmax(0,1fr)`, `min-width:0` sui figli, `focus({ preventScroll: true })`, e il controllo nella prova cliccata.
-- Le catture per elemento con `zoom` sulla pagina funzionano (Playwright legge il riquadro già scalato); il problema visto nelle
-  prime catture del rifiuto era lo scorrimento laterale dello schermo, non la cattura.
-- `m.decidi` mette `r.giorno = 0` e `r.min` dall'ora dell'azienda (prima era `10 * 60 + 42` scritto a mano in `direzione-a.js`).
-- L'orbe della versione 10 (`avatar/avatar-orbe.js`), le tinte (`m.tintaDi`, `TINTE_ID`), il CSS di `.av` sotto `.dirA`, gli
-  intagli con `--behind`, le tendine, la Console che si scala con `zoom`, le differenze LCS: come nelle note delle sessioni
-  precedenti (vedi la storia di questo file in git, commit `044e363` e `f3a5d53`).
-- Gli artefatti si ripubblicano allo stesso URL solo se lo strumento accetta; per un artefatto nuovo serve un percorso di file
-  nuovo e un `favicon`. Il file unico del mobile pesa circa 400 KB. Mai forzare.
+  comunque scorrevole e il fuoco su un input lo scorre. Griglie con `minmax(0,1fr)`, `min-width:0` sui figli,
+  `focus({ preventScroll: true })`, e il controllo nella prova cliccata (nessuno sforo in questa sessione).
+- Titoli a 24 px con `-webkit-line-clamp: 2` su 256 px: una freccia «→» fra due parole spezza la riga e l'ellissi mangia la
+  seconda; legare con `&nbsp;` («v7&nbsp;→&nbsp;v8») o riscrivere («Da Standard a Esperto»). Nel `.lb` delle versioni il chip
+  lungo («v7 · in produzione») e il testo stanno su due righe con `flex-wrap`, non troncati.
+- La linea del tempo del Riepilogo è **un segmento per marcatore** (`.m::after` da sotto il badge al bordo della riga più il
+  gap; `.m.ult` senza segmento; `.m.linea` vuoto per continuare la linea accanto a un'intestazione): niente altezze a mano, la
+  linea finisce da sola all'ultima voce. L'ora ha lo sfondo del pannello, così la linea le passa dietro.
+- `m.decidi(id, stato, commento, esito)`: sul telefono la prova passa `esito = 'prova'` con il commento «Prova su N esecuzioni»
+  (N da `rv.prova.esecuzioni`); l'applica è `approvata` senza esito (predefinito `applicata`); il rifiuto passa `'rifiutata'`.
+- L'artefatto si ripubblica allo stesso indirizzo passando `url` allo strumento, dopo averlo letto con `action: read` (lo
+  strumento salva il file e chiede di averlo visto; la versione in linea era il build della sessione precedente, verificato con
+  `grep` sulle stringhe della versione). Il file unico del mobile pesa circa 420 KB. Mai forzare.
+- L'orbe della versione 10, le tinte, gli intagli con `--behind`, le tendine, la Console che si scala con `zoom`, le differenze
+  LCS (`differenze` ora esportata da `DIREZIONE_A`): come nelle note delle sessioni precedenti (storia di questo file in git,
+  commit `044e363`, `f3a5d53`, `5d20ff9`).
 
 ## Cosa manca
 
-1. **La seconda metà del mobile**: vedi «Come riprendere».
-2. **La pagina dei costi dell'azienda**: per dipartimento, dipendente, cliente, modello, strumento; riusa la card costo
-   dell'esecuzione e le righe della spesa del mese.
+1. **La pagina dei costi dell'azienda** (scelta dall'utente per la prossima sessione, vedi «Come riprendere»): per
+   dipartimento, dipendente, cliente, modello, strumento; riusa la card costo dell'esecuzione e le righe della spesa del mese.
+2. **Il giudizio dell'utente** sulle tre schermate del mobile (versioni 11 e 12) e sulle scelte della decisione 23: in sospeso,
+   non blocca il punto 1.
 3. **Manutenzione**: descrivere la sezione «moto» dello specimen in `DESIGN.md`; estrarre i componenti di `direzione-a.js` in
-   `schermate/componenti.js` (il mobile oggi importa tutta la Console per usarne il CSS e tre funzioni: è il momento buono).
-4. Giudizio dell'utente sulle pagine dell'Esecuzione e del Dipendente e sulle due schermate del mobile; tendina del passo;
-   stato vuoto del dipendente nuovo.
+   `schermate/componenti.js` (il mobile oggi importa tutta la Console per usarne il CSS e quattro funzioni: `av`, `iconaTipo`,
+   `nomeTipo`, `differenze`); mettere nel repository le prove cliccate (oggi rifatte a ogni sessione).
+4. Giudizio dell'utente sulle pagine dell'Esecuzione e del Dipendente; tendina del passo; stato vuoto del dipendente nuovo; sul
+   telefono le tab e i cerchi inerti (vedi «Punti aperti ereditati»).
 
 ### Prompt di avvio suggerito per la prossima sessione
 
 ```
-Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md. Controlla la PR #8: se è unita riparti da main con un branch nuovo, altrimenti
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md. Controlla la PR #9: se è unita riparti da main con un branch nuovo, altrimenti
 continua sullo stesso branch. Lavoriamo nella direzione A · Console (schermate/direzioni/direzione-a.js, dati.js, comune.js,
 avatar/, mobile.js): non cambiare la cornice, i componenti o i colori del sistema di design; niente emoji, solo le icone dello
 sprite; gli avatar sono quelli della versione 10 (tinta, occhi lilguy, punto di stato, gesto nelle pile).
 
-Costruisci la seconda metà delle approvazioni da mobile (PROSSIMA-SESSIONE.md «Come riprendere», DIREZIONI.md «Versione 11»):
-il Riepilogo di oggi come terza schermata, che è anche lo stato vuoto a coda finita; la revisione di performance sul telefono
-con le due versioni a confronto e le quattro decisioni, e le revisioni che entrano nella coda del telefono; la prova a quaranta.
-Poi screenshot delle cornici con design-system/tools/screenshot-elementi.js, artefatto con build-unico.js, aggiornamento di
-DIREZIONI.md, SYSTEM-DESIGN.md, README e PROSSIMA-SESSIONE.md, commit e push. Alla fine mostrami le schermate e fermati.
+Costruisci la pagina dei costi dell'azienda (PROSSIMA-SESSIONE.md «Come riprendere», punti 3 e 4): stessa cornice, titolo COSTI,
+i tre numeri, e le sezioni per dipartimento, per dipendente, per cliente, per modello e per strumento, con le pillole del
+periodo. Usa i dati che sono già nel modello e riusa la card costo dell'esecuzione, le righe della spesa del mese e i badge del
+confronto. Proponimi da dove ci si arriva (rail, numero della home, collegamenti dalle pagine Dipartimento ed Esecuzione) e
+scegli tu se non rispondo. Poi prova cliccata, screenshot, artefatto della Console ripubblicato, aggiornamento di DIREZIONI.md,
+SYSTEM-DESIGN.md, README e PROSSIMA-SESSIONE.md, commit e push. Alla fine mostrami le schermate e fermati.
 ```

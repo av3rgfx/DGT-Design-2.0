@@ -768,16 +768,87 @@ Screenshot: `screenshot/mobile.png` (la pagina), `mobile-1-da-approvare.png`, `m
 https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9. **Sessione successiva**: la schermata Riepilogo di oggi (anche come stato
 vuoto, a coda finita), la revisione di performance sul telefono (le due versioni una sotto l'altra con le differenze e le
 quattro decisioni; poi le revisioni entrano nella coda del telefono), la prova a quaranta, il giudizio dell'utente su queste due
-schermate.
+schermate. (Fatto nella versione 12, sotto.)
+
+### Versione 12: le approvazioni da mobile, seconda metà (2026-09-06, sessione successiva)
+
+La seconda metà della struttura accettata: la terza schermata, la revisione di performance sul telefono, lo stato vuoto, la
+prova a quaranta. La pagina mostra ora **tre telefoni** affiancati (Da approvare, Richiesta, Riepilogo di oggi), che condividono
+il modello e la richiesta corrente.
+
+1. **Riepilogo di oggi** (schermata 3, fondo `#F4F4F4`: il pannello Riepilogo dello specimen in colonna). Riga di navigazione con
+   il cerchio «indietro» vuoto a bordo scuro (`olight`, come nella tendina chiara della Console) e a destra il **chip della data**
+   («4 settembre», con il calendario: la data della barra agenda). Intestazione come il pannello dello specimen: **cerchio nero 44
+   con la bacchetta** e «Riepilogo di oggi» 22/26; sotto, i **tre numeri della riga WORKSPACE** della Console (al lavoro, da
+   approvare, spesi oggi, 26/300 con l'etichetta 12). Poi la **linea del tempo** dello specimen: colonna di 36 px con l'ora 11 e
+   il **badge rotondo 22** (lime «mi piace» per la card delle consegne, nero con il mirino per l'obiettivo del mese; per le voci
+   del diario lime con la campanella = consegna e richiesta di approvazione, nero con il triangolo = inizio, bianco con la
+   spunta = passo, rosa con il triangolo = errore) e la linea `#C8C8C8` fra un badge e il seguente (un segmento per marcatore,
+   non una linea unica: così si ferma da sola all'ultima voce); a destra la pila: la **card Consegne** (`.dcard` `#E4E4E4` r20 con
+   l'intaglio del download: due miniature 96 con l'etichetta delle due consegne di oggi più recenti, «Approvate oggi», «Spesa di
+   oggi»), la **card lime dell'obiettivo del mese** con la matita nell'intaglio (il testo 13/18 con le parti in 500, come nello
+   specimen mobile), «Diario di oggi» con le **ultime cinque voci** (12/16, l'etichetta del dipendente in 500, righe separate da
+   una linea `.08`). In fondo la **riga lime «Da approvare · N richieste in attesa»** che riporta alla prima schermata (bianca e
+   «niente in attesa» a coda finita). La campanella e i quattro cerchi restano sotto, con la fascia sfocata.
+2. **Lo stato vuoto**: a coda finita la prima schermata **prende il fondo del Riepilogo** (`#F4F4F4`) e mostra, sotto il titolo e
+   i due numeri (0 da approvare, N approvate oggi), la **card bianca «Niente da approvare»** (cerchio nero 48 con la spunta,
+   titolo 20/24, «Hai deciso tutto. Le prossime consegne arriveranno qui.» 13/18) e sotto il riepilogo di oggi (intestazione
+   con la bacchetta e la linea del tempo, senza i tre numeri che stanno già sopra). Sul nero (schermata Richiesta a coda
+   finita) la stessa card è scura con il cerchio bianco. Niente più riquadro tratteggiato.
+3. **La revisione di performance sul telefono**: le richieste di tipo `revisione` **entrano nella coda** (`DGT_MOBILE.coda`
+   senza filtro: la Console e il telefono contano le stesse richieste, 4 a 11). Nella prima schermata la card lime e le righe
+   sono quelle di sempre (fulmine, «Revisione · 2 € · 3 passi», «Nova Studio · 10:30»; la spunta della card applica). Nella
+   schermata Richiesta: chip «Revisione del soul prompt» / «Revisione del modello» e chip lime «decide il titolare»; **titolo
+   corto** («Soul prompt v7 → v8» con la freccia legata; «Da Standard a Esperto»: il titolo lungo del modello a 24 px si
+   troncava sulla seconda riga); «chi · dipartimento · proposta oggi 10:30». Poi **le due versioni una sotto l'altra** in card
+   bianche r24: per il soul prompt il chip della versione (nero «v7 · in produzione», lime «v8 · proposta») e chi/quando, i
+   paragrafi 13/19 con le **differenze della tendina delle versioni** (`A.differenze`, ora esportata da `direzione-a.js`:
+   paragrafi tolti su rosa barrati, aggiunti su lime, cambiati su grigio `.045` con le parole in `mark`), tre righe di numeri
+   (task, corretti · respinte, costo per esito utile); per il modello le due card con il chip del modello (nero «assegnato
+   oggi», lime «proposto»), descrizione, costo, esecuzioni e costo in 30 giorni. Poi le **tre card scure** Perché / Cosa ci
+   aspettiamo / Rischi con le evidenze del dossier (il numero in una pillola 22 sopra la frase 12/17: in colonna, perché in
+   due colonne la frase restava su 150 px) e la riga della prova; **«Chi riguarda»** (avatar nello stato vero, proposta dal
+   sistema, costo dell'analisi, passi a chip); **«Nota del sistema»**. La barra fissa ha **due righe**: sopra **«Prova su 20
+   esecuzioni»** bianca larga (la strada sicura: la versione attuale resta in produzione), sotto **Applica** lime larga con la
+   matita (chiedi modifiche) e la X rossa (rifiuta: il campo del motivo, come per le altre richieste; il segnaposto cambia).
+   Le quattro decisioni passano da `m.decidi(id, stato, motivo, esito)` con esito prova / applicata / modifiche / rifiutata:
+   quello che si decide qui si vede nella Console (dossier del dipendente, cronologia delle revisioni).
+4. **La prova a quaranta** (`mobile.html?n=40`): 7 in coda, i tipi ruotano, i titoli lunghi delle righe si troncano con i puntini
+   («Sequenza email di benve…»), la riga sotto si tronca dopo il cliente; il badge della campanella a due cifre (provato con «12»)
+   resta una pillola. Il Riepilogo a quaranta: 12 al lavoro, 427 € spesi, le miniature delle due consegne più recenti, il diario
+   generato (cinque voci). Nessuno sforo orizzontale in nessuna schermata, nessun errore di console.
+
+**Correzione dell'utente alla prima vista** («ci sono componenti che si sovrappongono», con la cattura della campanella lime
+della navigazione sopra l'ora e il badge della linea del tempo): l'ora e i badge rotondi della linea del tempo hanno
+`z-index: 1` (serve perché la linea grigia passi dietro), e siccome il corpo che scorre non era un piano a sé finivano
+**sopra** la barra in basso invece che sotto la fascia sfocata. Ora il corpo che scorre è un piano a sé
+(`.m-scroll` con `position: relative` e `z-index: 0`: gli z-index di dentro restano dentro) e la fascia sfocata, la pillola
+della navigazione, la dissolvenza e la barra delle azioni hanno uno z-index esplicito (2 e 3). La regola che ne esce: **la
+barra in basso sta sempre sopra il contenuto che scorre**, e il contenuto le passa sotto sfocato.
+
+Scelte fatte costruendo, da confermare: lo stato vuoto prende il fondo del Riepilogo (le `dcard` `#E4E4E4` sul chiaro `#E0E0E0`
+non si vedrebbero); la data sta nella riga di navigazione e non nell'intestazione (con il chip accanto, «Riepilogo di oggi» a
+22 px si troncava); i tre numeri sotto l'intestazione al posto di una riga di testo (andava a capo); la spunta della card di una
+revisione applica al volo, come nella Console; la prova è la pillola bianca sopra l'applica; le miniature sono le due consegne di
+oggi più recenti (in attesa o approvate) invece delle etichette fisse della Console; il diario mostra le ultime cinque voci, le
+più recenti prima. Nel modello (`dati.js`) solo `azienda.scadenzaMese` («30 set») per il marcatore dell'obiettivo.
+
+Screenshot (cornici con `screenshot-elementi.js`, `SCALE=2 H=1100`, `EVAL` per lo scorrimento e per approvare tutto): `mobile.png`
+(la pagina con i tre telefoni), `mobile-1-da-approvare.png`, `mobile-1-coda.png`, `mobile-1-vuoto.png`, `mobile-1-vuoto-fondo.png`,
+`mobile-2-richiesta.png`, `mobile-2-richiesta-post.png`, `mobile-2-rifiuto.png`, `mobile-2-revisione.png`,
+`mobile-2-revisione-differenze.png`, `mobile-2-revisione-perche.png`, `mobile-2-revisione-modello.png`, `mobile-3-riepilogo.png`,
+`mobile-3-riepilogo-fondo.png`, `mobile-40-coda.png`, `mobile-40-riepilogo.png`. Artefatto (stesso indirizzo, ripubblicato):
+https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9. **L'utente non ha ancora giudicato nessuna delle tre
+schermate** (solo la correzione della fascia sfocata, versione 11).
 
 ## 5. File
 
 | File | Ruolo |
 |---|---|
-| `dati.js` | modello sintetico (11 e 40) condiviso; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`), le richieste di tipo `revisione` e l'esecuzione (`esecuzioneDi`: sei scritte a mano, le altre generate); dal 2026-09-05 la decisione del titolare (`decidi`), condivisa fra Console e telefono |
+| `dati.js` | modello sintetico (11 e 40) condiviso; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`), le richieste di tipo `revisione` e l'esecuzione (`esecuzioneDi`: sei scritte a mano, le altre generate); dal 2026-09-05 la decisione del titolare (`decidi`), condivisa fra Console e telefono; `azienda.scadenzaMese` per la linea del tempo del mobile |
 | `comune.js` | sprite di icone di DGT, prefisso CSS, utilità |
-| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo); cliccabile |
-| `mobile.js` / `.html` | le approvazioni da mobile (versione 11, prima metà): cornice del telefono dello specimen, schermate «Da approvare» e «Richiesta» con il rifiuto con motivo, due telefoni affiancati che condividono il modello e la richiesta corrente; `DGT_MOBILE.monta`, `coda`; `?schermata=1|2&richiesta=0` |
+| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo); cliccabile; esporta `av`, `iconaTipo`, `nomeTipo` e `differenze` per il telefono |
+| `mobile.js` / `.html` | le approvazioni da mobile (versioni 11 e 12): cornice del telefono dello specimen, schermate «Da approvare», «Richiesta» (anche la revisione di performance con le due versioni a confronto e le quattro decisioni) e «Riepilogo di oggi» (linea del tempo, anche stato vuoto a coda finita), il rifiuto con motivo; tre telefoni affiancati che condividono il modello e la richiesta corrente; `DGT_MOBILE.monta`, `coda`; `?schermata=1|2|3&richiesta=0`, `?n=40` |
 | `avatar/avatar-dgt.js` | involucro degli avatar nel linguaggio della Console (colori, stati, simboli statici, animazione); `usa('orbe'|'kit')` sceglie la famiglia |
 | `avatar/avatar-orbe.js` | la famiglia «orbe» (versioni 5b, 5c, 7, 7b, 7c): cerchi dal seme con le pupille e lo sguardo del kit, un solo motore `requestAnimationFrame` con funzioni continue del tempo, sguardo che segue il puntatore; senza disco, con le pelli (`pelle('perla'|'grigio'|'chiaro'|'alone'|'disco')`, solo variabili CSS; perla predefinita); `fermo(t)`, `riprendi()`, `fotogramma(svg, t)` per gli screenshot |
 | `confronto-avatar.html` | le due famiglie a confronto nelle viste della Console |
@@ -789,6 +860,6 @@ schermate.
 | `direzione-c.js` / `.html` | Mappa viva |
 | `confronto.html` | pagina di confronto con tab e selettore 11/40 |
 | `build-unico.js` | genera il file unico per l'artefatto (`node build-unico.js direzione-a.html out.html`) |
-| `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`); le cornici del telefono (`mobile-*.png`) con `screenshot-elementi.js` |
+| `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`); le cornici del telefono (`mobile-*.png`, sedici catture delle versioni 11 e 12) con `screenshot-elementi.js` |
 
 Per gli screenshot: `design-system/tools/screenshot-page.js` (vedi `design-system/tools/README.md`).
