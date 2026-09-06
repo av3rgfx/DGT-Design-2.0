@@ -15,10 +15,12 @@ prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decision
   `?editor=nuovo|<id dipendente>`, `?avatar=orbe|kit`, `?pelle=perla|grigio|chiaro|alone|disco` (la pelle dell'orbe
   senza disco; predefinita perla). Artefatto:
   https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34
-- **Le approvazioni da mobile** (versione 11, prima metà, 2026-09-05): `mobile.html` + `mobile.js`, la direzione A sul
-  telefono nella cornice dello specimen: schermate «Da approvare» e «Richiesta» per post, documento, lista e proposta, con il
-  rifiuto con motivo; due telefoni affiancati, cliccabili, che condividono il modello e la richiesta corrente con la Console
-  (`m.decidi` in `dati.js`). Parametri: `?schermata=1|2` (un solo telefono), `?richiesta=0`, `?n=40`, più quelli dell'avatar.
+- **Le approvazioni da mobile** (versioni 11 e 12, 2026-09-05/06): `mobile.html` + `mobile.js`, la direzione A sul telefono
+  nella cornice dello specimen: schermate «Da approvare», «Richiesta» (post, documento, lista, proposta e la revisione di
+  performance con le due versioni a confronto e le quattro decisioni) e «Riepilogo di oggi» (linea del tempo; a coda finita è lo
+  stato vuoto della prima schermata), con il rifiuto con motivo; tre telefoni affiancati, cliccabili, che condividono il modello
+  e la richiesta corrente con la Console (`m.decidi` in `dati.js`). Parametri: `?schermata=1|2|3` (uno o più telefoni, es.
+  `?schermata=2`), `?richiesta=0` (a 11: 2 e 3 sono le due revisioni), `?n=40`, più quelli dell'avatar.
   Artefatto: https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9
 - Avatar dei dipendenti AI in `avatar/`: `avatar-dgt.js` (involucro della Console, sceglie la famiglia con
   `usa('orbe'|'kit')` e la pelle con `pelle('chiaro'|…)`), `avatar-orbe.js` (la famiglia «orbe», predefinita, senza

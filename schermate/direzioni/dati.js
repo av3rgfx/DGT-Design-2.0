@@ -13,6 +13,7 @@ window.DGT_DATI = (function () {
     data: '4 settembre',
     dataLunga: 'giovedì 4 settembre 2026',
     obiettivoMese: 'Consegnare <b>3 e-commerce</b> e <b>36 post</b> entro il 30 settembre, con <b>approvazione del titolare</b> su ogni uscita verso i clienti.',
+    scadenzaMese: '30 set',           // la scadenza dell'obiettivo del mese, sulla linea del tempo del Riepilogo (mobile, versione 12)
   };
 
   /* Le otto tinte dell'avatar (stesse chiavi di TINTE in avatar/avatar-orbe.js): il modello tiene solo il nome, i colori stanno nel sistema. */
