@@ -17,7 +17,8 @@ prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decision
   `?editor=nuovo|<id dipendente>`, `?avatar=orbe|kit`, `?pelle=perla|grigio|chiaro|alone|disco` (la pelle dell'orbe
   senza disco; predefinita perla). Artefatto:
   https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34
-- **Le approvazioni da mobile** (versioni 11 e 12, 2026-09-05/06): `mobile.html` + `mobile.js`, la direzione A sul telefono
+- **Le approvazioni da mobile** (versioni 11 e 12, 2026-09-05/06): `mobile.html` + `mobile.js` (che carica `../componenti.js` e
+  non la Console), la direzione A sul telefono
   nella cornice dello specimen: schermate «Da approvare», «Richiesta» (post, documento, lista, proposta e la revisione di
   performance con le due versioni a confronto e le quattro decisioni) e «Riepilogo di oggi» (linea del tempo; a coda finita è lo
   stato vuoto della prima schermata), con il rifiuto con motivo; tre telefoni affiancati, cliccabili, che condividono il modello
@@ -30,8 +31,15 @@ prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decision
   toccato `avatar/vendor-avatars/`). Le due famiglie a confronto: `confronto-avatar.html`, artefatto
   https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526. Le pelli dell'orbe a confronto su tutti i
   fondi della Console: `avatar-pelli.html`, artefatto https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569
-- Prove cliccate in `prove/`: `costi.js` (la pagina dei Costi, 48 verifiche con Playwright):
-  `PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css node schermate/direzioni/prove/costi.js`.
+- I componenti condivisi stanno in `../componenti.js` (`schermate/componenti.js`, `window.DGT_COMPONENTI`, dalla versione 14):
+  il CSS delle primitive, le variabili e le funzioni che le stampano (`av`, `pair`, `chipStato`, `iconaTipo`, `eur`,
+  `differenze`…). Ogni pagina lo carica subito dopo `comune.js` e mette in pagina `DGT_COMPONENTI.css` prima del CSS della
+  Console (`direzione-a.js`, che tiene la cornice, le pagine, le tendine e `monta`).
+- Prove cliccate in `prove/` (con il `README.md` che dice il comando): `console.js` (64 verifiche: tendine, Richieste, editor del
+  dipendente, esecuzione, 40), `mobile.js` (39: le tre schermate, la revisione, il rifiuto con motivo, la prova, lo stato vuoto,
+  40) e `costi.js` (48: la pagina dei Costi):
+  `PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css node schermate/direzioni/prove/console.js`
+  (e così `mobile.js`, `costi.js`).
 - File unico per l'artefatto: `node build-unico.js /percorso/confronto-unico.html`.
 - Screenshot: `LOCAL_FONT_CSS=/tmp/fonts.css node ../../design-system/tools/screenshot-page.js "direzione-a.html?n=40" out.png`.
 - L'identità degli orbi (versione 10, proposta in attesa di scelta): `avatar-identita.html`, un configuratore con corpo
