@@ -9,9 +9,10 @@ la pagina dei costi o la manutenzione (vedi «Cosa manca»).
 ## Stato
 
 - Branch: `claude/mobile-approvals-v11-mgqf5d` (da `main`, che contiene le PR #1, #3, #4, #5, #6, #7 e #8; la #8 era già unita
-  all'inizio di questa sessione). **Nessuna PR è stata aperta** per questo branch (non era chiesto): all'avvio della prossima
-  sessione controllare su GitHub se l'utente l'ha aperta e unita; se è unita ripartire da `main` con un branch nuovo, altrimenti
-  continuare su questo branch.
+  all'inizio di questa sessione). A fine sessione è aperta la **PR #9** verso `main`
+  (https://github.com/av3rgfx/DGT-Design-2.0/pull/9), con la versione 12 e la correzione dell'impilamento: se all'avvio della
+  prossima sessione risulta già unita, ripartire da `main` con un branch nuovo; se è ancora aperta, continuare sullo stesso
+  branch e la PR si aggiorna da sola.
 - Artefatto del **mobile** (`mobile.html`: i tre telefoni affiancati, «Da approvare», «Richiesta», «Riepilogo di oggi»,
   cliccabili; ripubblicato allo stesso indirizzo con l'etichetta «Versione 12: seconda metà»):
   https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9. Si rigenera con
@@ -96,18 +97,48 @@ la pagina dei costi o la manutenzione (vedi «Cosa manca»).
     sé (`.m-scroll` con `position: relative` e `z-index: 0`) e la fascia sfocata, la navigazione, la dissolvenza e la barra
     delle azioni hanno z-index 2 e 3. Regola: la barra in basso sta sempre sopra il contenuto, che le passa sotto sfocato.
 
+25. **Fine della sessione**: l'utente ha scelto il **punto 2 di «Cosa manca», la pagina dei costi dell'azienda**, come lavoro
+    della prossima sessione. Il giudizio sulle tre schermate del mobile resta in sospeso e non blocca: se arrivano correzioni,
+    si applicano prima della pagina dei costi.
+
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti sintetici di DGT; documenti in italiano.
 
-## Come riprendere
+## Come riprendere: la pagina dei costi dell'azienda
+
+Scelta dall'utente a fine sessione (decisione 25). È l'ultima pagina di prodotto che manca alla direzione A.
 
 1. Leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezioni 6 e 10, regole 19 e 20) e `schermate/direzioni/DIREZIONI.md` («Versione 11»
-   e «Versione 12»). Controllare il branch e la PR (vedi «Stato»). Aprire `schermate/direzioni/mobile.html` (i tre telefoni;
-   `?richiesta=2` per la revisione del soul prompt, `?richiesta=3` per quella del modello; `?n=40` per la prova a quaranta) e
-   `direzione-a.html` per la Console.
-2. **Raccogliere il giudizio dell'utente** sulle tre schermate (screenshot in `schermate/direzioni/screenshot/mobile-*.png`,
-   artefatto in «Stato») e correggere prima di andare avanti. Le scelte da confermare sono nella decisione 23.
-3. Poi una delle cose in «Cosa manca», nell'ordine che l'utente sceglie.
+   e «Versione 12»). Controllare il branch e la PR (vedi «Stato»). Aprire `direzione-a.html` per la Console (`?pagina=dipartimento`
+   per la sezione «Spesa del mese», `?pagina=esecuzione&id=4` per la sezione «Costo») e `mobile.html` per il telefono.
+2. **Se l'utente manda correzioni sulle tre schermate del mobile, applicarle prima** (scelte da confermare nella decisione 23).
+   Altrimenti non aspettare: il giudizio non blocca la pagina dei costi.
+3. **La pagina dei costi**, nella stessa cornice della Console (`cornice(m, opz, titolo, stats, railAttivo, corpo, nuovo)` in
+   `direzione-a.js`), titolo «COSTI», e i tre numeri della riga WORKSPACE: spesi oggi (`m.costoOggi`), spesa dei 30 giorni,
+   quanto resta del budget del mese. Sezioni proposte, ognuna con la sua intestazione e le pillole di filtro del periodo
+   (Oggi · 7 giorni · 30 giorni · Da inizio anno):
+   - **Per dipartimento**: quattro card (una per dipartimento, la forma della card lead o della card costo) con spesa del
+     periodo, numero di consegne approvate, ripartizione per modello e la freccia verso la pagina del Dipartimento.
+   - **Per dipendente**: righe `.crow` con avatar, etichetta, spesa del periodo, costo per esito utile, budget del mese con la
+     barra (`d.budget`), badge del confronto con i 30 giorni precedenti (`delta` in `direzione-a.js`), freccia verso la pagina
+     del Dipendente. Oltre sedici, la vista compatta come le altre pagine (regola 3).
+   - **Per cliente**: le righe già scritte nella pagina Dipartimento (sezione «Spesa del mese», il calcolo `perCliente`), qui su
+     tutta l'azienda.
+   - **Per modello**: la card costo dell'esecuzione (`.task.spesa` con `.ripart` e `.leg`) sull'intera azienda, più una riga per
+     modello con esecuzioni, costo medio e costo totale (`m.dossierDi(e).modello.uso` per ciascun dipendente, sommato).
+   - **Per strumento**: righe `.crow` come nella sezione Costo dell'Esecuzione, con chiamate e costo
+     (`m.esecuzioneDi(e).strumentiUso`, sommato per nome).
+   I dati ci sono già tutti nel modello, non serve inventarne: `m.richieste` (costo, cliente, chi, giorno, stato),
+   `e.att.costo` (le esecuzioni di oggi), `m.dossierDi(e).budget` e `.modello.uso`, `m.esecuzioneDi(e).passi` e `.strumentiUso`,
+   `m.MODELLI[x].costo`. Se serve un aggregatore, sta in `dati.js` accanto a `costoOggi`, non nella vista.
+4. **Da dove ci si arriva** (decisione da prendere e da segnare): un sesto cerchio nel rail con `i-euro`; il numero «spesi oggi»
+   della home che diventa cliccabile; il collegamento «Tutti i costi» nella sezione «Spesa del mese» della pagina Dipartimento e
+   nella sezione «Costo» dell'Esecuzione. Il rail oggi ha cinque cerchi (elenco, organizzazione, campanella, chat, calendario) in
+   `cornice`, e la pagina si aggiunge a `render` e a `monta` come `pagina: 'costi'` (`?pagina=costi`).
+5. Poi come sempre: prova cliccata, screenshot (`screenshot-page.js` a 1440 per la pagina intera, `screenshot-elementi.js` per le
+   sezioni), artefatto della Console da ripubblicare (questa volta cambia: c'è una pagina in più),
+   `DIREZIONI.md` (versione 13), `SYSTEM-DESIGN.md` (una regola nuova nella sezione 10 e la riga della pagina nella sezione 6),
+   README, questo file, commit e push.
 
 Punti aperti ereditati (non chiesti dall'utente, da non toccare senza richiesta): i filtri inerti delle sezioni Passi, Output e
 Costo dell'Esecuzione; «Sposta», «Ripeti» e le frecce dei passi senza tendina del passo; lo stato vuoto del dipendente appena
@@ -180,9 +211,10 @@ Console (`min(2, n)`) e non ha ancora un significato nel modello.
 
 ## Cosa manca
 
-1. **Il giudizio dell'utente** sulle tre schermate del mobile (versioni 11 e 12) e sulle scelte della decisione 23.
-2. **La pagina dei costi dell'azienda**: per dipartimento, dipendente, cliente, modello, strumento; riusa la card costo
-   dell'esecuzione e le righe della spesa del mese.
+1. **La pagina dei costi dell'azienda** (scelta dall'utente per la prossima sessione, vedi «Come riprendere»): per
+   dipartimento, dipendente, cliente, modello, strumento; riusa la card costo dell'esecuzione e le righe della spesa del mese.
+2. **Il giudizio dell'utente** sulle tre schermate del mobile (versioni 11 e 12) e sulle scelte della decisione 23: in sospeso,
+   non blocca il punto 1.
 3. **Manutenzione**: descrivere la sezione «moto» dello specimen in `DESIGN.md`; estrarre i componenti di `direzione-a.js` in
    `schermate/componenti.js` (il mobile oggi importa tutta la Console per usarne il CSS e quattro funzioni: `av`, `iconaTipo`,
    `nomeTipo`, `differenze`); mettere nel repository le prove cliccate (oggi rifatte a ogni sessione).
@@ -192,13 +224,15 @@ Console (`min(2, n)`) e non ha ancora un significato nel modello.
 ### Prompt di avvio suggerito per la prossima sessione
 
 ```
-Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md. Controlla il branch claude/mobile-approvals-v11-mgqf5d: se la sua PR è unita riparti
-da main con un branch nuovo, altrimenti continua sullo stesso branch. Lavoriamo nella direzione A · Console
-(schermate/direzioni/direzione-a.js, dati.js, comune.js, avatar/, mobile.js): non cambiare la cornice, i componenti o i colori
-del sistema di design; niente emoji, solo le icone dello sprite; gli avatar sono quelli della versione 10 (tinta, occhi lilguy,
-punto di stato, gesto nelle pile).
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md. Controlla la PR #9: se è unita riparti da main con un branch nuovo, altrimenti
+continua sullo stesso branch. Lavoriamo nella direzione A · Console (schermate/direzioni/direzione-a.js, dati.js, comune.js,
+avatar/, mobile.js): non cambiare la cornice, i componenti o i colori del sistema di design; niente emoji, solo le icone dello
+sprite; gli avatar sono quelli della versione 10 (tinta, occhi lilguy, punto di stato, gesto nelle pile).
 
-Le tre schermate del mobile sono in schermate/direzioni/screenshot/mobile-*.png e nell'artefatto: ecco le mie correzioni: […].
-Applicale, poi [la pagina dei costi dell'azienda | la manutenzione], screenshot, artefatto, documenti, commit e push. Alla fine
-mostrami le schermate e fermati.
+Costruisci la pagina dei costi dell'azienda (PROSSIMA-SESSIONE.md «Come riprendere», punti 3 e 4): stessa cornice, titolo COSTI,
+i tre numeri, e le sezioni per dipartimento, per dipendente, per cliente, per modello e per strumento, con le pillole del
+periodo. Usa i dati che sono già nel modello e riusa la card costo dell'esecuzione, le righe della spesa del mese e i badge del
+confronto. Proponimi da dove ci si arriva (rail, numero della home, collegamenti dalle pagine Dipartimento ed Esecuzione) e
+scegli tu se non rispondo. Poi prova cliccata, screenshot, artefatto della Console ripubblicato, aggiornamento di DIREZIONI.md,
+SYSTEM-DESIGN.md, README e PROSSIMA-SESSIONE.md, commit e push. Alla fine mostrami le schermate e fermati.
 ```
