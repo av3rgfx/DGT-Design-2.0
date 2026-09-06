@@ -7,10 +7,10 @@ sul telefono, lo stato vuoto, la prova a quaranta), dopo il giudizio dell'utente
 
 ## Stato
 
-- Branch: `claude/approvazioni-mobile-direzione-a-t5290b` (da `main`, che contiene le PR #1, #3, #4, #5, #6 e #7). La PR #7 è
-  stata unita all'inizio di questa sessione. **Nessuna PR aperta per questo branch** (l'utente non l'ha chiesta): all'avvio
-  della prossima sessione aprirla verso `main` se serve, oppure continuare sullo stesso branch; se nel frattempo è stata unita,
-  ripartire da `main` con un branch nuovo.
+- Branch: `claude/approvazioni-mobile-direzione-a-t5290b` (da `main`, che contiene le PR #1, #3, #4, #5, #6 e #7; la #7 è stata
+  unita all'inizio di questa sessione). A fine sessione è aperta la **PR #8** verso `main`
+  (https://github.com/av3rgfx/DGT-Design-2.0/pull/8): se all'avvio della prossima sessione risulta già unita, ripartire da `main`
+  con un branch nuovo; se è ancora aperta, continuare sullo stesso branch e la PR si aggiorna da sola.
 - Artefatto del **mobile** (`mobile.html`: i due telefoni affiancati, «Da approvare» e «Richiesta», cliccabili; ripubblicato
   allo stesso indirizzo dopo la correzione della navigazione):
   https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9. Si rigenera con
@@ -174,14 +174,14 @@ telefono i cerchi «commenta», «filtri» e «ordina» e le tab organizzazione 
 ### Prompt di avvio suggerito per la prossima sessione
 
 ```
-Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md. Controlla il branch claude/approvazioni-mobile-direzione-a-t5290b: se è stato
-unito in main riparti da main con un branch nuovo, altrimenti continua sullo stesso branch. Lavoriamo nella direzione A ·
-Console (schermate/direzioni/direzione-a.js, dati.js, comune.js, avatar/, mobile.js): non cambiare la cornice, i componenti o
-i colori del sistema di design; niente emoji, solo le icone dello sprite; gli avatar sono quelli della versione 10.
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md. Controlla la PR #8: se è unita riparti da main con un branch nuovo, altrimenti
+continua sullo stesso branch. Lavoriamo nella direzione A · Console (schermate/direzioni/direzione-a.js, dati.js, comune.js,
+avatar/, mobile.js): non cambiare la cornice, i componenti o i colori del sistema di design; niente emoji, solo le icone dello
+sprite; gli avatar sono quelli della versione 10 (tinta, occhi lilguy, punto di stato, gesto nelle pile).
 
-Seconda metà delle approvazioni da mobile (PROSSIMA-SESSIONE.md «Come riprendere», DIREZIONI.md «Versione 11»): prima le mie
-correzioni alle schermate «Da approvare» e «Richiesta»; poi il Riepilogo di oggi (anche come stato vuoto), la revisione di
-performance sul telefono con le due versioni a confronto e le quattro decisioni, la prova a quaranta. Poi screenshot delle
-cornici con screenshot-elementi.js, artefatto con build-unico.js, aggiornamento di DIREZIONI.md, SYSTEM-DESIGN.md, README e
-PROSSIMA-SESSIONE.md, commit e push. Alla fine mostrami le schermate e fermati.
+Costruisci la seconda metà delle approvazioni da mobile (PROSSIMA-SESSIONE.md «Come riprendere», DIREZIONI.md «Versione 11»):
+il Riepilogo di oggi come terza schermata, che è anche lo stato vuoto a coda finita; la revisione di performance sul telefono
+con le due versioni a confronto e le quattro decisioni, e le revisioni che entrano nella coda del telefono; la prova a quaranta.
+Poi screenshot delle cornici con design-system/tools/screenshot-elementi.js, artefatto con build-unico.js, aggiornamento di
+DIREZIONI.md, SYSTEM-DESIGN.md, README e PROSSIMA-SESSIONE.md, commit e push. Alla fine mostrami le schermate e fermati.
 ```
