@@ -1065,6 +1065,40 @@ pillola «Nuovo evento» della testata; nella Chat i cerchi cerca e filtri; sul 
 quello «ordina». Il dipendente non risponde da solo a una nota nuova: le risposte stanno nel modello, e sotto il filo c'è
 la riga che dice quando la leggerà.
 
+### Correzione 15a: gli avatar centrati nella casella (2026-09-06, stessa sessione)
+
+Correzione dell'utente: «in ogni pagina (nell'intero prodotto) gli avatar piccoli sono decentrati e spostati un po' verso
+il basso».
+
+**Il perché.** L'orbe cresce oltre la casella (`--av-scala`: 115 % con la perla, 128 % con il corpo piatto di oggi) e lo
+faceva con `width` e `height` in percentuale sull'SVG (`avatar/avatar-orbe.js`). La casella `.av` è una griglia con
+`place-items:center` e una riga automatica: la percentuale in altezza è ciclica, quindi Chromium la risolve dal rapporto
+1:1 e dalla larghezza, la riga cresce fino a quell'altezza e **sfora solo in basso**. Risultato: l'SVG restava alto quanto
+1,28 volte la riga e il disco scendeva di `(scala − 1) / 2` dell'altezza utile — 3,4 px su un avatar da 28, 6,2 px su uno
+da 48, 9,5 px sul grande della pagina del Dipendente. Orizzontalmente era centrato: si vedeva solo la caduta.
+
+**La correzione.** Una riga sola: l'SVG torna a riempire la casella (`width:100%;height:100%`) e la crescita passa alla
+proprietà `scale`, che scala **attorno al centro** e non tocca la griglia.
+
+```css
+[data-pelle] .av:has(>svg.orbe)>svg.ava.orbe{width:100%;height:100%;scale:var(--av-scala,115%)}
+```
+
+Il disco resta grande esattamente come prima (misurato: 24,45 px su una casella da 28, 32,43 su 36, 44,6 su 48, 68,88 sul
+grande): cambia solo dove sta. Verificato con uno script che confronta il centro del disco disegnato (`circle.pelle`) con
+il centro della casella su ogni avatar di ogni pagina — Console (home, Richieste, Dipartimento, Dipendente, Esecuzione,
+Costi, Agenda, Chat, editor, 40), telefono, confronto delle direzioni e le tre pagine di studio degli avatar: **1 000
+avatar, scarto massimo 0 px** (prima fino a 9,5 px). Le quattro prove cliccate passano invariate.
+
+Screenshot rigenerati: 56 delle 71 catture cambiano (solo la posizione degli avatar); otto non hanno avatar e restano
+identiche byte per byte. Non rigenerate: `b-11`, `b-40`, `c-11`, `c-40` (lo studio delle direzioni B e C del 2026-09-04,
+tenuto com'era), `avatar-orbe-pellicola.png` (la pellicola del moto, fatta con uno script fuori dal repository) e le due
+catture della revisione sul telefono senza avatar.
+
+**La regola che ne esce** (regola 23 in `SYSTEM-DESIGN.md`): quando un elemento deve sforare la sua casella, si scala
+attorno al centro (`scale`), non si allarga con una percentuale dentro una griglia; una percentuale in altezza dentro una
+riga automatica cresce solo verso il basso.
+
 ## 5. File
 
 | File | Ruolo |

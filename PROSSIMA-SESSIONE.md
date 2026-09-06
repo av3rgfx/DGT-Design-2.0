@@ -1,8 +1,9 @@
 # Prossima sessione — passaggio di consegne
 
 Stato al 2026-09-06, fine della sessione delle **pagine Agenda e Chat** (versione 15 della direzione A · Console: i due cerchi del
-rail che erano inerti ora aprono due pagine vere, e sul telefono ci sono le tab corrispondenti più la conversazione). Le pagine che
-già esistevano non sono cambiate: verificato byte per byte prima e dopo. Tutto è committato e pushato sul branch indicato sotto, con
+rail che erano inerti ora aprono due pagine vere, e sul telefono ci sono le tab corrispondenti più la conversazione), più la
+**correzione degli avatar decentrati** chiesta dall'utente a fine sessione (15a: l'avatar torna al centro della sua casella in tutto
+il prodotto). Le pagine che già esistevano non sono cambiate a parte quello: verificato byte per byte prima e dopo. Tutto è committato e pushato sul branch indicato sotto, con
 la PR aperta verso `main`. **Prossimo passo**: da scegliere (proposta in «Come riprendere»).
 
 ## Stato
@@ -37,14 +38,22 @@ la PR aperta verso `main`. **Prossimo passo**: da scegliere (proposta in «Come 
   byte per byte prima e dopo; i quattro telefoni delle schermate 1, 2, 3 e della revisione sono identici all'albero di partenza
   (`git archive HEAD`) una volta tolta l'intestazione della pagina di studio, che cambia di proposito (il testo più lungo sposta i
   telefoni di una frazione di pixel sotto `zoom: 1.25`).
+- **La correzione degli avatar (15a)**: l'orbe cresce oltre la casella con la proprietà `scale` (attorno al centro) e non più
+  con `width`/`height` in percentuale, che dentro la griglia di `.av` facevano crescere la riga e cadere l'avatar verso il basso
+  di `(scala − 1) / 2` (3,4 px a 28, 6,2 a 48, 9,5 sul grande). Una riga in `avatar/avatar-orbe.js`; il disco resta della stessa
+  misura. Misurato su ogni avatar di ogni pagina: mille avatar, scarto massimo 0 px. Dettaglio in `DIREZIONI.md`,
+  «Correzione 15a», e regola 23 in `SYSTEM-DESIGN.md`.
 - Screenshot nuovi in `schermate/direzioni/screenshot/`: `a-agenda.png`, `a-agenda-giorno.png`, `a-agenda-settimana.png`,
   `a-agenda-scadenze.png`, `a-agenda-40.png`, `a-chat.png`, `a-chat-nora.png`, `a-chat-filo.png`, `mobile-4-chat.png`,
   `mobile-5-filo.png`, `mobile-5-filo-kim.png`, `mobile-6-agenda.png`, `mobile-6-agenda-giorni.png`; `mobile.png` rifatto (sei
-  telefoni invece di tre).
-- Artefatto della **Console** (ripubblicato allo stesso indirizzo, etichetta «Versione 15: agenda e chat»; il file unico è 447 KB):
+  telefoni invece di tre). Con la correzione 15a sono state **rigenerate 56 delle 71 catture** (cambia solo la posizione degli
+  avatar); otto non hanno avatar e sono venute identiche byte per byte. Non rigenerate: `b-11`, `b-40`, `c-11`, `c-40` (lo studio
+  delle direzioni B e C del 2026-09-04, lasciato com'era: rifarlo oggi cambierebbe anche il testo, che è stato catturato con un
+  altro font locale) e `avatar-orbe-pellicola.png` (la pellicola del moto, fatta con uno script mai entrato nel repository).
+- Artefatto della **Console** (ripubblicato allo stesso indirizzo, etichette «Versione 15: agenda e chat» e «Avatar centrati nella casella»; il file unico è 447 KB):
   https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34. Si rigenera con
   `node schermate/direzioni/build-unico.js direzione-a.html /percorso/console.html`.
-- Artefatto del **telefono** (ripubblicato allo stesso indirizzo, etichetta «Versione 15: chat e agenda»; 330 KB):
+- Artefatto del **telefono** (ripubblicato allo stesso indirizzo, etichette «Versione 15: chat e agenda» e «Avatar centrati nella casella»; 330 KB):
   https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9
   (`node schermate/direzioni/build-unico.js mobile.html /percorso/nova-studio-mobile.html`).
 - Artefatti precedenti, non ripubblicati (le loro pagine non cambiano): identità degli orbi
@@ -149,6 +158,11 @@ la PR aperta verso `main`. **Prossimo passo**: da scegliere (proposta in «Come 
     - sul telefono la conversazione è una schermata a sé (5) che si apre già scorsa in fondo, e la riga di navigazione sta fuori
       dal corpo che scorre.
 
+31. **Correzione dell'utente a fine sessione**: «in ogni pagina (nell'intero prodotto) gli avatar piccoli sono decentrati e
+    spostati un po' verso il basso». Era vero e valeva per tutti gli avatar, non solo i piccoli: la casella li spingeva in basso
+    di `(scala − 1) / 2` (vedi «Stato» e `DIREZIONI.md`, «Correzione 15a»). Corretto con una riga (`scale` al posto delle
+    percentuali), screenshot e artefatti rifatti. **L'utente non ha ancora visto il risultato.**
+
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti sintetici di DGT; documenti in italiano.
 
@@ -231,6 +245,11 @@ sopravvive al ricaricamento della pagina.
 - **I nomi delle classi si scontrano**: `.drow` era già delle righe del diario nella tendina Riepilogo, e riusarla per le righe
   della settimana ha cambiato una pagina che doveva restare ferma (se ne è accorto il confronto byte per byte). Le righe nuove sono
   `.grow`. Prima di scegliere un nome, cercarlo in `componenti.js` e in `direzione-a.js`.
+- **Chi sfora la casella si scala, non si allarga**: `width`/`height` in percentuale su un figlio di una griglia con la riga
+  automatica è una percentuale ciclica; Chromium la risolve dal rapporto, la riga cresce e l'eccedenza cade tutta in basso. Per
+  far sforare un elemento (l'orbe oltre `.av`) si usa la proprietà `scale`, che scala attorno al centro e non tocca la griglia.
+  Per accorgersene basta misurare il centro del disegno contro il centro della casella (`getBoundingClientRect` su
+  `circle.pelle` e su `.av`): è il controllo da rifare dopo ogni cambio di misura degli avatar.
 - **Il testo eredita il colore della cornice**: una primitiva scura (`.qrow`) messa su una superficie chiara resta bianca su bianco.
   Le due pagine nuove lo correggono con una regola sul contenitore (`.fcorpo .qrow{color:var(--ink)}`), non toccando la primitiva.
 - **Il fondo di una barra a segmenti non può essere lime**: la pista del giorno è `#EDEDED` e sono i blocchi a portare il colore,
@@ -254,7 +273,7 @@ sopravvive al ricaricamento della pagina.
 
 1. **Il lavoro della prossima sessione**: lo sceglie l'utente; le tre proposte stanno in «Come riprendere» (la tab «Dipartimenti»
    del telefono, la tendina del passo, i controlli ancora inerti).
-2. **Il giudizio dell'utente** sulle pagine Agenda e Chat (versione 15, decisione 30), sulla revisione sul telefono (decisione 28),
+2. **Il giudizio dell'utente** sulle pagine Agenda e Chat (versione 15, decisione 30), sugli avatar ricentrati (15a, decisione 31), sulla revisione sul telefono (decisione 28),
    sulle schermate del mobile (versioni 11 e 12, decisione 23), sulla pagina del Dipendente (versione 6) e su quella
    dell'Esecuzione (versione 8): in sospeso, non blocca. La pagina dei Costi ha avuto un «bene» (decisione 27).
 3. I punti aperti ereditati e quelli nuovi della versione 15 (vedi «Come riprendere»).
@@ -267,7 +286,8 @@ continua sullo stesso branch. Lavoriamo nella direzione A · Console (schermate/
 dati.js, comune.js, avatar/, mobile.js): non cambiare la cornice, i componenti o i colori del sistema di design; niente emoji, solo
 le icone dello sprite; gli avatar sono quelli della versione 10 (tinta, occhi lilguy, punto di stato, gesto nelle pile).
 
-Guarda le pagine Agenda e Chat della versione 15 e dimmi se vanno bene; se ci sono correzioni, falle prima di tutto il resto. Poi
+Guarda le pagine Agenda e Chat della versione 15 e gli avatar (ricentrati nella casella, correzione 15a) e dimmi se vanno bene;
+se ci sono correzioni, falle prima di tutto il resto. Poi
 prendi il lavoro dalle proposte in «Come riprendere» (A: la tab Dipartimenti del telefono; B: la tendina del passo dell'Esecuzione;
 C: i controlli ancora inerti): scegli tu se non rispondo. Prima lancia le quattro prove di prove/ e fai gli screenshot delle pagine
 che esistono: non devono cambiare. Poi prove, screenshot, artefatti della Console e del mobile ripubblicati allo stesso indirizzo,

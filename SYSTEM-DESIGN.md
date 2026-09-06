@@ -156,7 +156,9 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
   mobile 39, Costi 48, Agenda e Chat 54) e gli screenshot in `schermate/direzioni/screenshot/`. La manutenzione del
   2026-09-06 (versione 14) è stata verificata con trentuno catture identiche byte per byte prima e dopo e con le impronte
   degli stili calcolati di ogni elemento (`DIREZIONI.md`, «Versione 14»); le pagine Agenda e Chat (versione 15) con
-  venticinque catture identiche byte per byte e le cornici del telefono confrontate con l'albero precedente.
+  venticinque catture identiche byte per byte e le cornici del telefono confrontate con l'albero precedente. La
+  correzione degli avatar decentrati (15a) è stata verificata misurando, su ogni avatar di ogni pagina, lo scarto fra il
+  centro del disco disegnato e il centro della casella: mille avatar, scarto massimo 0 px (prima fino a 9,5).
 
 ## 10. Schermate del prodotto: direzione scelta
 
@@ -276,6 +278,14 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     e dal quinto cerchio del rail, dal cerchio della barra «Oggi in azienda», dalla pillola «Sposta» delle esecuzioni
     pianificate, dai cerchi «commenta» delle card e delle tendine e dalla pillola «Scrivi a …» dell'Esecuzione.
 
+23. **Un elemento che sfora la sua casella si scala, non si allarga** (2026-09-06, correzione dell'utente: «in ogni pagina
+    gli avatar piccoli sono decentrati e spostati un po' verso il basso»). L'avatar cresce oltre la casella (115 % con la
+    perla, 128 % con il corpo piatto) e lo faceva con `width` e `height` in percentuale: dentro una griglia con la riga
+    automatica la percentuale in altezza è ciclica, la riga cresce con l'immagine e l'eccedenza cade **solo in basso**
+    (fino a 9,5 px sull'avatar grande). Ora l'SVG riempie la casella e la crescita passa alla proprietà `scale`, che
+    scala attorno al centro e non tocca la griglia: stessa misura del disco, centrato. La regola vale per qualunque
+    elemento che debba sforare: si scala dal centro, non si allarga in percentuale dentro una riga automatica.
+
 Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in
 `schermate/direzioni/DIREZIONI.md`, sezione 1. Sorgenti in `schermate/direzioni/` (`dati.js`, `comune.js`,
@@ -283,7 +293,7 @@ dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegn
 Dipendente, revisione di performance), 7, 7b e 7c (orbe senza disco, le pelli; poi perla, corpi tondi e moti fluidi; poi
 gli occhi del kit), 8 (pagina dell'Esecuzione), 10 (l'identità degli orbi), 11 e 12 (le approvazioni da mobile), 13 (la pagina dei Costi), 14 (la manutenzione: i componenti in `componenti.js`, le prove nel
 repository, la sezione «moto» in `DESIGN.md`; niente di visibile cambiato, tranne una perdita di stile sulla schermata della
-revisione del telefono, corretta e da confermare) e 15 (le pagine Agenda e Chat del rail e le due tab del telefono) in
+revisione del telefono, corretta e da confermare) 15 (le pagine Agenda e Chat del rail e le due tab del telefono) e 15a (gli avatar di nuovo centrati nella casella) in
 `DIREZIONI.md`, sezione 4.
 
 ## 11. Collegamenti
