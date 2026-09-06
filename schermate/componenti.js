@@ -7,8 +7,8 @@
    di interesse, badge, card con intaglio (lead, attività, Riepilogo), righe
    (crow, hrow, erow, qrow), barra di avanzamento, ripartizione con legenda,
    più le funzioni che le stampano (av, pair, dots, chipStato, chipEsito,
-   iconaTipo, nomeTipo, eur, delta) e le differenze fra due testi
-   (differenze, con lcs e parole).
+   iconaTipo, nomeTipo, eur, delta), le bolle della chat (messaggio) e le
+   differenze fra due testi (differenze, con lcs e parole).
 
    Versione 14 (2026-09-06, manutenzione): estratti da direzione-a.js senza
    cambiare nulla di visibile. Le regole CSS stanno nell'ordine che avevano
@@ -21,9 +21,13 @@
    l'avatar (av) legge window.DGT_AVATAR quando viene chiamato, non al
    caricamento.
 
+   Versione 15 (2026-09-06): le bolle dei messaggi della chat (.msg, .bub) e
+   messaggio(m, e, v), condivise dalla pagina Chat della Console e dalla tab
+   Chat del telefono.
+
    API: DGT_COMPONENTI.css (già prefissato con .dirA), DGT_COMPONENTI.variabili,
    av(m, e, size, stato, extra, opz), pair(m, ids, size, max), dots(livello),
-   chipStato(m, e), chipEsito(r), iconaTipo, nomeTipo, eur(v),
+   chipStato(m, e), chipEsito(r), messaggio(m, e, v), iconaTipo, nomeTipo, eur(v),
    delta(ora, prima, meglioSeSale, fmt), differenze(A, B).
    ===================================================================== */
 window.DGT_COMPONENTI = (function () {
@@ -241,6 +245,18 @@ window.DGT_COMPONENTI = (function () {
 .ripart i.b1,.leg i.b1{background:var(--lime)}.ripart i.b2,.leg i.b2{background:var(--white)}.ripart i.b3,.leg i.b3{background:#6B6B6B}
 .leg.wrap{flex-wrap:wrap;row-gap:4px}
 .task.lime .ripart{background:rgb(0 0 0/.12)}.task.lime .ripart i.standard,.task.lime .leg i.standard{background:var(--ink)}.task.lime .ripart i.esperto,.task.lime .leg i.esperto{background:var(--white)}.task.lime .leg{color:rgb(0 0 0/.6)}
+/* i messaggi del filo (versione 15, 2026-09-06): la bolla del dipendente a sinistra (scura, con l'avatar), quella del titolare
+   a destra (bianca, con le iniziali), la riga di sistema al centro come chip. Le misure del telefono le rifà mobile.js. */
+.msg{display:flex;align-items:flex-end;gap:10px;min-width:0}
+.msg .av{width:36px;height:36px;font-size:12px}
+.bub{max-width:74%;min-width:0;border-radius:22px;padding:12px 16px 10px;background:linear-gradient(180deg,var(--card-top),var(--card));color:var(--white);font-size:14px;line-height:20px;white-space:pre-line}
+.bub .ora{display:block;margin-top:6px;font-size:11px;color:var(--t2);white-space:nowrap}
+.msg.dip .bub{border-bottom-left-radius:8px}
+.msg.io{flex-direction:row-reverse}
+.msg.io .bub{background:var(--white);color:var(--ink);border-bottom-right-radius:8px}
+.msg.io .bub .ora{color:var(--t2-light);text-align:right}
+.msg.sistema{justify-content:center}
+.msg.sistema .chip{height:28px;max-width:100%}.msg.sistema .chip span{overflow:hidden;text-overflow:ellipsis}
 `;
 
   /* ---------- i componenti in HTML ---------- */
@@ -257,6 +273,12 @@ window.DGT_COMPONENTI = (function () {
        i punti si sovrapporrebbero ai vicini (scelta dell'utente, 2026-09-05) */
     return `<span class="pair">${shown.map(e => av(m, e, size, undefined, undefined, { segnale: 'gesto' })).join('')}${rest > 0 ? `<span class="more">+${rest}</span>` : ''}</span>`;
   };
+  /* Un messaggio del filo (versione 15): la bolla del dipendente o quella del titolare, o la riga di sistema (una consegna
+     che entra nel filo). Chi la stampa aggiunge sotto, se serve, la riga della consegna. */
+  const messaggio = (m, e, v) => v.da === 'sistema'
+    ? `<div class="msg sistema"><span class="chip light">${ic('i-bell')}<span>${esc(v.ora)} · ${esc(m.etichetta(e))} ${esc(v.testo)}</span></span></div>`
+    : `<div class="msg ${v.da === 'io' ? 'io' : 'dip'}">${v.da === 'io' ? `<span class="av persona">${esc(m.azienda.titolare.iniziali)}</span>` : av(m, e, 's')}<div class="bub">${esc(v.testo)}<span class="ora">${esc(v.ora)}${v.passo ? ' · al passo ' + v.passo : ''}</span></div></div>`;
+
   const iconaTipo = { post: 'i-mega', documento: 'i-doc', lista: 'i-list', proposta: 'i-receipt', revisione: 'i-bolt' };
   const nomeTipo = { post: 'Post', documento: 'Documento', lista: 'Lista', proposta: 'Proposta', revisione: 'Revisione' };
 
@@ -315,5 +337,5 @@ window.DGT_COMPONENTI = (function () {
     return [L.join(''), R.join('')];
   }
 
-  return { css: prefissa(css, '.dirA'), variabili, av, pair, dots, chipStato, chipEsito, iconaTipo, nomeTipo, eur, delta, differenze };
+  return { css: prefissa(css, '.dirA'), variabili, av, pair, dots, chipStato, chipEsito, messaggio, iconaTipo, nomeTipo, eur, delta, differenze };
 })();

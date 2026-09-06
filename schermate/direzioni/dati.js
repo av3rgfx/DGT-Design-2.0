@@ -624,6 +624,67 @@ window.DGT_DATI = (function () {
     return { obiettivo: null, serie: [], passi, log, output: [out], strumentiUso };
   }
 
+  /* ---- I fili della chat (versione 15, 2026-09-06): un filo per dipendente, le note del titolare e le risposte del
+     dipendente. Un messaggio è { da: 'io' | 'dip' | 'sistema', ora, testo }, con `richiesta` (id) quando porta una consegna
+     che aspetta il titolare e `passo` quando la nota è consegnata a un passo dell'esecuzione. Scritti a mano a 11 per Nora,
+     Kim, il Social media manager e Ricerca lead; generati per gli altri dallo stato e dall'esecuzione corrente, come i
+     dossier. La barra di scrittura dell'Esecuzione e quella della chat scrivono nello stesso filo (`scrivi`). ---- */
+  const FILI11 = {
+    4: [
+      { da: 'dip', ora: '09:15', testo: 'Buongiorno. Oggi ho in programma i post 4 e 5 di 12 per Rossi Srl: parto dal brief e dagli ultimi tre approvati.' },
+      { da: 'io', ora: '09:18', testo: 'Va bene. Sul post 4 tieni la lunghezza sotto le 800 battute.' },
+      { da: 'dip', ora: '09:20', testo: 'Annotato: è il vincolo del brief, l\'avevo perso nel post 2. Lo tengo per tutta la serie.' },
+      { da: 'sistema', ora: '10:12', testo: 'ha consegnato il post 4 di 12 e chiede l\'approvazione', richiesta: 'ap1' },
+      { da: 'dip', ora: '10:13', testo: '780 battute, una sola idea, chiude con una domanda. L\'immagine proposta è quella approvata la settimana scorsa.' },
+      { da: 'io', ora: '10:20', testo: 'Intanto vai avanti con il 5.' },
+      { da: 'dip', ora: '10:24', testo: 'Sono al passo 2 di 4: prima stesura a 640 battute, sto rileggendo. Consegno verso le 10:50.', passo: 2 },
+    ],
+    3: [
+      { da: 'dip', ora: '08:55', testo: 'Ho iniziato il deploy in staging per Zenith.' },
+      { da: 'dip', ora: '09:02', testo: 'Fermo al passo 2: le chiavi di accesso sono scadute. Non riprovo da solo, lascerei l\'ambiente a metà.' },
+      { da: 'io', ora: '09:05', testo: 'Chi le rinnova?' },
+      { da: 'dip', ora: '09:06', testo: 'Si rinnovano dalla mia pagina, in «Strumenti e connessioni». Poi riprovo il passo: un minuto e 0,4 €.' },
+    ],
+    5: [
+      { da: 'dip', ora: '09:06', testo: 'Comincio il piano editoriale di ottobre per Madira Ink: dodici post, quattro reel, due newsletter.' },
+      { da: 'io', ora: '09:10', testo: 'Evita le festività e la settimana del lancio del 14.' },
+      { da: 'dip', ora: '09:11', testo: 'D\'accordo: sposto i due post di quella settimana e tengo libero il 14.' },
+      { da: 'sistema', ora: '09:48', testo: 'ha consegnato il piano editoriale di ottobre e chiede l\'approvazione', richiesta: 'ap2' },
+      { da: 'dip', ora: '10:35', testo: 'Sul reel di lunedì scorso sono stato respinto due volte: il sistema ha aperto una revisione del mio modello.', richiesta: 'rv2' },
+    ],
+    7: [
+      { da: 'dip', ora: '08:30', testo: 'Parto dai criteri del brief: e-commerce in Lombardia, fatturato sopra il milione, sito attivo.' },
+      { da: 'io', ora: '09:40', testo: 'Siamo già a 61 € su questa lista. Quanto manca?' },
+      { da: 'dip', ora: '09:41', testo: 'Passo 5 di 6, verifica delle e-mail: restano una quarantina di righe, circa mezz\'ora.', passo: 5 },
+      { da: 'io', ora: '09:42', testo: 'Vai, ma niente strumenti a pagamento oltre il limite del giorno.' },
+      { da: 'dip', ora: '09:43', testo: 'Resto su quelli già attivi.' },
+    ],
+  };
+  /* Filo generato per chi non ne ha uno scritto a mano: due o tre messaggi dallo stato dell'attività corrente. Le ore sono
+     quelle dell'esecuzione (il passo in corso, non «adesso»), così l'ordine della chat è quello vero. */
+  function filoGenerato(e, x) {
+    const a = e.att || {}, cli = a.cliente || azienda.nome, msg = [];
+    const cur = x ? x.passi.find(p => p.stato === 'corso' || p.stato === 'errore') : null;
+    const agg = (da, ora, testo, extra) => { if (ora) msg.push(Object.assign({ da, ora, testo }, extra || {})); };
+    if (e.stato === 'lavoro') {
+      agg('dip', a.da, `Ho iniziato «${a.titolo}» per ${cli}.`);
+      if (a.passo) agg('dip', (cur && cur.inizio) || azienda.ora, `Sono al passo ${a.passo[0]} di ${a.passo[1]}${a.prossimo ? `: il prossimo è «${a.prossimo}»` : ''}. Finora ${String(a.costo || 0).replace('.', ',')} €.`, { passo: a.passo[0] });
+    } else if (e.stato === 'attesa') {
+      agg('dip', a.da, `Ho iniziato «${a.titolo}» per ${cli}.`);
+      agg('dip', a.fine, `Consegnato: aspetto la tua approvazione prima che esca verso ${cli}.`);
+    } else if (e.stato === 'errore') {
+      agg('dip', (x && x.passi[0] && x.passi[0].inizio) || a.da, `Ho iniziato «${a.titolo}» per ${cli}.`);
+      agg('dip', (cur && cur.fine) || a.da, `Sono fermo: ${(a.errore || 'errore').toLowerCase()}. Serve un intervento prima di riprovare.`);
+    } else if (e.stato === 'pianificato') {
+      agg('dip', '08:00', `«${a.titolo}» è pianificato per le ${a.quando}${cli ? ', per ' + cli : ''}. Ti avviso quando parte.`);
+    } else if (a.fine) {
+      agg('dip', /^\d\d:\d\d$/.test(a.fine) ? a.fine : '08:00', `Ho concluso «${a.titolo}»${cli ? ' per ' + cli : ''} ${/ieri/i.test(a.fine) ? a.fine : 'alle ' + a.fine}. Sono libero.`);
+    } else {
+      agg('dip', '08:00', 'Nessuna esecuzione: aspetto un incarico.');
+    }
+    return msg;
+  }
+
   /* ---- Generatore a 40 dipendenti: 10 per dipartimento, 12 al lavoro ---- */
   const NOMI = ['Leo','Ada','Kim','Nora','Ivo','Mia','Sam','Zoe','Ugo','Rea','Teo','Bea','Dan','Eva','Gil','Ines','Jan','Lia','Max','Nil',
     'Ora','Pia','Rio','Sia','Tom','Uma','Vic','Wes','Yan','Zed','Aldo','Bice','Caio','Dora','Elia','Fede','Gaia','Hugo','Iris','Jole'];
@@ -787,6 +848,77 @@ window.DGT_DATI = (function () {
         dal: perDipartimento.map(x => x.dal).filter(Boolean).sort((a, b) => ordDal(a) - ordDal(b))[0] || '',
         perDipendente, perDipartimento, perCliente, perModello, perStrumento };
     }
+    /* ---- L'agenda dell'azienda (versione 15, 2026-09-06): un solo aggregatore per la pagina Agenda della Console e per la
+       tab Agenda del telefono. `giornata()` costruisce gli eventi di oggi dall'attività corrente di ogni dipendente: le ore,
+       i titoli e i costi sono quelli di `e.att` (nessun numero nuovo), le durate mancanti vengono dai passi dell'esecuzione
+       (`esecuzioneDi`, lo stesso calcolo della pagina Esecuzione). `settimana()` sono i sette giorni da oggi: i pianificati
+       che si ripetono (obiettivi con scadenza «ogni …»), le prossime consegne degli obiettivi e le scadenze che cadono in
+       quel giorno. Le date si leggono da `azienda.data` e `azienda.dataLunga`. ---- */
+    const MESI = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
+    const GIORNI = ['domenica', 'lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato'];
+    const orario = t => { const k = /(\d\d):(\d\d)/.exec(t || ''); return k ? (+k[1]) * 60 + (+k[2]) : null; };
+    const hhmm = t => String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');
+    const minutiDi = s => { const k = /(\d+)\s*min/.exec(s || ''); return k ? +k[1] : 0; };
+    function giornata() {
+      const adesso = orario(azienda.ora), ev = [];
+      m.dipendenti.forEach(e => {
+        const a = e.att || {};
+        const base = { chi: e.id, titolo: a.titolo || '', cliente: a.cliente || '', costo: a.costo || 0, dip: e.dip };
+        const metti = x => ev.push(Object.assign({}, base, x));
+        if (e.stato === 'lavoro') { const d = orario(a.da); if (d !== null) metti({ stato: 'corso', da: a.da, a: azienda.ora, min: d, fine: Math.max(d + 10, adesso), passo: a.passo || null }); }
+        else if (e.stato === 'attesa') { const d = orario(a.da), f = orario(a.fine); if (d !== null) metti({ stato: 'attesa', da: a.da, a: a.fine || '', min: d, fine: Math.max(d + 10, f === null ? d + 30 : f) }); }
+        /* l'errore: il blocco va dal primo passo al passo fallito (`e.att.da` è l'ora del guasto, non dell'avvio) */
+        else if (e.stato === 'errore') { const x = out.esecuzioneDi(e), p0 = x.passi.find(p => p.inizio), pu = x.passi.filter(p => p.fine).pop(); const d = orario(p0 ? p0.inizio : a.da), f = orario(pu ? pu.fine : a.da); if (d !== null) metti({ stato: 'errore', da: hhmm(d), a: hhmm(f === null ? d + 20 : f), min: d, fine: Math.max(d + 10, f === null ? d + 20 : f), errore: a.errore || '', guasto: a.da }); }
+        else if (e.stato === 'pianificato') { const d = orario(a.quando); if (d !== null) { const st = out.esecuzioneDi(e).passi.reduce((t, p) => t + minutiDi(p.stima), 0) || 30; metti({ stato: 'pianificato', da: a.quando, a: hhmm(d + st), min: d, fine: d + st, stima: st }); } }
+        else if (a.fine && !/ieri/i.test(a.fine)) { const f = orario(a.fine), d = orario(a.da); if (f !== null) metti({ stato: 'fatto', da: d === null ? hhmm(Math.max(0, f - 30)) : a.da, a: a.fine, min: d === null ? Math.max(0, f - 30) : d, fine: f }); }
+      });
+      return ev.sort((p, q) => (p.min - q.min) || (p.chi - q.chi));
+    }
+    /* La settimana: sette giorni da oggi. Ogni giorno porta i pianificati che si ripetono, le prossime consegne degli
+       obiettivi e le scadenze; oggi porta anche gli eventi della giornata. */
+    /* Il giorno di oggi: il numero e il mese da `azienda.data`, il nome del giorno da `azienda.dataLunga`. Il calendario del
+       modello è quello del prodotto, non quello vero: il nome del giorno si conta da lì (giovedì 4, venerdì 5, …), la data
+       si conta con Date solo per il cambio di mese. */
+    const oggiData = new Date(+((/(\d{4})/.exec(azienda.dataLunga || '') || [])[1]) || 2026, Math.max(0, MESI.findIndex(x => azienda.data.indexOf(x) >= 0)), parseInt(azienda.data, 10) || 1);
+    const oggiGiorno = (() => { const gi = GIORNI.findIndex(x => (azienda.dataLunga || '').indexOf(x) === 0); return gi >= 0 ? gi : oggiData.getDay(); })();
+    const dataBreve = d => d.getDate() + ' ' + MESI[d.getMonth()].slice(0, 3);
+    const leggiData = s => { const k = /(\d{1,2})\s+([a-zà-ù]{3})/i.exec(String(s || '')); if (!k) return null; const mi = MESI.findIndex(x => x.slice(0, 3) === k[2].toLowerCase()); return mi < 0 ? null : mi * 100 + (+k[1]); };
+    const chiaveData = d => d.getMonth() * 100 + d.getDate();
+    function settimana() {
+      const oggiEv = giornata();
+      return Array.from({ length: 7 }, (_, i) => {
+        const d = new Date(oggiData.getTime()); d.setDate(d.getDate() + i);
+        const chiave = chiaveData(d), nome = GIORNI[(oggiGiorno + i) % 7], voci = [];
+        /* i pianificati che si ripetono: gli obiettivi con scadenza «ogni giorno» / «ogni <giorno della settimana>» */
+        m.obiettivi.forEach(o => {
+          const s = String(o.scadenza || '');
+          if (s.indexOf('ogni') !== 0) return;
+          const ogni = s.slice(5).trim();
+          if (i === 0 || !(ogni === 'giorno' || ogni === nome)) return;   // oggi i pianificati stanno già negli eventi del giorno
+          o.chi.forEach(id => { const e = byId[id]; if (e && e.att && e.att.quando) voci.push({ tipo: 'pianificato', ora: e.att.quando, chi: [id], titolo: e.att.titolo, sotto: e.att.cliente || o.titolo, cliente: e.att.cliente || '', obiettivo: o.id }); });
+        });
+        m.obiettivi.forEach(o => {
+          if (leggiData(o.prossima) === chiave) voci.push({ tipo: 'consegna', ora: '', chi: o.chi.slice(0, 3), titolo: String(o.prossima).split('·').slice(0, -1).join('·').trim() || o.titolo, sotto: o.titolo, cliente: o.cliente, obiettivo: o.id });
+          if (leggiData(o.scadenza) === chiave) voci.push({ tipo: 'scadenza', ora: '', chi: o.chi.slice(0, 3), titolo: o.titolo, sotto: 'scadenza · ' + (o.consegne[0] + ' di ' + o.consegne[1] + ' consegne'), cliente: o.cliente, obiettivo: o.id, stato: o.stato, avanz: o.avanz });
+        });
+        voci.sort((a, b) => (a.ora ? 0 : 1) - (b.ora ? 0 : 1) || String(a.ora).localeCompare(String(b.ora)));
+        return { i, oggi: i === 0, nome, breve: nome.slice(0, 3), data: dataBreve(d), eventi: i === 0 ? oggiEv : [], voci };
+      });
+    }
+    /* Le scadenze dei prossimi giorni, dalla più vicina: gli obiettivi con una data (non quelli che si ripetono). */
+    function scadenze() {
+      const oggi = chiaveData(oggiData);
+      return m.obiettivi.map(o => ({ o, quando: leggiData(o.scadenza) })).filter(x => x.quando !== null)
+        .sort((a, b) => (a.quando - b.quando) || a.o.id.localeCompare(b.o.id))
+        .map(x => Object.assign(x, { giorni: Math.round((new Date(oggiData.getFullYear(), Math.floor(x.quando / 100), x.quando % 100) - oggiData) / 86400000) }));
+    }
+    /* ---- I fili della chat (versione 15): una sola copia per dipendente, così i messaggi restano; la Console e il telefono
+       leggono lo stesso filo, e la barra di scrittura dell'Esecuzione ci scrive dentro come quella della chat. ---- */
+    const fili = {};
+    const filoDi = e => { if (!e) return []; if (!fili[e.id]) fili[e.id] = (n < 40 && FILI11[e.id]) ? FILI11[e.id].slice() : filoGenerato(e, out.esecuzioneDi(e)); return fili[e.id]; };
+    const ultimo = e => { const f = filoDi(e); return f.length ? f[f.length - 1] : null; };
+    /* Da leggere: i messaggi del dipendente (e le consegne) dopo l'ultima nota del titolare. */
+    const nonLetti = e => { const f = filoDi(e); let k = f.length; while (k > 0 && f[k - 1].da !== 'io') k--; return f.length - k; };
     const out = {
       azienda, dipartimenti, STATI, n: m.dipendenti.length,
       dipendenti: m.dipendenti, byId, perDip: {}, approvazioni: m.approvazioni, richieste: m.richieste, diario: m.diario, agenda: m.agenda,
@@ -820,6 +952,15 @@ window.DGT_DATI = (function () {
       conta, costoOggi, iniziali, dipDi,
       /* I costi dell'azienda per periodo ('oggi' | 'mese' | 'anno'), tutta l'azienda o un dipartimento (versione 13): vedi sopra. */
       costi, spesaDi,
+      /* L'agenda dell'azienda (versione 15, 2026-09-06): gli eventi di oggi costruiti dalle attività correnti, i sette giorni
+         da oggi (pianificati che si ripetono, prossime consegne, scadenze) e le scadenze degli obiettivi dalla più vicina. */
+      giornata, settimana, scadenze, oraDi: orario,
+      /* I fili della chat (versione 15): un filo per dipendente, una sola copia (i messaggi restano), condivisa fra Console e
+         telefono; `scrivi` è la nota del titolare, dalla chat o dalla barra di scrittura dell'Esecuzione. */
+      filoDi, ultimoDi: ultimo, nonLetti,
+      scrivi: (id, testo, extra) => { const e = byId[id]; if (!e || !String(testo || '').trim()) return null; const msg = Object.assign({ da: 'io', ora: azienda.ora, testo: String(testo).trim() }, extra || {}); filoDi(e).push(msg); return msg; },
+      /* I fili nell'ordine della chat: prima quelli con messaggi da leggere, poi per ultimo messaggio (i più recenti prima). */
+      fili: () => m.dipendenti.map(e => ({ e, ultimo: ultimo(e), nuovi: nonLetti(e) })).sort((a, b) => ((b.nuovi > 0) - (a.nuovi > 0)) || String((b.ultimo || {}).ora || '').localeCompare(String((a.ultimo || {}).ora || '')) || (a.e.id - b.e.id)),
       MODELLI,
       /* Il dossier del dipendente (versione 6): scritto a mano per Nora e il Social media manager a 11, generato per gli altri; una sola copia per dipendente, così le decisioni restano. */
       dossierDi: e => { if (!e) return null; if (!dossier[e.id]) dossier[e.id] = (n < 40 && DOSSIER11[e.id]) ? DOSSIER11[e.id] : dossierGenerato(e); return dossier[e.id]; },

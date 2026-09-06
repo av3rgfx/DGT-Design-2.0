@@ -70,8 +70,8 @@ window.DIREZIONE_A = (function () {
 .a-app h3,.a-app h4,.a-app h5,.a-app p{margin:0;font-weight:400}
 .a-app svg{display:block}
 .a-app [data-az]{cursor:pointer}
-/* le superfici chiare della cornice (barra agenda, tendina, documento del prompt, righe delle versioni, card del modello scelto): l'orbe si inverte come sulle superfici chiare dei componenti (schermate/componenti.js) */
-.a-sched .av svg.orbe,.vrow.on .av svg.orbe,.vrow.prop .av svg.orbe,.a-tend .av svg.orbe,.pdoc .av svg.orbe,.lead.mod.on .av svg.orbe{--av-c-corpo:var(--av-inv-corpo);--av-c-orlo:var(--av-inv-orlo);--av-c-orlo-w:var(--av-inv-orlo-w);--av-c-luce:var(--av-inv-luce);--av-occhi-neutri:#FCFCFC;--av-c-bordo:0;--av-c-zeta:#FCFCFC}
+/* le superfici chiare della cornice (barra agenda, tendina, documento del prompt, righe delle versioni, card del modello scelto, barra del giorno dell'Agenda, filo aperto della Chat): l'orbe si inverte come sulle superfici chiare dei componenti (schermate/componenti.js) */
+.a-sched .av svg.orbe,.vrow.on .av svg.orbe,.vrow.prop .av svg.orbe,.a-tend .av svg.orbe,.pdoc .av svg.orbe,.lead.mod.on .av svg.orbe,.giorno .av svg.orbe,.erow.filo.on .av svg.orbe{--av-c-corpo:var(--av-inv-corpo);--av-c-orlo:var(--av-inv-orlo);--av-c-orlo-w:var(--av-inv-orlo-w);--av-c-luce:var(--av-inv-luce);--av-occhi-neutri:#FCFCFC;--av-c-bordo:0;--av-c-zeta:#FCFCFC}
 .a-tend .ncard .av svg.orbe,.a-tend .appr .av svg.orbe{--av-c-corpo:initial;--av-c-orlo:initial;--av-c-orlo-w:initial;--av-c-luce:initial;--av-occhi-neutri:initial;--av-c-bordo:initial;--av-c-zeta:initial}
 .a-head .impost{margin-left:auto}
 /* impaginazione della console */
@@ -399,6 +399,88 @@ window.DIREZIONE_A = (function () {
 .crow.sp .bud .prog.oltre i{background:var(--badge-red)}
 .crow.sp .eur .badge{margin-right:10px;vertical-align:3px}
 .task.spesa.dpt .who{padding-right:72px}
+/* ===== pagina Agenda (versione 15, 2026-09-06): la barra agenda del riferimento allargata al giorno (blocchi su corsie),
+   le card degli eventi, le righe della settimana ===== */
+.giorno{border-radius:var(--r-card);background:var(--white);color:var(--ink);padding:20px 22px;margin-top:-8px}
+.giorno .top{display:flex;align-items:center;gap:14px;min-width:0}
+.giorno .top .t{font-size:22px;white-space:nowrap}
+.giorno .cal{display:flex;align-items:center;gap:10px;height:44px;padding:0 20px 0 6px;border-radius:var(--r-pill);border:1px solid rgb(0 0 0/.14);font-size:14px;white-space:nowrap;flex:none}
+.giorno .cal i{width:32px;height:32px;border-radius:50%;background:#EDEDED;display:grid;place-items:center}
+.giorno .cal svg{width:14px;height:14px}
+.giorno .leg{margin:0;color:var(--t2-light);flex-wrap:wrap}
+.giorno .leg i{width:20px;height:10px;border-radius:5px;background:var(--white);box-shadow:inset 0 0 0 1px rgb(0 0 0/.14)}
+.giorno .leg i.lime{background:var(--lime);box-shadow:none}
+.giorno .leg i.piano{background:transparent;box-shadow:inset 0 0 0 1px rgb(0 0 0/.3)}
+.giorno .leg i.errore{background:var(--badge-red);box-shadow:none}
+/* la pista è chiara e i blocchi portano il colore: il lime resta l'attenzione del titolare (al lavoro, da approvare) */
+.pista{position:relative;margin-top:36px;border-radius:26px;background:#EDEDED;padding:6px}
+.pista .h{position:absolute;top:6px;bottom:6px;width:1px;background:rgb(0 0 0/.07)}
+.pista .h b{position:absolute;left:0;top:-26px;transform:translateX(-50%);font-size:11px;font-weight:400;color:var(--t2-light)}
+.corsia{position:relative;height:36px}
+.corsia+.corsia{margin-top:6px}
+.blk{position:absolute;top:0;height:36px;border-radius:var(--r-pill);background:var(--white);display:flex;align-items:center;gap:8px;padding:0 12px 0 4px;font-size:12px;color:#6B6B6B;white-space:nowrap;overflow:hidden;min-width:44px}
+.blk .av{width:28px;height:28px}
+.blk b{font-weight:500;color:var(--ink);overflow:hidden;text-overflow:ellipsis;min-width:0}
+.blk.corso,.blk.attesa{background:var(--lime)}
+.blk.fatto{background:var(--white)}
+.blk.pianificato{background:transparent;border:1px dashed rgb(0 0 0/.3);color:rgb(0 0 0/.55)}
+.blk.pianificato b{color:rgb(0 0 0/.75)}
+.blk.errore{background:var(--badge-red);color:var(--badge-red-ink)}.blk.errore b{color:var(--badge-red-ink)}
+.pista .ades{position:absolute;top:-6px;bottom:-6px;width:1px;background:var(--ink);z-index:2}
+.pista .ades b{position:absolute;left:0;top:-11px;transform:translateX(-50%);height:22px;padding:0 10px;border-radius:var(--r-pill);background:var(--ink);color:var(--white);font-size:11px;font-weight:400;display:flex;align-items:center;white-space:nowrap}
+.pista .ades i{position:absolute;left:0;bottom:0;width:8px;height:8px;border-radius:50%;background:var(--ink);transform:translate(-50%,50%)}
+/* le scadenze: la riga della Console con la barra di avanzamento; le righe della settimana */
+.crow.scad{grid-template-columns:40px minmax(0,1fr) 110px minmax(0,190px) 140px 32px}
+.crow.scad .prog{margin:0;height:8px}
+.crow.scad .quando{display:grid;gap:2px;align-content:center;font-size:14px;white-space:nowrap}
+.crow.scad .quando small{margin:0;font-size:11px;color:var(--t2)}
+.crow.scad .quando.vicina{color:var(--lime)}
+.crow.scad .bud{display:grid;gap:6px;align-content:center}
+.crow.scad .bud small{font-size:11px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grow{min-height:68px;border-radius:26px;background:linear-gradient(180deg,var(--card-top),var(--card));display:grid;grid-template-columns:150px minmax(0,1fr);align-items:center;gap:16px;padding:12px 16px 12px 20px}
+.grow>*{min-width:0}
+.grow .gg{display:grid;gap:3px}
+.grow .gg b{font-weight:500;font-size:15px;text-transform:capitalize}
+.grow .gg span{font-size:11px;color:var(--t2);display:flex;align-items:center;gap:6px}
+.grow .gg .chip{height:20px;font-size:10px;padding:0 8px}
+.grow .voci{display:flex;flex-wrap:wrap;gap:8px;min-width:0}
+.grow .voce{display:inline-flex;align-items:center;gap:8px;height:40px;border-radius:var(--r-pill);background:rgb(255 255 255/.06);border:1px solid rgb(255 255 255/.12);padding:0 14px 0 6px;font-size:13px;max-width:100%;min-width:0}
+.grow .voce .ico{width:28px;height:28px;border-radius:50%;background:rgb(255 255 255/.1);display:grid;place-items:center;flex:none}
+.grow .voce .ico svg{width:13px;height:13px}
+.grow .voce b{font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.grow .voce span{color:var(--t2);white-space:nowrap;flex:none}
+.grow .voce.scadenza{background:var(--white);color:var(--ink);border-color:transparent}
+.grow .voce.scadenza .ico{background:rgb(0 0 0/.08)}.drow .voce.scadenza span{color:var(--t2-light)}
+.grow .voce.ritardo{background:var(--badge-red);color:var(--badge-red-ink);border-color:transparent}
+.grow .voce.ritardo .ico{background:rgb(0 0 0/.12)}.drow .voce.ritardo span{color:rgb(0 0 0/.6)}
+.grow .niente{font-size:13px;color:var(--t2)}
+/* ===== pagina Chat (versione 15, 2026-09-06): i fili a sinistra, il filo aperto a destra con la barra di scrittura del riferimento ===== */
+.chatp{display:grid;grid-template-columns:396px minmax(0,1fr);gap:16px;align-items:start;margin-top:24px}
+.chatp>*{min-width:0}
+.fili{display:grid;gap:8px}
+.erow.filo{height:76px;padding:0 16px 0 8px;gap:12px;cursor:pointer}
+.erow.filo .av{width:52px;height:52px;font-size:16px}
+.erow.filo .tx b{font-size:15px}
+.erow.filo .tx span{font-size:12px}
+.erow.filo .dx{display:grid;justify-items:end;gap:6px;flex:none}
+.erow.filo .dx .ora{font-size:11px;color:var(--t2);white-space:nowrap}
+.erow.filo .nuovi{min-width:24px;height:22px;padding:0 8px;border-radius:var(--r-pill);background:var(--lime);color:var(--ink);font-size:12px;display:grid;place-items:center}
+.erow.filo.on{background:var(--white);color:var(--ink)}
+.erow.filo.on .tx span,.erow.filo.on .dx .ora{color:var(--t2-light)}
+.erow.filo.on .nuovi{background:var(--ink);color:var(--white)}
+.filoap{display:grid;gap:16px;align-content:start}
+.ftesta{display:flex;align-items:center;gap:16px;min-width:0;flex-wrap:wrap}
+.ftesta .tx{min-width:0;display:grid;gap:2px}
+.ftesta .tx b{font-weight:500;font-size:18px;line-height:22px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ftesta .tx span{font-size:13px;color:var(--t2);white-space:nowrap}
+.ftesta .chips{display:flex;gap:6px;flex-wrap:wrap}
+.ftesta .azioni{margin-left:auto;display:flex;gap:8px;flex:none}
+.fcorpo{border-radius:var(--r-card);border:1px solid rgb(255 255 255/.1);padding:22px;display:grid;gap:14px}
+.fgiorno{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--t2);white-space:nowrap}
+.fgiorno::before,.fgiorno::after{content:"";height:1px;background:rgb(255 255 255/.12);flex:1}
+.fcorpo .qrow{width:min(560px,88%);margin:0 auto;height:52px;color:var(--ink)}
+.fcorpo .qrow .rb.xs.black{background:var(--ink);color:var(--white);border-color:transparent}
+.fcorpo .qrow .rb.xs.red{background:var(--hangup);color:var(--white);border-color:transparent}
 `;
 
   const nomePeriodo = { oggi: 'Oggi', ieri: 'Ieri', settimana: 'Ultimi 7 giorni', mese: 'Ultimi 30 giorni', prima: 'Prima' };
@@ -416,7 +498,7 @@ window.DIREZIONE_A = (function () {
       <div class="who">${av(m, e, '', null, 'data-anima="1"')}<div><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div></div>
       <div class="nt"><span class="rb ghost">${ic('i-bell')}${pend ? '<i class="dot"></i>' : ''}</span><span class="rb ghost" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Apri l'esecuzione">${ic('i-ne')}</span></div>
       <div class="body"><span class="ico">${ic(iconaDip[e.dip])}</span><div><div class="tt">${esc(e.att.titolo)}</div><div class="meta"><b>${esc(e.att.cliente)}</b><span>da</span><b>${esc(e.att.da)}</b></div></div></div>
-      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel"><span class="chip lime">${ic('i-play')}In corso</span><span>Passo ${e.att.passo[0]} di ${e.att.passo[1]}</span>${ic('i-chev')}</span><span class="rb ghost">${ic('i-chat')}</span><span class="rb black" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Passi, log e output">${ic('i-eye')}</span></div></div>
+      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel"><span class="chip lime">${ic('i-play')}In corso</span><span>Passo ${e.att.passo[0]} di ${e.att.passo[1]}</span>${ic('i-chev')}</span><span class="rb ghost" data-az="pagina" data-pagina="chat" data-id="${e.id}" title="Scrivi a ${esc(m.etichetta(e))}">${ic('i-chat')}</span><span class="rb black" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Passi, log e output">${ic('i-eye')}</span></div></div>
     </div>`;
   }
   function cardEsecuzione(m, e, i) {
@@ -430,7 +512,7 @@ window.DIREZIONE_A = (function () {
       <div class="who">${av(m, e)}<div><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div></div>
       <div class="nt"><span class="rb ghost">${ic('i-bell')}${err ? '<i class="dot"></i>' : ''}</span><span class="rb ghost" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Apri l'esecuzione">${ic('i-ne')}</span></div>
       <div class="body"><span class="ico">${ic(err ? 'i-warn' : iconaDip[e.dip])}</span><div><div class="tt">${esc(a.titolo)}</div><div class="meta">${meta}</div></div></div>
-      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${sel}${ic('i-chev')}</span><span class="rb ghost">${ic('i-chat')}</span><span class="rb black" data-az="${err ? 'esec-riprova' : 'esec-avvia'}" data-id="${e.id}" title="${err ? 'Riprova' : 'Avvia ora'}">${ic('i-play')}</span></div></div>
+      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${sel}${ic('i-chev')}</span><span class="rb ghost" data-az="pagina" data-pagina="chat" data-id="${e.id}" title="Scrivi a ${esc(m.etichetta(e))}">${ic('i-chat')}</span><span class="rb black" data-az="${err ? 'esec-riprova' : 'esec-avvia'}" data-id="${e.id}" title="${err ? 'Riprova' : 'Avvia ora'}">${ic('i-play')}</span></div></div>
     </div>`;
   }
   function cardObiettivo(m, o, i) {
@@ -480,7 +562,7 @@ window.DIREZIONE_A = (function () {
       if (a.stato === 'fatto') return `<span class="ev">${pair(m, a.chi, 's', m.n > 16 ? 1 : 2)}${esc(a.durata)}${m.n > 16 ? '' : `<span class="rb xs">${ic('i-ne')}</span>`}</span>`;
       return `<span class="sep"></span><span class="tm">${esc(a.ora)}</span><span class="ev plan" style="padding-right:12px">${pair(m, a.chi, 's', m.n > 16 ? 1 : 2)}</span>`;
     }).join('');
-    return `<div class="a-sched"><span class="t">Oggi in azienda</span><span class="cal"><i>${ic('i-cal')}</i>${esc(m.azienda.data)}</span><div class="tl">${ev}</div><span class="rb go">${ic('i-ne')}</span></div>`;
+    return `<div class="a-sched"><span class="t">Oggi in azienda</span><span class="cal"><i>${ic('i-cal')}</i>${esc(m.azienda.data)}</span><div class="tl">${ev}</div><span class="rb go" data-az="pagina" data-pagina="agenda" title="L'agenda dell'azienda">${ic('i-ne')}</span></div>`;
   }
 
   /* ---------- tendina del titolare ---------- */
@@ -510,7 +592,7 @@ window.DIREZIONE_A = (function () {
       <div class="top"><span class="chip">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]} · ${esc(r.ora)}</span><span class="r"><span class="rb glass" data-az="prec">${ic('i-left')}</span><span class="rb glass" data-az="succ">${ic('i-right')}</span></span></div>
       ${av(m, chi, 'lg face', 'attesa')}
       <div class="cap"><b>${esc(r.cosa)}</b>${esc(m.etichetta(chi))} · ${esc(r.cliente)} · ${idx + 1} di ${n}</div>
-      <div class="ctl"><span class="rb glass" data-az="espandi" title="Apri">${ic('i-eye')}</span><span class="rb glass" title="Commenta">${ic('i-chat')}</span><span class="rb lime" data-az="approva" data-id="${r.id}" title="Approva">${ic('i-check')}</span><span class="rb red" data-az="rifiuta" data-id="${r.id}" title="Rifiuta">${ic('i-x')}</span></div>
+      <div class="ctl"><span class="rb glass" data-az="espandi" title="Apri">${ic('i-eye')}</span><span class="rb glass" data-az="pagina" data-pagina="chat" data-id="${r.chi}" title="Commenta">${ic('i-chat')}</span><span class="rb lime" data-az="approva" data-id="${r.id}" title="Approva">${ic('i-check')}</span><span class="rb red" data-az="rifiuta" data-id="${r.id}" title="Rifiuta">${ic('i-x')}</span></div>
     </div>`;
   }
   function tendinaAperta(m, opz) {
@@ -553,7 +635,7 @@ window.DIREZIONE_A = (function () {
             <div class="passi">${r.passi.map(p => `<span class="chip light">${ic('i-check')}${esc(p)}</span>`).join('')}</div></div>
           <div class="dcard"><h5>Nota del dipendente</h5><p class="nota">${esc(r.nota)}</p></div>
         </div>
-        <div class="azioni"><span class="pill lime" data-az="approva" data-id="${r.id}">${ic('i-check')}Approva</span><span class="pill olight" data-az="modifiche" data-id="${r.id}">${ic('i-pen')}Chiedi modifiche</span><span class="pill olight">${ic('i-chat')}Commenta</span><span class="pill red" data-az="rifiuta" data-id="${r.id}">${ic('i-x')}Rifiuta</span><span class="link" data-az="pagina" data-pagina="richieste">Tutte le richieste ${ic('i-ne')}</span></div>
+        <div class="azioni"><span class="pill lime" data-az="approva" data-id="${r.id}">${ic('i-check')}Approva</span><span class="pill olight" data-az="modifiche" data-id="${r.id}">${ic('i-pen')}Chiedi modifiche</span><span class="pill olight" data-az="pagina" data-pagina="chat" data-id="${r.chi}">${ic('i-chat')}Commenta</span><span class="pill red" data-az="rifiuta" data-id="${r.id}">${ic('i-x')}Rifiuta</span><span class="link" data-az="pagina" data-pagina="richieste">Tutte le richieste ${ic('i-ne')}</span></div>
       </div></div>
     </div>`;
   }
@@ -629,8 +711,8 @@ window.DIREZIONE_A = (function () {
         <span class="rb ${railAttivo === 'home' ? 'white' : ''}" data-az="pagina" data-pagina="home">${ic('i-list')}</span>
         <span class="rb ${railAttivo === 'org' ? 'white' : ''}" data-az="pagina" data-pagina="dipartimento">${ic('i-org')}</span>
         <span class="rb ${railAttivo === 'richieste' ? 'white' : ''}" data-az="pagina" data-pagina="richieste">${ic('i-bell')}</span>
-        <span class="rb">${ic('i-chat')}</span>
-        <span class="rb">${ic('i-cal')}</span>
+        <span class="rb ${railAttivo === 'chat' ? 'white' : ''}" data-az="pagina" data-pagina="chat" title="Le conversazioni con i dipendenti">${ic('i-chat')}</span>
+        <span class="rb ${railAttivo === 'agenda' ? 'white' : ''}" data-az="pagina" data-pagina="agenda" title="L'agenda dell'azienda">${ic('i-cal')}</span>
         <span class="rb ${railAttivo === 'costi' ? 'white' : ''}" data-az="pagina" data-pagina="costi" title="I costi dell'azienda">${ic('i-euro')}</span>
       </div>
       <div class="a-main">${corpo}</div>
@@ -835,7 +917,7 @@ window.DIREZIONE_A = (function () {
       <div class="who">${av(m, e)}<div><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div></div>
       <div class="nt"><span class="rb ghost">${ic('i-bell')}${att ? '<i class="dot"></i>' : ''}</span><span class="rb ghost" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Apri l'esecuzione">${ic('i-ne')}</span></div>
       <div class="body"><span class="ico">${ic(iconaDip[e.dip])}</span><div><div class="tt">${esc(a.titolo)}</div><div class="meta"><b>${esc(a.cliente || '—')}</b><span>${att ? 'consegnato alle' : 'concluso'}</span><b>${esc(a.fine || '')}</b></div></div></div>
-      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${att ? `<span class="chip ink">${ic('i-bell')}Da approvare</span><span>aspetta il titolare</span>` : `<span class="chip">Libero</span><span>nessuna esecuzione in corso</span>`}${ic('i-chev')}</span><span class="rb ghost">${ic('i-chat')}</span><span class="rb black" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Passi, log e output">${ic('i-eye')}</span></div></div>
+      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${att ? `<span class="chip ink">${ic('i-bell')}Da approvare</span><span>aspetta il titolare</span>` : `<span class="chip">Libero</span><span>nessuna esecuzione in corso</span>`}${ic('i-chev')}</span><span class="rb ghost" data-az="pagina" data-pagina="chat" data-id="${e.id}" title="Scrivi a ${esc(m.etichetta(e))}">${ic('i-chat')}</span><span class="rb black" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Passi, log e output">${ic('i-eye')}</span></div></div>
     </div>`;
   }
   function sezioneOggi(m, e) {
@@ -1033,10 +1115,10 @@ window.DIREZIONE_A = (function () {
       : `<b>Concluso ${esc(a.fine || '')}</b>: ${r.n} passi${r.durata ? ' in ' + r.durata : ''}, ${eur(r.costo)}.`;
     const pillDip = `<span class="pill sm" data-az="pagina" data-pagina="dipendente" data-id="${e.id}">${ic('i-ne')}La pagina di ${esc(m.etichetta(e))}</span>`;
     const azioni = e.pausa ? `<span class="pill sm on" data-az="esec-pausa" data-id="${e.id}">${ic('i-play')}Riprendi</span><span class="pill sm" data-az="esec-stop" data-id="${e.id}">${ic('i-x')}Interrompi</span>${pillDip}`
-      : e.stato === 'lavoro' ? `<span class="pill sm" data-az="esec-pausa" data-id="${e.id}">${ic('i-pause')}Metti in pausa</span><span class="pill sm" data-az="esec-stop" data-id="${e.id}">${ic('i-x')}Interrompi</span><span class="pill sm" data-az="esec-scrivi">${ic('i-chat')}Scrivi a ${esc(m.etichetta(e))}</span>${pillDip}`
+      : e.stato === 'lavoro' ? `<span class="pill sm" data-az="esec-pausa" data-id="${e.id}">${ic('i-pause')}Metti in pausa</span><span class="pill sm" data-az="esec-stop" data-id="${e.id}">${ic('i-x')}Interrompi</span><span class="pill sm" data-az="pagina" data-pagina="chat" data-id="${e.id}">${ic('i-chat')}Scrivi a ${esc(m.etichetta(e))}</span>${pillDip}`
       : e.stato === 'errore' ? `<span class="pill sm lime" data-az="esec-riprova" data-id="${e.id}">${ic('i-play')}Riprova il passo ${r.cur ? r.cur.n : ''}</span><span class="pill sm" data-az="pagina" data-pagina="dipendente" data-id="${e.id}">${ic('i-org')}Rinnova la connessione</span><span class="pill sm" data-az="esec-stop" data-id="${e.id}">${ic('i-x')}Interrompi</span>`
-      : e.stato === 'pianificato' ? `<span class="pill sm lime" data-az="esec-avvia" data-id="${e.id}">${ic('i-play')}Avvia ora</span><span class="pill sm">${ic('i-cal')}Sposta</span>${pillDip}`
-      : e.stato === 'attesa' ? `${idx >= 0 ? `<span class="pill sm lime" data-az="richiesta" data-idx="${idx}">${ic('i-bell')}Apri la richiesta</span>` : ''}<span class="pill sm" data-az="esec-scrivi">${ic('i-chat')}Scrivi a ${esc(m.etichetta(e))}</span>${pillDip}`
+      : e.stato === 'pianificato' ? `<span class="pill sm lime" data-az="esec-avvia" data-id="${e.id}">${ic('i-play')}Avvia ora</span><span class="pill sm" data-az="pagina" data-pagina="agenda" title="L'agenda dell'azienda">${ic('i-cal')}Sposta</span>${pillDip}`
+      : e.stato === 'attesa' ? `${idx >= 0 ? `<span class="pill sm lime" data-az="richiesta" data-idx="${idx}">${ic('i-bell')}Apri la richiesta</span>` : ''}<span class="pill sm" data-az="pagina" data-pagina="chat" data-id="${e.id}">${ic('i-chat')}Scrivi a ${esc(m.etichetta(e))}</span>${pillDip}`
       : `<span class="pill sm">${ic('i-play')}Ripeti</span>${pillDip}`;
     return `<section class="etesta">
       <div class="ident">${av(m, e, 'lg', e.pausa ? 'libero' : null, 'data-anima="1"')}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div>
@@ -1228,6 +1310,169 @@ window.DIREZIONE_A = (function () {
     return cornice(m, opz, 'COSTI', stats, 'costi', corpo, '');
   }
 
+  /* ---------- pagina Agenda (versione 15, 2026-09-06) ----------
+     L'agenda dell'azienda, dalla barra «Oggi in azienda» della cornice. Stessa cornice (titolo AGENDA, tre numeri, il quinto
+     cerchio del rail acceso). Quattro sezioni: la **barra del giorno**, che è la barra agenda del riferimento allargata a
+     tutta la giornata (i blocchi sulle corsie, il segno di «adesso», le ore sotto la pista lime); gli **eventi di oggi** come
+     card attività, con le pillole che filtrano davvero; le **scadenze** (l'obiettivo del mese come card del Riepilogo e gli
+     obiettivi con una data, dal più vicino); **la settimana**, sette righe con i pianificati che si ripetono, le prossime
+     consegne e le scadenze. I dati sono l'aggregatore di `dati.js` (`giornata`, `settimana`, `scadenze`): nessun numero nuovo.
+     Si arriva dal quinto cerchio del rail, dal cerchio della barra «Oggi in azienda» e dalla pillola «Sposta» dell'Esecuzione. */
+  const NOME_EV = { corso: 'In corso', attesa: 'Da approvare', errore: 'Errore', pianificato: 'Pianificato', fatto: 'Concluso' };
+  const ICONA_EV = { corso: 'i-play', attesa: 'i-bell', errore: 'i-warn', pianificato: 'i-clock', fatto: 'i-check' };
+  /* La barra del giorno: la pista lime da un'ora tonda all'altra, un blocco per evento sulla prima corsia libera. */
+  function barraGiorno(m, ev) {
+    if (!ev.length) return `<div class="vuoto" style="margin-top:16px">Nessun evento oggi</div>`;
+    const da = Math.floor(Math.min(...ev.map(x => x.min)) / 60) * 60;
+    const a = Math.ceil(Math.max(...ev.map(x => x.fine)) / 60) * 60;
+    const span = Math.max(60, a - da);
+    const minimo = Math.ceil(span * 0.035);                 // un blocco non scende sotto la larghezza dell'avatar
+    const pos = t => 100 * (t - da) / span;
+    const corsie = [];
+    ev.forEach(x => {
+      const fine = Math.max(x.fine, x.min + minimo);
+      const c = corsie.find(y => y.fine <= x.min);
+      if (c) { c.fine = fine; c.ev.push(Object.assign({ largo: fine }, x)); }
+      else corsie.push({ fine, ev: [Object.assign({ largo: fine }, x)] });
+    });
+    const ore = [];
+    for (let t = da; t <= a; t += 60) ore.push(`<i class="h" style="left:${pos(t)}%"><b>${String(t / 60).padStart(2, '0')}:00</b></i>`);
+    const blocco = x => { const e = m.byId[x.chi]; return `<div class="blk ${x.stato}" style="left:${pos(x.min)}%;width:${pos(x.largo) - pos(x.min)}%" data-az="pagina" data-pagina="esecuzione" data-id="${x.chi}" title="${esc(m.etichetta(e))} · ${esc(x.titolo)} · ${esc(x.da)}${x.a ? '–' + esc(x.a) : ''}">${av(m, e, '', x.stato === 'fatto' ? 'libero' : undefined)}<b>${esc(x.titolo)}</b><span>${esc(x.da)}${x.a ? '–' + esc(x.a) : ''}</span></div>`; };
+    const adesso = m.oraDi(m.azienda.ora);
+    return `<div class="pista">${ore.join('')}
+      ${corsie.map(c => `<div class="corsia">${c.ev.map(blocco).join('')}</div>`).join('')}
+      ${adesso >= da && adesso <= a ? `<span class="ades" style="left:${pos(adesso)}%"><b>${esc(m.azienda.ora)}</b><i></i></span>` : ''}</div>`;
+  }
+  function cardEvento(m, x) {
+    const e = m.byId[x.chi];
+    return (x.stato === 'corso' || x.stato === 'errore' || x.stato === 'pianificato') ? cardEsecuzione(m, e, 0) : cardUltima(m, e);
+  }
+  function rigaScadenza(m, s) {
+    const o = s.o, lime = s.giorni <= 7;
+    return `<div class="crow scad"><span class="ico">${ic('i-target')}</span>
+      <div class="tx"><b>${esc(o.titolo)}</b><span>${esc(o.cliente)} · ${o.chi.length} dipendent${o.chi.length === 1 ? 'e' : 'i'}</span></div>
+      <span class="quando${lime ? ' vicina' : ''}">${esc(o.scadenza)}<small>${s.giorni === 0 ? 'oggi' : 'fra ' + s.giorni + ' giorni'}</small></span>
+      <div class="bud"><small>${o.consegne[0]} di ${o.consegne[1]} consegne · ${esc(o.prossima)}</small><div class="prog"><i style="width:${o.avanz}%"></i></div></div>
+      <span class="v">${o.stato === 'ritardo' ? `<span class="chip rosa">${ic('i-warn')}In ritardo</span>` : o.stato === 'concluso' ? `<span class="chip lime">${ic('i-check')}Concluso</span>` : `<span class="chip">${o.avanz}%</span>`}</span>
+      <span class="rb xs" data-az="pagina" data-pagina="dipartimento" data-dip="${o.dip}" title="Apri il dipartimento">${ic('i-ne')}</span></div>`;
+  }
+  function rigaGiorno(m, g) {
+    const voce = v => `<span class="voce ${v.tipo === 'scadenza' ? (v.stato === 'ritardo' ? 'ritardo' : 'scadenza') : v.tipo}"><span class="ico">${ic(v.tipo === 'scadenza' ? 'i-target' : v.tipo === 'consegna' ? 'i-doc' : 'i-clock')}</span>${v.ora ? `<span>${esc(v.ora)}</span>` : ''}<b>${esc(v.titolo)}</b><span>${esc(v.sotto || v.cliente)}</span></span>`;
+    const oggi = g.oggi
+      ? `<span class="voce"><span class="ico">${ic('i-play')}</span><b>${g.eventi.filter(x => x.stato === 'corso').length} al lavoro</b><span>adesso</span></span>
+         <span class="voce"><span class="ico">${ic('i-clock')}</span><b>${g.eventi.filter(x => x.stato === 'pianificato').length} da partire</b><span>${esc((g.eventi.filter(x => x.stato === 'pianificato')[0] || {}).da || '—')}</span></span>`
+      : '';
+    return `<div class="grow"><div class="gg"><b>${esc(g.nome)}</b><span>${esc(g.data)}${g.oggi ? `<span class="chip lime">Oggi</span>` : ''}</span></div>
+      <div class="voci">${oggi}${g.voci.map(voce).join('') || (g.oggi ? '' : `<span class="niente">Niente in programma</span>`)}</div></div>`;
+  }
+  function agenda(m, opz) {
+    const ev = m.giornata(), scad = m.scadenze(), set = m.settimana();
+    const f = opz.agenda || 'tutti';
+    const visti = ev.filter(x => f === 'tutti' || x.stato === f);
+    const piani = ev.filter(x => x.stato === 'pianificato');
+    const vicine = scad.filter(s => s.giorni <= 7);
+    const stats = `<div class="stat"><b>${ev.length}</b><span>eventi oggi</span><span class="badge up">${ic('i-play')}${ev.filter(x => x.stato === 'corso').length}</span></div>
+      <div class="stat"><b>${piani.length}</b><span>ancora da partire</span><span class="badge flat">${ic('i-clock')}${esc((piani[0] || {}).da || '—')}</span></div>
+      <div class="stat"><b>${vicine.length}</b><span>scadenze in settimana</span>${vicine.some(s => s.o.stato === 'ritardo') ? `<span class="badge down">${ic('i-warn')}${vicine.filter(s => s.o.stato === 'ritardo').length}</span>` : ''}</div>`;
+    const pill = (v, testo, extra) => `<span class="pill${f === v ? ' on' : ''}" data-az="agenda-filtro" data-v="${v}">${extra || ''}${testo}</span>`;
+    const corpo = `
+      <section>
+        <div class="giorno">
+          <div class="top"><span class="t">Oggi in azienda</span><span class="cal"><i>${ic('i-cal')}</i>${esc(m.azienda.dataLunga || m.azienda.data)}</span>
+            <div class="leg"><span><i class="lime"></i>Al lavoro o da approvare</span><span><i></i>Concluso</span><span><i class="piano"></i>Pianificato</span><span><i class="errore"></i>Errore</span></div></div>
+          ${barraGiorno(m, ev)}
+        </div>
+      </section>
+      <section>
+        <div class="shead"><h3>Eventi di oggi</h3><span class="cnt"><b>${visti.length}</b><span>di ${ev.length}</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
+          <div class="filters">${pill('tutti', 'Tutti')}${pill('corso', 'In corso')}${pill('attesa', 'Da approvare', ic('i-fire'))}${pill('pianificato', 'Pianificati')}${pill('errore', 'Errori')}</div></div>
+        ${visti.length ? `<div class="cards riga">${visti.map(x => cardEvento(m, x)).join('')}</div>` : `<div class="vuoto">Nessun evento di questo tipo oggi</div>`}
+      </section>
+      <section>
+        <div class="shead"><h3>Scadenze</h3><span class="cnt"><b>${scad.length}</b><span>Obiettivi con una data</span></span><span class="rb sm ghost">${ic('i-sliders')}</span>
+          <div class="filters"><span class="pill on">Per data</span><span class="pill">Per dipartimento</span></div></div>
+        <div class="costo">
+          <div class="dcard"><div class="nt"><span class="rb sm">${ic('i-target')}</span></div><h5>Obiettivo del mese:</h5><p class="goal">${m.azienda.obiettivoMese}</p>
+            <div class="kv"><span>Scadenza</span><b>${esc(m.azienda.scadenzaMese || '')}</b></div>
+            <div class="kv"><span>Scadenze entro sette giorni</span><b>${vicine.length}</b></div>
+            <div class="kv"><span>In ritardo</span><b>${m.obiettivi.filter(o => o.stato === 'ritardo').length}</b></div>
+          </div>
+          <div class="hlist" style="margin-top:0">${scad.map(s => rigaScadenza(m, s)).join('')}</div>
+        </div>
+      </section>
+      <section>
+        <div class="shead"><h3>La settimana</h3><span class="cnt"><b>${set.reduce((t, g) => t + g.voci.length, 0) + ev.length}</b><span>Impegni</span></span><span class="rb sm ghost">${ic('i-search')}</span>
+          <div class="filters"><span class="pill on">Sette giorni</span><span class="pill">Questo mese</span></div></div>
+        <div class="hlist" style="margin-top:24px">${set.map(g => rigaGiorno(m, g)).join('')}</div>
+      </section>`;
+    return cornice(m, opz, 'AGENDA', stats, 'agenda', corpo, 'Nuovo evento');
+  }
+
+  /* ---------- pagina Chat (versione 15, 2026-09-06) ----------
+     Un filo per dipendente (dati.js, `filoDi`): le note del titolare e le risposte del dipendente. A sinistra i fili, con
+     l'ultimo messaggio e quanti ne restano da leggere; a destra il filo aperto, con la testata del dipendente, i messaggi e
+     la barra di scrittura del riferimento. Una consegna che aspetta entra nel filo come riga bianca, con approva e rifiuta:
+     la decisione è la stessa di tutte le altre (`m.decidi`). Si arriva dal quarto cerchio del rail, dai cerchi «commenta»
+     delle card e delle tendine e dalla pillola «Scrivi a …» dell'Esecuzione. */
+  const filoScelto = (m, opz) => m.byId[opz.filo] || (m.fili()[0] || {}).e || m.dipendenti[0];
+  function rigaConsegna(m, r) {
+    const idx = inAttesa(m).indexOf(r);
+    return `<div class="qrow${r.stato === 'attesa' ? ' on' : ''}"${idx >= 0 ? ` data-az="richiesta" data-idx="${idx}"` : ''}>
+      <span class="av xs" style="background:var(--ink);color:var(--white)">${ic(iconaTipo[r.tipo])}</span>
+      <div class="tx"><b>${esc(r.cosa)}</b><span>${nomeTipo[r.tipo]} · ${esc(r.cliente)} · ${r.costo} €</span></div>
+      ${r.stato === 'attesa' ? `<span class="rb xs black" data-az="approva" data-id="${r.id}" title="Approva">${ic('i-check')}</span><span class="rb xs red" data-az="rifiuta" data-id="${r.id}" title="Rifiuta">${ic('i-x')}</span>` : chipEsito(r)}
+      <span class="rb xs">${ic('i-chevr')}</span></div>`;
+  }
+  function rigaFilo(m, x, on) {
+    const e = x.e, u = x.ultimo;
+    return `<div class="erow filo${on ? ' on' : ''}" data-az="filo" data-id="${e.id}">${av(m, e)}
+      <div class="tx"><b>${esc(m.etichetta(e))}</b><span>${u ? (u.da === 'io' ? 'Tu: ' : '') + esc(u.testo) : 'Nessun messaggio'}</span></div>
+      <span class="dx"><span class="ora">${u ? esc(u.ora) : ''}</span>${x.nuovi ? `<span class="nuovi">${x.nuovi}</span>` : chipStato(m, e)}</span></div>`;
+  }
+  function filoAperto(m, e) {
+    const f = m.filoDi(e), x = m.esecuzioneDi(e), r = riepilogoEsecuzione(m, e, x);
+    const corpo = f.map(v => {
+      const q = v.richiesta ? m.richieste.find(t => t.id === v.richiesta) : null;
+      return C.messaggio(m, e, v) + (q ? rigaConsegna(m, q) : '');
+    }).join('');
+    const stato = e.stato === 'lavoro' && r.cur ? `Al passo ${r.cur.n} di ${r.n}: legge le tue note fra un passo e l'altro.`
+      : e.stato === 'errore' ? 'Fermo per un errore: risponde quando riparte.'
+      : e.stato === 'pianificato' ? `Parte alle ${esc(e.att.quando)}: legge le tue note alla partenza.`
+      : e.stato === 'attesa' ? 'Ha consegnato e aspetta la tua decisione.'
+      : 'Libero: legge le tue note alla prossima esecuzione.';
+    return `<div class="filoap">
+      <div class="ftesta">${av(m, e, 'lg', null, 'data-anima="1"')}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div>
+        <div class="chips">${chipStato(m, e)}<span class="chip">${ic('i-chat')}${f.length} messagg${f.length === 1 ? 'io' : 'i'}</span></div>
+        <div class="azioni"><span class="pill sm" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}">${ic('i-eye')}L'esecuzione</span><span class="pill sm" data-az="pagina" data-pagina="dipendente" data-id="${e.id}">${ic('i-ne')}La sua pagina</span></div>
+      </div>
+      <div class="fcorpo"><div class="fgiorno">oggi · ${esc(m.azienda.data)}</div>${corpo}</div>
+      <p class="fgiorno">${stato}</p>
+      <div class="chat">${av(m, e, 's')}<input type="text" data-campo="chat" placeholder="Scrivi a ${esc(m.etichetta(e))}…" maxlength="160"><span class="rb sm" data-az="chat-invia" data-id="${e.id}" title="Invia">${ic('i-send')}</span></div>
+    </div>`;
+  }
+  function chat(m, opz) {
+    const tutti = m.fili();
+    const f = opz.chatf || 'tutti';
+    const visti = tutti.filter(x => f === 'tutti' ? true : f === 'nuovi' ? x.nuovi > 0 : x.e.stato === f);
+    const e = filoScelto(m, opz);
+    const daLeggere = tutti.filter(x => x.nuovi > 0).length;
+    const messaggi = tutti.reduce((t, x) => t + m.filoDi(x.e).length, 0);
+    const stats = `<div class="stat"><b>${tutti.length}</b><span>conversazioni</span></div>
+      <div class="stat"><b>${daLeggere}</b><span>da leggere</span>${daLeggere ? `<span class="badge down">${ic('i-bell')}${daLeggere}</span>` : ''}</div>
+      <div class="stat"><b>${messaggi}</b><span>messaggi oggi</span></div>`;
+    const pill = (v, testo) => `<span class="pill${f === v ? ' on' : ''}" data-az="chat-filtro" data-v="${v}">${testo}</span>`;
+    const corpo = `
+      <section>
+        <div class="shead"><h3>Conversazioni</h3><span class="cnt"><b>${visti.length}</b><span>di ${tutti.length}</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
+          <div class="filters">${pill('tutti', 'Tutte')}${pill('nuovi', 'Da leggere')}${pill('lavoro', 'Al lavoro')}${pill('attesa', 'Da approvare')}${pill('errore', 'Errori')}</div></div>
+        <div class="chatp">
+          <div class="fili">${visti.length ? visti.map(x => rigaFilo(m, x, x.e.id === e.id)).join('') : `<div class="vuoto" style="margin:0">Nessuna conversazione</div>`}</div>
+          ${filoAperto(m, e)}
+        </div>
+      </section>`;
+    return cornice(m, opz, 'CHAT', stats, 'chat', corpo, '');
+  }
+
   /* ---------- tendina estesa delle versioni: dossier di una revisione, o confronto fra due versioni ---------- */
   function tendinaVersioni(m, opz) {
     const c = opz.confronto, e = m.byId[c.id], d = m.dossierDi(e), rv = c.rev, r = c.richiesta;
@@ -1267,13 +1512,13 @@ window.DIREZIONE_A = (function () {
   }
 
   function render(m, opz) {
-    opz = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, confronto: null, motivo: false, periodo: {} }, opz || {});
-    return opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : opz.pagina === 'dipendente' ? dipendente(m, opz) : opz.pagina === 'esecuzione' ? esecuzione(m, opz) : opz.pagina === 'costi' ? paginaCosti(m, opz) : home(m, opz);
+    opz = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, confronto: null, motivo: false, periodo: {}, filo: 0, agenda: 'tutti', chatf: 'tutti' }, opz || {});
+    return opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : opz.pagina === 'dipendente' ? dipendente(m, opz) : opz.pagina === 'esecuzione' ? esecuzione(m, opz) : opz.pagina === 'costi' ? paginaCosti(m, opz) : opz.pagina === 'agenda' ? agenda(m, opz) : opz.pagina === 'chat' ? chat(m, opz) : home(m, opz);
   }
 
   /* Disegna e collega i clic: tendina, cambio pagina, filtri, decisioni. Ritorna lo stato. */
   function monta(radice, m, opz) {
-    const st = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, editor: null, confronto: null, motivo: false, log: 'tutto', periodo: { dipartimenti: 'mese', dipendenti: 'mese', clienti: 'mese', modelli: 'mese' } }, opz || {});
+    const st = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, editor: null, confronto: null, motivo: false, log: 'tutto', periodo: { dipartimenti: 'mese', dipendenti: 'mese', clienti: 'mese', modelli: 'mese' }, filo: 0, agenda: 'tutti', chatf: 'tutti' }, opz || {});
     const n = () => m.richiesteDi('attesa').length;
     /* parametri di avvio della pagina del dipendente: ?tendina=dossier (la revisione in sospeso del dipendente, estesa) e ?confronto=a,b (due versioni del prompt) */
     const idxRevisione = id => inAttesa(m).findIndex(r => r.tipo === 'revisione' && r.chi === id);
@@ -1323,11 +1568,15 @@ window.DIREZIONE_A = (function () {
       else if (az === 'esec-avvia') { const p0 = x.passi.find(p => p.stato === 'da fare'); if (!p0) return; p0.stato = 'corso'; p0.inizio = ora; e.stato = 'lavoro'; const quando = e.att.quando; e.att.da = ora; delete e.att.quando; e.att.passo = [p0.n, x.passi.length]; const pr = x.passi.find(p => p.stato === 'da fare'); e.att.prossimo = pr ? pr.nome : ''; x.log.push(voce(`MR ha avviato l'esecuzione${quando ? ' (era pianificata alle ' + quando + ')' : ''}`)); }
       m.ricalcola(); tutto();
     };
-    const inviaNota = id => {
+    /* La nota del titolare: dalla barra dell'Esecuzione va nel log e nel filo della chat, dalla chat solo nel filo
+       (versione 15: la barra di scrittura dell'Esecuzione e quella della chat sono la stessa conversazione). */
+    const inviaNota = (id, soloFilo) => {
       const inp = radice.querySelector('.chat input'); const v = inp ? inp.value.trim() : ''; const e = m.byId[id];
       if (!v) { if (inp) inp.focus(); return; } if (!e) return;
       const x = m.esecuzioneDi(e), r = riepilogoEsecuzione(m, e, x);
-      x.log.push(voce('MR: ' + v, r.cur ? { passo: r.cur.n } : {})); st.log = 'tutto'; tutto();
+      if (!soloFilo) { x.log.push(voce('MR: ' + v, r.cur ? { passo: r.cur.n } : {})); st.log = 'tutto'; }
+      m.scrivi(e.id, v, r.cur && e.stato === 'lavoro' ? { passo: r.cur.n } : {});
+      tutto();
     };
     tutto();
     if (st.editor) apriEditor(st.editor === 'nuovo' ? 0 : +st.editor);
@@ -1340,7 +1589,7 @@ window.DIREZIONE_A = (function () {
     });
     radice.addEventListener('keydown', ev => {
       if (ev.key === 'Enter' && ev.target.closest('input[data-campo="motivo"]')) { ev.preventDefault(); const b = radice.querySelector('[data-az="rifiuta-conferma"]'); if (b) b.click(); return; }
-      if (ev.key === 'Enter' && ev.target.closest('input[data-campo="chat"]')) { ev.preventDefault(); const b = radice.querySelector('[data-az="esec-invia"]'); if (b) inviaNota(+b.dataset.id); return; }
+      if (ev.key === 'Enter' && ev.target.closest('input[data-campo="chat"]')) { ev.preventDefault(); const b = radice.querySelector('[data-az="esec-invia"],[data-az="chat-invia"]'); if (b) inviaNota(+b.dataset.id, b.dataset.az === 'chat-invia'); return; }
       if (ev.key === 'Enter' && st.modifica && ev.target.closest('input[data-campo]')) { ev.preventDefault(); salva(); }
       if (ev.key === 'Escape' && st.modifica) { chiudiEditor(); soloTendina(); }
     });
@@ -1361,7 +1610,7 @@ window.DIREZIONE_A = (function () {
       else if (az === 'succ') { if (n()) st.richiesta = (st.richiesta + 1) % n(); soloTendina(); }
       else if (az === 'vai') { st.richiesta = +el.dataset.idx; soloTendina(); }
       else if (az === 'richiesta') { if (ev.target.closest('[data-az="approva"],[data-az="rifiuta"]')) return; st.richiesta = +el.dataset.idx; st.tendina = 'estesa'; st.pannello = 'richieste'; soloTendina(); }
-      else if (az === 'pagina') { ev.stopPropagation(); st.pagina = el.dataset.pagina; if (el.dataset.dip) { st.dip = el.dataset.dip; if (st.pagina === 'richieste') st.filtri = { dip: el.dataset.dip }; } if (el.dataset.id) st.id = +el.dataset.id; if (el.dataset.chi) st.filtri = { chi: el.dataset.chi }; if (el.dataset.cliente) st.filtri = Object.assign(st.pagina === 'richieste' && el.dataset.dip ? { dip: el.dataset.dip } : {}, { cliente: el.dataset.cliente }); if (st.tendina === 'confronto' || st.tendina === 'estesa') st.tendina = 'aperta'; st.motivo = false; tutto(); window.scrollTo(0, 0); }
+      else if (az === 'pagina') { ev.stopPropagation(); st.pagina = el.dataset.pagina; if (el.dataset.dip) { st.dip = el.dataset.dip; if (st.pagina === 'richieste') st.filtri = { dip: el.dataset.dip }; } if (el.dataset.id) { if (st.pagina === 'chat') st.filo = +el.dataset.id; else st.id = +el.dataset.id; } if (el.dataset.chi) st.filtri = { chi: el.dataset.chi }; if (el.dataset.cliente) st.filtri = Object.assign(st.pagina === 'richieste' && el.dataset.dip ? { dip: el.dataset.dip } : {}, { cliente: el.dataset.cliente }); if (st.tendina === 'confronto' || st.tendina === 'estesa') st.tendina = 'aperta'; st.motivo = false; tutto(); window.scrollTo(0, 0); }
       else if (az === 'filtro') { const k = el.dataset.k, v = el.dataset.v; st.filtri[k] = (st.filtri[k] === v || v === 'tutti') ? undefined : v; tutto(); }
       /* ---- pagina dei costi: il periodo di una sezione ---- */
       else if (az === 'periodo') { st.periodo = Object.assign({}, st.periodo, { [el.dataset.sez]: el.dataset.v }); tutto(); }
@@ -1382,6 +1631,11 @@ window.DIREZIONE_A = (function () {
       else if (az === 'prova') { decidi(el.dataset.id, 'approvata', 'Prova su 20 esecuzioni', 'prova'); }
       else if (az === 'rifiuta-motivo') { const r = m.richieste.find(x => x.id === el.dataset.id); const i = r ? inAttesa(m).indexOf(r) : -1; if (i >= 0) { st.richiesta = i; st.tendina = 'estesa'; st.pannello = 'richieste'; st.motivo = true; soloTendina(); const inp = radice.querySelector('input[data-campo="motivo"]'); if (inp) inp.focus(); } }
       else if (az === 'rifiuta-annulla') { st.motivo = false; soloTendina(); }
+      /* ---- agenda e chat (versione 15) ---- */
+      else if (az === 'agenda-filtro') { st.agenda = el.dataset.v; tutto(); }
+      else if (az === 'chat-filtro') { st.chatf = el.dataset.v; tutto(); }
+      else if (az === 'filo') { st.filo = +el.dataset.id; tutto(); }
+      else if (az === 'chat-invia') { inviaNota(+el.dataset.id, true); }
       /* ---- esecuzione ---- */
       else if (az === 'filtro-log') { st.log = el.dataset.v; tutto(); }
       else if (az === 'esec-scrivi') { const inp = radice.querySelector('.chat input'); if (inp) { inp.scrollIntoView({ block: 'center' }); inp.focus(); } }

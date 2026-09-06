@@ -45,7 +45,7 @@
 window.DGT_MOBILE = (function () {
   const { ic, esc, prefissa } = window.DGT_UI;
   const C = window.DGT_COMPONENTI;
-  const { av, iconaTipo, nomeTipo, eur, differenze } = C;   // i componenti condivisi con la Console (schermate/componenti.js)
+  const { av, iconaTipo, nomeTipo, chipEsito, eur, differenze } = C;   // i componenti condivisi con la Console (schermate/componenti.js)
 
   const css = `
 /* la pagina: nero, come la Console; le variabili dei componenti (DGT_COMPONENTI.variabili) più --light e --light-card del telefono; i telefoni affiancati come nello specimen */
@@ -242,6 +242,48 @@ window.DGT_MOBILE = (function () {
 .m-bar input:focus{border-color:var(--ink)}
 .m-bar input::placeholder{color:#A7A7A7}
 .m-bar input.manca{border-color:var(--hangup)}
+/* ===== tab Chat e Agenda (versione 15, 2026-09-06) ===== */
+/* l'elenco dei fili: le righe della coda con l'ultimo messaggio e quanti ne restano da leggere */
+.m-coda .qrow.on .n{background:var(--ink);color:var(--white)}
+.m-coda .qrow .n{min-width:22px;height:22px;padding:0 7px;border-radius:var(--r-pill);background:var(--lime);color:var(--ink);font-size:11px;font-weight:500;display:grid;place-items:center;flex:none}
+.m-coda .qrow .ora{font-size:10px;color:var(--t2-light);white-space:nowrap;flex:none}
+.m-coda .qrow.filo{height:56px}
+.m-coda .qrow.filo .av{width:38px;height:38px}
+.m-coda .qrow.filo .dx{display:grid;justify-items:end;gap:4px;flex:none}
+/* il filo aperto: le bolle dei componenti a misura di telefono, la barra di scrittura in fondo */
+.m-scr.filo .m-nav{flex:none;padding-bottom:12px}
+.m-scr.filo .m-scroll{padding-bottom:96px}
+.m-fili{display:grid;gap:10px;padding:14px 12px 0}
+.m-fili .bub{max-width:82%;border-radius:18px;padding:10px 13px 8px;font-size:13px;line-height:18px}
+.m-fili .bub .ora{margin-top:4px;font-size:10px}
+.m-fili .msg .av{width:28px;height:28px}
+.m-fili .msg{gap:8px}
+.m-fili .msg.sistema .chip{height:24px;font-size:10px}
+.m-fili .qrow{height:46px;font-size:12px;color:var(--ink)}
+.m-fili .qrow .rb.xs.black{background:var(--ink);color:var(--white);border-color:transparent}
+.m-fili .qrow .rb.xs.red{background:var(--hangup);color:var(--white);border-color:transparent}
+.m-fili .stato{font-size:11px;line-height:15px;color:var(--t2);text-align:center;padding:4px 10px 0}
+.m-nav .chi{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.m-nav .chi .av{width:36px;height:36px}
+.m-nav .chi div{min-width:0}
+.m-nav .chi b{display:block;font-weight:500;font-size:14px;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-nav .chi span{display:block;font-size:11px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-bar.scrivi input{flex:1;width:auto;min-width:0}
+/* l'agenda: la linea del tempo del Riepilogo con una card per evento, poi i prossimi giorni */
+.m-ev{background:var(--white);border-radius:20px;padding:10px 12px;display:flex;align-items:center;gap:10px;min-width:0}
+.m-ev .av{width:36px;height:36px}
+.m-ev .tx{flex:1;min-width:0}
+.m-ev .tx b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-weight:500;font-size:13px;line-height:17px}
+.m-ev .tx span{display:block;font-size:11px;color:var(--t2-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-ev.corso,.m-ev.attesa{background:var(--lime)}
+.m-ev.corso .tx span,.m-ev.attesa .tx span{color:rgb(0 0 0/.6)}
+.m-ev.errore{background:var(--badge-red)}.m-ev.errore .tx span{color:rgb(0 0 0/.55)}
+.m-ev.pianificato{background:transparent;border:1px dashed rgb(0 0 0/.25)}
+.m-ev.pianificato .tx b{color:rgb(0 0 0/.75)}
+.m-gg{display:flex;align-items:center;gap:10px;min-width:0;font-size:12px}
+.m-gg .gg{flex:1;min-width:0;line-height:15px}
+.m-gg .gg b{display:block;font-weight:500;font-size:13px;text-transform:capitalize}
+.m-gg .gg span{display:block;font-size:11px;color:var(--t2-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 `;
 
   /* La coda del telefono: le richieste in attesa, le più vecchie prima (come nella Console). Dalla versione 12 anche le
@@ -254,8 +296,11 @@ window.DGT_MOBILE = (function () {
   const barraStato = m => `<div class="m-sb"><span>${esc(m.azienda.ora)}</span><span class="isl"></span><span class="sig">${ic('i-signal')}${ic('i-wifi')}<i></i></span></div>`;
   const navigazione = (m, n, attiva) => `<div class="m-navfondo"></div><div class="m-bnav">
       <span class="meet" data-az="schermata" data-s="1" title="Da approvare">${ic('i-bell')}${n ? `<span class="n">${n}</span>` : ''}</span>
-      <div class="tabs"><span class="rb${attiva === 1 ? ' white' : ''}" data-az="schermata" data-s="1" title="Da approvare">${ic('i-list')}</span><span class="rb" title="Dipartimenti">${ic('i-org')}</span><span class="rb" title="Chat">${ic('i-chat')}</span><span class="rb" title="Agenda">${ic('i-cal')}</span></div>
+      <div class="tabs"><span class="rb${attiva === 1 ? ' white' : ''}" data-az="schermata" data-s="1" title="Da approvare">${ic('i-list')}</span><span class="rb" title="Dipartimenti">${ic('i-org')}</span><span class="rb${attiva === 4 ? ' white' : ''}" data-az="schermata" data-s="4" title="Chat">${ic('i-chat')}</span><span class="rb${attiva === 6 ? ' white' : ''}" data-az="schermata" data-s="6" title="Agenda">${ic('i-cal')}</span></div>
     </div>`;
+  /* i nomi degli stati dell'agenda e la riga di una consegna dentro il filo (gli stessi della Console) */
+  const NOME_EV = { corso: 'In corso', attesa: 'Da approvare', errore: 'Errore', pianificato: 'Pianificato', fatto: 'Concluso' };
+  const rigaConsegna = (m, r) => { const i = coda(m).indexOf(r); return `<div class="qrow${r.stato === 'attesa' ? ' on' : ''}"${i >= 0 ? ` data-az="apri" data-idx="${i}"` : ''}><span class="av xs" style="background:var(--ink);color:var(--white)">${ic(iconaTipo[r.tipo])}</span><div class="tx"><b>${esc(r.cosa)}</b><span>${nomeTipo[r.tipo]} · ${r.costo} €</span></div>${r.stato === 'attesa' ? `<span class="rb xs black" data-az="approva" data-id="${r.id}" title="${r.tipo === 'revisione' ? 'Applica' : 'Approva'}">${ic('i-check')}</span><span class="rb xs red" data-az="rifiuta" data-idx="${i}" title="Rifiuta con un motivo">${ic('i-x')}</span>` : chipEsito(r)}</div>`; };
   const vuoto = () => `<div class="m-vuoto"><span class="rb black">${ic('i-check')}</span><b>Niente da approvare</b><span>Hai deciso tutto. Le prossime consegne arriveranno qui.</span></div>`;
 
   /* ---------- il Riepilogo di oggi: intestazione e linea del tempo (schermata 3 e stato vuoto della 1) ---------- */
@@ -410,10 +455,91 @@ window.DGT_MOBILE = (function () {
     </div>`;
   }
 
-  const NOMI = { 1: 'Da approvare', 2: 'Richiesta', 3: 'Riepilogo di oggi' };
+  /* ---------- schermata 4: Chat, l'elenco dei fili (versione 15, 2026-09-06) ----------
+     Le stesse conversazioni della Console (`m.fili`, `m.filoDi`): una riga per dipendente con l'ultimo messaggio, l'ora e
+     quanti messaggi restano da leggere. Si apre dalla tab «Chat» della navigazione in basso. */
+  function chatElenco(m, tel, st) {
+    const lst = m.fili();
+    const daLeggere = lst.filter(x => x.nuovi > 0).length;
+    return `<div class="m-scr chiara" data-schermata="4">
+      ${barraStato(m)}
+      <div class="m-scroll">
+        <div class="m-nav"><span class="m-logo">DGT</span><span class="r"><span class="rb white" title="Cerca">${ic('i-search')}</span><span class="av persona">${esc(m.azienda.titolare.iniziali)}</span></span></div>
+        <h3 class="m-h1">CHAT</h3>
+        <div class="m-stats">
+          <div class="m-stat"><span class="num">${lst.length}</span><span>conversazioni</span></div>
+          <div class="m-stat"><span class="num">${daLeggere}${daLeggere ? `<span class="badge down">${ic('i-bell')}${daLeggere}</span>` : ''}</span><span>da leggere</span></div>
+        </div>
+        <div class="m-sh"><h4>Dipendenti</h4><span class="chip light">${lst.length}</span><span class="rb olight" title="Ordina">${ic('i-sort')}</span></div>
+        <div class="m-coda">${lst.map(x => { const e = x.e, u = x.ultimo; return `<div class="qrow filo${x.e.id === st.filo ? ' on' : ''}" data-az="filo" data-id="${e.id}">${av(m, e, 'xs')}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${u ? (u.da === 'io' ? 'Tu: ' : '') + esc(u.testo) : 'Nessun messaggio'}</span></div><span class="dx"><span class="ora">${u ? esc(u.ora) : ''}</span>${x.nuovi ? `<span class="n">${x.nuovi}</span>` : `<span class="rb xs">${ic('i-chevr')}</span>`}</span></div>`; }).join('')}</div>
+      </div>
+      ${navigazione(m, coda(m).length, 4)}
+    </div>`;
+  }
+
+  /* ---------- schermata 5: il filo di un dipendente ----------
+     Le bolle dei componenti (DGT_COMPONENTI.messaggio), le consegne che aspettano come riga bianca con approva e rifiuta,
+     la barra di scrittura in fondo: quello che si scrive qui sta anche nella chat della Console (`m.scrivi`). */
+  function filo(m, tel, st) {
+    const e = m.byId[st.filo] || (m.fili()[0] || {}).e || m.dipendenti[0];
+    const f = m.filoDi(e);
+    const righe = f.map(v => {
+      const r = v.richiesta ? m.richieste.find(t => t.id === v.richiesta) : null;
+      return C.messaggio(m, e, v) + (r ? rigaConsegna(m, r) : '');
+    }).join('');
+    const stato = e.stato === 'lavoro' ? `Al lavoro: legge le tue note fra un passo e l'altro.`
+      : e.stato === 'errore' ? 'Fermo per un errore: risponde quando riparte.'
+      : e.stato === 'pianificato' ? `Parte alle ${esc(e.att.quando)}: legge le tue note alla partenza.`
+      : e.stato === 'attesa' ? 'Ha consegnato e aspetta la tua decisione.'
+      : 'Libero: legge le tue note alla prossima esecuzione.';
+    return `<div class="m-scr filo" data-schermata="5">
+      ${barraStato(m)}
+      <div class="m-nav"><span class="rb" data-az="indietro" data-s="4" title="Chat">${ic('i-left')}</span>
+        <span class="chi">${av(m, e, 's')}<div><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div></span>
+        <span class="rb" data-az="schermata" data-s="1" title="Da approvare">${ic('i-bell')}</span></div>
+      <div class="m-scroll">
+        <div class="m-fili">${righe}<p class="stato">${stato}</p></div>
+      </div>
+      <div class="m-fade"></div>
+      <div class="m-bar scrivi"><div class="row"><input type="text" data-campo="mchat" placeholder="Scrivi a ${esc(m.etichetta(e))}…" maxlength="120" autocomplete="off"><span class="rb lime" data-az="mchat-invia" data-id="${e.id}" title="Invia">${ic('i-send')}</span></div></div>
+    </div>`;
+  }
+
+  /* ---------- schermata 6: Agenda ----------
+     La giornata dell'azienda sulla linea del tempo del Riepilogo (`m.giornata`): un marcatore per ora, una card per evento;
+     sotto, i prossimi giorni con quanti impegni portano (`m.settimana`). Si apre dalla tab «Agenda». */
+  function agenda(m, tel, st) {
+    const ev = m.giornata(), set = m.settimana().slice(1), scad = m.scadenze().filter(s => s.giorni <= 7);
+    const piani = ev.filter(x => x.stato === 'pianificato');
+    const BADGE = { corso: ['lime', 'i-play'], attesa: ['lime', 'i-bell'], errore: ['rosa', 'i-warn'], pianificato: ['', 'i-clock'], fatto: ['', 'i-check'] };
+    const card = x => { const e = m.byId[x.chi]; const b = BADGE[x.stato] || ['', 'i-check'];
+      return `<div class="m"><span>${esc(x.da)}</span><i class="${b[0]}">${ic(b[1])}</i></div>
+        <div class="m-ev ${x.stato}">${av(m, e, 's')}<div class="tx"><b>${esc(x.titolo)}</b><span>${esc(m.etichetta(e))} · ${esc(x.cliente || m.azienda.nome)}</span></div></div>`; };
+    return `<div class="m-scr chiara rie" data-schermata="6">
+      ${barraStato(m)}
+      <div class="m-scroll">
+        <div class="m-nav"><span class="m-logo">DGT</span><span class="r"><span class="chip light">${ic('i-cal')}${esc(m.azienda.data)}</span><span class="av persona">${esc(m.azienda.titolare.iniziali)}</span></span></div>
+        <h3 class="m-h1">AGENDA</h3>
+        <div class="m-stats">
+          <div class="m-stat"><span class="num">${ev.length}</span><span>eventi oggi</span></div>
+          <div class="m-stat"><span class="num">${piani.length}${piani.length ? `<span class="badge flat">${ic('i-clock')}${esc(piani[0].da)}</span>` : ''}</span><span>da partire</span></div>
+        </div>
+        <div class="m-rie">${ev.length ? ev.map(card).join('') : `<div class="m linea ult"></div><div class="voce">Nessun evento oggi</div>`}</div>
+        <div class="m-sh"><h4>Prossimi giorni</h4><span class="chip light">${set.reduce((t, g) => t + g.voci.length, 0)}</span></div>
+        <div class="m-coda">${set.map(g => `<div class="m-gg qrow"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic(g.voci.some(v => v.tipo === 'scadenza') ? 'i-target' : 'i-clock')}</span><div class="gg"><b>${esc(g.nome)} ${esc(g.data)}</b><span>${g.voci.length ? esc(g.voci.map(v => v.titolo).join(' · ')) : 'niente in programma'}</span></div><span class="chip light">${g.voci.length}</span></div>`).join('')}</div>
+        ${scad.length ? `<div class="m-sh"><h4>Scadenze</h4><span class="chip light">${scad.length}</span></div>
+        <div class="m-coda">${scad.map(s => `<div class="qrow"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-target')}</span><div class="tx"><b>${esc(s.o.titolo)}</b><span>${esc(s.o.cliente)} · ${s.o.consegne[0]} di ${s.o.consegne[1]} consegne</span></div><span class="chip${s.o.stato === 'ritardo' ? ' rosa' : ' light'}">${esc(s.o.scadenza)}</span></div>`).join('')}</div>` : ''}
+      </div>
+      ${navigazione(m, coda(m).length, 6)}
+    </div>`;
+  }
+
+  const NOMI = { 1: 'Da approvare', 2: 'Richiesta', 3: 'Riepilogo di oggi', 4: 'Chat', 5: 'Conversazione', 6: 'Agenda' };
   /* Un telefono: tel = { n, schermata, motivo }; st = { richiesta } condiviso fra i telefoni. */
   function render(m, tel, st) {
-    const scr = tel.schermata === 2 ? richiesta(m, tel, st) : tel.schermata === 3 ? riepilogo(m, tel, st) : daApprovare(m, tel, st);
+    const scr = tel.schermata === 2 ? richiesta(m, tel, st) : tel.schermata === 3 ? riepilogo(m, tel, st)
+      : tel.schermata === 4 ? chatElenco(m, tel, st) : tel.schermata === 5 ? filo(m, tel, st) : tel.schermata === 6 ? agenda(m, tel, st)
+      : daApprovare(m, tel, st);
     return `<div class="m-tel" data-n="${tel.n}" role="figure" aria-label="Telefono ${tel.n} — ${NOMI[tel.schermata] || NOMI[1]} (contenuto sintetico)">${scr}</div>`;
   }
 
@@ -421,18 +547,18 @@ window.DGT_MOBILE = (function () {
      quello che si decide su uno si vede subito sugli altri (e nella Console, che legge lo stesso modello). */
   function monta(radice, m, opz) {
     opz = opz || {};
-    const st = { richiesta: opz.richiesta || 0 };
-    const tels = (opz.schermate && opz.schermate.length ? opz.schermate : [1, 2, 3]).map((s, i) => ({ n: i + 1, schermata: s === 2 || s === 3 ? s : 1, motivo: false }));
+    const st = { richiesta: opz.richiesta || 0, filo: opz.filo || ((m.fili()[0] || {}).e || m.dipendenti[0]).id };
+    const tels = (opz.schermate && opz.schermate.length ? opz.schermate : [1, 2, 3, 4, 5, 6]).map((s, i) => ({ n: i + 1, schermata: s >= 2 && s <= 6 ? s : 1, motivo: false }));
     const n = () => coda(m).length;
     radice.innerHTML = `<div class="m-page">
-      <div class="m-hd"><h1>Le approvazioni da mobile</h1><p><b>Da approvare</b>, <b>Richiesta</b> e <b>Riepilogo di oggi</b>: post, documenti, liste, proposte e le revisioni di performance (le due versioni a confronto e le quattro decisioni), il rifiuto con motivo, il riepilogo che a coda finita prende il posto della coda. I telefoni condividono il modello della Console: la richiesta scelta su uno si apre sull'altro, e quello che si decide qui vale anche lì.</p></div>
+      <div class="m-hd"><h1>Il telefono del titolare</h1><p><b>Da approvare</b>, <b>Richiesta</b> e <b>Riepilogo di oggi</b>: post, documenti, liste, proposte e le revisioni di performance (le due versioni a confronto e le quattro decisioni), il rifiuto con motivo, il riepilogo che a coda finita prende il posto della coda. Poi le due tab della navigazione in basso: <b>Chat</b> (l'elenco dei fili e la conversazione con un dipendente, con la barra di scrittura) e <b>Agenda</b> (la giornata sulla linea del tempo, i prossimi giorni, le scadenze). I telefoni condividono il modello della Console: la richiesta scelta su uno si apre sull'altro, e quello che si decide o si scrive qui vale anche lì.</p></div>
       <div class="m-phones"></div>
     </div>`;
     const cont = radice.querySelector('.m-phones');
     const tutto = () => {
       const scroll = [...cont.querySelectorAll('.m-tel')].map(t => { const s = t.querySelector('.m-scroll'); return s ? s.scrollTop : 0; });
       cont.innerHTML = tels.map(t => `<div>${render(m, t, st)}<div class="m-cap">${t.n} · ${NOMI[t.schermata]}</div></div>`).join('');
-      cont.querySelectorAll('.m-tel').forEach((t, i) => { const s = t.querySelector('.m-scroll'); if (s && scroll[i]) s.scrollTop = scroll[i]; });
+      cont.querySelectorAll('.m-tel').forEach((t, i) => { const s = t.querySelector('.m-scroll'); if (!s) return; if (scroll[i]) s.scrollTop = scroll[i]; else if (t.querySelector('.m-scr.filo')) s.scrollTop = s.scrollHeight; });   // il filo si apre sull'ultimo messaggio
       window.DGT_AVATAR.anima(radice);
     };
     const telDi = el => { const t = el.closest('.m-tel'); return t ? tels[+t.dataset.n - 1] : tels[0]; };
@@ -451,17 +577,27 @@ window.DGT_MOBILE = (function () {
     };
     tutto();
     radice.addEventListener('keydown', ev => {
+      const chat = ev.target.closest('input[data-campo="mchat"]');
+      if (chat) { if (ev.key === 'Enter') { ev.preventDefault(); const b = chat.closest('.m-bar').querySelector('[data-az="mchat-invia"]'); if (b) b.click(); } return; }
       const inp = ev.target.closest('input[data-campo="motivo"]'); if (!inp) return;
       if (ev.key === 'Enter') { ev.preventDefault(); const b = inp.closest('.m-bar').querySelector('[data-az="rifiuta-conferma"]'); if (b) b.click(); }
       if (ev.key === 'Escape') { ev.preventDefault(); telDi(inp).motivo = false; tutto(); }
     });
-    radice.addEventListener('input', ev => { const inp = ev.target.closest('input[data-campo="motivo"]'); if (inp) inp.classList.remove('manca'); });
+    radice.addEventListener('input', ev => { const inp = ev.target.closest('input[data-campo="motivo"],input[data-campo="mchat"]'); if (inp) inp.classList.remove('manca'); });
     radice.addEventListener('click', ev => {
       const el = ev.target.closest('[data-az]'); if (!el || !radice.contains(el)) return;
       const az = el.dataset.az, tel = telDi(el);
       if (az === 'apri') { ev.stopPropagation(); if (el.dataset.idx !== undefined) st.richiesta = +el.dataset.idx; tel.schermata = 2; tel.motivo = false; tutto(); }
-      else if (az === 'indietro') { tel.schermata = 1; tel.motivo = false; tutto(); }
-      else if (az === 'schermata') { ev.stopPropagation(); const s = +el.dataset.s; if (s === 1 || s === 2 || s === 3) { tel.schermata = s; tel.motivo = false; tutto(); } }
+      else if (az === 'indietro') { tel.schermata = +(el.dataset.s || 1); tel.motivo = false; tutto(); }
+      /* la chat (versione 15): la riga apre il filo, la barra di scrittura ci scrive dentro (`m.scrivi`, lo stesso filo della Console) */
+      else if (az === 'filo') { ev.stopPropagation(); st.filo = +el.dataset.id; tel.schermata = 5; tel.motivo = false; tutto(); }
+      else if (az === 'mchat-invia') {
+        const inp = el.closest('.m-bar').querySelector('input[data-campo="mchat"]'); const v = inp ? inp.value.trim() : '';
+        if (!v) { if (inp) { inp.classList.add('manca'); inp.focus({ preventScroll: true }); } return; }
+        m.scrivi(+el.dataset.id, v); tutto();
+        const sc = cont.querySelector(`.m-tel[data-n="${tel.n}"] .m-scroll`); if (sc) sc.scrollTop = sc.scrollHeight;
+      }
+      else if (az === 'schermata') { ev.stopPropagation(); const s = +el.dataset.s; if (s >= 1 && s <= 6) { tel.schermata = s; tel.motivo = false; tutto(); } }
       else if (az === 'prec') { if (n()) st.richiesta = (st.richiesta - 1 + n()) % n(); tel.motivo = false; tutto(); }
       else if (az === 'succ') { if (n()) st.richiesta = (st.richiesta + 1) % n(); tel.motivo = false; tutto(); }
       else if (az === 'approva') { ev.stopPropagation(); decidi(el.dataset.id, 'approvata'); }

@@ -27,10 +27,10 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   const coda = () => page.evaluate(() => DGT_MOBILE.coda(modello).map(r => ({ id: r.id, tipo: r.tipo, cosa: r.cosa, rv: r.tipo === 'revisione' ? modello.revisioneDi(r).tipo : null })));
   const richiesta = id => page.evaluate(id => { const r = modello.richieste.find(x => x.id === id); return { stato: r.stato, commento: r.commento || '', rv: r.tipo === 'revisione' ? modello.revisioneDi(r).stato : null }; }, id);
 
-  console.log('1. i tre telefoni');
+  console.log('1. i sei telefoni');
   await page.goto(file('')); await page.waitForTimeout(500);
-  check(await conta('.m-tel') === 3, 'tre telefoni');
-  check(await schermata(1) === '1' && await schermata(2) === '2' && await schermata(3) === '3', 'schermate 1, 2 e 3');
+  check(await conta('.m-tel') === 6, 'sei telefoni');
+  check((await Promise.all([1, 2, 3, 4, 5, 6].map(schermata))).join(',') === '1,2,3,4,5,6', 'schermate da 1 a 6');
   let c = await coda(); console.log('    coda:', c.map(r => r.cosa).join(' | '));
   check(c.length === 4, 'quattro richieste in coda');
   check(await txt(tel(1) + '.m-h1') === 'DA APPROVARE' && (await txt(tel(1) + '.m-stat .num')).startsWith('4'), 'titolo e numero «da approvare»');

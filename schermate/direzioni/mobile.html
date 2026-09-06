@@ -17,7 +17,8 @@
 <script src="dati.js"></script>
 <script src="mobile.js"></script>
 <script>
-  // Parametri: ?schermata=1|2|3 (uno o più telefoni, es. ?schermata=2 o ?schermata=1,3; predefinito 1,2,3: i tre telefoni affiancati) ?richiesta=0 (indice nella coda)
+  // Parametri: ?schermata=1|2|3|4|5|6 (uno o più telefoni, es. ?schermata=2 o ?schermata=1,4; predefinito 1,2,3,4,5,6: i sei telefoni)
+  // 1 Da approvare · 2 Richiesta · 3 Riepilogo di oggi · 4 Chat · 5 Conversazione · 6 Agenda.  ?richiesta=0 (indice nella coda)  ?filo=<id dipendente>
   // ?n=11|40 e gli stessi parametri dell'avatar della Console (?avatar= ?pelle= ?identita= ?palette= ?corpo= ?occhi= ?segnale= ?carattere=)
   const q = new URLSearchParams(location.search);
   DGT_UI.iconeInserisci();
@@ -28,8 +29,8 @@
   DGT_UI.stile('css-componenti', DGT_COMPONENTI.css);   // i componenti condivisi con la Console (schermate/componenti.js, classi .dirA)
   DGT_UI.stile('css-m', DGT_MOBILE.css);    // le cornici del telefono e le tre schermate
   const modello = DGT_DATI.modello(DGT_DATI.nDaUrl());
-  const schermate = (q.get('schermata') || '1,2,3').split(',').map(Number).filter(s => s === 1 || s === 2 || s === 3);
-  DGT_MOBILE.monta(document.getElementById('root'), modello, { schermate, richiesta: +(q.get('richiesta') || 0) });
+  const schermate = (q.get('schermata') || '1,2,3,4,5,6').split(',').map(Number).filter(s => s >= 1 && s <= 6);
+  DGT_MOBILE.monta(document.getElementById('root'), modello, { schermate, richiesta: +(q.get('richiesta') || 0), filo: +(q.get('filo') || 0) });
 </script>
 </body>
 </html>
