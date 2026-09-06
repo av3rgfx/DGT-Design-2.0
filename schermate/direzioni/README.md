@@ -7,23 +7,31 @@ prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decision
   https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
 - Schermate singole: `direzione-a.html`, `direzione-b.html`, `direzione-c.html`; con `?n=40` la prova di scala.
 - La direzione A è cliccabile (due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente per
-  creare e modificare i dipendenti, pagina Dipendente con la revisione di performance, pagina Esecuzione, pagina Costi). Parametri:
+  creare e modificare i dipendenti, pagina Dipendente con la revisione di performance, pagina Esecuzione, pagina Costi,
+  pagina Agenda, pagina Chat). Parametri:
   `?pagina=dipartimento&dip=svi|mkt|ven|amm`, `?pagina=dipendente&id=4` (con `&tendina=dossier` il dossier della
   revisione in sospeso, con `&confronto=6,7` due versioni del prompt a confronto), `?pagina=esecuzione&id=4` (Nora al
   lavoro; `id=3` Kim in errore, `id=5` Social media manager da approvare, `id=2` Tester QA pianificata), `?pagina=costi` (i
   costi dell'azienda: per dipartimento, dipendente, cliente, modello e strumento, con le pillole del periodo in ogni sezione;
   dal sesto cerchio del rail, dal numero «spesi oggi» e dalle sezioni Spesa del mese e Costo),
+  `?pagina=agenda` (il giorno dell'azienda: la barra delle ore con i blocchi, le esecuzioni di oggi, la settimana e le
+  scadenze; dal quinto cerchio del rail, dal cerchio della barra «Oggi in azienda» e dalla pillola «Sposta»),
+  `?pagina=chat&filo=<id dipendente>` (le conversazioni con i dipendenti: l'elenco dei fili e il filo aperto con la barra di
+  scrittura; dal quarto cerchio del rail, dai cerchi «commenta» delle card, da «Commenta» nelle due tendine e dalla pillola
+  «Scrivi a …» dell'Esecuzione),
   `?tendina=chiusa|aperta|estesa`, `?pannello=richieste|riepilogo`, `?pagina=home|richieste`, `?richiesta=0`,
   `?editor=nuovo|<id dipendente>`, `?avatar=orbe|kit`, `?pelle=perla|grigio|chiaro|alone|disco` (la pelle dell'orbe
   senza disco; predefinita perla). Artefatto:
   https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34
-- **Le approvazioni da mobile** (versioni 11 e 12, 2026-09-05/06): `mobile.html` + `mobile.js` (che carica `../componenti.js` e
-  non la Console), la direzione A sul telefono
+- **Il telefono del titolare** (versioni 11 e 12, 2026-09-05/06; versione 15, 2026-09-06): `mobile.html` + `mobile.js` (che carica
+  `../componenti.js` e non la Console), la direzione A sul telefono
   nella cornice dello specimen: schermate «Da approvare», «Richiesta» (post, documento, lista, proposta e la revisione di
-  performance con le due versioni a confronto e le quattro decisioni) e «Riepilogo di oggi» (linea del tempo; a coda finita è lo
-  stato vuoto della prima schermata), con il rifiuto con motivo; tre telefoni affiancati, cliccabili, che condividono il modello
-  e la richiesta corrente con la Console (`m.decidi` in `dati.js`). Parametri: `?schermata=1|2|3` (uno o più telefoni, es.
-  `?schermata=2`), `?richiesta=0` (a 11: 2 e 3 sono le due revisioni), `?n=40`, più quelli dell'avatar.
+  performance con le due versioni a confronto e le quattro decisioni), «Riepilogo di oggi» (linea del tempo; a coda finita è lo
+  stato vuoto della prima schermata), «Chat» (l'elenco dei fili, i non letti prima), «Conversazione» (il filo aperto in fondo,
+  con la barra di scrittura) e «Agenda» (il giorno dell'azienda sulla linea del tempo del Riepilogo, poi la settimana), con il
+  rifiuto con motivo; sei telefoni affiancati, cliccabili, che condividono il modello, la richiesta corrente e i fili con la
+  Console (`m.decidi` e `m.scrivi` in `dati.js`). Parametri: `?schermata=1|2|3|4|5|6` (uno o più telefoni, es.
+  `?schermata=2`), `?richiesta=0` (a 11: 2 e 3 sono le due revisioni), `?filo=<id dipendente>`, `?n=40`, più quelli dell'avatar.
   Artefatto: https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9
 - Avatar dei dipendenti AI in `avatar/`: `avatar-dgt.js` (involucro della Console, sceglie la famiglia con
   `usa('orbe'|'kit')` e la pelle con `pelle('chiaro'|…)`), `avatar-orbe.js` (la famiglia «orbe», predefinita, senza
@@ -36,10 +44,11 @@ prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decision
   `differenze`…). Ogni pagina lo carica subito dopo `comune.js` e mette in pagina `DGT_COMPONENTI.css` prima del CSS della
   Console (`direzione-a.js`, che tiene la cornice, le pagine, le tendine e `monta`).
 - Prove cliccate in `prove/` (con il `README.md` che dice il comando): `console.js` (64 verifiche: tendine, Richieste, editor del
-  dipendente, esecuzione, 40), `mobile.js` (39: le tre schermate, la revisione, il rifiuto con motivo, la prova, lo stato vuoto,
-  40) e `costi.js` (48: la pagina dei Costi):
+  dipendente, esecuzione, 40), `mobile.js` (39: le sei schermate, la revisione, il rifiuto con motivo, la prova, lo stato vuoto,
+  40), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le due pagine nuove, da dove ci si arriva, i filtri, la
+  scrittura nel filo e le due tab del telefono):
   `PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css node schermate/direzioni/prove/console.js`
-  (e così `mobile.js`, `costi.js`).
+  (e così `mobile.js`, `costi.js`, `agenda-chat.js`).
 - File unico per l'artefatto: `node build-unico.js /percorso/confronto-unico.html`.
 - Screenshot: `LOCAL_FONT_CSS=/tmp/fonts.css node ../../design-system/tools/screenshot-page.js "direzione-a.html?n=40" out.png`.
 - L'identità degli orbi (versione 10, proposta in attesa di scelta): `avatar-identita.html`, un configuratore con corpo

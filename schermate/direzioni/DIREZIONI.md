@@ -218,6 +218,14 @@ direzione. Regole che valgono da qui in avanti:
     in `dati.js`) per la pagina e per la sezione «Spesa del mese» del Dipartimento: gli stessi numeri ovunque, e le
     viste per dipartimento, dipendente, cliente e modello sommano allo stesso totale. Si arriva dal sesto cerchio del
     rail (euro), dal numero «spesi oggi» e dalle pillole «Tutti i costi dell'azienda» nelle sezioni Spesa del mese e Costo.
+16. **Le pagine Agenda e Chat** (versione 15) nella stessa cornice, dai due cerchi del rail che restavano inerti. L'**Agenda**
+    parte dalla barra «Oggi in azienda»: la barra agenda del riferimento allargata alla giornata (blocchi su corsie, il segno
+    di «adesso», la pista chiara e il lime nei blocchi al lavoro e da approvare), le card degli eventi con le pillole che
+    filtrano, le scadenze e i sette giorni. La **Chat** parte dalla barra di scrittura dell'Esecuzione: un filo per
+    dipendente, le note del titolare e le risposte del dipendente, le consegne che aspettano dentro il filo con approva e
+    rifiuta. **La nota scritta nell'Esecuzione entra nel log e nel filo**: è una sola conversazione. Sul telefono le stesse
+    tre schermate nelle due tab della navigazione in basso. Un solo aggregatore in `dati.js` (`giornata`, `settimana`,
+    `scadenze`, `filoDi`, `scrivi`) per la Console e per il telefono.
 
 ### Versione 2 della direzione A (2026-09-04)
 
@@ -964,15 +972,150 @@ scala dei tempi e degli easing, le distanze, le sfocature e le scale, gli undici
 resta fermo, il moto ridotto), nello stile delle altre sezioni; lo specimen non è cambiato. Notato e non toccato: `tokens.css` porta
 solo tre token di moto e un easing diverso da quello dello specimen (`cubic-bezier(.2,.8,.2,1)` contro `(.22,1,.36,1)`).
 
+### Versione 15: le pagine Agenda e Chat del rail (2026-09-06, sessione successiva)
+
+I due cerchi ancora inerti del rail della Console (`i-chat` e `i-cal`) e le due tab corrispondenti sul telefono, come da
+passaggio di consegne. Niente di visibile cambia nelle pagine che c'erano: **venticinque catture identiche byte per byte**
+prima e dopo (Console, tendine, Richieste, Dipartimento, Dipendente con dossier, confronto ed editor, quattro Esecuzioni,
+Costi, le prove a 40, il kit, il telefono in quattro stati) e le quattro cornici del telefono (schermate 1, 2, 3 e la
+revisione) identiche byte per byte all'albero precedente (`git archive HEAD`, con l'intestazione della pagina di studio
+tolta da entrambe le catture: è l'unica cosa che cambia lì, vedi sotto).
+
+**Il modello** (`dati.js`), un solo aggregatore per la Console e per il telefono, come per i costi:
+
+| Che cosa | Come |
+|---|---|
+| `giornata()` | Gli eventi di oggi, costruiti dall'attività corrente di ogni dipendente: le ore, i titoli, i clienti e i costi sono quelli di `e.att` (**nessun numero nuovo**). Al lavoro va da `att.da` ad «adesso»; consegnato da `att.da` a `att.fine`; l'errore dal **primo passo** al passo fallito (`att.da` è l'ora del guasto, non dell'avvio: le ore vengono da `esecuzioneDi`, lo stesso calcolo della pagina Esecuzione); il pianificato dall'ora alla somma delle stime dei suoi passi; concluso oggi chi ha `att.fine` di oggi. A 11 sono otto eventi, a 40 ventisei. |
+| `settimana()` | I sette giorni da oggi. Il numero e il mese vengono da `azienda.data`, il nome del giorno da `azienda.dataLunga` e poi si contano in avanti (il calendario del modello è quello del prodotto, non quello vero: 4 settembre è giovedì). Ogni giorno porta i **pianificati che si ripetono** (obiettivi con scadenza «ogni giorno» / «ogni venerdì»: il report delle 18:00 e il follow-up del venerdì), le **prossime consegne** degli obiettivi (`prossima`, quando porta una data: «Checkout · 8 set») e le **scadenze** che cadono in quel giorno. |
+| `scadenze()` | Gli obiettivi con una data, dalla più vicina, con quanti giorni mancano. |
+| `filoDi(e)`, `scrivi`, `fili()`, `nonLetti` | I fili della chat: un filo per dipendente, una sola copia (i messaggi restano), scritti a mano a 11 per Nora, Kim, il Social media manager e Ricerca lead, **generati** per gli altri dallo stato e dai passi dell'esecuzione (le ore sono quelle del passo in corso, non «adesso», così l'ordine della chat è quello vero). Un messaggio è `{ da: 'io' \| 'dip' \| 'sistema', ora, testo }`, con `richiesta` quando porta una consegna che aspetta il titolare e `passo` quando la nota è consegnata a un passo. `fili()` ordina: prima quelli con messaggi da leggere, poi per ultimo messaggio. |
+
+**La pagina Agenda** (Console, `agenda` in `direzione-a.js`), stessa cornice: titolo AGENDA, tre numeri (eventi oggi con
+quanti al lavoro, ancora da partire con l'ora del primo, scadenze in settimana con quante in ritardo), quinto cerchio del
+rail acceso. Quattro sezioni:
+
+1. **Oggi in azienda**: la barra agenda del riferimento allargata a tutta la giornata. Card bianca con il titolo, la data
+   lunga in pillola e la legenda; dentro, la **pista** da un'ora tonda all'altra con le ore sopra, un **blocco** per evento
+   sulla prima corsia libera (i blocchi non si sovrappongono mai) e il segno di **«adesso»** con il marcatore nero, come
+   nella barra della cornice. Un blocco porta l'avatar (con il suo punto di stato), il titolo e le ore, e apre la sua
+   esecuzione. *Scelta fatta in costruzione*: la pista è **chiara** (`#EDEDED`) e sono i blocchi a portare il colore —
+   lime al lavoro e da approvare, bianco concluso, tratteggiato pianificato, rosa in errore. Con la pista lime del
+   riferimento i blocchi «in corso» (`#A8E65D` su `#B8FC64`) sparivano dentro la pista; così il lime resta quello che è
+   nel sistema, l'attenzione del titolare.
+2. **Eventi di oggi**: le card attività della home (`cardEsecuzione` e `cardUltima`), con le **pillole che filtrano
+   davvero** (Tutti · In corso · Da approvare · Pianificati · Errori). Il filtro vale per le card: la barra del giorno
+   resta intera.
+3. **Scadenze**: a sinistra la card del Riepilogo con l'obiettivo del mese (scadenza, scadenze entro sette giorni, in
+   ritardo), a destra le righe degli obiettivi con una data, dalla più vicina: data e giorni che mancano (lime entro
+   sette giorni), consegne e prossima, avanzamento a barra, chip «In ritardo» / «Concluso» / percentuale, freccia al
+   dipartimento.
+4. **La settimana**: sette righe, una per giorno, con il nome e la data (oggi ha il chip lime). Oggi porta due voci
+   riassuntive (quanti al lavoro, quanti da partire e a che ora); gli altri giorni le voci del modello: pianificati che si
+   ripetono, prossime consegne (bianche), scadenze (bianche, rosa se l'obiettivo è in ritardo).
+
+**La pagina Chat** (Console, `chat` in `direzione-a.js`), stessa cornice: titolo CHAT, tre numeri (conversazioni, da
+leggere, messaggi di oggi), quarto cerchio acceso. Due colonne: a sinistra i **fili** come righe compatte (avatar 52,
+etichetta, ultimo messaggio con «Tu:» quando è del titolare, ora e il numero da leggere in pillola lime; la riga aperta è
+bianca), con le pillole che filtrano (Tutte · Da leggere · Al lavoro · Da approvare · Errori); a destra il **filo aperto**:
+testata con avatar 68, chip di stato e conteggio, pillole «L'esecuzione» e «La sua pagina»; il corpo in un riquadro
+contornato con le **bolle** (dipendente a sinistra scura con l'avatar, titolare a destra bianca con le iniziali, la riga di
+sistema al centro come chip) e, sotto la riga di sistema, la **consegna** come riga bianca con approva e rifiuta — decidere
+di lì è la stessa decisione di tutte le altre (`m.decidi`); in fondo la riga che dice quando il dipendente legge e la
+**barra di scrittura del riferimento**.
+
+**La barra di scrittura dell'Esecuzione e quella della chat sono la stessa conversazione**: la nota scritta
+nell'Esecuzione entra nel log come prima («MR: …») **e** nel filo; quella scritta nella chat entra solo nel filo. Era il
+punto di partenza chiesto dal passaggio di consegne.
+
+**Da dove ci si arriva** (scelte fatte in costruzione, il prompt le lasciava a me):
+
+| Pagina | Ingressi |
+|---|---|
+| Agenda | il quinto cerchio del rail; il **cerchio della barra «Oggi in azienda»** in ogni pagina; la pillola **«Sposta»** di un'esecuzione pianificata (prima inerte) |
+| Chat | il quarto cerchio del rail; i **cerchi «commenta»** delle card attività, delle card esecuzione e della card ultima (prima inerti); **«Commenta»** nelle due tendine del titolare (cerchio di vetro e pillola); la pillola **«Scrivi a …»** dell'Esecuzione, che prima portava il fuoco sulla barra del log |
+
+**Il telefono** (`mobile.js`): le due tab della navigazione in basso non sono più inerti e portano a tre schermate nuove.
+
+- **4 · Chat**: schermo chiaro, titolo CHAT, due numeri (conversazioni, da leggere), l'elenco dei fili come righe della
+  coda (avatar 38, etichetta, ultimo messaggio, ora e il numero da leggere; nera sulla riga accesa).
+- **5 · Conversazione**: schermo nero. La riga di navigazione sta **fuori dal corpo che scorre** (indietro, avatar e nome
+  di chi parla, campanella), perché il filo si apre in fondo, sull'ultimo messaggio; le bolle dei componenti a misura di
+  telefono, le consegne come riga bianca con approva e rifiuta, e in fondo la barra di scrittura (pillola bianca e cerchio
+  lime «invia»). Quello che si scrive qui sta anche nella chat della Console.
+- **6 · Agenda**: schermo sul fondo del Riepilogo. Titolo AGENDA, due numeri (eventi oggi, da partire con l'ora del
+  primo), la **linea del tempo del Riepilogo** (la stessa colonna di marcatori: ora, badge rotondo con l'icona dello
+  stato, linea) con una card per evento — lime al lavoro e da approvare, rosa in errore, tratteggiata pianificata —, poi
+  «Prossimi giorni» (sei righe con quanti impegni) e «Scadenze» (entro sette giorni, con il chip della data, rosa se in
+  ritardo).
+
+Sul telefono la navigazione accende la tab della schermata aperta (1 per le approvazioni, 4 per la chat, 6 per l'agenda);
+la tab «Dipartimenti» resta inerte, come da passaggio di consegne. **La pagina di studio del telefono ora mostra sei
+telefoni** (1…6) invece di tre e ha un titolo nuovo («Il telefono del titolare»): è l'unica cosa che cambia nelle pagine
+che c'erano, ed è il motivo per cui le catture del telefono si confrontano con l'intestazione tolta.
+
+**Verifica.** Le tre prove di prima passano invariate (Console 64, mobile 39 con i sei telefoni, Costi 48) e ce n'è una
+**quarta**, `prove/agenda-chat.js` (54 verifiche): gli ingressi, la barra del giorno (un blocco per evento, gli stati, il
+segno di «adesso»), le pillole che filtrano, le scadenze e la settimana, i fili e il filo aperto, scrivere dalla chat e
+dall'Esecuzione (la nota entra nel log **e** nel filo), approvare dalla riga della consegna, le due pagine a 40, e sul
+telefono le due tab, la riga che apre il filo, scrivere, indietro; a ogni passo nessuno sforo orizzontale e console pulita.
+
+**Punti aperti nuovi** (non chiesti, da non toccare senza richiesta): nell'Agenda i cerchi cerca e filtri delle
+intestazioni, le pillole «Per data / Per dipartimento» delle scadenze e «Sette giorni / Questo mese» della settimana, e la
+pillola «Nuovo evento» della testata; nella Chat i cerchi cerca e filtri; sul telefono il cerchio «cerca» della chat e
+quello «ordina». Il dipendente non risponde da solo a una nota nuova: le risposte stanno nel modello, e sotto il filo c'è
+la riga che dice quando la leggerà.
+
+### Correzione 15a: gli avatar centrati nella casella (2026-09-06, stessa sessione)
+
+Correzione dell'utente: «in ogni pagina (nell'intero prodotto) gli avatar piccoli sono decentrati e spostati un po' verso
+il basso».
+
+**Il perché.** L'orbe cresce oltre la casella (`--av-scala`: 115 % con la perla, 128 % con il corpo piatto di oggi) e lo
+faceva con `width` e `height` in percentuale sull'SVG (`avatar/avatar-orbe.js`). La casella `.av` è una griglia con
+`place-items:center` e una riga automatica: la percentuale in altezza è ciclica, quindi Chromium la risolve dal rapporto
+1:1 e dalla larghezza, la riga cresce fino a quell'altezza e **sfora solo in basso**. Risultato: l'SVG restava alto quanto
+1,28 volte la riga e il disco scendeva di `(scala − 1) / 2` dell'altezza utile — 3,4 px su un avatar da 28, 6,2 px su uno
+da 48, 9,5 px sul grande della pagina del Dipendente. Orizzontalmente era centrato: si vedeva solo la caduta.
+
+**La correzione.** Una riga sola: l'SVG torna a riempire la casella (`width:100%;height:100%`) e la crescita passa alla
+proprietà `scale`, che scala **attorno al centro** e non tocca la griglia.
+
+```css
+[data-pelle] .av:has(>svg.orbe)>svg.ava.orbe{width:100%;height:100%;scale:var(--av-scala,115%)}
+```
+
+Il disco resta grande esattamente come prima (misurato: 24,45 px su una casella da 28, 32,43 su 36, 44,6 su 48, 68,88 sul
+grande): cambia solo dove sta. Verificato con uno script che confronta il centro del disco disegnato (`circle.pelle`) con
+il centro della casella su ogni avatar di ogni pagina — Console (home, Richieste, Dipartimento, Dipendente, Esecuzione,
+Costi, Agenda, Chat, editor, 40), telefono, confronto delle direzioni e le tre pagine di studio degli avatar: **1 000
+avatar, scarto massimo 0 px** (prima fino a 9,5 px). Le quattro prove cliccate passano invariate.
+
+Screenshot rigenerati: 56 delle 71 catture cambiano (solo la posizione degli avatar); otto non hanno avatar e restano
+identiche byte per byte. Non rigenerate: `b-11`, `b-40`, `c-11`, `c-40` (lo studio delle direzioni B e C del 2026-09-04,
+tenuto com'era), `avatar-orbe-pellicola.png` (la pellicola del moto, fatta con uno script fuori dal repository) e le due
+catture della revisione sul telefono senza avatar.
+
+**La regola che ne esce** (regola 23 in `SYSTEM-DESIGN.md`): quando un elemento deve sforare la sua casella, si scala
+attorno al centro (`scale`), non si allarga con una percentuale dentro una griglia; una percentuale in altezza dentro una
+riga automatica cresce solo verso il basso.
+
+**Prossimo lavoro, scelto dall'utente a fine sessione**: la **barra «Oggi in azienda»** (`barraAgenda` in `direzione-a.js`,
+`.a-sched` e `.tl`), la barra verde in cima alla Console. «Non capisco a primo impatto il suo utilizzo… mi dà l'idea che dica
+chi sta lavorando e chi ha un lavoro programmato? Ma non ne sono sicuro, in ogni caso non è ben chiaro»: la prossima sessione
+fa uno **studio e un'analisi UX** della barra e propone come renderla più chiara e utile. Il brief sta in
+`PROSSIMA-SESSIONE.md`, «Come riprendere». Da tenere presente: la barra viene dal riferimento e vale anche come **barra dei
+passi** nella pagina Esecuzione (dove, avendo le etichette, si legge molto meglio), e dalla versione 15 c'è la pagina Agenda
+con una pista proporzionale alle ore.
+
 ## 5. File
 
 | File | Ruolo |
 |---|---|
-| `dati.js` | modello sintetico (11 e 40) condiviso; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`), le richieste di tipo `revisione` e l'esecuzione (`esecuzioneDi`: sei scritte a mano, le altre generate); dal 2026-09-05 la decisione del titolare (`decidi`), condivisa fra Console e telefono; `azienda.scadenzaMese` per la linea del tempo del mobile; dal 2026-09-06 l'aggregatore dei costi (`costi(periodo, dip)`, `spesaDi`) per la pagina Costi e la sezione «Spesa del mese» |
+| `dati.js` | modello sintetico (11 e 40) condiviso; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`), le richieste di tipo `revisione` e l'esecuzione (`esecuzioneDi`: sei scritte a mano, le altre generate); dal 2026-09-05 la decisione del titolare (`decidi`), condivisa fra Console e telefono; `azienda.scadenzaMese` per la linea del tempo del mobile; dal 2026-09-06 l'aggregatore dei costi (`costi(periodo, dip)`, `spesaDi`) per la pagina Costi e la sezione «Spesa del mese», e (versione 15) l'agenda (`giornata`, `settimana`, `scadenze`) e i fili della chat (`filoDi`, `scrivi`, `fili`, `nonLetti`) per la Console e per il telefono |
 | `comune.js` | sprite di icone di DGT, prefisso CSS, utilità |
-| `../componenti.js` (`schermate/componenti.js`) | dal 2026-09-06 (versione 14) i componenti della Console condivisi con il telefono e con le pagine degli avatar: il CSS delle primitive (`.rb`, `.av`, `.pair`, `.pill`, `.chip`, `.dots`, `.badge`, `.ncard`/`.nt`, `.lead`, `.task`, `.crow`, `.hrow`, `.erow`, `.qrow`, `.dcard`, `.ripart`/`.leg`…), `variabili`, e `av`, `pair`, `dots`, `chipStato`, `chipEsito`, `iconaTipo`, `nomeTipo`, `eur`, `delta`, `differenze`; `window.DGT_COMPONENTI`, va caricato dopo `comune.js` e il suo CSS messo in pagina prima di quello della Console |
-| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo), pagina Costi (per dipartimento, dipendente, cliente, modello, strumento, con le pillole del periodo per sezione; `?pagina=costi`); cliccabile; dalla versione 14 prende le primitive da `../componenti.js` e tiene la cornice, le pagine, le tendine e `monta` |
-| `mobile.js` / `.html` | le approvazioni da mobile (versioni 11 e 12): cornice del telefono dello specimen, schermate «Da approvare», «Richiesta» (anche la revisione di performance con le due versioni a confronto e le quattro decisioni) e «Riepilogo di oggi» (linea del tempo, anche stato vuoto a coda finita), il rifiuto con motivo; tre telefoni affiancati che condividono il modello e la richiesta corrente; `DGT_MOBILE.monta`, `coda`; `?schermata=1|2|3&richiesta=0`, `?n=40`; dalla versione 14 carica `../componenti.js` e non più `direzione-a.js` |
+| `../componenti.js` (`schermate/componenti.js`) | dal 2026-09-06 (versione 14) i componenti della Console condivisi con il telefono e con le pagine degli avatar: il CSS delle primitive (`.rb`, `.av`, `.pair`, `.pill`, `.chip`, `.dots`, `.badge`, `.ncard`/`.nt`, `.lead`, `.task`, `.crow`, `.hrow`, `.erow`, `.qrow`, `.dcard`, `.ripart`/`.leg`, e dalla versione 15 le bolle della chat `.msg`/`.bub`), `variabili`, e `av`, `pair`, `dots`, `chipStato`, `chipEsito`, `messaggio`, `iconaTipo`, `nomeTipo`, `eur`, `delta`, `differenze`; `window.DGT_COMPONENTI`, va caricato dopo `comune.js` e il suo CSS messo in pagina prima di quello della Console |
+| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo), pagina Costi (per dipartimento, dipendente, cliente, modello, strumento, con le pillole del periodo per sezione; `?pagina=costi`), pagina Agenda (barra del giorno, eventi, scadenze, settimana; `?pagina=agenda`) e pagina Chat (fili, filo aperto, barra di scrittura; `?pagina=chat&filo=4`, versione 15); cliccabile; dalla versione 14 prende le primitive da `../componenti.js` e tiene la cornice, le pagine, le tendine e `monta` |
+| `mobile.js` / `.html` | il telefono del titolare: le approvazioni (versioni 11 e 12, schermate «Da approvare», «Richiesta» — anche la revisione di performance con le due versioni a confronto e le quattro decisioni — e «Riepilogo di oggi», con il rifiuto con motivo e lo stato vuoto a coda finita) e, dalla versione 15, le due tab «Chat» (elenco dei fili e conversazione con la barra di scrittura) e «Agenda» (la giornata sulla linea del tempo, i prossimi giorni, le scadenze); sei telefoni affiancati che condividono il modello, la richiesta corrente e il filo aperto; `DGT_MOBILE.monta`, `coda`; `?schermata=1…6&richiesta=0&filo=4`, `?n=40`; dalla versione 14 carica `../componenti.js` e non più `direzione-a.js` |
 | `avatar/avatar-dgt.js` | involucro degli avatar nel linguaggio della Console (colori, stati, simboli statici, animazione); `usa('orbe'|'kit')` sceglie la famiglia |
 | `avatar/avatar-orbe.js` | la famiglia «orbe» (versioni 5b, 5c, 7, 7b, 7c): cerchi dal seme con le pupille e lo sguardo del kit, un solo motore `requestAnimationFrame` con funzioni continue del tempo, sguardo che segue il puntatore; senza disco, con le pelli (`pelle('perla'|'grigio'|'chiaro'|'alone'|'disco')`, solo variabili CSS; perla predefinita); `fermo(t)`, `riprendi()`, `fotogramma(svg, t)` per gli screenshot |
 | `confronto-avatar.html` | le due famiglie a confronto nelle viste della Console |
@@ -984,7 +1127,7 @@ solo tre token di moto e un easing diverso da quello dello specimen (`cubic-bezi
 | `direzione-c.js` / `.html` | Mappa viva |
 | `confronto.html` | pagina di confronto con tab e selettore 11/40 |
 | `build-unico.js` | genera il file unico per l'artefatto (`node build-unico.js direzione-a.html out.html`) |
-| `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`); le cornici del telefono (`mobile-*.png`, sedici catture delle versioni 11 e 12; le quattro della revisione rifatte nella versione 14) e le sezioni della pagina Costi (`a-costi-*.png`, versione 13) con `screenshot-elementi.js` |
-| `prove/` | le prove cliccate con Playwright, con il `README.md` che dice il comando: `console.js` (64 verifiche: tendine, Richieste, editor, esecuzione, 40), `mobile.js` (39: le tre schermate, revisione, rifiuto con motivo, prova, stato vuoto, 40) e `costi.js` (48: la pagina dei Costi); leggono `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH` |
+| `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`); le cornici del telefono (`mobile-*.png`: le versioni 11 e 12, le quattro della revisione rifatte nella versione 14 e le tre schermate nuove `mobile-4-chat`, `mobile-5-filo`, `mobile-6-agenda` della versione 15) e le sezioni delle pagine Costi (`a-costi-*.png`, versione 13), Agenda e Chat (`a-agenda-*.png`, `a-chat-*.png`, versione 15) con `screenshot-elementi.js` |
+| `prove/` | le prove cliccate con Playwright, con il `README.md` che dice il comando: `console.js` (64 verifiche: tendine, Richieste, editor, esecuzione, 40), `mobile.js` (39: le schermate delle approvazioni, revisione, rifiuto con motivo, prova, stato vuoto, 40), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le pagine Agenda e Chat della Console e le due tab del telefono, versione 15); leggono `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH` |
 
 Per gli screenshot: `design-system/tools/screenshot-page.js` (vedi `design-system/tools/README.md`).

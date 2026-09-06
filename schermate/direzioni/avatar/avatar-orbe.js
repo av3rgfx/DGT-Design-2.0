@@ -328,7 +328,10 @@ window.DGT_AVATAR_ORBE = (function () {
 .ava.orbe .alone{display:var(--av-alone,none);fill:url(#av-orbe-alone)}
 /* la casella: con il disco (pelle «disco») è chiara e taglia; senza disco è trasparente, non taglia i moti e l'orbe cresce dall'80 al 92 % */
 [data-pelle] .av:has(>svg.orbe){background:var(--av-fondo,transparent);border-color:transparent;overflow:var(--av-taglio,visible)}
-[data-pelle] .av:has(>svg.orbe)>svg.ava.orbe{width:var(--av-scala,115%);height:var(--av-scala,115%)}
+/* l'orbe cresce oltre la casella con la proprietà scale, non con una larghezza in percentuale: la casella resta quadrata e il disco resta
+   centrato. Con width/height in percentuale la riga della griglia cresceva con l'immagine e l'avatar scendeva di (scala-1)/2
+   (correzione dell'utente, 2026-09-06: «gli avatar piccoli sono decentrati e spostati un po' verso il basso»). */
+[data-pelle] .av:has(>svg.orbe)>svg.ava.orbe{width:100%;height:100%;scale:var(--av-scala,115%)}
 /* impilati senza disco: si toccano appena invece di sovrapporsi */
 [data-pelle]:not([data-pelle="disco"]) .pair .av:has(>svg.orbe)+.av{margin-left:-6px}
 [data-pelle="perla"],[data-pelle="grigio"],[data-pelle="chiaro"],[data-pelle="alone"]{--av-fondo:transparent;--av-taglio:visible;--av-scala:115%;--av-anello-pelle:transparent}

@@ -112,9 +112,9 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   await page.click('.elenco .erow >> nth=0 >> [data-pagina="dipendente"]'); await page.waitForTimeout(300);
   check((await titolo()) !== 'COSTI', 'dalla pillola compatta alla pagina del dipendente: ' + await titolo());
 
-  console.log('6. il telefono carica ancora la Console');
+  console.log('6. il telefono carica');
   await page.goto('file://' + path.resolve(__dirname, '../mobile.html')); await page.waitForTimeout(500);
-  check((await page.locator('.m-tel').count()) === 3, 'tre telefoni');
+  check((await page.locator('.m-tel').count()) === 6, 'sei telefoni');
   check(errors.length === 0, 'nessun errore in console: ' + JSON.stringify(errors));
   console.log(`\n${ok} ok, ${ko} ko`);
   await browser.close(); process.exit(ko ? 1 : 0);

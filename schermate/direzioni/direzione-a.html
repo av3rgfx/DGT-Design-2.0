@@ -17,7 +17,7 @@
 <script src="dati.js"></script>
 <script src="direzione-a.js"></script>
 <script>
-  // Parametri: ?n=11|40  ?tendina=chiusa|aperta|estesa|dossier  ?pannello=richieste|riepilogo  ?pagina=home|richieste|dipartimento|dipendente|esecuzione|costi  ?dip=svi|mkt|ven|amm  ?id=<id dipendente>  ?confronto=6,7  ?richiesta=0  ?editor=nuovo|<id dipendente>  ?avatar=orbe|kit  ?pelle=perla|grigio|chiaro|alone|disco  ?identita=tinta|dipartimento|toni|nessuna  ?palette=vivace|pastello|scura  ?corpo=piatta|orlo|perla  ?occhi=lilguy|neri|colorati|punti|kit  ?segnale=nessuno|punto|anello|gesto  ?carattere=1
+  // Parametri: ?n=11|40  ?tendina=chiusa|aperta|estesa|dossier  ?pannello=richieste|riepilogo  ?pagina=home|richieste|dipartimento|dipendente|esecuzione|costi|agenda|chat  ?dip=svi|mkt|ven|amm  ?id=<id dipendente>  ?filo=<id dipendente, pagina chat>  ?confronto=6,7  ?richiesta=0  ?editor=nuovo|<id dipendente>  ?avatar=orbe|kit  ?pelle=perla|grigio|chiaro|alone|disco  ?identita=tinta|dipartimento|toni|nessuna  ?palette=vivace|pastello|scura  ?corpo=piatta|orlo|perla  ?occhi=lilguy|neri|colorati|punti|kit  ?segnale=nessuno|punto|anello|gesto  ?carattere=1
   const q = new URLSearchParams(location.search);
   DGT_UI.iconeInserisci();
   DGT_AVATAR.usa(q.get('avatar') || 'orbe');   // ?avatar=kit per le forme del kit
@@ -32,7 +32,7 @@
   const modello = DGT_DATI.modello(DGT_DATI.nDaUrl());
   DIREZIONE_A.monta(root, modello, {
     pagina: q.get('pagina') || 'home', dip: q.get('dip') || 'svi', id: +(q.get('id') || 4), tendina: q.get('tendina') || 'aperta', richiesta: +(q.get('richiesta') || 0),
-    pannello: q.get('pannello') || 'richieste', editor: q.get('editor'), confronto: q.get('confronto') });
+    pannello: q.get('pannello') || 'richieste', editor: q.get('editor'), confronto: q.get('confronto'), filo: +(q.get('filo') || 0) });
   // La Console è progettata a 1440 px e riempie sempre la larghezza dello schermo: sopra i 1440 si ingrandisce, sotto si riduce
   // (richiesta dell'utente, 2026-09-04). Si usa `zoom`, non `transform`: così le tendine e le pillole fisse restano al bordo dello
   // schermo e non scorrono con la pagina; i 100vh delle tendine si dividono per --z (vedi il CSS in direzione-a.js).
