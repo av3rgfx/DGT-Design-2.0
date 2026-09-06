@@ -16,7 +16,7 @@
 <script src="dati.js"></script>
 <script src="direzione-a.js"></script>
 <script>
-  // Parametri: ?n=11|40  ?tendina=chiusa|aperta|estesa|dossier  ?pannello=richieste|riepilogo  ?pagina=home|richieste|dipartimento|dipendente|esecuzione  ?dip=svi|mkt|ven|amm  ?id=<id dipendente>  ?confronto=6,7  ?richiesta=0  ?editor=nuovo|<id dipendente>  ?avatar=orbe|kit  ?pelle=perla|grigio|chiaro|alone|disco  ?identita=tinta|dipartimento|toni|nessuna  ?palette=vivace|pastello|scura  ?corpo=piatta|orlo|perla  ?occhi=lilguy|neri|colorati|punti|kit  ?segnale=nessuno|punto|anello|gesto  ?carattere=1
+  // Parametri: ?n=11|40  ?tendina=chiusa|aperta|estesa|dossier  ?pannello=richieste|riepilogo  ?pagina=home|richieste|dipartimento|dipendente|esecuzione|costi  ?dip=svi|mkt|ven|amm  ?id=<id dipendente>  ?confronto=6,7  ?richiesta=0  ?editor=nuovo|<id dipendente>  ?avatar=orbe|kit  ?pelle=perla|grigio|chiaro|alone|disco  ?identita=tinta|dipartimento|toni|nessuna  ?palette=vivace|pastello|scura  ?corpo=piatta|orlo|perla  ?occhi=lilguy|neri|colorati|punti|kit  ?segnale=nessuno|punto|anello|gesto  ?carattere=1
   const q = new URLSearchParams(location.search);
   DGT_UI.iconeInserisci();
   DGT_AVATAR.usa(q.get('avatar') || 'orbe');   // ?avatar=kit per le forme del kit

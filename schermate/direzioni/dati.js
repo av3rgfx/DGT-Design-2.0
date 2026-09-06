@@ -319,7 +319,7 @@ window.DGT_DATI = (function () {
         { nome: 'Instagram · Madira Ink', desc: 'Solo bozze: pubblica il titolare', stato: 'attiva', ultimo: 'lun 1 set' },
         { nome: 'Drive di Nova Studio', desc: 'Brief e materiali', stato: 'attiva', ultimo: '09:06' },
       ],
-      budget: { mese: 300, speso: 140, giorno: 15, oggi: 9 },
+      budget: { mese: 300, speso: 43, giorno: 15, oggi: 9 },   // speso = metriche.ora.spesa, come per Nora e per i dossier generati (coerenza per la pagina dei costi, versione 13)
       permessi: [
         { nome: 'Uscite verso i clienti', modo: 'Sempre da approvare', origine: 'Regola generale', attiva: true },
         { nome: 'Spese sopra 50 €', modo: 'Sempre da approvare', origine: 'Regola generale', attiva: false },
@@ -361,7 +361,7 @@ window.DGT_DATI = (function () {
           attese: [
             { n: '22% → 8%', t: 'consegne respinte, stima dalla prova di luglio' },
             { n: '3,1 → 2,6 €', t: 'costo per esito utile: l\'esecuzione costa di più ma non si rifà' },
-            { n: '+18 €', t: 'al mese sul budget (140 € su 300 spesi finora)' },
+            { n: '+18 €', t: 'al mese sul budget (43 € su 300 spesi finora)' },
           ],
           rischi: [
             'Il costo per esecuzione sale del 60%: se le consegne lunghe aumentano, il budget del mese va rivisto.',
@@ -399,6 +399,11 @@ window.DGT_DATI = (function () {
     const strumenti = STRUMENTI_DIP[e.dip].map((s, i) => ({ id: 's' + i, nome: s[0], desc: s[1], icona: s[2], attivo: i < 3, ultimo: i < 3 ? ['09:1' + i, 'ieri', '10:0' + i][i] : 'mai' }));
     const modello = r(0, 2) === 0 ? 'rapido' : 'standard';
     const es = { rapido: r(3, 10), standard: r(8, 25), esperto: r(0, 4) };
+    /* i costi per modello ripartiscono la spesa dei 30 giorni secondo le esecuzioni e il listino (versione 13, 2026-09-06): così la
+       somma torna con metriche.ora.spesa e con il budget, e la pagina dei costi quadra per modello e per dipendente */
+    const pesi = { rapido: es.rapido * 0.1, standard: es.standard * 1.5, esperto: es.esperto * 7 }, sommaPesi = (pesi.rapido + pesi.standard + pesi.esperto) || 1;
+    const usoCosto = { rapido: Math.round(spesa * pesi.rapido / sommaPesi), standard: Math.round(spesa * pesi.standard / sommaPesi), esperto: 0 };
+    if (es.esperto) usoCosto.esperto = spesa - usoCosto.rapido - usoCosto.standard; else usoCosto.standard = spesa - usoCosto.rapido;
     return {
       mansione: `${e.ruolo} di Nova Studio: ${dipartimenti.find(d => d.id === e.dip).desc.toLowerCase()}, sempre da un brief e con l'approvazione del titolare sulle uscite.`,
       dal: ['12 giu', '20 giu', '1 lug', '15 lug'][r(0, 3)],
@@ -408,7 +413,7 @@ window.DGT_DATI = (function () {
         { v: 1, data: '20 giu', chi: 'MR', nota: 'Creazione', testo: testo(0), numeri: { task: r(3, 8), corretti: r(20, 45), respinte: r(10, 30), costo: 3 } },
       ] },
       modello: { assegnato: modello, regola: modello === 'rapido' ? 'Di base <b>Rapido</b>. <b>Standard</b> sopra 3 passi o quando la consegna esce verso il cliente.' : 'Di base <b>Standard</b>. <b>Esperto</b> sopra 6 passi o quando la consegna esce verso il cliente. <b>Rapido</b> per le verifiche.', automatica: true,
-        uso: { rapido: { esecuzioni: es.rapido, costo: Math.round(es.rapido * 0.3) }, standard: { esecuzioni: es.standard, costo: Math.round(es.standard * 1.5) }, esperto: { esecuzioni: es.esperto, costo: es.esperto * 7 } } },
+        uso: { rapido: { esecuzioni: es.rapido, costo: usoCosto.rapido }, standard: { esecuzioni: es.standard, costo: usoCosto.standard }, esperto: { esecuzioni: es.esperto, costo: usoCosto.esperto } } },
       strumenti,
       connessioni: [{ nome: 'Drive di Nova Studio', desc: 'Materiali dei clienti', stato: 'attiva', ultimo: '09:40' }],
       budget: { mese: [80, 120, 200][r(0, 2)], speso: spesa, giorno: 10, oggi: e.att.costo || 0 },
@@ -719,6 +724,69 @@ window.DGT_DATI = (function () {
     const tintaDi = e => e.tinta || TINTE_ID[(e.id - 1 + TINTE_ID.length * 1000) % TINTE_ID.length];
     const tintaLibera = () => { const uso = Object.fromEntries(TINTE_ID.map(t => [t, 0])); m.dipendenti.forEach(e => { uso[tintaDi(e)]++; }); return TINTE_ID.reduce((a, t) => uso[t] < uso[a] ? t : a, TINTE_ID[0]); };
     const iniziali = e => etichetta(e).slice(0, 2).toUpperCase();
+    /* ---- I costi dell'azienda (versione 13, 2026-09-06): un solo aggregatore per la pagina Costi e per la sezione «Spesa del
+       mese» del Dipartimento, così le due leggono gli stessi numeri. Tre periodi: `oggi` = le esecuzioni di oggi (e.att.costo:
+       lo stesso numero di «spesi oggi» nella home); `mese` = i 30 giorni del dossier (metriche.ora.spesa, confrontati con i 30
+       precedenti; budget.speso è lo stesso numero); `anno` = dalla creazione del dipendente (giugno): i 30 giorni, i 30 precedenti
+       e le versioni del prompt più vecchie (task × costo per esito). Le consegne: oggi le richieste approvate oggi; nei 30 giorni
+       le consegne accettate del dossier (approvate al primo colpo più quelle corrette); dalla creazione anche le versioni vecchie
+       (task meno le respinte). Per cliente, la spesa e le consegne di ogni dipendente si ripartiscono fra i suoi clienti in
+       proporzione alle richieste del periodo (oggi: il cliente dell'esecuzione in corso): così per dipartimento, per dipendente
+       e per cliente si somma allo stesso totale. Per modello: oggi i passi delle esecuzioni (fatti, in corso, in errore), nei 30
+       giorni l'uso del dossier; niente da inizio anno. Per strumento: solo oggi, dalle esecuzioni, sommato per nome. ---- */
+    const oggiConta = e => (e.att.costo || 0) > 0;
+    const versioniVecchie = d => d.prompt.versioni.filter(v => !v.proposta).slice(2);
+    const blocchiDi = e => { const d = out.dossierDi(e); return { ora: d.metriche.ora.spesa, prima: d.metriche.prima.spesa, prima2: versioniVecchie(d).reduce((t, v) => t + (v.numeri ? Math.round(v.numeri.task * v.numeri.costo) : 0), 0) }; };
+    const spesaDi = (e, periodo) => { if (periodo === 'oggi') return e.att.costo || 0; const b = blocchiDi(e); return periodo === 'anno' ? b.ora + b.prima + b.prima2 : b.ora; };
+    const inPeriodo = (r, periodo) => periodo === 'oggi' ? r.giorno === 0 : periodo === 'mese' ? r.giorno <= 31 : true;
+    const consegneDi = (e, periodo, approvate) => { if (periodo === 'oggi') return approvate.filter(r => r.chi === e.id).length; const d = out.dossierDi(e), o = d.metriche.ora, p = d.metriche.prima; const mese = o.approvate + o.modifiche; return periodo === 'mese' ? mese : mese + p.approvate + p.modifiche + versioniVecchie(d).reduce((t, v) => t + (v.numeri ? Math.round(v.numeri.task * (1 - v.numeri.respinte / 100)) : 0), 0); };
+    const ordDal = s => { const [g, me] = String(s || '').split(' '); return ({ gen: 1, feb: 2, mar: 3, apr: 4, mag: 5, giu: 6, lug: 7, ago: 8, set: 9, ott: 10, nov: 11, dic: 12 }[me] || 0) * 100 + (+g || 0); };
+    /* arrotonda il campo `k` a interi che sommano a `tot`: i resti vanno ai decimali più grandi */
+    const interi = (lista, k, tot) => { const base = lista.map(x => Math.floor(x[k])); let resto = Math.round(tot) - base.reduce((a, b) => a + b, 0); lista.map((x, i) => [x[k] - base[i], i]).sort((a, b) => b[0] - a[0]).forEach(([, i]) => { if (resto > 0) { base[i]++; resto--; } }); lista.forEach((x, i) => { x[k] = base[i]; }); };
+    const dec = v => Math.round(v * 10) / 10;
+    const M_ID = Object.keys(MODELLI);
+    const usoVuoto = () => Object.fromEntries(M_ID.map(k => [k, { n: 0, costo: 0 }]));
+    const listaModelli = u => M_ID.map(k => ({ id: k, nome: MODELLI[k].nome, icona: MODELLI[k].icona, listino: MODELLI[k].costo, n: u[k].n, costo: dec(u[k].costo) }));
+    function costi(periodo, dip) {
+      periodo = periodo || 'mese';
+      const lst = dip ? m.dipendenti.filter(e => e.dip === dip) : m.dipendenti;
+      const ids = new Set(lst.map(e => e.id));
+      const richieste = m.richieste.filter(r => ids.has(r.chi) && inPeriodo(r, periodo));
+      const approvate = richieste.filter(r => r.stato === 'approvata');
+      const modelliDi = e => { const u = usoVuoto(); if (periodo === 'oggi') { if (oggiConta(e)) out.esecuzioneDi(e).passi.forEach(p => { if (p.stato !== 'da fare' && u[p.modello]) { u[p.modello].n++; u[p.modello].costo += p.costo; } }); } else if (periodo === 'mese') { const uso = out.dossierDi(e).modello.uso; M_ID.forEach(k => { if (uso[k]) { u[k].n += uso[k].esecuzioni; u[k].costo += uso[k].costo; } }); } return u; };
+      const somma = (a, b) => { M_ID.forEach(k => { a[k].n += b[k].n; a[k].costo += b[k].costo; }); return a; };
+      const sommaDi = (lista, f) => lista.reduce((t, x) => t + f(x), 0);
+      const perDipendente = lst.map(e => { const d = out.dossierDi(e), b = blocchiDi(e); return { e, d, spesa: spesaDi(e, periodo), prima: periodo === 'mese' ? b.prima : null, blocchi: b, esito: d.metriche.ora.costo, budget: d.budget, oggi: e.att.costo || 0, consegne: consegneDi(e, periodo, approvate), modelli: modelliDi(e) }; }).sort((a, b) => (b.spesa - a.spesa) || (a.e.id - b.e.id));
+      const tot = sommaDi(perDipendente, x => x.spesa), totConsegne = sommaDi(perDipendente, x => x.consegne);
+      const perDipartimento = dipartimenti.filter(d => !dip || d.id === dip).map(d => { const mie = perDipendente.filter(x => x.e.dip === d.id); return { d, n: mie.length, lav: mie.filter(x => x.e.stato === 'lavoro').length, spesa: sommaDi(mie, x => x.spesa), prima: periodo === 'mese' ? sommaDi(mie, x => x.prima) : null, blocchi: { ora: sommaDi(mie, x => x.blocchi.ora), prima: sommaDi(mie, x => x.blocchi.prima), prima2: sommaDi(mie, x => x.blocchi.prima2) }, budgetMese: sommaDi(mie, x => x.budget.mese), budgetSpeso: sommaDi(mie, x => x.budget.speso), budgetGiorno: sommaDi(mie, x => x.budget.giorno), oggi: sommaDi(mie, x => x.oggi), consegne: sommaDi(mie, x => x.consegne), modelli: listaModelli(mie.reduce((u, x) => somma(u, x.modelli), usoVuoto())), dal: mie.map(x => x.d.dal).sort((a, b) => ordDal(a) - ordDal(b))[0] || '' }; });
+      /* per cliente: spesa e consegne del dipendente ripartite fra i clienti delle sue richieste del periodo; oggi il cliente dell'esecuzione */
+      const clienti = {};
+      const cliente = c => (clienti[c] = clienti[c] || { cliente: c, spesa: 0, consegne: 0, oggi: 0, chi: [] });
+      perDipendente.forEach(x => {
+        const e = x.e, pesi = {};
+        if (periodo === 'oggi') { if (e.att.cliente) pesi[e.att.cliente] = 1; }
+        else { richieste.filter(r => r.chi === e.id).forEach(r => { pesi[r.cliente] = (pesi[r.cliente] || 0) + r.costo; }); if (oggiConta(e) && e.att.cliente) pesi[e.att.cliente] = (pesi[e.att.cliente] || 0) + e.att.costo; }
+        let peso = Object.values(pesi).reduce((t, v) => t + v, 0);
+        if (!peso) { pesi[e.att.cliente || azienda.nome] = 1; peso = 1; }
+        Object.keys(pesi).forEach(c => { const q = cliente(c); q.spesa += x.spesa * pesi[c] / peso; if (periodo !== 'oggi') q.consegne += x.consegne * pesi[c] / peso; if (x.spesa && !q.chi.includes(e.id)) q.chi.push(e.id); });
+        if (x.oggi && e.att.cliente) cliente(e.att.cliente).oggi += x.oggi;
+      });
+      if (periodo === 'oggi') approvate.forEach(r => { cliente(r.cliente).consegne++; });
+      const perCliente = Object.values(clienti).filter(c => c.spesa >= 0.5 || c.consegne >= 0.5).sort((a, b) => (b.spesa - a.spesa) || a.cliente.localeCompare(b.cliente));
+      interi(perCliente, 'spesa', tot); if (periodo !== 'oggi') interi(perCliente, 'consegne', totConsegne);
+      const perModello = periodo === 'anno' ? null : listaModelli(perDipendente.reduce((u, x) => somma(u, x.modelli), usoVuoto()));
+      /* per strumento: le esecuzioni di oggi, sommate per nome; `usi` dice chi lo ha usato, dal più caro */
+      const strumenti = {};
+      lst.filter(oggiConta).forEach(e => out.esecuzioneDi(e).strumentiUso.forEach(s => { if (!s.chiamate) return; const q = strumenti[s.nome] = strumenti[s.nome] || { nome: s.nome, icona: s.icona, chiamate: 0, costo: 0, usi: [], errore: false }; q.chiamate += s.chiamate; q.costo += s.costo; q.usi.push({ id: e.id, costo: s.costo, chiamate: s.chiamate }); if (s.errore) q.errore = true; }));
+      const perStrumento = Object.values(strumenti).map(s => { s.usi.sort((a, b) => (b.costo - a.costo) || (b.chiamate - a.chiamate)); s.chi = s.usi.map(u => u.id); s.costo = dec(s.costo); return s; }).sort((a, b) => (b.costo - a.costo) || (b.chiamate - a.chiamate));
+      return { periodo, totale: dec(tot), prima: periodo === 'mese' ? sommaDi(perDipendente, x => x.prima) : null,
+        blocchi: { ora: sommaDi(perDipendente, x => x.blocchi.ora), prima: sommaDi(perDipendente, x => x.blocchi.prima), prima2: sommaDi(perDipendente, x => x.blocchi.prima2) },
+        budgetMese: sommaDi(perDipendente, x => x.budget.mese), budgetSpeso: sommaDi(perDipendente, x => x.budget.speso), budgetGiorno: sommaDi(perDipendente, x => x.budget.giorno),
+        oggi: sommaDi(perDipendente, x => x.oggi), consegne: totConsegne, esecuzioni: perModello ? perModello.reduce((t, x) => t + x.n, 0) : 0,
+        chiamate: perStrumento.reduce((t, s) => t + s.chiamate, 0), costoStrumenti: dec(perStrumento.reduce((t, s) => t + s.costo, 0)),
+        dal: perDipartimento.map(x => x.dal).filter(Boolean).sort((a, b) => ordDal(a) - ordDal(b))[0] || '',
+        perDipendente, perDipartimento, perCliente, perModello, perStrumento };
+    }
     const out = {
       azienda, dipartimenti, STATI, n: m.dipendenti.length,
       dipendenti: m.dipendenti, byId, perDip: {}, approvazioni: m.approvazioni, richieste: m.richieste, diario: m.diario, agenda: m.agenda,
@@ -750,6 +818,8 @@ window.DGT_DATI = (function () {
       ],
       alLavoro: [],
       conta, costoOggi, iniziali, dipDi,
+      /* I costi dell'azienda per periodo ('oggi' | 'mese' | 'anno'), tutta l'azienda o un dipartimento (versione 13): vedi sopra. */
+      costi, spesaDi,
       MODELLI,
       /* Il dossier del dipendente (versione 6): scritto a mano per Nora e il Social media manager a 11, generato per gli altri; una sola copia per dipendente, così le decisioni restano. */
       dossierDi: e => { if (!e) return null; if (!dossier[e.id]) dossier[e.id] = (n < 40 && DOSSIER11[e.id]) ? DOSSIER11[e.id] : dossierGenerato(e); return dossier[e.id]; },
