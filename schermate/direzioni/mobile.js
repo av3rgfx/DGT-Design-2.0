@@ -11,7 +11,8 @@
       e i due numeri del titolare; la richiesta corrente come card lime (avatar,
       cosa, cliente · ora, chip del tipo) con i quattro cerchi della tendina della
       Console (apri, commenta, approva, rifiuta); «In coda» con le richieste come
-      righe; in fondo la riga «Riepilogo di oggi».
+      righe; in fondo la riga «Riepilogo di oggi». Sotto la navigazione il
+      contenuto che scorre è sfocato e appena scurito (correzione dell'utente).
    2. «Richiesta» (la tendina estesa in colonna, su fondo nero): indietro, le
       frecce che scorrono la coda, chip del tipo, titolo; il documento in una card
       bianca (testo e allegato); «Chi la propone» (avatar, consegnata alle, costo,
@@ -115,7 +116,11 @@ window.DGT_MOBILE = (function () {
 .m-vuoto b{font-weight:400;font-size:18px;color:var(--ink)}
 .m-scr:not(.chiara) .m-vuoto{border-color:rgb(255 255 255/.2);color:var(--t2)}
 .m-scr:not(.chiara) .m-vuoto b{color:var(--white)}
-/* navigazione in basso: campanella lime con il numero, pillola nera con i quattro cerchi del rail */
+/* navigazione in basso: campanella lime con il numero, pillola nera con i quattro cerchi del rail.
+   Sotto la navigazione il contenuto che scorre è sfocato e appena scurito, con il bordo alto sfumato (correzione dell'utente,
+   2026-09-05): la campanella lime resta distinta anche quando sotto passano la card lime o la riga lime della coda. Il vetro
+   sfocato è già nel sistema (i pulsanti «glass» della videochiamata). */
+.m-navfondo{position:absolute;left:0;right:0;bottom:0;height:112px;background:rgb(0 0 0/.16);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);-webkit-mask-image:linear-gradient(180deg,transparent,#000 40px);mask-image:linear-gradient(180deg,transparent,#000 40px);pointer-events:none}
 .m-bnav{position:absolute;left:14px;right:14px;bottom:14px;height:64px;display:flex;align-items:center;gap:10px}
 .m-bnav .meet{position:relative;width:52px;height:52px;border-radius:50%;background:var(--lime);display:grid;place-items:center;color:var(--ink);flex:none}
 .m-bnav .meet svg{width:20px;height:20px}
@@ -177,7 +182,7 @@ window.DGT_MOBILE = (function () {
 
   /* ---------- pezzi comuni ---------- */
   const barraStato = m => `<div class="m-sb"><span>${esc(m.azienda.ora)}</span><span class="isl"></span><span class="sig">${ic('i-signal')}${ic('i-wifi')}<i></i></span></div>`;
-  const navigazione = (m, n, attiva) => `<div class="m-bnav">
+  const navigazione = (m, n, attiva) => `<div class="m-navfondo"></div><div class="m-bnav">
       <span class="meet" data-az="schermata" data-s="1" title="Da approvare">${ic('i-bell')}${n ? `<span class="n">${n}</span>` : ''}</span>
       <div class="tabs"><span class="rb${attiva === 1 ? ' white' : ''}" data-az="schermata" data-s="1" title="Da approvare">${ic('i-list')}</span><span class="rb" title="Dipartimenti">${ic('i-org')}</span><span class="rb" title="Chat">${ic('i-chat')}</span><span class="rb" title="Agenda">${ic('i-cal')}</span></div>
     </div>`;

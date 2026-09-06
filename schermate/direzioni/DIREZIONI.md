@@ -755,6 +755,13 @@ la barra delle azioni sforava di 18 px e il fuoco sull'input faceva scorrere lo 
 «Rifiuta» al posto di «Conferma il rifiuto», `focus({ preventScroll: true })`; la prova cliccata controlla lo sforo orizzontale
 di ogni schermo a ogni passo). A quaranta l'allegato generato segue il tipo (immagine, foglio, documento).
 
+**Correzione dell'utente alla prima vista** («l'icona delle approvazioni ha lo stesso colore di alcune card e quando scorri capita
+di non riuscire a distinguerla; invece di cambiare colore al pulsante, mettere lo sfondo sfocato e leggermente oscurato nella
+parte bassa dove c'è la navbar»): sotto la navigazione una fascia di 112 px (`.m-navfondo`) con il contenuto che scorre
+**sfocato** (`backdrop-filter: blur(14px)`) e **appena scurito** (nero al 16 %), con il bordo alto sfumato in 40 px
+(`mask-image`), sotto la campanella e la pillola nera, che non cambiano. Il vetro sfocato è già nel sistema (i pulsanti «glass»
+della videochiamata). La barra delle azioni della seconda schermata tiene la sua dissolvenza nera.
+
 Screenshot: `screenshot/mobile.png` (la pagina), `mobile-1-da-approvare.png`, `mobile-1-coda.png` (scorsa alla coda),
 `mobile-2-richiesta.png` (documento), `mobile-2-richiesta-post.png`, `mobile-2-rifiuto.png` (cornici catturate con
 `design-system/tools/screenshot-elementi.js`, `SCALE=2 H=1100`, `CLICK` per il rifiuto, `EVAL` per lo scorrimento). Artefatto:

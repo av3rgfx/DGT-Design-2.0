@@ -11,7 +11,8 @@ sul telefono, lo stato vuoto, la prova a quaranta), dopo il giudizio dell'utente
   stata unita all'inizio di questa sessione. **Nessuna PR aperta per questo branch** (l'utente non l'ha chiesta): all'avvio
   della prossima sessione aprirla verso `main` se serve, oppure continuare sullo stesso branch; se nel frattempo è stata unita,
   ripartire da `main` con un branch nuovo.
-- Artefatto del **mobile** (`mobile.html`: i due telefoni affiancati, «Da approvare» e «Richiesta», cliccabili):
+- Artefatto del **mobile** (`mobile.html`: i due telefoni affiancati, «Da approvare» e «Richiesta», cliccabili; ripubblicato
+  allo stesso indirizzo dopo la correzione della navigazione):
   https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9. Si rigenera con
   `node schermate/direzioni/build-unico.js mobile.html /percorso/nova-studio-mobile.html`.
 - Artefatto della **Console** (direzione A cliccabile: home, tendine, Richieste, Dipartimento, editor del dipendente, pagina
@@ -75,6 +76,10 @@ sul telefono, lo stato vuoto, la prova a quaranta), dopo il giudizio dell'utente
     sulla prima schermata («spesi oggi» va nel Riepilogo); le revisioni di performance restano fuori dalla coda del telefono
     finché il confronto non è disegnato (la Console dice 4 da approvare, il telefono 2); i due telefoni affiancati condividono
     modello e richiesta corrente.
+22. **Prima correzione dell'utente sul mobile** («l'icona delle approvazioni ha lo stesso colore di alcune card e quando scorri
+    non si distingue; invece di cambiare colore al pulsante, sfondo sfocato e leggermente oscurato nella parte bassa dove c'è la
+    navbar»): fatto, fascia `.m-navfondo` sotto la navigazione (blur 14, nero al 16 %, bordo alto sfumato). Le due schermate
+    per il resto non sono ancora state giudicate («bene» sul primo sguardo).
 
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti sintetici di DGT; documenti in italiano.
@@ -85,7 +90,9 @@ Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti si
    Controllare il branch (vedi «Stato»). Aprire `schermate/direzioni/mobile.html` (i due telefoni; `?schermata=2&richiesta=1`
    per il post) e `direzione-a.html` per la Console.
 2. **Raccogliere il giudizio dell'utente** sulle due schermate (screenshot in `schermate/direzioni/screenshot/mobile-*.png`,
-   artefatto in «Stato») e correggere prima di andare avanti.
+   artefatto in «Stato») e correggere prima di andare avanti. Una correzione è già arrivata e fatta (decisione 22: la fascia
+   sfocata sotto la navigazione); la regola che ne esce: un pulsante non cambia colore per distinguersi, è il fondo a farsi da
+   parte.
 3. **Riepilogo di oggi** (schermata 3, `#F4F4F4`): il pannello Riepilogo dello specimen sul telefono (`.summary`, `.tline` con i
    badge rotondi, `.dcard`), con consegne (miniature), approvate oggi, spesa di oggi, obiettivo del mese nella card lime con la
    matita, le voci del diario sulla linea del tempo, e la riga lime che riporta alle richieste. In `direzione-a.js` c'è già
