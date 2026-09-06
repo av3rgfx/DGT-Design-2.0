@@ -1107,6 +1107,171 @@ fa uno **studio e un'analisi UX** della barra e propone come renderla più chiar
 passi** nella pagina Esecuzione (dove, avendo le etichette, si legge molto meglio), e dalla versione 15 c'è la pagina Agenda
 con una pista proporzionale alle ore.
 
+### Versione 16: la barra «Oggi in azienda» (2026-09-06, sessione successiva)
+
+Lavoro chiesto dall'utente: «non capisco a primo impatto il suo utilizzo… mi dà l'idea che dica chi sta lavorando e chi ha un
+lavoro programmato? Ma non ne sono sicuro, in ogni caso non è ben chiaro». Prima uno **studio**, poi **tre strade disegnate nella
+Console vera** e catturate, con pro e contro, poi una **raccomandazione**, applicata perché l'utente non ha risposto.
+Catture: `a-barra-oggi.png` (la barra di prima), `a-barra-momenti.png`, `a-barra-misura.png`, `a-barra-stato.png` (le tre strade),
+le stesse con `-40`, e le quattro nella Console (`a-barra-console-*.png`).
+
+#### 1 · Che cosa dice oggi la barra
+
+La barra viene dal riferimento (case study, `design-system/reference/`) ed è copiata così com'è dalla versione 1. Nel riferimento
+è l'**agenda personale di una persona**: eventi tutti dello stesso tipo (appuntamenti), la coppia di avatar è chi partecipa, il
+segmento «adesso» è la videochiamata in corso (icona video), e chi guarda è dentro quegli appuntamenti. In DGT la stessa forma
+porta un contenuto diverso: **le esecuzioni dei dipendenti AI**, di tipi e stati diversi, e chi guarda non partecipa, sorveglia.
+
+Il testo che la barra stampa oggi, per intero: `38 min · 10:42 · 3 al lavoro · 15:00 · 17:00`. Cinque numeri e **nessun
+sostantivo**: nessun evento è nominato. Da lì nasce la lettura dell'utente.
+
+Misure (pista larga 790 px a 1440, modello a 11):
+
+| pezzo | larghezza | copre | scala |
+|---|---|---|---|
+| pillola bianca «38 min» | 128 px | 38 minuti | 3,4 px/min |
+| segmento «in corso» | 402 px (51 % della pista) | 30 minuti | **13,4 px/min** |
+| «15:00» + pillola | 95 px | ~30 minuti stimati | 1,7 px/min |
+| separatore fra «adesso» e le 15:00 | **1 px** | **4 h 18** | 0,004 px/min |
+
+La scala cambia di **otto volte** fra un blocco e l'altro, e il vuoto più lungo della giornata (le quattro ore e mezza fra
+mezzogiorno e le 15:00) è l'elemento più piccolo della barra. **Non è una linea del tempo**, ma ne ha la forma.
+
+Il segno di «adesso» non sta a un'ora: sta al **bordo sinistro del segmento verde**, cioè in una posizione decisa dal layout. La
+prova: a 11 dipendenti è a 142 px dall'inizio della pista, a 40 è a 130 px — **lo stesso orario si sposta di 12 px** solo perché la
+pillola che lo precede si è stretta.
+
+Gli stati sono codificati nel **riempimento**, e i riempimenti hanno lo stesso valore: pista lime `#B8FC64`, evento concluso
+bianco, «in corso» `#A8E65D`, pianificato bianco al 55 %. I contrasti fra loro: **1,19 : 1** (bianco su lime), **1,21 : 1**
+(in corso su pista), **1,11 : 1** (pianificato su pista), **1,08 : 1** (concluso contro pianificato). Sotto la soglia del colpo
+d'occhio: la categoria non si legge, restano le forme.
+
+**Che cosa non dice.** La barra legge `m.agenda`, una lista scritta a mano e parallela al modello, che ha solo tre stati (fatto,
+in corso, pianificato). La giornata vera (`m.giornata()`, l'aggregatore della versione 15) a 11 dipendenti ha **8 esecuzioni**:
+3 in corso, **1 ferma per errore**, **1 che aspetta l'approvazione**, 3 pianificate. La barra ne mostra 4 (una conclusa, il
+gruppo «in corso», due pianificate su tre) e **tace proprio sulle due su cui il titolare deve fare qualcosa**. A 40 la giornata
+ha 26 esecuzioni e la barra mostra sempre le stesse quattro caselle: **non scala**.
+
+Un dettaglio che chiude il ragionamento: la pillola bianca «38 min» **è** una delle quattro cose che aspettano il titolare (il
+post 4 di 12 consegnato da Nora alle 10:12, in coda per l'approvazione). La barra ce l'ha e la chiama «38 min».
+
+#### 2 · Che cosa dovrebbe capire il titolare in un colpo d'occhio
+
+Aprendo la Console: **che cosa è fermo** (l'errore), **che cosa aspetta lui**, **chi lavora adesso e su cosa**, **che cosa parte
+dopo**. Delle quattro, la barra risponde bene solo alla terza, e con un numero già scritto in 48 px sessanta pixel più sotto.
+La prima — l'errore — **non è in nessun punto sintetico della Console**: Kim in errore si trova solo scorrendo la griglia dei
+dipendenti, come un chip rosa piccolo.
+
+**Il confronto in casa.** La stessa barra, nella pagina Esecuzione (`barraPassi`), si legge molto meglio: ogni segmento ha
+un'etichetta («Struttura approvata e catalogo · 7 min», «passo 3 · Carrello collegato al magazzino · 24 min»). È la stessa forma
+con il contenuto nominato: la prova che il problema non è la forma, è che i blocchi non dicono che cosa sono.
+
+#### 3 · Le tre strade (disegnate nella Console, catturate a 11 e a 40)
+
+Tutte e tre leggono il modello vero (stati dei dipendenti e richieste in attesa) invece della lista parallela `m.agenda`: così
+l'errore e le approvazioni esistono.
+
+**Strada 1 · «I tre momenti»** (`a-barra-momenti.png`) — la forma del riferimento, il contenuto nominato: la pillola bianca
+diventa l'ultima consegna con il suo titolo e la campanella «da approvare», il segmento verde dice «adesso · 3 al lavoro», si
+aggiunge una pillola **rosa** per chi è fermo, e i pianificati si contano in «15:00 · e 3 da fare».
+*Risolve*: ogni blocco dice che cos'è; l'errore entra in cima; scostamento minimo dal riferimento; usa la lezione della barra dei
+passi, che è già in casa. *Perde*: resta la falsa linea del tempo (le larghezze non dicono niente); i titoli si tagliano già a 11
+(«Piano editoriale otto…») e **a 40 si tagliano in tre punti** («Cons…», «12 …», «Documen…»): 790 px non bastano per quattro
+blocchi nominati. *Costa*: poco — la stessa cornice, quattro classi nuove.
+
+**Strada 2 · «La giornata a misura»** (`a-barra-misura.png`) — la pista diventa chiara e **proporzionale alle ore** (08–19), con
+le fasce che dicono che cosa succede in quel momento, l'errore come riga sottile sotto la fascia (una sola esecuzione ferma
+tingerebbe di rosso tutta la mattina), le finestre dei pianificati tratteggiate al loro posto e «adesso» alla sua ora vera.
+*Risolve*: la barra diventa onesta; «10:42» significa qualcosa; si vede il buco del pomeriggio e il picco del mattino; scala a 40
+senza cambiare, perché è una densità e non un elenco. *Perde*: **resta muta** — in 24 px di fascia non c'è posto per un nome, e
+serve una legenda che mangia 215 px di pista; non dice che cosa aspetta il titolare; duplica in piccolo e in peggio la barra del
+giorno della pagina Agenda, che ha quattro corsie e i titoli. *Costa*: medio (un calcolo per minuto e una legenda).
+
+**Strada 3 · «La riga di stato»** (`a-barra-stato.png`) — la barra smette di fingersi una linea del tempo e diventa il **quadro
+del giorno**: cinque caselle contate e nominate — `2 approvate`, `3 al lavoro` (con la pila di chi), `1 ferma · Kim` (rosa),
+`4 aspettano te`, `3 dopo · dalle 15:00` — ognuna cliccabile verso il posto giusto (le richieste, l'agenda, l'esecuzione ferma).
+Con l'azienda grande i dettagli cedono il posto ai numeri (il nome di chi è fermo e l'ora del prossimo spariscono sopra i sedici
+dipendenti). *Risolve*: risponde alle quattro domande del colpo d'occhio; scala a 40 senza tagliare niente; porta l'errore in
+cima, dove oggi manca del tutto; niente marcatore dell'ora, quindi sulla pagina Esecuzione non ci sono più due «10:42» a 250 px
+di distanza. *Perde*: l'asse del tempo (la barra non dice più *quando*, lo dice l'Agenda) e, **sulla sola home**, ripete due
+numeri già grandi lì sotto («al lavoro», «da approvare»). *Costa*: poco.
+
+#### 4 · Raccomandazione, applicata: la strada 3
+
+Le ragioni, in ordine:
+
+1. **Risponde alla domanda dell'utente.** «Non capisco a cosa serve» si chiude solo nominando le cose: la 3 le nomina tutte e
+   quattro, la 1 solo in parte (e tagliate), la 2 non le nomina affatto.
+2. **Copre un buco vero.** L'errore non ha oggi nessun posto sintetico nella Console. La barra è l'unico elemento presente in
+   tutte e sette le pagine: è il posto giusto.
+3. **Scala.** A 40 la 1 taglia tre etichette, la 3 cambia solo i numeri.
+4. **La duplicazione costa poco e vale.** I due numeri ripetuti si vedono **solo nella home**: nelle altre sei pagine i numeri
+   grandi sono quelli della pagina (passi dell'esecuzione, costi, dipartimento) e la barra è l'unico posto dove lo stato
+   dell'azienda resta scritto. Un elemento fisso che ripete il titolo della pagina d'ingresso è ridondanza voluta, non rumore.
+5. **La proporzionalità della 2 è già in casa e sta meglio dov'è**: la pagina Agenda ha la pista vera, con le ore, le corsie e i
+   titoli. La barra in cima deve dire *meno* e portare lì.
+
+**Dove ci si scosta dal riferimento, e perché.** Resta tutto quello che il riferimento dà come forma: pillola bianca 64,
+titolo 18, chip del calendario, pista lime 52, blocchi come pillole con le pile di avatar, cerchio 52 in fondo. Cade **l'asse del
+tempo**: gli orari fra i blocchi, i separatori e il marcatore nero dell'ora. È legittimo nel riferimento — l'agenda personale di
+una giornata di appuntamenti *è* una linea del tempo — e non lo è in DGT, dove i blocchi non stanno in scala e il marcatore non
+sta a un'ora (vedi i numeri della sezione 1). Il resto del sistema non cambia: nessuna emoji, solo le icone dello sprite
+(`i-check`, `i-warn`, `i-bell`, `i-clock`), il lime resta l'attenzione del titolare, il rosa `--badge-red` resta l'errore come in
+tutte le altre pagine, gli avatar sono quelli della versione 10.
+
+`?barra=0` rimette la barra di prima, per il confronto (stessa abitudine di `?avatar=kit` e `?pelle=`); verificato che con quel
+parametro la pagina è identica byte per byte a quella di prima. Le due strade scartate non restano nel codice: stanno qui e nelle
+catture.
+
+#### 5 · La barra dei passi dell'Esecuzione (lo stesso componente)
+
+Guardandola come chiedeva il prompt sono venuti fuori due difetti, corretti tutti e due.
+
+**a. Con sette passi la barra usciva dalla pagina e veniva tagliata in silenzio.** `.etesta` è una griglia senza colonne
+dichiarate: la colonna implicita cresce a `max-content` e con l'esecuzione «Checkout e-commerce» arrivava a **2180 px** dentro un
+contenitore da 1312; `.a-app` ha `overflow:hidden`, quindi gli ultimi tre passi non erano semplicemente sullo schermo, e nessuna
+prova se ne accorgeva (la pagina non scorreva di lato, il contenuto era tagliato). Rimedio: `grid-template-columns:minmax(0,1fr)`
+su `.etesta`, lo stesso che `.a-main` ha già.
+
+**b. Sette passi per esteso chiedono 1600 px e la pista ne ha 990.** Ora la barra si stringe da sola: i passi **conclusi** di
+un'esecuzione lunga (oltre quattro pillole) tengono la spunta e la durata e lasciano il nome, che sta nella lista dei Passi lì
+sotto; oltre tre conclusi restano gli ultimi due e gli altri si contano (`+3 fatti`); i passi **da fare** oltre i due successivi
+si contano in una pillola sola (`+2 da fare`). Il passo **in corso** e quello **in errore** restano sempre per esteso.
+Verificato su tutte e **51 le esecuzioni** del modello (11 e 40): nessuna sfora la pista. Prima e dopo in
+`a-barra-passi-prima.png` e `a-barra-passi.png`.
+
+Con la barra nuova in cima, le due barre della pagina Esecuzione non si confondono più: quella dell'intestazione è fatta di
+caselle contate, quella dei passi è una successione con il marcatore nero dell'ora.
+
+#### 6 · Verifica
+
+- Le quattro prove cliccate passano: `console.js` **80** (erano 64: sedici verifiche nuove sulla barra — le cinque caselle, i
+  numeri contro il modello, dove portano, la barra dei passi dentro la pagina su quattro esecuzioni, i quaranta), `mobile.js` 39,
+  `costi.js` 48, `agenda-chat.js` 54. In tutto 221.
+- **Le 25 catture della Console cambiano solo nella barra**: confronto a pixel di ogni pagina prima e dopo, il riquadro delle
+  differenze è sempre `x 426–1203, y 34–85` (esattamente la pista) e le differenze sono ~29 500 pixel su ognuna; le uniche due
+  eccezioni sono `a-esecuzione.png` e `a-esecuzione-attesa.png`, che cambiano anche nella barra dei passi (il difetto corretto
+  qui sopra). `a-1920.png` cambia nello stesso riquadro scalato di 1,333.
+- Il telefono non è toccato: `mobile.png` rigenerato è **identico byte per byte**; `mobile.js` e `componenti.js` non cambiano.
+- `?barra=0` (la barra di prima) rende la home **identica byte per byte** a quella di prima della sessione.
+- I parametri delle catture non stavano più in nessun posto: ora c'è `scatta.js`, che li dichiara e le rigenera
+  (`node schermate/direzioni/scatta.js`, oppure `console` / `barra` per un gruppo solo, `--in <cartella>` per il confronto
+  prima/dopo). Le catture che restano fuori sono dichiarate nel file (direzioni B e C, pellicola del moto, cornici del telefono,
+  sezioni per elemento, le due strade scartate).
+
+#### 7 · Scelte fatte in costruzione, da confermare
+
+- Le cinque caselle e le loro parole: «approvate» (le richieste approvate oggi, la stessa parola del Riepilogo), «al lavoro»,
+  «ferma/e», «aspettano te», «dopo». «Aspettano te» dice in voce di titolare quello che il numero grande chiama «da approvare»:
+  è l'unico punto in cui il prodotto usa due parole per la stessa cosa.
+- La casella «al lavoro» è l'unica bianca piena: adesso pesa più del passato e del futuro.
+- La pila di avatar resta solo su «al lavoro» (chi sta lavorando); le altre caselle hanno l'icona dello sprite.
+- Sopra i sedici dipendenti spariscono il nome di chi è fermo e l'ora del primo pianificato (restano i numeri).
+- Le caselle traslucide hanno il filetto `inset 0 0 0 1px rgb(0 0 0/.1)`, lo stesso del chip della data: senza, il contrasto con
+  la pista sarebbe 1,1 : 1, l'errore che l'analisi contesta alla barra di prima.
+- Nella barra dei passi: quattro pillole è la soglia oltre cui i conclusi perdono il nome; due i passi da fare mostrati per esteso.
+
+
 ## 5. File
 
 | File | Ruolo |
@@ -1114,7 +1279,7 @@ con una pista proporzionale alle ore.
 | `dati.js` | modello sintetico (11 e 40) condiviso; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`), le richieste di tipo `revisione` e l'esecuzione (`esecuzioneDi`: sei scritte a mano, le altre generate); dal 2026-09-05 la decisione del titolare (`decidi`), condivisa fra Console e telefono; `azienda.scadenzaMese` per la linea del tempo del mobile; dal 2026-09-06 l'aggregatore dei costi (`costi(periodo, dip)`, `spesaDi`) per la pagina Costi e la sezione «Spesa del mese», e (versione 15) l'agenda (`giornata`, `settimana`, `scadenze`) e i fili della chat (`filoDi`, `scrivi`, `fili`, `nonLetti`) per la Console e per il telefono |
 | `comune.js` | sprite di icone di DGT, prefisso CSS, utilità |
 | `../componenti.js` (`schermate/componenti.js`) | dal 2026-09-06 (versione 14) i componenti della Console condivisi con il telefono e con le pagine degli avatar: il CSS delle primitive (`.rb`, `.av`, `.pair`, `.pill`, `.chip`, `.dots`, `.badge`, `.ncard`/`.nt`, `.lead`, `.task`, `.crow`, `.hrow`, `.erow`, `.qrow`, `.dcard`, `.ripart`/`.leg`, e dalla versione 15 le bolle della chat `.msg`/`.bub`), `variabili`, e `av`, `pair`, `dots`, `chipStato`, `chipEsito`, `messaggio`, `iconaTipo`, `nomeTipo`, `eur`, `delta`, `differenze`; `window.DGT_COMPONENTI`, va caricato dopo `comune.js` e il suo CSS messo in pagina prima di quello della Console |
-| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo), pagina Costi (per dipartimento, dipendente, cliente, modello, strumento, con le pillole del periodo per sezione; `?pagina=costi`), pagina Agenda (barra del giorno, eventi, scadenze, settimana; `?pagina=agenda`) e pagina Chat (fili, filo aperto, barra di scrittura; `?pagina=chat&filo=4`, versione 15); cliccabile; dalla versione 14 prende le primitive da `../componenti.js` e tiene la cornice, le pagine, le tendine e `monta` |
+| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo), pagina Costi (per dipartimento, dipendente, cliente, modello, strumento, con le pillole del periodo per sezione; `?pagina=costi`), pagina Agenda (barra del giorno, eventi, scadenze, settimana; `?pagina=agenda`) e pagina Chat (fili, filo aperto, barra di scrittura; `?pagina=chat&filo=4`, versione 15); dalla versione 16 la barra «Oggi in azienda» è il quadro del giorno in caselle contate (`barraStato`, `gruppiOggi`; `?barra=0` rimette quella di prima) e la barra dei passi si stringe da sola; cliccabile; dalla versione 14 prende le primitive da `../componenti.js` e tiene la cornice, le pagine, le tendine e `monta` |
 | `mobile.js` / `.html` | il telefono del titolare: le approvazioni (versioni 11 e 12, schermate «Da approvare», «Richiesta» — anche la revisione di performance con le due versioni a confronto e le quattro decisioni — e «Riepilogo di oggi», con il rifiuto con motivo e lo stato vuoto a coda finita) e, dalla versione 15, le due tab «Chat» (elenco dei fili e conversazione con la barra di scrittura) e «Agenda» (la giornata sulla linea del tempo, i prossimi giorni, le scadenze); sei telefoni affiancati che condividono il modello, la richiesta corrente e il filo aperto; `DGT_MOBILE.monta`, `coda`; `?schermata=1…6&richiesta=0&filo=4`, `?n=40`; dalla versione 14 carica `../componenti.js` e non più `direzione-a.js` |
 | `avatar/avatar-dgt.js` | involucro degli avatar nel linguaggio della Console (colori, stati, simboli statici, animazione); `usa('orbe'|'kit')` sceglie la famiglia |
 | `avatar/avatar-orbe.js` | la famiglia «orbe» (versioni 5b, 5c, 7, 7b, 7c): cerchi dal seme con le pupille e lo sguardo del kit, un solo motore `requestAnimationFrame` con funzioni continue del tempo, sguardo che segue il puntatore; senza disco, con le pelli (`pelle('perla'|'grigio'|'chiaro'|'alone'|'disco')`, solo variabili CSS; perla predefinita); `fermo(t)`, `riprendi()`, `fotogramma(svg, t)` per gli screenshot |
@@ -1127,7 +1292,8 @@ con una pista proporzionale alle ore.
 | `direzione-c.js` / `.html` | Mappa viva |
 | `confronto.html` | pagina di confronto con tab e selettore 11/40 |
 | `build-unico.js` | genera il file unico per l'artefatto (`node build-unico.js direzione-a.html out.html`) |
-| `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`); le cornici del telefono (`mobile-*.png`: le versioni 11 e 12, le quattro della revisione rifatte nella versione 14 e le tre schermate nuove `mobile-4-chat`, `mobile-5-filo`, `mobile-6-agenda` della versione 15) e le sezioni delle pagine Costi (`a-costi-*.png`, versione 13), Agenda e Chat (`a-agenda-*.png`, `a-chat-*.png`, versione 15) con `screenshot-elementi.js` |
-| `prove/` | le prove cliccate con Playwright, con il `README.md` che dice il comando: `console.js` (64 verifiche: tendine, Richieste, editor, esecuzione, 40), `mobile.js` (39: le schermate delle approvazioni, revisione, rifiuto con motivo, prova, stato vuoto, 40), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le pagine Agenda e Chat della Console e le due tab del telefono, versione 15); leggono `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH` |
+| `scatta.js` | rigenera le catture di `screenshot/` dalla lista di parametri dichiarata nel file (`node scatta.js`, `console` / `barra` per un gruppo, `--in <cartella>` per il confronto prima/dopo); le catture che restano fuori sono elencate in `FUORI` |
+| `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`); le cornici del telefono (`mobile-*.png`: le versioni 11 e 12, le quattro della revisione rifatte nella versione 14 e le tre schermate nuove `mobile-4-chat`, `mobile-5-filo`, `mobile-6-agenda` della versione 15) e le sezioni delle pagine Costi (`a-costi-*.png`, versione 13), Agenda e Chat (`a-agenda-*.png`, `a-chat-*.png`, versione 15) con `screenshot-elementi.js`; le catture dello studio della barra (`a-barra-*.png`, versione 16). Si rigenerano con `scatta.js` |
+| `prove/` | le prove cliccate con Playwright, con il `README.md` che dice il comando: `console.js` (80 verifiche: tendine, Richieste, editor, esecuzione, 40, e dalla versione 16 la barra «Oggi in azienda» e la barra dei passi), `mobile.js` (39: le schermate delle approvazioni, revisione, rifiuto con motivo, prova, stato vuoto, 40), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le pagine Agenda e Chat della Console e le due tab del telefono, versione 15); leggono `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH` |
 
 Per gli screenshot: `design-system/tools/screenshot-page.js` (vedi `design-system/tools/README.md`).

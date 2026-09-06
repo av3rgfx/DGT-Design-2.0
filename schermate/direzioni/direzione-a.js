@@ -97,6 +97,22 @@ window.DIREZIONE_A = (function () {
 .tl .now b{position:absolute;left:0;top:0;transform:translate(-50%,-50%);height:22px;padding:0 10px;border-radius:var(--r-pill);background:var(--ink);color:var(--white);font-size:11px;font-weight:400;display:flex;align-items:center;white-space:nowrap}
 .tl .now i{position:absolute;left:0;bottom:0;width:8px;height:8px;border-radius:50%;background:var(--white);transform:translateX(-50%)}
 .a-sched .go{border-color:rgb(0 0 0/.14);background:transparent;color:var(--ink);width:52px;height:52px}
+/* ---- studio della barra «Oggi in azienda» (versione 16, 2026-09-06): tre strade dietro ?barra=1|2|3, la barra di oggi è ?barra=0.
+   Le strade condividono la cornice del riferimento (pillola bianca 64, titolo, chip della data, pista 52, cerchio finale 52) e
+   cambiano solo che cosa c'è dentro la pista. ---- */
+/* la barra nuova (versione 16): quattro o cinque caselle contate e nominate, nessun asse del tempo */
+.tl.quadro{gap:6px}
+.tl .qua{height:40px;border-radius:var(--r-pill);background:rgb(255 255 255/.5);box-shadow:inset 0 0 0 1px rgb(0 0 0/.1);display:flex;align-items:center;gap:8px;padding:0 14px 0 6px;font-size:12px;color:var(--t2-light);white-space:nowrap;flex:none;min-width:0}
+.tl .qua b{font-weight:400;font-size:20px;line-height:1;color:var(--ink)}
+.tl .qua .ico{width:28px;height:28px;border-radius:50%;background:rgb(0 0 0/.06);display:grid;place-items:center;flex:none}
+.tl .qua .ico svg{width:14px;height:14px;color:var(--ink)}
+.tl .qua .pair{flex:none}
+.tl .qua.viva{background:var(--white);box-shadow:none}
+.tl .qua.err{background:var(--badge-red);color:var(--badge-red-ink);box-shadow:none}
+.tl .qua.err b{color:var(--badge-red-ink)}
+.tl .qua.err .ico{background:rgb(122 31 31/.16)}.tl .qua.err .ico svg{color:var(--badge-red-ink)}
+.tl .qua .nm{overflow:hidden;text-overflow:ellipsis;min-width:0;font-size:12px}
+.tl .qua.poi{margin-left:auto}
 .a-tr{position:absolute;right:26px;top:36px;display:flex;gap:10px;align-items:center}
 .a-back{position:absolute;left:26px;top:128px}
 .a-head{position:absolute;left:102px;top:112px;right:26px;display:flex;align-items:center;gap:40px}
@@ -324,7 +340,7 @@ window.DIREZIONE_A = (function () {
 .a-tend.vers .azioni.motivo input{flex:1;height:44px;border-radius:var(--r-pill);background:var(--white);border:1px solid transparent;padding:0 16px;font:400 14px/20px var(--font);color:var(--ink);outline:none;min-width:240px}
 .a-tend.vers .azioni.motivo input:focus{border-color:var(--ink)}
 /* ===== pagina Esecuzione (versione 8): testata con la barra dei passi, passi, log con la barra di scrittura, output, costo ===== */
-.etesta{display:grid;gap:18px;margin-top:-8px}
+.etesta{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;margin-top:-8px}   /* senza la colonna vincolata la barra dei passi cresce a max-content (2180 px con 7 passi) e .a-app la taglia in silenzio */
 .etesta .ident{display:flex;align-items:center;gap:18px;min-width:0;flex-wrap:wrap}
 .etesta .ident .tx{min-width:0;display:grid;gap:2px}
 .etesta .ident .tx>b{font-weight:500;font-size:18px;line-height:22px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -338,7 +354,11 @@ window.DIREZIONE_A = (function () {
 /* la barra dei passi: la barra agenda del sistema, ferma nella testata; i passi fatti sono eventi bianchi, quello in corso è il segmento «adesso», quelli da fare sono eventi traslucidi */
 .etesta .a-sched{position:static;height:64px;margin-top:4px;padding-left:22px}
 .etesta .a-sched .t{font-size:18px}
-.etesta .tl{overflow-x:auto}
+.etesta .tl{overflow:hidden}
+.etesta .tl .ev.fatto{padding-right:14px}
+.etesta .tl .ev .nm{max-width:190px;overflow:hidden;text-overflow:ellipsis}
+.etesta .tl .ev.resto{padding:0 14px;gap:6px}
+.etesta .tl .ev.resto b{color:var(--ink);font-weight:500}
 .etesta .tl .ev{gap:8px;padding:0 12px 0 4px;color:#6B6B6B}
 .etesta .tl .ev .n{width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--white);display:grid;place-items:center;font-size:12px;flex:none}
 .etesta .tl .ev .n svg{width:14px;height:14px}
@@ -553,7 +573,38 @@ window.DIREZIONE_A = (function () {
   function rigaDipendente(m, e) {
     return `<div class="erow${e.stato === 'lavoro' ? ' lav' : ''}">${av(m, e)}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e, true))}</span></div>${e.stato === 'lavoro' ? `<span class="chip onlime"><span>${esc(e.att.titolo)}</span></span>` : chipStato(m, e)}<span class="rb xs" data-az="modifica" data-id="${e.id}" title="Modifica">${ic('i-pen')}</span><span class="rb xs" data-az="pagina" data-pagina="dipendente" data-id="${e.id}" title="Apri">${ic('i-ne')}</span></div>`;
   }
-  function barraAgenda(m) {
+  /* ---- Lo studio della barra «Oggi in azienda» (versione 16, 2026-09-06) ----
+     La barra di oggi (`barraOggi`, `?barra=0`) è la barra agenda del riferimento copiata dalla versione 1: legge `m.agenda`,
+     una lista scritta a mano che ha solo tre stati (fatto, in corso, pianificato) e non conosce né gli errori né le consegne
+     che aspettano il titolare. Le tre strade leggono invece il modello vero (gli stati dei dipendenti e le richieste in
+     attesa), lo stesso dato della pagina Agenda: così l'errore e le approvazioni esistono. Lo studio ha disegnato tre strade
+     nella Console vera (i tre momenti, la giornata a misura, la riga di stato) e ha scelto la terza: le altre due restano nelle
+     catture e in `DIREZIONI.md`, «Versione 16», con i pro e i contro. `?barra=0` rimette la barra di prima, per il confronto. */
+  /* I gruppi del giorno per la barra: dal modello, non dalla lista parallela `m.agenda`. */
+  function gruppiOggi(m) {
+    const per = s => m.dipendenti.filter(e => e.stato === s);
+    const piani = per('pianificato').slice().sort((a, b) => String(a.att.quando || '').localeCompare(String(b.att.quando || '')));
+    const att = m.richiesteDi('attesa').slice().sort((a, b) => (b.giorno - a.giorno) || (a.min - b.min));
+    const fatte = m.richieste.filter(r => r.giorno === 0 && r.stato === 'approvata').length;
+    return { corso: per('lavoro'), errore: per('errore'), piani, attesa: att, ultima: att[0] || null, fatte };
+  }
+  /* La barra «Oggi in azienda» (versione 16, scelta dello studio): niente asse del tempo, le caselle del giorno contate e
+     nominate — approvate, al lavoro, ferme, aspettano te, dopo — ognuna con la sua icona e la strada per agire. Con l'azienda
+     grande i dettagli (il nome di chi è fermo, l'ora del prossimo) cedono il posto ai numeri. */
+  function barraStato(m) {
+    const g = gruppiOggi(m), q = [], largo = m.n <= 16;
+    if (g.fatte) q.push(`<span class="qua" data-az="pagina" data-pagina="richieste" title="Le richieste al titolare"><span class="ico">${ic('i-check')}</span><b>${g.fatte}</b><span>approvate</span></span>`);
+    q.push(`<span class="qua viva" data-az="pagina" data-pagina="agenda" title="L'agenda dell'azienda">${pair(m, g.corso.map(e => e.id), 'xs', largo ? 3 : 2)}<b>${g.corso.length}</b><span>al lavoro</span></span>`);
+    if (g.errore.length) {
+      const e = g.errore[0];
+      q.push(`<span class="qua err" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Apri l'esecuzione ferma"><span class="ico">${ic('i-warn')}</span><b>${g.errore.length}</b><span>ferm${g.errore.length === 1 ? 'a' : 'e'}</span>${largo ? `<span class="nm">· ${esc(m.etichetta(e))}</span>` : ''}</span>`);
+    }
+    q.push(`<span class="qua" data-az="pagina" data-pagina="richieste" title="Le richieste al titolare"><span class="ico">${ic('i-bell')}</span><b>${g.attesa.length}</b><span>aspettano te</span></span>`);
+    if (g.piani.length) q.push(`<span class="qua poi" data-az="pagina" data-pagina="agenda" title="L'agenda dell'azienda"><span class="ico">${ic('i-clock')}</span><b>${g.piani.length}</b><span>dopo${largo ? ' · dalle ' + esc(g.piani[0].att.quando) : ''}</span></span>`);
+    return q.join('');
+  }
+  /* La barra di prima (la barra agenda del riferimento copiata dalla versione 1): resta dietro ?barra=0 per il confronto. */
+  function barraOggi(m) {
     const fatti = m.agenda.filter(a => a.stato === 'fatto').slice(-1);
     const live = m.agenda.filter(a => a.stato === 'in corso');
     const piani = m.agenda.filter(a => a.stato === 'pianificato').slice(0, 2);
@@ -562,7 +613,13 @@ window.DIREZIONE_A = (function () {
       if (a.stato === 'fatto') return `<span class="ev">${pair(m, a.chi, 's', m.n > 16 ? 1 : 2)}${esc(a.durata)}${m.n > 16 ? '' : `<span class="rb xs">${ic('i-ne')}</span>`}</span>`;
       return `<span class="sep"></span><span class="tm">${esc(a.ora)}</span><span class="ev plan" style="padding-right:12px">${pair(m, a.chi, 's', m.n > 16 ? 1 : 2)}</span>`;
     }).join('');
-    return `<div class="a-sched"><span class="t">Oggi in azienda</span><span class="cal"><i>${ic('i-cal')}</i>${esc(m.azienda.data)}</span><div class="tl">${ev}</div><span class="rb go" data-az="pagina" data-pagina="agenda" title="L'agenda dell'azienda">${ic('i-ne')}</span></div>`;
+    return ev;
+  }
+  /* La barra in cima alla Console: `opz.barra` sceglie la strada dello studio (0 = la barra di oggi, il riferimento copiato). */
+  function barraAgenda(m, opz) {
+    const vecchia = String((opz && opz.barra) || '') === '0';
+    const dentro = vecchia ? barraOggi(m) : barraStato(m);
+    return `<div class="a-sched"><span class="t">Oggi in azienda</span><span class="cal"><i>${ic('i-cal')}</i>${esc(m.azienda.data)}</span><div class="tl${vecchia ? '' : ' quadro'}">${dentro}</div><span class="rb go" data-az="pagina" data-pagina="agenda" title="L'agenda dell'azienda">${ic('i-ne')}</span></div>`;
   }
 
   /* ---------- tendina del titolare ---------- */
@@ -698,7 +755,7 @@ window.DIREZIONE_A = (function () {
     const lungo = e ? (titolo.length > 20 ? ' lunghissimo' : titolo.length > 12 ? ' lungo' : '') : '';
     return `<div class="a-app" role="figure" aria-label="Direzione A — ${esc(titolo)} (contenuto sintetico)">
       <span class="a-logo">DGT</span>
-      ${barraAgenda(m)}
+      ${barraAgenda(m, opz)}
       <div class="a-tr"><span class="rb">${ic('i-bell')}<i class="dot"></i></span><span class="av persona">${esc(m.azienda.titolare.iniziali)}</span></div>
       <span class="rb a-back" ${indietro}>${ic('i-left')}</span>
       <div class="a-head">
@@ -1086,18 +1143,32 @@ window.DIREZIONE_A = (function () {
     return { fatti, cur, prossimo, costo, stima, durata, n: x.passi.length };
   }
   /* La barra dei passi: eventi bianchi = fatti, segmento «adesso» = in corso, rosa = errore, traslucidi = da fare. */
+  /* La barra dei passi non scorre: la pista è larga circa 990 px e sette passi per esteso ne chiedono 1600. I passi già
+     conclusi di un'esecuzione lunga (oltre quattro passi) tengono la spunta e la durata e lasciano il nome, che sta nella
+     lista dei Passi qui sotto, e i passi da fare oltre i due successivi si contano in una pillola sola. Il passo in corso e
+     quello in errore restano sempre per esteso. */
   function barraPassi(m, e, x, r) {
     const a = e.att;
-    const ev = x.passi.map(p => {
-      const num = p.stato === 'fatto' ? `<i class="n">${ic('i-check')}</i>` : `<i class="n">${p.n}</i>`;
-      if (p.stato === 'corso') return `<div class="live"><span class="now"><b>${esc(m.azienda.ora)}</b><i></i></span><span class="lbl"><b>passo ${p.n}</b> · ${esc(p.nome)} · ${durataFra(p.inizio, m.azienda.ora)}</span><span class="rb">${ic('i-play')}</span></div>`;
-      if (p.stato === 'errore') return `<span class="ev err"><i class="n">${ic('i-warn')}</i><span class="nm">${esc(p.nome)}</span><b>${esc(p.fine || '')}</b></span>`;
-      if (p.stato === 'fatto') return `<span class="ev">${num}<span class="nm">${esc(p.nome)}</span><b>${esc(p.durata || '')}</b></span>`;
-      return `<span class="ev plan">${num}<span class="nm">${esc(p.nome)}</span>${p.stima ? `<b>≈ ${esc(p.stima)}</b>` : ''}</span>`;
-    }).join('');
+    const vivo = x.passi.findIndex(p => p.stato === 'corso' || p.stato === 'errore');
+    const ultimoDaFare = vivo >= 0 ? vivo + 2 : 2;
+    const nascosti = x.passi.filter((p, i) => p.stato === 'da fare' && i > ultimoDaFare).length;
     const fine = e.stato === 'attesa' ? `<span class="fine"><span class="rb">${ic('i-bell')}</span><b>consegnato alle ${esc(a.fine)}</b>aspetta il titolare</span>`
       : e.stato === 'libero' ? `<span class="fine"><span class="rb">${ic('i-check')}</span><b>concluso ${esc(a.fine || '')}</b></span>`
       : e.stato === 'pianificato' ? `<span class="fine"><span class="rb">${ic('i-clock')}</span><b>parte alle ${esc(a.quando)}</b>${r.n} passi · circa ${eur(r.stima)}</span>` : '';
+    const stretti = x.passi.length + (fine ? 1 : 0) > 4;   /* finché le pillole sono quattro i nomi ci stanno tutti; oltre, i passi conclusi lasciano il nome */
+    const fatti = x.passi.filter(p => p.stato === 'fatto');
+    const primoFatto = fatti.length > 3 ? x.passi.indexOf(fatti[fatti.length - 2]) : -1;   /* con più di tre passi conclusi restano gli ultimi due, gli altri si contano */
+    const ev = x.passi.map((p, i) => {
+      const num = p.stato === 'fatto' ? `<i class="n">${ic('i-check')}</i>` : `<i class="n">${p.n}</i>`;
+      if (p.stato === 'corso') return `<div class="live"><span class="now"><b>${esc(m.azienda.ora)}</b><i></i></span><span class="lbl"><b>passo ${p.n}</b> · ${esc(p.nome)} · ${durataFra(p.inizio, m.azienda.ora)}</span><span class="rb">${ic('i-play')}</span></div>`;
+      if (p.stato === 'errore') return `<span class="ev err"><i class="n">${ic('i-warn')}</i><span class="nm">${esc(p.nome)}</span><b>${esc(p.fine || '')}</b></span>`;
+      if (p.stato === 'fatto') {
+        if (primoFatto >= 0 && i < primoFatto) return i === 0 ? `<span class="ev fatto resto"><b>+${fatti.length - 2}</b>fatti</span>` : '';
+        return `<span class="ev${stretti ? ' fatto' : ''}" title="${esc(p.nome)}">${num}${stretti ? '' : `<span class="nm">${esc(p.nome)}</span>`}<b>${esc(p.durata || '')}</b></span>`;
+      }
+      if (p.stato === 'da fare' && i > ultimoDaFare) return '';
+      return `<span class="ev plan">${num}<span class="nm">${esc(p.nome)}</span>${p.stima ? `<b>≈ ${esc(p.stima)}</b>` : ''}</span>`;
+    }).join('') + (nascosti ? `<span class="ev plan resto"><b>+${nascosti}</b>da fare</span>` : '');
     const cal = e.stato === 'lavoro' ? `da ${esc(a.da)} · ${r.durata}` : e.stato === 'errore' ? `fermo dalle ${esc(a.da)}` : e.stato === 'pianificato' ? `alle ${esc(a.quando)}` : `${esc(a.da || '')}${a.da && a.fine ? ' → ' : ''}${esc(a.fine || '')}`;
     return `<div class="a-sched"><span class="t">Passi</span><span class="cal"><i>${ic('i-clock')}</i>${cal}</span><div class="tl">${ev}${fine}</div><span class="rb go" data-az="pagina" data-pagina="dipendente" data-id="${e.id}" title="La pagina del dipendente">${ic('i-ne')}</span></div>`;
   }
@@ -1512,13 +1583,13 @@ window.DIREZIONE_A = (function () {
   }
 
   function render(m, opz) {
-    opz = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, confronto: null, motivo: false, periodo: {}, filo: 0, agenda: 'tutti', chatf: 'tutti' }, opz || {});
+    opz = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, confronto: null, motivo: false, periodo: {}, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '' }, opz || {});
     return opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : opz.pagina === 'dipendente' ? dipendente(m, opz) : opz.pagina === 'esecuzione' ? esecuzione(m, opz) : opz.pagina === 'costi' ? paginaCosti(m, opz) : opz.pagina === 'agenda' ? agenda(m, opz) : opz.pagina === 'chat' ? chat(m, opz) : home(m, opz);
   }
 
   /* Disegna e collega i clic: tendina, cambio pagina, filtri, decisioni. Ritorna lo stato. */
   function monta(radice, m, opz) {
-    const st = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, editor: null, confronto: null, motivo: false, log: 'tutto', periodo: { dipartimenti: 'mese', dipendenti: 'mese', clienti: 'mese', modelli: 'mese' }, filo: 0, agenda: 'tutti', chatf: 'tutti' }, opz || {});
+    const st = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, editor: null, confronto: null, motivo: false, log: 'tutto', periodo: { dipartimenti: 'mese', dipendenti: 'mese', clienti: 'mese', modelli: 'mese' }, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '' }, opz || {});
     const n = () => m.richiesteDi('attesa').length;
     /* parametri di avvio della pagina del dipendente: ?tendina=dossier (la revisione in sospeso del dipendente, estesa) e ?confronto=a,b (due versioni del prompt) */
     const idxRevisione = id => inAttesa(m).findIndex(r => r.tipo === 'revisione' && r.chi === id);
