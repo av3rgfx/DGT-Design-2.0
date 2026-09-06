@@ -41,6 +41,11 @@
    m.esecuzioneDi(e). Avatar senza disco (avatar-orbe.js, pelli); poi, su
    giudizio dell'utente, pelle perla, corpi tondi e un motore di moto fluido.
 
+   Versione 11 (2026-09-05, sessione successiva): le approvazioni da mobile
+   in mobile.js + mobile.html, con gli stessi componenti (classi .dirA) e lo
+   stesso modello: la decisione sulla richiesta passa da qui a dati.js come
+   m.decidi, così telefono e Console condividono lo stato.
+
    API: DIREZIONE_A.render(m, opz) → HTML; DIREZIONE_A.monta(radice, m, opz)
    disegna e collega i clic. opz = { pagina: 'home'|'richieste'|'dipartimento'|'dipendente'|'esecuzione',
    dip: 'svi'|'mkt'|'ven'|'amm', id: id del dipendente, tendina: 'chiusa'|'aperta'|'estesa'|'dipendente'|'confronto'|'dossier',
@@ -1436,10 +1441,9 @@ window.DIREZIONE_A = (function () {
       if (st.modifica.id) m.aggiorna(st.modifica.id, dati); else m.aggiungi(dati);
       chiudiEditor(); tutto();
     };
+    /* la decisione vive nel modello (m.decidi, dati.js, versione 11): qui solo lo stato della tendina */
     const decidi = (id, stato, commento, esitoRevisione) => {
-      const r = m.richieste.find(x => x.id === id); if (!r) return;
-      r.stato = stato; r.decisa = m.azienda.ora; r.giorno = 0; r.min = 10 * 60 + 42; if (commento) r.commento = commento;
-      if (r.tipo === 'revisione') m.decidiRevisione(r, esitoRevisione || (stato === 'approvata' ? 'applicata' : stato), commento);
+      if (!m.decidi(id, stato, commento, esitoRevisione)) return;
       st.motivo = false;
       if (st.richiesta >= n()) st.richiesta = Math.max(0, n() - 1);
       if (!n() && st.tendina === 'estesa') st.tendina = 'aperta';
@@ -1501,7 +1505,7 @@ window.DIREZIONE_A = (function () {
       else if (az === 'approva') { ev.stopPropagation(); decidi(el.dataset.id, 'approvata'); }
       else if (az === 'rifiuta') { ev.stopPropagation(); const r = m.richieste.find(x => x.id === el.dataset.id); if (r && r.tipo === 'revisione') { const i = inAttesa(m).indexOf(r); if (i >= 0) { st.richiesta = i; st.tendina = 'estesa'; st.pannello = 'richieste'; st.motivo = true; soloTendina(); } return; } decidi(el.dataset.id, 'rifiutata', 'Rifiutata dal titolare'); }
       else if (az === 'modifiche') { decidi(el.dataset.id, 'modifiche', 'Modifiche chieste dal titolare'); }
-      else if (az === 'approva-tutte') { inAttesa(m).forEach(r => { r.stato = 'approvata'; r.decisa = m.azienda.ora; r.giorno = 0; r.min = 10 * 60 + 42; if (r.tipo === 'revisione') m.decidiRevisione(r, 'applicata'); }); st.richiesta = 0; if (st.tendina === 'estesa') st.tendina = 'aperta'; tutto(); }
+      else if (az === 'approva-tutte') { inAttesa(m).forEach(r => m.decidi(r.id, 'approvata')); st.richiesta = 0; if (st.tendina === 'estesa') st.tendina = 'aperta'; tutto(); }
       /* ---- pagina del dipendente ---- */
       else if (az === 'pausa') { const e = m.byId[+el.dataset.id]; if (e) { e.pausa = !e.pausa; tutto(); } }
       else if (az === 'colloquio') { const e = m.byId[+el.dataset.id]; if (e) { m.dossierDi(e).colloquio.inCorso = true; tutto(); } }
@@ -1523,5 +1527,6 @@ window.DIREZIONE_A = (function () {
     return st;
   }
 
-  return { id: 'A', nome: 'Console', css: prefissa(css, '.dirA'), render, monta };
+  /* av, iconaTipo e nomeTipo servono anche al telefono (mobile.js, versione 11) */
+  return { id: 'A', nome: 'Console', css: prefissa(css, '.dirA'), render, monta, av, iconaTipo, nomeTipo };
 })();

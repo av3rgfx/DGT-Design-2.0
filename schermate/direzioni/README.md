@@ -15,6 +15,11 @@ prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decision
   `?editor=nuovo|<id dipendente>`, `?avatar=orbe|kit`, `?pelle=perla|grigio|chiaro|alone|disco` (la pelle dell'orbe
   senza disco; predefinita perla). Artefatto:
   https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34
+- **Le approvazioni da mobile** (versione 11, prima metà, 2026-09-05): `mobile.html` + `mobile.js`, la direzione A sul
+  telefono nella cornice dello specimen: schermate «Da approvare» e «Richiesta» per post, documento, lista e proposta, con il
+  rifiuto con motivo; due telefoni affiancati, cliccabili, che condividono il modello e la richiesta corrente con la Console
+  (`m.decidi` in `dati.js`). Parametri: `?schermata=1|2` (un solo telefono), `?richiesta=0`, `?n=40`, più quelli dell'avatar.
+  Artefatto: https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9
 - Avatar dei dipendenti AI in `avatar/`: `avatar-dgt.js` (involucro della Console, sceglie la famiglia con
   `usa('orbe'|'kit')` e la pelle con `pelle('chiaro'|…)`), `avatar-orbe.js` (la famiglia «orbe», predefinita, senza
   disco), `avatar-motore.js` (motore del kit impacchettato: rigenerare con `node avatar/build-motore.js` dopo aver
