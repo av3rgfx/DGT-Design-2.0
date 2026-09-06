@@ -26,3 +26,10 @@
 
 Cattura uno o più elementi di una pagina, per selettore, a piena risoluzione: `node screenshot-elementi.js <file.html[?query]> <prefisso-out> <selettore1> [selettore2 ...]` scrive `prefisso-0.png`, `prefisso-1.png`, …
 Stesse variabili di `screenshot-page.js` (`PLAYWRIGHT_MODULE`, `NODE_PATH`, `LOCAL_FONT_CSS`), più `MOTION=no-preference` per avere gli avatar in moto (poi si fermano con `DGT_AVATAR_ORBE.fermo(t)` o `fotogramma(svg, t)` nella pagina), `SCALE=2`, `W=1440`, `H=900` (altezza del viewport: alzarla finché la pagina non scorre, altrimenti le catture dopo un clic si spostano), `CLICK="sel1|sel2"` per cliccare prima della cattura, `EVAL="codice"` per eseguire JavaScript nella pagina prima della cattura (per esempio scorrere lo schermo di un telefono). Serve per le card, le tendine e le cornici del telefono del mobile (2026-09-05: `mobile.html`, `H=1100`).
+
+## Le prove cliccate delle schermate
+
+Stanno in `schermate/direzioni/prove/` (`console.js`, `mobile.js`, `costi.js`), con il loro `README.md` che dice il comando; usano il CSS
+locale di `fetch-fonts.py` e le stesse variabili di `screenshot-page.js` (`LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `NODE_PATH`,
+`CHROME_PATH`). Per la manutenzione del 2026-09-06 il confronto prima/dopo è stato fatto con `screenshot-page.js` (stesse pagine e
+parametri, confronto byte per byte dei PNG) e con un'impronta degli stili calcolati di ogni elemento (`DIREZIONI.md`, «Versione 14»).

@@ -48,6 +48,15 @@ spacing:
   card-pad: 20px
   gap: 16px
   section: 64px
+motion:
+  ease: cubic-bezier(.22, 1, .36, 1)
+  fast: 150ms
+  base: 250ms
+  medium: 350ms
+  slow: 400ms
+  slower: 500ms
+  stagger: 40ms
+  reduced-motion: "tutto fermo e visibile"
 components:
   round-button: "48px, cerchio; scuro #1E1E1E su nero, bianco #FCFCFC se attivo, vuoto con bordo .14 se secondario"
   pill-filter: "44px, bordo rgb(255 255 255/.14), trasparente; attivo bianco con testo nero"
@@ -148,8 +157,8 @@ gradiente radiale grigio-caldo con pulsanti in vetro (`rgb(255 255 255/.22)`).
 
 - **Pulsante rotondo** 48 (40, 32): scuro `#1E1E1E`; bianco se attivo; vuoto con bordo `.14`;
   nero pieno per il video; rosso `#F15E60` per chiudere la chiamata; vetro nella chiamata.
-- **Pillola filtro** 44: bordo `.14`, trasparente; "Tutti" bianca. L'icona fiamma `i-fire` nel testo (niente emoji, regola dal 2026-09-04; lo specimen ha anche una sezione «moto» con i token `--dgt-t-*`, da descrivere qui) come
-  nell'originale.
+- **Pillola filtro** 44: bordo `.14`, trasparente; "Tutti" bianca. L'icona fiamma `i-fire` nel testo (niente emoji, regola
+  dal 2026-09-04) come nell'originale.
 - **Barra agenda**: pillola bianca 64 → titolo, pillola calendario con cerchio grigio, timeline
   lime 52 con eventi bianchi (coppia di avatar, durata, freccia), separatori, orari, segmento in
   corso `#A8E65D` con icona video, marcatore nero "14:15" con linea e punto bianco, freccia finale.
@@ -177,6 +186,73 @@ gradiente radiale grigio-caldo con pulsanti in vetro (`rgb(255 255 255/.22)`).
   con riflesso, nodo agente 208×100, nodo selezionato verde `#2F8F3E→#1C5A22` con campi, nodo
   disattivato con cestino, connettori `#4FCB58` con bagliore, mini-mappa, zoom, pillole in basso a
   destra (l'ora in lime), barra chat con ID monospazio.
+
+## Moto (Motion)
+
+Lo specimen si muove poco e sempre allo stesso modo: la sezione «MOTO» del suo CSS (`specimen.html`, dopo i componenti) e lo
+script in fondo alla pagina. **Lo script mette solo classi e attributi, il CSS fa il resto**; senza script la pagina resta una
+figura statica (gli stati iniziali nascosti valgono solo con la classe `js` sulla radice). Le classi `t-*` riprendono nove
+snippet di transitions.dev con i token di DGT; il resto è CSS sulla stessa scala. In `tokens.css` stanno solo `--dgt-ease`,
+`--dgt-t-fast` e `--dgt-t-base`: la scala completa è dichiarata nel `:root` dello specimen.
+
+| Token | Valore | Dove |
+|---|---|---|
+| `--dgt-t-fast` | 150 ms | hover di cerchi e pillole, scambio di testo, badge che si spegne, videochiamata che si chiude |
+| `--dgt-t-base` | 250 ms | badge che compare, scambio icona, card che si allargano, videochiamata che si apre |
+| `--dgt-t-medium` | 350 ms | Riepilogo e chiamata che si richiudono (le righe della griglia), la freccia che ruota |
+| `--dgt-t-slow` | 400 ms | il contenuto del pannello che scivola e sfuma quando si riapre |
+| `--dgt-t-slower` | 500 ms | pop-in di cifre e badge, spunta di conferma, spunte dei nodi |
+| `--dgt-t-avatar` | 320 ms | il gruppo di avatar che si solleva |
+| `--dgt-t-stagger` | 40 ms | scarto fra passi: la spunta si disegna dopo 2 scarti, le spunte dei nodi a 3 scarti l'una dall'altra |
+| `--dgt-digit-stagger` | 70 ms | scarto fra le cifre di un numero, 2 scarti in più per ogni numero della riga, il badge a 3 |
+| `--dgt-t-flow`, `--dgt-t-pulse` | 2400 ms | il flusso lungo i connettori e il respiro delle porte dell'editor a nodi |
+| `--dgt-t-marker` | 90 000 ms | il marcatore «14:15» che attraversa la timeline fino a «15:00» |
+| `--dgt-ease` | `cubic-bezier(.22,1,.36,1)` | quasi tutto: partenza decisa, arrivo morbido |
+| `--dgt-ease-in-out` | `ease-in-out` | scambi di testo e di icona, respiro delle porte |
+| `--dgt-ease-close` | `cubic-bezier(.4,0,.2,1)` | il badge che si spegne |
+| `--dgt-ease-spring`, `-spring-digit`, `-spring-strong` | `cubic-bezier(.34,1.36,.64,1)`, `(.34,1.45,.64,1)`, `(.34,3.85,.64,1)` | rimbalzo di badge e spunta, delle cifre, degli avatar che tornano a posto |
+| distanze | micro 4, base 8, pannello 16 px | di quanto si sposta ciò che entra o esce |
+| sfocatura | piccola 2 px, grande 8 px | ciò che entra parte sfocato |
+| scala | videochiamata .96, icona .25, badge .6 | da dove parte ciò che si apre |
+
+Che cosa si muove, nell'ordine dello specimen:
+
+1. **Cifre e badge (pop-in).** Ogni cifra dei numeri (WORKSPACE, conteggi delle sezioni, «189+») è uno span che entra da 8 px
+   sotto, sfocato, con la molla delle cifre in 500 ms; le cifre si susseguono a 70 ms, ogni numero della riga parte 140 ms dopo
+   il precedente; il badge ↑/↓ scala da .6 con la molla dopo tre scarti. Parte quando la console entra nello schermo (un quinto
+   visibile).
+2. **Badge sulla campanella.** Il punto rosso arriva da in basso a sinistra (−8, +12 px) in 250 ms; al clic si spegne scalando
+   a zero, sfocato, in 150 ms con l'easing di chiusura, e si riaccende con la molla.
+3. **Scambio di testo nel selettore di stato.** Il testo esce verso l'alto di 4 px sfocandosi (150 ms, ease-in-out) e il nuovo
+   entra dal basso; gli stati che confermano mostrano la spunta.
+4. **Spunta di conferma.** L'avatar del selettore sfuma e al suo posto il cerchio lime con la spunta: ruota da 80°, da sfocata
+   (8 px) a nitida, sale di 8 px con la molla, e il segno si disegna (tratto da 16 a 0) dopo due scarti; tutto in 500 ms.
+5. **Riepilogo e chiamata richiudibili.** La freccia in alto a destra chiude e riapre il pannello: le righe della griglia
+   passano da `1fr` a `0fr` in 350 ms, il contenuto sale di 16 px sfumando e sfocandosi (350 ms a chiudere, 400 ms a
+   riaprire); la stessa cosa per il pannello della chiamata, che si richiude con la X.
+6. **Videochiamata a schermo intero.** Dal cerchio nero del video o dall'espandi della chiamata: il fondo nero al 62 % con
+   sfocatura 6 sfuma in 250 ms, la finestra scala da .96 a 1 nello stesso tempo; si chiude in 150 ms, anche con Esc.
+7. **Gruppo di avatar.** L'avatar sotto il puntatore si solleva di 4 px e scala 1,05, i vicini seguono con decadimento
+   (.45 per ogni posto di distanza), in 320 ms; all'uscita tutti tornano giù con la molla forte.
+8. **Scambio icona nei filtri e nel rail.** Le due icone stanno sovrapposte: quella che esce scala a .25 sfocandosi, quella che
+   entra fa il contrario, 250 ms ease-in-out; nel rail il cerchio cliccato diventa bianco e la sua icona rientra.
+9. **Card che si allargano.** Un clic sulla card lead o sul corpo della card attività apre una riga in più (`0fr` → `1fr`
+   in 250 ms, con il testo che sfuma).
+10. **Marcatore della timeline.** «14:15» attraversa la barra fino alla fine in 90 secondi lineari, e l'ora sale di un minuto
+    ogni due secondi fino a «15:00».
+11. **Editor a nodi.** Il flusso lungo i connettori (tratteggio 14 su 120, 2,4 s lineari, all'infinito), il respiro delle porte
+    (ombra da 6 a 16 px, 2,4 s avanti e indietro), le spunte dei nodi che si disegnano all'ingresso (500 ms, tre scarti per
+    nodo).
+
+Hover: cerchi, pillole, tessere del rail, selettori e filtri cambiano solo fondo, colore e bordo in 150 ms; al passaggio il bordo
+sale a `.32`. Niente si muove da solo a parte il marcatore, il flusso e il respiro delle porte; le forme, i colori e
+l'impaginazione non cambiano mai durante un moto (le due griglie che si richiudono spostano solo ciò che sta sotto).
+
+**Con `prefers-reduced-motion: reduce` tutto è fermo e tutto è visibile**: animazioni e transizioni spente (`!important`), la
+spunta e i tratti disegnati, il flusso dei connettori nascosto, gli avatar a riposo; lo script lo rispetta a sua volta (i badge
+restano accesi, il marcatore non avanza, il testo cambia senza scambio, i numeri compaiono subito). Le schermate della
+direzione A (`schermate/direzioni/`) non usano ancora questi moti: lì si muovono solo gli avatar (regola 19 di
+`SYSTEM-DESIGN.md`) e gli screenshot si fanno con il moto ridotto.
 
 ## Sì e no (Do's and Don'ts)
 

@@ -154,6 +154,7 @@ h1,h2,h3,p{margin:0;font-weight:400}
 </div>
 
 <script src="comune.js"></script>
+<script src="../componenti.js"></script>
 <script src="avatar/avatar-motore.js"></script>
 <script src="avatar/avatar-dgt.js"></script>
 <script src="avatar/avatar-orbe.js"></script>
@@ -188,6 +189,7 @@ h1,h2,h3,p{margin:0;font-weight:400}
 
   DGT_UI.iconeInserisci();
   DGT_AVATAR.usa(new URLSearchParams(location.search).get('avatar') || 'orbe');
+  DGT_UI.stile('css-componenti', DGT_COMPONENTI.css);   // i componenti condivisi (schermate/componenti.js), prima del CSS della direzione A
   ['A', 'B', 'C'].forEach(k => DGT_UI.stile('css-' + k, DIR[k].css));
 
   const stato = { dir: 'A', n: 11 };

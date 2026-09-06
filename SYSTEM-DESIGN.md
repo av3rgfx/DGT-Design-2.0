@@ -2,7 +2,7 @@
 
 Documento unico del sistema di design di DGT (sistema operativo aziendale per agenti AI).
 Raccoglie tutto ciò che serve per progettare e costruire schermate coerenti: fonti, palette,
-tipografia, forme, componenti, schermate e strumenti di verifica. Aggiornato al 2026-09-05.
+tipografia, forme, componenti, schermate e strumenti di verifica. Aggiornato al 2026-09-06.
 
 ## 1. Che cos'è e da dove viene
 
@@ -27,9 +27,10 @@ DGT al posto di Google Meet. Contenuti sintetici, in italiano.
 | `design-system/tokens.css` | Tutti i token come custom property `--dgt-*` (colori campionati dagli originali, tipografia, raggi, misure, spazio, moto). |
 | `design-system/DESIGN.md` | Descrizione strutturata (frontmatter + sezioni) dei colori, della tipografia, del layout, delle forme e di ogni componente. |
 | `design-system/reference/` | I due riferimenti dell'utente e il README che dice cosa se ne copia. |
-| `design-system/tools/` | `screenshot.js` (cattura desktop/mobile), `fetch-fonts.py` (Urbanist locale per gli ambienti senza Google Fonts), `wcag.py` (utilità di contrasto, non è una regola). |
+| `design-system/tools/` | `screenshot.js` (cattura desktop/mobile dello specimen), `screenshot-page.js` e `screenshot-elementi.js` (cattura di una pagina o di elementi per selettore), `fetch-fonts.py` (Urbanist locale per gli ambienti senza Google Fonts), `wcag.py` (utilità di contrasto, non è una regola). |
 | `design-system/archive/` | Varianti precedenti (A e B). **Non fanno testo.** |
-| `schermate/direzioni/` | Schermate reali: tre direzioni per la vista principale, prova a 40, direzione scelta (`DIREZIONI.md`); dentro la direzione A le pagine Richieste, Dipartimento, Dipendente ed Esecuzione; le approvazioni da mobile (`mobile.html`). |
+| `schermate/componenti.js` | I componenti della Console condivisi con il telefono e con le pagine degli avatar (dal 2026-09-06, versione 14): il CSS delle primitive del sistema applicate al prodotto (pulsanti rotondi, avatar e pile, pillole, chip, punti, badge, card con intaglio, righe, ripartizione), le variabili, e le funzioni che le stampano (`av`, `pair`, `chipStato`, `iconaTipo`, `eur`, `differenze`…); `window.DGT_COMPONENTI`, caricato dopo `comune.js`, con il suo CSS in pagina prima di quello della Console. |
+| `schermate/direzioni/` | Schermate reali: tre direzioni per la vista principale, prova a 40, direzione scelta (`DIREZIONI.md`); dentro la direzione A le pagine Richieste, Dipartimento, Dipendente, Esecuzione e Costi; le approvazioni da mobile (`mobile.html`); le prove cliccate in `prove/` (`console.js`, `mobile.js`, `costi.js`, con il README che dice il comando); gli screenshot in `screenshot/`. |
 | `schermate/direzioni/avatar/` | Avatar dei dipendenti AI: motore del kit (verbatim in `vendor-avatars/`, impacchettato in `avatar-motore.js`) e involucro `avatar-dgt.js` con colori, stati e animazione della Console. |
 | `PRODUCT.md`, `CLAUDE.md` | Contesto di prodotto e istruzioni per le sessioni. |
 | `PROSSIMA-SESSIONE.md` | Passaggio di consegne: stato, decisioni, come riprendere. |
@@ -137,6 +138,10 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
   (`.lime .gray .dark`), `.sched`/`.tl`, `.stats`/`.stat`, `.shead`, `.call`, `.summary`/`.dcard`/`.thumb`,
   `.phone`/`.screen` (`.lightbg .daily .callscr`), `.sw`, `.ch`, `.step`, `.editor`.
 - Testi in italiano e inglese devono stare su una riga nelle pillole: scegliere etichette corte.
+- Nel prodotto le stesse primitive stanno in `schermate/componenti.js` (`window.DGT_COMPONENTI`: CSS già prefissato
+  `.dirA`, variabili e funzioni che le stampano), condivise dalla Console, dal telefono e dalle pagine degli avatar. Una
+  schermata nuova carica `comune.js`, `componenti.js` e poi il proprio file, dichiara `variabili` sulla propria radice e
+  mette in pagina il CSS dei componenti prima del proprio.
 
 ## 9. Verifiche fatte
 
@@ -145,6 +150,10 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 - Confronto visivo sezione per sezione con le immagini originali a 1920 px.
 - Differenza voluta: le card delle sfide sono su una griglia regolare invece che sparse attorno al
   titolo, per restare leggibili su mobile.
+- Le schermate del prodotto hanno tre prove cliccate con Playwright in `schermate/direzioni/prove/` (Console, mobile,
+  Costi) e gli screenshot in `schermate/direzioni/screenshot/`. La manutenzione del 2026-09-06 (versione 14) è stata
+  verificata con trentuno catture identiche byte per byte prima e dopo e con le impronte degli stili calcolati di ogni
+  elemento (`DIREZIONI.md`, «Versione 14»).
 
 ## 10. Schermate del prodotto: direzione scelta
 
@@ -255,15 +264,17 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
 Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in
 `schermate/direzioni/DIREZIONI.md`, sezione 1. Sorgenti in `schermate/direzioni/` (`dati.js`, `comune.js`,
-`direzione-a.js`, `avatar/`). Dettaglio della versione 5 (dipendenti, editor, avatar), 5b/5c (orbe), 6 (pagina del
+`../componenti.js`, `direzione-a.js`, `mobile.js`, `avatar/`). Dettaglio della versione 5 (dipendenti, editor, avatar), 5b/5c (orbe), 6 (pagina del
 Dipendente, revisione di performance), 7, 7b e 7c (orbe senza disco, le pelli; poi perla, corpi tondi e moti fluidi; poi
-gli occhi del kit), 8 (pagina dell'Esecuzione), 10 (l'identità degli orbi), 11 e 12 (le approvazioni da mobile), 13 (la pagina dei Costi) in `DIREZIONI.md`, sezione 4.
+gli occhi del kit), 8 (pagina dell'Esecuzione), 10 (l'identità degli orbi), 11 e 12 (le approvazioni da mobile), 13 (la pagina dei Costi), 14 (la manutenzione: i componenti in `componenti.js`, le prove nel
+repository, la sezione «moto» in `DESIGN.md`; niente di visibile cambiato, tranne una perdita di stile sulla schermata della
+revisione del telefono, corretta e da confermare) in `DIREZIONI.md`, sezione 4.
 
 ## 11. Collegamenti
 
 - Confronto delle tre direzioni (artefatto): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
-- Direzione A cliccabile, tendine, pagine Richieste, Dipartimento, Dipendente (revisione di performance), Esecuzione e Costi, avatar ed editor (artefatto, ripubblicato il 2026-09-06 con la pagina dei Costi): https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34
-- Le approvazioni da mobile, schermate «Da approvare», «Richiesta» (anche la revisione di performance) e «Riepilogo di oggi» sul telefono, cliccabili, con lo stato vuoto (artefatto): https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9
+- Direzione A cliccabile, tendine, pagine Richieste, Dipartimento, Dipendente (revisione di performance), Esecuzione e Costi, avatar ed editor (artefatto, ripubblicato il 2026-09-06 con la manutenzione della versione 14): https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34
+- Le approvazioni da mobile, schermate «Da approvare», «Richiesta» (anche la revisione di performance) e «Riepilogo di oggi» sul telefono, cliccabili, con lo stato vuoto (artefatto, ripubblicato il 2026-09-06 con la versione 14): https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9
 - Avatar dei dipendenti, le due famiglie a confronto (artefatto): https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526
 - Le pelli dell'orbe senza disco, quattro soluzioni a confronto (artefatto): https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569
 - PR #3 verso `main` con schermate e documenti (unita): https://github.com/av3rgfx/DGT-Design-2.0/pull/3
@@ -271,7 +282,8 @@ gli occhi del kit), 8 (pagina dell'Esecuzione), 10 (l'identità degli orbi), 11 
 - Branch della pagina del Dipendente e degli avatar senza segni dietro (versioni 5c e 6): `claude/avatar-orbe-employee-page-3nhqmk`, PR #5 (unita)
 - Branch dell'orbe senza disco, della pagina dell'Esecuzione e della cornice a tutto schermo (versioni 7–9): `claude/avatar-execution-page-nv8dm4`, PR #6: https://github.com/av3rgfx/DGT-Design-2.0/pull/6
 - Branch delle approvazioni da mobile, seconda metà (versione 12): `claude/mobile-approvals-v11-mgqf5d`, PR #9 (unita): https://github.com/av3rgfx/DGT-Design-2.0/pull/9
-- Branch della pagina dei Costi (versione 13): `claude/company-costs-page-llxcix`, PR #10: https://github.com/av3rgfx/DGT-Design-2.0/pull/10
+- Branch della pagina dei Costi (versione 13): `claude/company-costs-page-llxcix`, PR #10 (unita): https://github.com/av3rgfx/DGT-Design-2.0/pull/10
+- Branch della manutenzione (versione 14): `claude/console-mobile-maintenance-gwnihs`, PR verso `main` (vedi `PROSSIMA-SESSIONE.md`)
 
 - Artefatto pubblicato: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b
 - Branch di lavoro: `claude/dgt-design-system-fz5r1g`, PR #1 verso `main`: https://github.com/av3rgfx/DGT-Design-2.0/pull/1

@@ -906,14 +906,73 @@ indirizzo: https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34.
 «bene»**, senza correzioni, e ha scelto la manutenzione come lavoro successivo (PR #10: https://github.com/av3rgfx/DGT-Design-2.0/pull/10).
 La prova cliccata è nel repository: `prove/costi.js`.
 
+### Versione 14: la manutenzione (2026-09-06, sessione successiva)
+
+Nessuna pagina nuova e niente di visibile cambiato (con un'eccezione, sotto): i tre lavori scelti dall'utente a fine sessione
+precedente (decisione 27), fatti con la regola «prima e dopo gli screenshot devono essere identici e le prove devono passare».
+
+**1. I componenti della Console in `schermate/componenti.js`** (`window.DGT_COMPONENTI`, un'IIFE come gli altri file, niente
+moduli ESM, gira da `file://` e nel file unico). Da `direzione-a.js` sono passati lì **il CSS delle primitive** e **le funzioni che
+le stampano**; `direzione-a.js` le riprende con una sola riga (`const { av, pair, … } = window.DGT_COMPONENTI`) e tiene le pagine,
+la cornice, le tendine e `monta`; `mobile.js` carica `componenti.js` **e non più la Console**.
+
+| Dove | Che cosa |
+|---|---|
+| `componenti.js`, CSS | `.rb` (con il punto rosso), `.av` (misure, `.persona`, `.xl`), `.pair` (con il «+N»), l'inversione dell'orbe sulle superfici chiare **dei componenti** (card lime, selettore, riga della coda, riga in attesa, riga al lavoro, pillola accesa), `.pill` (con `.ink`), `.chip`, `.dots`, `.badge` (con `.flat`), `.ncard` / `.nt` / `.who`, `.lead` (dipartimento, dipendente, «aggiungi», il valore nel piede), `.task` (attività e richiesta: selettore, `.prog`, `.next`, l'unità nel titolo), `.crow` (con `.spenta`, `.add`, la pila nel valore), `.erow`, `.hrow` (la base), `.qrow`, `.dcard` / `.thumbs` / `.thumb` / `.goal` / `.kv`, `.ripart` / `.leg` (per modello, per blocchi di tempo, a capo, su fondo lime), i colori delle card lead lime e grigie |
+| `componenti.js`, funzioni | `av`, `pair`, `dots`, `chipStato`, `chipEsito`, `iconaTipo`, `nomeTipo`, `eur`, `delta`, `differenze` (con `lcs` e `parole`, private); `variabili`, la stringa delle custom property dei componenti, che ogni cornice dichiara sulla propria radice (`.a-app` nella Console, `.m-page` sul telefono, che vi aggiunge `--light` e `--light-card`) |
+| `direzione-a.js` | la cornice (`.a-*`, `.shead`, `.cards`, `.stat`, la barra agenda `.a-sched` / `.tl`, `.elenco`, `.vuoto`), le pagine (Richieste `.fbar` / `.frow` / `.fsum` / `.hgroup`; Dipendente `.dtesta` / `.rev` / `.pdoc` / `.vrow` / `.prompt`; Esecuzione `.etesta` / `.lrow` / `.chat`; Costi `.crow.sp` / `.costo`), le tendine (`.a-mini`, `.a-tend`, `.appr`, `.rx`, l'editor `.campo` / `.scelte` / `.tinte`, le versioni `.cmp` / `.ev3` / `.who2`), l'inversione dell'orbe sulle superfici chiare **della cornice** (barra agenda, tendina, documento del prompt, righe delle versioni, card del modello scelto) e le varianti di pagina delle righe e delle card (`.hrow.rev` / `.caso` / `.passo`, `.crow.rend`, `.lead.mod` / `.out`, `.task.regola` / `.spesa` / `.budget` / `.esito`) |
+| pagine | `direzione-a.html`, `mobile.html`, `confronto.html`, `avatar-identita.html`, `avatar-pelli.html`, `confronto-avatar.html` caricano `../componenti.js` subito dopo `comune.js` e mettono in pagina `DGT_COMPONENTI.css` (stile `css-componenti`) **prima** del CSS della Console; `mobile.html` non carica più `direzione-a.js`. `build-unico.js` non cambia: incorpora ogni `<script src>` nell'ordine dei tag (il file unico della Console pesa 408 KB, quello del mobile 301 KB: prima 404 e 420) |
+
+Come si è tenuta ferma la cascata: le regole spostate stanno in `componenti.js` **nello stesso ordine che avevano** nella Console e
+vengono messe in pagina prima delle sue, quindi fra due regole di pari specificità vince la stessa di prima; per ogni regola
+spostata «da dietro» (le varianti aggiunte con le pagine successive: `.pill.ink`, `.badge.flat`, `.av.xl`, `.crow.spenta` /
+`.add`, `.lead .v`, `.ripart` / `.leg`, `.task .tt small`, i colori delle card lime e grigie, la pila nella riga, la ripartizione su
+lime) si è controllato che nessuna regola rimasta nella Console e prima di lei avesse la stessa specificità sulle stesse proprietà
+per uno stesso elemento. La regola dell'orbe sulle superfici chiare è divisa in due: i selettori dei componenti in `componenti.js`,
+quelli della cornice in `direzione-a.js` (toccano solo variabili `--av-*` che nessun'altra regola dichiara).
+
+**Verifica.** Trentuno catture a pagina intera (`screenshot-page.js`, stesse pagine e stessi parametri: home e tendine, Richieste,
+Dipartimento, Dipendente con dossier e confronto, editor nuovo e modifica, quattro Esecuzioni, Costi, le prove a 40, il kit, il
+telefono in quattro stati, le quattro pagine degli avatar e del confronto, lo specimen) **identiche byte per byte prima e dopo**,
+tranne le due del telefono con una revisione aperta (sotto). In più un'impronta degli **stili calcolati di ogni elemento** (tutte le
+proprietà più le custom property) su trentacinque stati di pagina, anche dopo i clic: identica per la Console e per le pagine
+degli avatar; sul telefono cambiano solo le sei variabili dei punti di interesse (`--d1`…`--d-off`, che il telefono non usa: ora
+le eredita da `variabili`) e gli elementi della perdita qui sotto. Le tre prove cliccate passano (Costi 48, Console 64, mobile 39).
+
+**L'eccezione: la schermata «Richiesta» di una revisione sul telefono.** Finché il telefono caricava tutta la Console, la classe
+`rev` dello schermo (`.m-scr.rev`, che serve solo al fondo sfumato e al padding in basso) riceveva anche le regole della **card
+revisione** della pagina del Dipendente: `.rev{padding:22px 24px 20px}` sull'intero schermo, `.rev p` (13/18, nero al 70 %),
+`.rev ul / li / li b / li span` sulle evidenze, `.rev .k` sull'etichetta del motivo. Era una perdita, non una scelta: la schermata
+di una consegna non aveva quel padding. Con il telefono che carica solo i componenti la perdita sparisce e la schermata è come la
+descrive `mobile.js`: niente padding, «Soul prompt v7 → v8» su una riga, il testo del prompt a 13 px su tre righe. Le quattro
+catture della revisione (`mobile-2-revisione.png`, `-differenze`, `-perche`, `-modello`) sono state rifatte. **Da confermare
+dall'utente** (l'unica cosa visibile che cambia): per tornare all'aspetto di prima basterebbe una riga
+(`.m-scr.rev{padding:22px 24px 20px}` in `mobile.js`), ma sarebbe copiare un errore.
+
+**2. Le prove cliccate nel repository** (`prove/`, con `prove/README.md` che dice il comando): `console.js` (64 verifiche: la
+tendina del titolare con approva, apri la revisione ed estendi, rifiuta con motivo, riduci, Riepilogo, chiudi e riapri; la pagina
+Richieste con un filtro, azzera e «Approva tutte»; l'editor del dipendente che crea con ruolo, dipartimento e tinta, non salva senza
+ruolo, modifica con Invio e chiude con Esc; l'esecuzione con pausa e riprendi, interrompi, riprova, avvia, la nota del titolare e il
+filtro del log; quaranta) e `mobile.js` (39: i tre telefoni, la riga della revisione che apre la schermata su entrambi, le frecce, il
+rifiuto con motivo, la prova della revisione del prompt, le approvazioni fino allo stato vuoto, la navigazione in basso, `?n=40` con
+sette in coda e «12» scritto nel badge; a ogni passo nessuno schermo che scorre di lato e console pulita), accanto a `costi.js` (48).
+Stesse variabili d'ambiente (`LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH`), `reducedMotion: 'reduce'`, escono con 1 se una
+verifica fallisce.
+
+**3. La sezione «moto» dello specimen in `design-system/DESIGN.md`**: il blocco `motion` nel frontmatter e la sezione «Moto» (la
+scala dei tempi e degli easing, le distanze, le sfocature e le scale, gli undici moti nell'ordine dello specimen, l'hover, che cosa
+resta fermo, il moto ridotto), nello stile delle altre sezioni; lo specimen non è cambiato. Notato e non toccato: `tokens.css` porta
+solo tre token di moto e un easing diverso da quello dello specimen (`cubic-bezier(.2,.8,.2,1)` contro `(.22,1,.36,1)`).
+
 ## 5. File
 
 | File | Ruolo |
 |---|---|
 | `dati.js` | modello sintetico (11 e 40) condiviso; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`), le richieste di tipo `revisione` e l'esecuzione (`esecuzioneDi`: sei scritte a mano, le altre generate); dal 2026-09-05 la decisione del titolare (`decidi`), condivisa fra Console e telefono; `azienda.scadenzaMese` per la linea del tempo del mobile; dal 2026-09-06 l'aggregatore dei costi (`costi(periodo, dip)`, `spesaDi`) per la pagina Costi e la sezione «Spesa del mese» |
 | `comune.js` | sprite di icone di DGT, prefisso CSS, utilità |
-| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo), pagina Costi (per dipartimento, dipendente, cliente, modello, strumento, con le pillole del periodo per sezione; `?pagina=costi`); cliccabile; esporta `av`, `iconaTipo`, `nomeTipo` e `differenze` per il telefono |
-| `mobile.js` / `.html` | le approvazioni da mobile (versioni 11 e 12): cornice del telefono dello specimen, schermate «Da approvare», «Richiesta» (anche la revisione di performance con le due versioni a confronto e le quattro decisioni) e «Riepilogo di oggi» (linea del tempo, anche stato vuoto a coda finita), il rifiuto con motivo; tre telefoni affiancati che condividono il modello e la richiesta corrente; `DGT_MOBILE.monta`, `coda`; `?schermata=1|2|3&richiesta=0`, `?n=40` |
+| `../componenti.js` (`schermate/componenti.js`) | dal 2026-09-06 (versione 14) i componenti della Console condivisi con il telefono e con le pagine degli avatar: il CSS delle primitive (`.rb`, `.av`, `.pair`, `.pill`, `.chip`, `.dots`, `.badge`, `.ncard`/`.nt`, `.lead`, `.task`, `.crow`, `.hrow`, `.erow`, `.qrow`, `.dcard`, `.ripart`/`.leg`…), `variabili`, e `av`, `pair`, `dots`, `chipStato`, `chipEsito`, `iconaTipo`, `nomeTipo`, `eur`, `delta`, `differenze`; `window.DGT_COMPONENTI`, va caricato dopo `comune.js` e il suo CSS messo in pagina prima di quello della Console |
+| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo), pagina Costi (per dipartimento, dipendente, cliente, modello, strumento, con le pillole del periodo per sezione; `?pagina=costi`); cliccabile; dalla versione 14 prende le primitive da `../componenti.js` e tiene la cornice, le pagine, le tendine e `monta` |
+| `mobile.js` / `.html` | le approvazioni da mobile (versioni 11 e 12): cornice del telefono dello specimen, schermate «Da approvare», «Richiesta» (anche la revisione di performance con le due versioni a confronto e le quattro decisioni) e «Riepilogo di oggi» (linea del tempo, anche stato vuoto a coda finita), il rifiuto con motivo; tre telefoni affiancati che condividono il modello e la richiesta corrente; `DGT_MOBILE.monta`, `coda`; `?schermata=1|2|3&richiesta=0`, `?n=40`; dalla versione 14 carica `../componenti.js` e non più `direzione-a.js` |
 | `avatar/avatar-dgt.js` | involucro degli avatar nel linguaggio della Console (colori, stati, simboli statici, animazione); `usa('orbe'|'kit')` sceglie la famiglia |
 | `avatar/avatar-orbe.js` | la famiglia «orbe» (versioni 5b, 5c, 7, 7b, 7c): cerchi dal seme con le pupille e lo sguardo del kit, un solo motore `requestAnimationFrame` con funzioni continue del tempo, sguardo che segue il puntatore; senza disco, con le pelli (`pelle('perla'|'grigio'|'chiaro'|'alone'|'disco')`, solo variabili CSS; perla predefinita); `fermo(t)`, `riprendi()`, `fotogramma(svg, t)` per gli screenshot |
 | `confronto-avatar.html` | le due famiglie a confronto nelle viste della Console |
@@ -925,7 +984,7 @@ La prova cliccata è nel repository: `prove/costi.js`.
 | `direzione-c.js` / `.html` | Mappa viva |
 | `confronto.html` | pagina di confronto con tab e selettore 11/40 |
 | `build-unico.js` | genera il file unico per l'artefatto (`node build-unico.js direzione-a.html out.html`) |
-| `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`); le cornici del telefono (`mobile-*.png`, sedici catture delle versioni 11 e 12) e le sezioni della pagina Costi (`a-costi-*.png`, versione 13) con `screenshot-elementi.js` |
-| `prove/` | le prove cliccate con Playwright: `costi.js` (dal 2026-09-06, 48 verifiche della pagina dei Costi; legge `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH`). Le prove della Console e del mobile sono ancora da mettere nel repository (manutenzione) |
+| `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`); le cornici del telefono (`mobile-*.png`, sedici catture delle versioni 11 e 12; le quattro della revisione rifatte nella versione 14) e le sezioni della pagina Costi (`a-costi-*.png`, versione 13) con `screenshot-elementi.js` |
+| `prove/` | le prove cliccate con Playwright, con il `README.md` che dice il comando: `console.js` (64 verifiche: tendine, Richieste, editor, esecuzione, 40), `mobile.js` (39: le tre schermate, revisione, rifiuto con motivo, prova, stato vuoto, 40) e `costi.js` (48: la pagina dei Costi); leggono `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH` |
 
 Per gli screenshot: `design-system/tools/screenshot-page.js` (vedi `design-system/tools/README.md`).

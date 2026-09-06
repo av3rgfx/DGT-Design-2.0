@@ -1,37 +1,45 @@
 # Prossima sessione — passaggio di consegne
 
-Stato al 2026-09-06, fine della sessione sulla **pagina dei Costi dell'azienda** (versione 13 della direzione A · Console: l'ultima
-pagina di prodotto, per dipartimento, dipendente, cliente, modello e strumento, con le pillole del periodo per sezione e un solo
-aggregatore dei costi nel modello). Tutto è committato e pushato sul branch indicato sotto, con la **PR #10** aperta verso
-`main`. Alla vista delle schermate l'utente ha detto «bene» (decisione 27). **Prossimo passo**: la manutenzione (vedi «Come
-riprendere»), poi le pagine chat e agenda del rail.
+Stato al 2026-09-06, fine della sessione della **manutenzione** (versione 14 della direzione A · Console: i componenti della
+Console in `schermate/componenti.js` con il telefono che importa quello e non più la Console; le prove cliccate della Console e del
+mobile nel repository accanto a quella dei Costi; la sezione «moto» dello specimen in `DESIGN.md`). Niente di visibile è cambiato,
+con un'eccezione da confermare (decisione 28). Tutto è committato e pushato sul branch indicato sotto, con la PR aperta verso
+`main`. **Prossimo passo**: le pagine chat e agenda del rail (vedi «Come riprendere»).
 
 ## Stato
 
-- Branch: `claude/company-costs-page-llxcix` (da `main`, che contiene le PR #1, #3, #4, #5, #6, #7, #8 e #9; la #9 era già unita
-  all'inizio di questa sessione). A fine sessione è aperta la **PR #10** verso `main`
-  (https://github.com/av3rgfx/DGT-Design-2.0/pull/10): se all'avvio della prossima sessione risulta già unita, ripartire da `main`
-  con un branch nuovo; se è ancora aperta, continuare sullo stesso branch e la PR si aggiorna da sola.
-- La **prova cliccata della pagina dei Costi è nel repository**: `schermate/direzioni/prove/costi.js` (48 verifiche; è la prima
-  prova a stare nel repository, quelle della Console e del mobile sono ancora da riscrivere: vedi «Come riprendere», punto 4).
-- Artefatto della **Console** (direzione A cliccabile, ora con la pagina Costi; ripubblicato allo stesso indirizzo con l'etichetta
-  «Versione 13: la pagina dei Costi»): https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34. Si rigenera con
-  `node schermate/direzioni/build-unico.js direzione-a.html /percorso/console.html`.
-- Artefatto del **mobile** (`mobile.html`, non toccato in questa sessione): https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9
+- Branch: `claude/console-mobile-maintenance-gwnihs` (da `main`, che contiene le PR #1, #3, #4, #5, #6, #7, #8, #9 e #10; la #10
+  era già unita all'inizio di questa sessione). A fine sessione è aperta la **PR #11** verso `main`
+  (https://github.com/av3rgfx/DGT-Design-2.0/pull/11): se all'avvio della prossima sessione risulta già unita, ripartire da
+  `main` con un branch nuovo; se è ancora aperta, continuare sullo stesso branch e la PR si aggiorna da sola.
+- **`schermate/componenti.js`** (`window.DGT_COMPONENTI`): il CSS delle primitive (già prefissato `.dirA`), `variabili` (le custom
+  property che ogni cornice dichiara sulla propria radice: `.a-app` nella Console, `.m-page` sul telefono) e le funzioni `av`,
+  `pair`, `dots`, `chipStato`, `chipEsito`, `iconaTipo`, `nomeTipo`, `eur`, `delta`, `differenze`. `direzione-a.js` le riprende
+  con una riga e tiene la cornice, le pagine, le tendine e `monta`; `mobile.js` carica `componenti.js` e non più la Console. Le sei
+  pagine (`direzione-a.html`, `mobile.html`, `confronto.html`, `avatar-identita.html`, `avatar-pelli.html`, `confronto-avatar.html`)
+  caricano `../componenti.js` dopo `comune.js` e mettono in pagina `DGT_COMPONENTI.css` (stile `css-componenti`) prima del CSS
+  della Console. `build-unico.js` non è cambiato. Che cosa sta dove, e come si è tenuta ferma la cascata: `DIREZIONI.md`,
+  «Versione 14».
+- **Le tre prove cliccate sono nel repository**: `schermate/direzioni/prove/console.js` (64 verifiche), `mobile.js` (39),
+  `costi.js` (48), con `prove/README.md` che dice il comando. Passano tutte.
+- Artefatto della **Console** (ripubblicato allo stesso indirizzo con l'etichetta «Versione 14: la manutenzione»; il file unico
+  ora incorpora anche `componenti.js`, 408 KB): https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34. Si rigenera
+  con `node schermate/direzioni/build-unico.js direzione-a.html /percorso/console.html`.
+- Artefatto del **mobile** (ripubblicato allo stesso indirizzo con la stessa etichetta; senza la Console il file unico è sceso da
+  420 a 301 KB): https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9
   (`node schermate/direzioni/build-unico.js mobile.html /percorso/nova-studio-mobile.html`).
-- Artefatti precedenti, non toccati: identità degli orbi https://claude.ai/code/artifact/1fc2ee53-3c23-4462-922a-cd581a90b6d6
-  (`avatar-identita.html`), pelli dell'orbe https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569
-  (`avatar-pelli.html`), le due famiglie kit/orbe https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526
-  (`confronto-avatar.html`), confronto A/B/C https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
-  (`confronto.html`), specimen https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b (`DESIGN.md` non descrive
-  ancora la sezione «moto» dello specimen: da fare).
-- Documento unico: `SYSTEM-DESIGN.md` (sezione 6, riga «Pagina Costi» e la riga «Rail» con i sei cerchi; sezione 10, regola 21;
-  sezione 11 con il branch). Studio e versioni della direzione A: `schermate/direzioni/DIREZIONI.md` (sezione 4: regola 15 e
-  «Versione 13» con quanto costruito e le scelte da confermare; sezione 5, tabella dei file).
-- Screenshot in `schermate/direzioni/screenshot/`: `a-costi.png` (la pagina a 11, tendina aperta), `a-costi-40.png`,
-  `a-costi-testata.png`, e le sezioni a due volte: `a-costi-dipartimenti.png`, `-dipartimenti-oggi`, `-dipartimenti-anno`,
-  `a-costi-dipendenti.png`, `-dipendenti-oggi`, `-dipendenti-anno`, `a-costi-clienti.png`, `-clienti-oggi`, `-clienti-anno`,
-  `a-costi-modelli.png`, `-modelli-oggi`, `a-costi-strumenti.png`.
+- Artefatti precedenti, non ripubblicati (le loro pagine caricano `componenti.js` ma non cambiano di aspetto: identità degli orbi
+  https://claude.ai/code/artifact/1fc2ee53-3c23-4462-922a-cd581a90b6d6 (`avatar-identita.html`), pelli dell'orbe
+  https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569 (`avatar-pelli.html`), le due famiglie kit/orbe
+  https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526 (`confronto-avatar.html`), confronto A/B/C
+  https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f (`confronto.html`)), specimen
+  https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b (`DESIGN.md` ora descrive anche la sezione «moto»).
+- Documento unico: `SYSTEM-DESIGN.md` (sezione 2 «Dove sta cosa» con `componenti.js` e `prove/`; sezione 8, la riga sui componenti
+  del prodotto; sezione 9, le prove; sezione 10, il richiamo alla versione 14; sezione 11 con il branch). Studio e versioni della
+  direzione A: `schermate/direzioni/DIREZIONI.md` (sezione 4, «Versione 14»: che cosa è stato spostato e dove, la verifica,
+  l'eccezione; sezione 5, tabella dei file). `design-system/DESIGN.md`: il blocco `motion` nel frontmatter e la sezione «Moto».
+- Screenshot in `schermate/direzioni/screenshot/`: invariati, tranne le quattro catture della revisione sul telefono
+  (`mobile-2-revisione.png`, `-differenze`, `-perche`, `-modello`), rifatte per la decisione 28.
 - Regole in `CLAUDE.md`: invariate (direzione A, avatar della versione 10, niente emoji).
 
 ## Decisioni dell'utente (in ordine)
@@ -109,141 +117,140 @@ riprendere»), poi le pagine chat e agenda del rail.
     (le scelte della decisione 26 restano segnate come fatte in costruzione: si riaprono solo se l'utente le rimette in
     discussione); ha scelto la **manutenzione** come lavoro della prossima sessione e ha chiesto la PR (#10). Le pagine chat e
     agenda del rail vengono dopo la manutenzione.
+28. **2026-09-06, questa sessione**: fatta la **manutenzione** (versione 14) come da passaggio di consegne, con la regola «prima e
+    dopo gli screenshot devono essere identici e le prove devono passare»: trentuno catture identiche byte per byte, impronte degli
+    stili calcolati identiche per la Console e per le pagine degli avatar. **L'unica cosa visibile che cambia, da confermare**: la
+    schermata «Richiesta» di una **revisione sul telefono**. Finché il telefono caricava tutta la Console, lo schermo `.m-scr.rev`
+    riceveva per errore le regole della card revisione della pagina del Dipendente (`.rev{padding:22px 24px 20px}`, `.rev p`,
+    `.rev ul/li`, `.rev .k`): un padding sull'intero schermo, il titolo «Soul prompt v7 → v8» spezzato, il testo del prompt più
+    grande. Con il telefono che carica solo i componenti la perdita sparisce e la schermata è come la descrive `mobile.js`. Tenuto
+    come correzione (dettaglio e confronto in `DIREZIONI.md`, «Versione 14»); per tornare all'aspetto di prima basterebbe
+    `.m-scr.rev{padding:22px 24px 20px}` in `mobile.js`, ma sarebbe copiare un errore. **L'utente non ha ancora visto il
+    risultato.**
 
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti sintetici di DGT; documenti in italiano.
 
-## Come riprendere: la manutenzione
+## Come riprendere: le pagine chat e agenda del rail
 
-Scelta dall'utente a fine sessione (decisione 27). Tre lavori, **senza cambiare nulla di visibile**: prima e dopo, gli screenshot
-delle pagine devono essere identici (`screenshot-page.js`, stesse pagine e parametri, confronto a occhio o con un diff delle
-immagini) e le prove cliccate devono passare.
+Il lavoro di prodotto successivo, deciso dall'utente a fine sessione precedente (decisione 27) per dopo la manutenzione: i due cerchi
+ancora inerti del rail della Console (`i-chat` e `i-cal`, i cerchi 4 e 5 in `cornice` di `direzione-a.js`, senza `data-az`) e le tab
+corrispondenti in basso sul telefono (`navigazione` in `mobile.js`: «Chat» e «Agenda», senza `data-az`).
 
-1. Leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezione 2 «Dove sta cosa», sezioni 6 e 10) e `schermate/direzioni/DIREZIONI.md`
-   (sezione 5, la tabella dei file). Controllare il branch e la PR (vedi «Stato»). Rifare i font locali (`fetch-fonts.py`) e
-   lanciare `prove/costi.js` prima di toccare qualcosa: è la base di confronto, insieme agli screenshot delle pagine.
-2. **Se l'utente manda correzioni** (pagina dei Costi, mobile, altre pagine), applicarle prima: le scelte da confermare stanno
-   nelle decisioni 23 e 26.
-3. **I componenti della Console in `schermate/componenti.js`**. Oggi `mobile.js` importa tutta `direzione-a.js` per usarne il CSS
-   (classi `.dirA`) e quattro funzioni (`av`, `iconaTipo`, `nomeTipo`, `differenze`). Spostare in `componenti.js` (stesso stile:
-   IIFE su `window`, niente moduli ESM, tutto gira da `file://` e come file unico) le primitive condivise: il CSS delle primitive
-   (`.rb`, `.av`, `.pair`, `.pill`, `.chip`, `.dots`, `.badge`, `.ncard`, `.nt`, `.lead`, `.task`, `.crow`, `.hrow`, `.erow`,
-   `.ripart`, `.leg`, `.prog`, `.dcard`, `.kv`, le variabili di `.a-app`) e le funzioni `av`, `pair`, `chipStato`, `chipEsito`,
-   `iconaTipo`, `nomeTipo`, `eur`, `delta`, `differenze` (con `lcs` e `parole`). `direzione-a.js` le riprende da
-   `window.DGT_COMPONENTI` e tiene le pagine, la cornice, le tendine e `monta`; `mobile.js` importa `componenti.js` e non più la
-   Console. Aggiornare i tag `<script>` di `direzione-a.html`, `mobile.html`, `confronto.html`, `avatar-identita.html`,
-   `avatar-pelli.html`, `confronto-avatar.html` e `build-unico.js` (incorpora ogni `<script src>`: basta l'ordine dei tag).
-   Verificare con gli screenshot identici (Console: home, dipartimento, dipendente, esecuzione, costi, 40; mobile) e con la prova
-   dei Costi.
-4. **Le prove cliccate nel repository** (`schermate/direzioni/prove/`): accanto a `costi.js` riscrivere `console.js` (tendine:
-   approva dalla tendina, apre la revisione ed estende, rifiuta con motivo, riduce, apre il riepilogo; pagina Richieste con
-   «Approva tutte»; editor del dipendente: crea, modifica, tinta; esecuzione: pausa, interrompi, riprova, avvia, nota del
-   titolare; 40) e `mobile.js` (le tre schermate; a ogni passo nessun `.m-scr` con `scrollWidth > clientWidth` e console pulita;
-   la riga della revisione, le frecce, il rifiuto con motivo (conferma vuota = bordo rosso, poi motivo + Invio), la prova della
-   revisione del prompt, approva le altre fino allo stato vuoto; `?n=40`: conta la coda, badge «12», il titolo più lungo), con un
-   `prove/README.md` che dice il comando. Le prove leggono `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH` come `costi.js`.
-5. **La sezione «moto» dello specimen in `design-system/DESIGN.md`**: leggere `specimen.html` (la sezione moto: che cosa si muove,
-   durate, easing, cosa resta fermo con `prefers-reduced-motion`) e descriverla nello stesso stile delle altre sezioni di
-   `DESIGN.md`; niente cambi allo specimen.
-6. Poi come sempre: prove, screenshot solo per il confronto (non devono cambiare), artefatti: il file unico cambia perché
-   incorpora un file in più, quindi rigenerare e ripubblicare Console e mobile allo stesso indirizzo (lettura per intero prima,
-   vedi «Note tecniche»); `DIREZIONI.md` (versione 14, «manutenzione»: che cosa è stato spostato e dove), `SYSTEM-DESIGN.md`
-   (sezione 2 «Dove sta cosa»), i README (`design-system/tools/README.md` per le prove), questo file, commit, push e PR.
-
-Dopo la manutenzione, il lavoro di prodotto successivo: **le pagine chat e agenda del rail**, i due cerchi ancora inerti nella
-Console e le tab corrispondenti sul telefono. L'agenda parte dalla barra «Oggi in azienda» (gli eventi della giornata, i
-pianificati, le scadenze degli obiettivi e del mese); la chat dalla barra di scrittura dell'Esecuzione (un filo per dipendente,
-le note del titolare che oggi finiscono nel log).
+1. Leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezioni 2, 6, 8 e 10) e `schermate/direzioni/DIREZIONI.md` (sezione 4 dalla versione 13,
+   sezione 5 con la tabella dei file). Controllare il branch e la PR (vedi «Stato»). Rifare i font locali (`fetch-fonts.py`) e
+   lanciare le tre prove di `prove/` prima di toccare qualcosa: sono la base di confronto, insieme agli screenshot delle pagine.
+2. **Se l'utente manda correzioni** (la revisione sul telefono della decisione 28, la pagina dei Costi, il mobile, altre pagine),
+   applicarle prima: le scelte da confermare stanno nelle decisioni 23, 26 e 28.
+3. **L'agenda** parte dalla barra «Oggi in azienda» (`.a-sched`, la barra agenda del riferimento, con il cerchio `.go` inerte): gli
+   eventi della giornata (le esecuzioni al lavoro, in attesa e in errore), i pianificati (`stato: 'pianificato'` con il loro orario),
+   le scadenze degli obiettivi e del mese (Riepilogo, `.goal`). Stessa cornice (titolo AGENDA, tre numeri), stessi componenti: la
+   barra agenda a segmenti per il giorno, le card attività per gli eventi, le righe per la settimana; il quinto cerchio del rail
+   acceso. Da dove ci si arriva: il cerchio del rail, il cerchio `.go` della barra «Oggi in azienda», la pillola «Sposta» delle
+   esecuzioni pianificate (oggi inerte).
+4. **La chat** parte dalla barra di scrittura dell'Esecuzione (`.chat`, `esec-invia`: oggi la nota del titolare finisce nel log come
+   riga «MR: …»): un filo per dipendente, le note del titolare e le risposte del dipendente (sintetiche, nel modello), la barra chat
+   del riferimento in fondo; il quarto cerchio del rail acceso. Da dove ci si arriva: il cerchio del rail, i cerchi `i-chat` inerti
+   delle card attività e delle tendine («Commenta»), la pillola «Scrivi a …» dell'Esecuzione (`esec-scrivi`).
+5. **Sul telefono** le due tab «Chat» e «Agenda» della navigazione in basso, con lo stesso modello (`dati.js`) e gli stessi
+   componenti (`componenti.js`); la tab «Dipartimenti» resta inerte se non richiesta.
+6. Modello: quello che serve va in `dati.js` (eventi, fili della chat), senza toccare i numeri che le prove verificano; componenti
+   nuovi solo se davvero mancano, e allora in `componenti.js` se servono anche al telefono. Poi come sempre: le prove (`prove/`,
+   aggiornarle o aggiungerne), screenshot delle pagine nuove in `screenshot/`, gli artefatti rigenerati e ripubblicati allo stesso
+   indirizzo (lettura per intero prima, vedi «Note tecniche»), `DIREZIONI.md` (versione 15), `SYSTEM-DESIGN.md` (sezioni 6, 10, 11),
+   i README, questo file, commit, push e PR.
 
 Punti aperti ereditati (non chiesti dall'utente, da non toccare senza richiesta): i filtri inerti delle sezioni Passi, Output e
 Costo dell'Esecuzione e le tre pillole inerti della sezione «Spesa del mese» del Dipartimento (la pagina dei Costi ha le sue,
 funzionanti); i cerchi cerca / filtri / scarica delle intestazioni; le frecce inerti delle righe per modello; «Sposta», «Ripeti» e
 le frecce dei passi senza tendina del passo; lo stato vuoto del dipendente appena creato («Nessuna esecuzione», con un dossier
 generato che gli attribuisce una spesa dei 30 giorni); la pagina del Dipendente (versione 6), quella dell'Esecuzione (versione 8),
-le tre schermate del mobile (11 e 12) e la pagina dei Costi (13) mai giudicate; sul telefono i cerchi «commenta», «filtri» e
-«ordina», le tab organizzazione / chat / agenda, il download e la matita delle card del Riepilogo sono inerti; il badge rosa
+le tre schermate del mobile (11 e 12) e la revisione sul telefono dopo la manutenzione (14) mai giudicate; sul telefono i cerchi
+«commenta», «filtri» e «ordina», la tab organizzazione, il download e la matita delle card del Riepilogo sono inerti; il badge rosa
 «campanella 2» accanto al numero «da approvare» copia quello della riga WORKSPACE della Console (`min(2, n)`) e non ha ancora un
 significato nel modello; il badge «↓12%» del numero «spesi oggi» nella home è decorativo (nella pagina dei Costi lo stesso numero
-ha il badge «oltre» solo sopra la somma dei limiti del giorno).
+ha il badge «oltre» solo sopra la somma dei limiti del giorno); `design-system/tokens.css` porta solo tre token di moto e un easing
+diverso da quello dello specimen (`cubic-bezier(.2,.8,.2,1)` contro `(.22,1,.36,1)`): notato nella sezione «Moto» di `DESIGN.md`,
+non toccato.
 
-## Strumenti (`design-system/tools/`)
+## Strumenti (`design-system/tools/` e `schermate/direzioni/prove/`)
 
+- **Le prove cliccate** (`schermate/direzioni/prove/`, con il README che dice il comando):
+  `export PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css` e poi
+  `node schermate/direzioni/prove/console.js` (64: tendine, Richieste, editor del dipendente, esecuzione, 40), `mobile.js` (39: i tre
+  telefoni, la revisione, le frecce, il rifiuto con motivo, la prova, lo stato vuoto, 40; a ogni passo nessuno schermo che scorre di
+  lato e console pulita) e `costi.js` (48); da qualunque cartella, leggono anche `CHROME_PATH`, girano con `reducedMotion: 'reduce'`,
+  escono con 1 se una verifica fallisce. Attenzione: Playwright scorre da solo per cliccare un elemento fuori dallo schermo, quindi
+  una verifica sullo scorrimento va fatta con l'elemento già visibile; nella pagina Richieste le richieste in attesa sono card
+  `.task[data-az="richiesta"]` (le righe `.hrow` sono lo storico); `.elenco .erow` comprende la card «Aggiungi» (`:not(.add)`).
 - `screenshot-page.js` — cattura a pagina intera (`FULL_PAGE=0` per il solo viewport; il quarto argomento è l'altezza del
   viewport: 1120 per far stare il dossier, 1100 per la pagina del mobile).
-  `export PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css` e poi
   `node design-system/tools/screenshot-page.js "schermate/direzioni/direzione-a.html?pagina=costi" /percorso/a-costi.png 1440 900`
   (dalla radice, con percorsi assoluti: nel Bash della sessione la cartella di lavoro può cambiare fra un comando e l'altro).
 - `screenshot-elementi.js` — cattura elementi per selettore (`node screenshot-elementi.js pagina.html prefisso '#sel1' '.sel2'`);
   `MOTION=no-preference` per gli avatar in moto, `SCALE=2`, `W=1440`, `H=1100` (l'altezza del viewport: va alzata finché la
   pagina non scorre, altrimenti le catture dopo un clic si spostano; per la pagina dei Costi `H=3200`), `CLICK="sel|sel"`,
-  `EVAL="codice"`. Per le sezioni della pagina dei Costi: `'.a-main > section:nth-child(1)'` … `nth-child(5)`, con
-  `CLICK='[data-az="periodo"][data-sez="dipartimenti"][data-v="oggi"]'` per cambiare periodo prima della cattura.
+  `EVAL="codice"` (per le catture del telefono: scorrere lo schermo con `EVAL` prima della cattura, `SCALE=2 H=1100`).
 - `fetch-fonts.py` — Urbanist locale per Chromium headless (`SSL_CERT_FILE=/root/.ccr/ca-bundle.crt python3 fetch-fonts.py
   /percorso/fonts.css`): va rifatto a ogni sessione, il file non è nel repository.
 - `schermate/direzioni/avatar/build-motore.js` — rigenera `avatar-motore.js` dai sorgenti del kit.
-- `schermate/direzioni/build-unico.js` — file unico per gli artefatti (incorpora anche gli script in `avatar/`).
-- Prove cliccate: **`schermate/direzioni/prove/costi.js`** è nel repository (48 verifiche della pagina dei Costi:
-  `PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css node
-  schermate/direzioni/prove/costi.js`, da qualunque cartella; legge anche `CHROME_PATH`). Che cosa verifica: sei cerchi nel rail e
-  il sesto attivo; i tre numeri; le quattro sezioni allo stesso totale; le pillole per sezione (lo scorrimento resta dov'era, i
-  periodi sono indipendenti); i collegamenti da e verso Dipartimento, Dipendente, Richieste (filtro cliente), home, Esecuzione;
-  approvare dalla tendina; la vista compatta a 40; il telefono che carica ancora la Console. Attenzione: Playwright scorre da solo
-  per cliccare una pillola fuori dallo schermo, quindi la verifica dello scorrimento va fatta con la pillola già visibile.
-  **Console** e **mobile**: ancora fuori dal repository, da riscrivere nella manutenzione (vedi «Come riprendere», punto 4) dalle
-  descrizioni delle sessioni precedenti (storia di questo file in git, commit `d2b625c`).
+- `schermate/direzioni/build-unico.js` — file unico per gli artefatti (incorpora ogni `<script src>` nell'ordine dei tag, anche
+  `../componenti.js` e gli script in `avatar/`).
+- **Il confronto «niente di visibile cambia»** (usato nella manutenzione, gli script erano fuori dal repository): catturare le stesse
+  pagine con gli stessi parametri prima e dopo (`screenshot-page.js`) e confrontare i PNG byte per byte (`cmp`); in più, per ogni
+  stato di pagina anche dopo i clic, un'impronta degli stili calcolati di ogni elemento (`getComputedStyle`, i nomi delle proprietà
+  ordinati, valori non vuoti, custom property comprese; senza l'indice dell'elemento e senza gli `<style>` in testa, perché uno
+  script o uno stile in più spostano gli indici) da confrontare con quella dell'albero originale (`git archive HEAD`). Le differenze
+  di un PNG si vedono con un diff a pixel in Chromium (canvas) ritagliato sulla zona che cambia.
 
 ## Note tecniche apprese
 
 - Playwright globale (`NODE_PATH=/opt/node22/lib/node_modules`, `PLAYWRIGHT_MODULE=playwright`), Chromium in
   `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`; Google Fonts bloccato: gli script servono un CSS locale. Gli script vanno
   lanciati con percorsi assoluti: nel Bash della sessione la cartella di lavoro può restare su una sottocartella dopo un `cd`.
-- La Console e il mobile girano da `file://` e come file unico: **niente moduli ESM**.
+- La Console e il mobile girano da `file://` e come file unico: **niente moduli ESM**. `componenti.js` è un'IIFE come gli altri.
+- **La cascata dopo lo spostamento**: le regole spostate stanno in `componenti.js` nello stesso ordine che avevano nella Console e il
+  suo `<style>` viene prima di quello della Console, quindi fra due regole di pari specificità vince la stessa di prima. Per ogni
+  regola spostata «da dietro» (le varianti aggiunte con le pagine successive) si controlla che nessuna regola rimasta nella Console
+  e prima di lei abbia la stessa specificità sulle stesse proprietà per uno stesso elemento. Una regola con selettori misti
+  (componenti e cornice, come l'inversione dell'orbe sulle superfici chiare) si divide in due, purché tocchi solo proprietà che
+  nessun'altra regola dichiara. Quando si aggiunge una primitiva nuova: il CSS in fondo a `componenti.js`, la funzione nel suo
+  `return`, e la riga di destrutturazione in `direzione-a.js` (e in `mobile.js` se serve al telefono).
+- **Il telefono non deve caricare la Console**: finché lo faceva, una classe con lo stesso nome (`.rev`) prendeva regole di una pagina
+  della Console (decisione 28). Le classi del telefono hanno il prefisso `m-`; le classi condivise sono solo quelle di
+  `componenti.js`.
 - **L'aggregatore dei costi** (`m.costi(periodo, dip)`): un solo calcolo per la pagina dei Costi e per la sezione «Spesa del mese»
-  del Dipartimento. I tre periodi leggono fonti diverse del modello (oggi `e.att.costo`, 30 giorni `metriche.ora.spesa`, dalla
-  creazione anche `metriche.prima` e le versioni vecchie del prompt); la ripartizione per cliente pesa le richieste del periodo
-  (oggi solo il cliente dell'esecuzione) e arrotonda a interi che sommano al totale (`interi`); per modello oggi contano i passi
-  fatti, in corso e in errore delle esecuzioni con un costo (`oggiConta`), nei 30 giorni `modello.uso`; per strumento solo oggi.
-  Se un giorno il modello avesse un registro completo delle esecuzioni, l'aggregatore è il solo posto da cambiare.
-- **Le richieste sono un campione, non il registro**: a 11 sommano 233 € in 30 giorni contro i 613 € dei dossier. Per questo la
-  spesa non si calcola più dalle richieste (come faceva la sezione «Spesa del mese») e non c'è la pillola «7 giorni».
-- **Coerenza dei dati scritti a mano**: quando due numeri finiscono uno accanto all'altro (spesa dei 30 giorni e budget speso) le
-  incoerenze del modello si vedono; le due correzioni della versione 13 sono nel `dati.js` e in `DIREZIONI.md`.
-- **La card costo su fondo lime**: la ripartizione per modello passa a nero (Standard) / bianco (Esperto) / grigio (Rapido), e il
-  fondo della pillola a `rgb(0 0 0/.12)`, altrimenti il lime sparisce sul lime (`.task.lime .ripart`).
-- **La striscia «chi» della card attività** ha 120 px di spazio a destra per i due pulsanti dell'intaglio: «Amministrazione» non ci
-  sta. Con un solo pulsante nell'intaglio (`.task.spesa.dpt .who{padding-right:72px}`) il nome del dipartimento sta intero; il
-  selettore in basso ha 172 px, tolto il cerchio «commenta» ne ha 228 e «243 consegne» non si tronca.
-- **Il rail** è una griglia con gap 12: sei cerchi occupano 348 px da 260, sotto l'ultimo la pagina continua senza problemi.
+  del Dipartimento; le richieste sono un campione, non il registro (a 11 sommano 233 € in 30 giorni contro i 613 € dei dossier). Se
+  un giorno il modello avesse un registro completo delle esecuzioni, l'aggregatore è il solo posto da cambiare.
 - L'artefatto si ripubblica allo stesso indirizzo passando `url` allo strumento, dopo averlo letto con `action: read`: lo strumento
-  salva il file e chiede che sia letto **per intero** (a blocchi di 300–1000 righe, ognuno sotto i 25 000 token; il `grep` non
-  basta più). Il file unico della Console pesa circa 404 KB. Mai forzare.
+  salva il file e chiede che sia letto **per intero** (a blocchi di 250–300 righe nelle zone dense, ognuno sotto i 25 000 token; il
+  `grep` non basta). Il file unico della Console pesa circa 408 KB (5 300 righe), quello del mobile 301 KB. Mai forzare. La
+  sottoscrizione agli aggiornamenti dell'artefatto non si registra da questa sessione (403): non dire che si sta «guardando».
 - Lo z-index del telefono, la linea del tempo a segmenti, `m.decidi`, l'orbe della versione 10, gli intagli con `--behind`, le
-  tendine, la Console che si scala con `zoom`, le differenze LCS: come nelle note delle sessioni precedenti (storia di questo file
-  in git, commit `d2b625c`, `044e363`, `f3a5d53`, `5d20ff9`).
+  tendine, la Console che si scala con `zoom`, le differenze LCS, la card costo su fondo lime, la striscia «chi» e il rail: come
+  nelle note delle sessioni precedenti (storia di questo file in git, commit `b50f659`, `d2b625c`, `044e363`, `f3a5d53`, `5d20ff9`).
 
 ## Cosa manca
 
-1. **Manutenzione** (scelta dall'utente per la prossima sessione, vedi «Come riprendere»): i componenti della Console in
-   `schermate/componenti.js` con il mobile che importa quello; le prove cliccate della Console e del mobile nel repository (quella
-   dei Costi c'è già); la sezione «moto» dello specimen in `DESIGN.md`.
-2. **Le pagine chat e agenda del rail** (i due cerchi ancora inerti nella Console e le tab del telefono), dopo la manutenzione.
-3. **Il giudizio dell'utente** sulle tre schermate del mobile (versioni 11 e 12, decisione 23), sulla pagina del Dipendente
-   (versione 6) e su quella dell'Esecuzione (versione 8): in sospeso, non blocca. La pagina dei Costi ha avuto un «bene»
-   (decisione 27).
-4. Tendina del passo; stato vuoto del dipendente nuovo; sul telefono le tab e i cerchi inerti; le pillole inerti della sezione
-   «Spesa del mese» del Dipartimento (vedi «Punti aperti ereditati»).
+1. **Le pagine chat e agenda del rail** (i due cerchi ancora inerti nella Console e le tab del telefono): il prossimo lavoro di
+   prodotto (vedi «Come riprendere»).
+2. **Il giudizio dell'utente** sulla revisione sul telefono dopo la manutenzione (decisione 28), sulle tre schermate del mobile
+   (versioni 11 e 12, decisione 23), sulla pagina del Dipendente (versione 6) e su quella dell'Esecuzione (versione 8): in sospeso,
+   non blocca. La pagina dei Costi ha avuto un «bene» (decisione 27).
+3. Tendina del passo; stato vuoto del dipendente nuovo; sul telefono le tab e i cerchi inerti; le pillole inerti della sezione
+   «Spesa del mese» del Dipartimento; i token di moto di `tokens.css` (vedi «Punti aperti ereditati»).
 
 ### Prompt di avvio suggerito per la prossima sessione
 
 ```
-Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md. Controlla la PR #10: se è unita riparti da main con un branch nuovo, altrimenti
-continua sullo stesso branch. Lavoriamo nella direzione A · Console (schermate/direzioni/direzione-a.js, dati.js, comune.js,
-avatar/, mobile.js): non cambiare la cornice, i componenti o i colori del sistema di design; niente emoji, solo le icone dello
-sprite; gli avatar sono quelli della versione 10 (tinta, occhi lilguy, punto di stato, gesto nelle pile).
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md. Controlla la PR #11: se è unita riparti da main con un branch nuovo, altrimenti
+continua sullo stesso branch. Lavoriamo nella direzione A · Console (schermate/componenti.js, schermate/direzioni/direzione-a.js,
+dati.js, comune.js, avatar/, mobile.js): non cambiare la cornice, i componenti o i colori del sistema di design; niente emoji, solo
+le icone dello sprite; gli avatar sono quelli della versione 10 (tinta, occhi lilguy, punto di stato, gesto nelle pile).
 
-Fai la manutenzione (PROSSIMA-SESSIONE.md «Come riprendere», punti 3, 4 e 5) senza cambiare nulla di visibile: i componenti
-della Console in schermate/componenti.js, con il mobile che importa quello e non più la Console; le prove cliccate della Console
-e del mobile nel repository accanto a prove/costi.js; la sezione «moto» dello specimen in DESIGN.md. Prima e dopo gli screenshot
-devono essere identici e le prove devono passare. Poi rigenera e ripubblica gli artefatti della Console e del mobile, aggiorna
-DIREZIONI.md, SYSTEM-DESIGN.md, README e PROSSIMA-SESSIONE.md, commit, push e PR. Alla fine mostrami cosa è cambiato e fermati.
+Costruisci le pagine agenda e chat del rail (PROSSIMA-SESSIONE.md «Come riprendere», punti 3, 4 e 5): l'agenda dalla barra «Oggi
+in azienda», la chat dalla barra di scrittura dell'Esecuzione, con le tab corrispondenti sul telefono; proponimi da dove ci si arriva
+e scegli tu se non rispondo. Prima lancia le tre prove di prove/ e fai gli screenshot delle pagine che esistono: non devono cambiare.
+Poi prove, screenshot, artefatti della Console e del mobile ripubblicati allo stesso indirizzo, DIREZIONI.md (versione 15),
+SYSTEM-DESIGN.md, README e PROSSIMA-SESSIONE.md, commit, push e PR. Alla fine mostrami cosa è cambiato e fermati.
 ```

@@ -10,11 +10,11 @@
 <body>
 <div class="dirA" id="root"></div>
 <script src="comune.js"></script>
+<script src="../componenti.js"></script>
 <script src="avatar/avatar-motore.js"></script>
 <script src="avatar/avatar-dgt.js"></script>
 <script src="avatar/avatar-orbe.js"></script>
 <script src="dati.js"></script>
-<script src="direzione-a.js"></script>
 <script src="mobile.js"></script>
 <script>
   // Parametri: ?schermata=1|2|3 (uno o più telefoni, es. ?schermata=2 o ?schermata=1,3; predefinito 1,2,3: i tre telefoni affiancati) ?richiesta=0 (indice nella coda)
@@ -25,7 +25,7 @@
   DGT_AVATAR.pelle(q.get('pelle') || 'perla');
   // lo stesso aspetto degli avatar della Console (versione 10, «strada 1»): dischi piatti nella tinta del dipendente, occhi lilguy, punto di stato
   DGT_AVATAR_ORBE.aspetto({ identita: q.get('identita') || 'tinta', palette: q.get('palette') || 'vivace', finitura: q.get('corpo') || 'piatta', occhi: q.get('occhi') || 'lilguy', segnale: q.get('segnale') || 'punto', carattere: q.get('carattere') === '1' });
-  DGT_UI.stile('css-a', DIREZIONE_A.css);   // i componenti della Console (classi .dirA)
+  DGT_UI.stile('css-componenti', DGT_COMPONENTI.css);   // i componenti condivisi con la Console (schermate/componenti.js, classi .dirA)
   DGT_UI.stile('css-m', DGT_MOBILE.css);    // le cornici del telefono e le tre schermate
   const modello = DGT_DATI.modello(DGT_DATI.nDaUrl());
   const schermate = (q.get('schermata') || '1,2,3').split(',').map(Number).filter(s => s === 1 || s === 2 || s === 3);

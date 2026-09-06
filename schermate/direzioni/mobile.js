@@ -32,25 +32,24 @@
       approvate oggi, spesa di oggi), la card lime dell'obiettivo del mese con la
       matita, le voci del diario; la riga lime che riporta a «Da approvare».
 
-   Stessi componenti della Console (classi .dirA di direzione-a.js: .rb, .pill,
-   .chip, .av, .ncard/.nt, .qrow, .badge, .dcard, .thumb), stesso modello
+   Stessi componenti della Console (schermate/componenti.js, classi .dirA: .rb,
+   .pill, .chip, .av, .ncard/.nt, .qrow, .badge, .dcard, .thumb; dalla versione
+   14 il telefono carica quello e non più direzione-a.js), stesso modello
    (dati.js): la decisione è m.decidi, così quello che si decide qui vale anche
-   nella Console. Le differenze fra le versioni sono A.differenze. Gli avatar sono
-   gli orbi della versione 10 (tinta, occhi lilguy, punto di stato).
+   nella Console. Le differenze fra le versioni sono DGT_COMPONENTI.differenze.
+   Gli avatar sono gli orbi della versione 10 (tinta, occhi lilguy, punto di stato).
 
    API: DGT_MOBILE.render(m, tel, st) → HTML di un telefono; DGT_MOBILE.monta(radice, m, opz)
    disegna i telefoni e collega i clic. opz = { schermate: [1, 2, 3], richiesta: 0 }.
    ===================================================================== */
 window.DGT_MOBILE = (function () {
   const { ic, esc, prefissa } = window.DGT_UI;
-  const A = window.DIREZIONE_A;
+  const C = window.DGT_COMPONENTI;
+  const { av, iconaTipo, nomeTipo, eur, differenze } = C;   // i componenti condivisi con la Console (schermate/componenti.js)
 
   const css = `
-/* la pagina: nero, come la Console; i telefoni affiancati come nello specimen */
-.m-page{--black:#000;--card:#1C1C1C;--card-top:#262626;--gray-card:#4D4D4D;--round:#1E1E1E;--pill-src:#3A3A3A;--dots-box:#141414;
-  --white:#FCFCFC;--light:#E0E0E0;--light-card:#F0F0F0;--summary:#F4F4F4;--docs:#E4E4E4;--thumb-pill:#A7A7A7;--lime:#B8FC64;--lime-deep:#A8E65D;--red:#F04848;--hangup:#F15E60;
-  --badge-red:#F9A3A3;--badge-red-ink:#7A1F1F;--t2:#9A9A9A;--t2-light:#6B6B6B;--ink:#0A0A0A;--font:"Urbanist",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-  --r-card:28px;--r-inner:22px;--r-pill:9999px;--behind:var(--black);
+/* la pagina: nero, come la Console; le variabili dei componenti (DGT_COMPONENTI.variabili) più --light e --light-card del telefono; i telefoni affiancati come nello specimen */
+.m-page{${C.variabili};--light:#E0E0E0;--light-card:#F0F0F0;
   min-height:100vh;background:var(--black);color:var(--white);font:400 15px/20px var(--font);-webkit-font-smoothing:antialiased;padding:48px 40px 96px;display:grid;gap:36px;align-content:start;justify-items:center}
 .m-page *{box-sizing:border-box}
 .m-page h1,.m-page h2,.m-page h3,.m-page h4,.m-page h5,.m-page p{margin:0;font-weight:400}
@@ -245,9 +244,6 @@ window.DGT_MOBILE = (function () {
 .m-bar input.manca{border-color:var(--hangup)}
 `;
 
-  const av = (m, e, size, stato, extra, opz) => A.av(m, e, size, stato, extra, opz);
-  const iconaTipo = A.iconaTipo, nomeTipo = A.nomeTipo;
-  const eur = v => (Math.round(v * 10) / 10).toString().replace('.', ',') + ' €';
   /* La coda del telefono: le richieste in attesa, le più vecchie prima (come nella Console). Dalla versione 12 anche le
      revisioni di performance: la Console e il telefono contano le stesse richieste. */
   const coda = m => m.richiesteDi('attesa').sort((a, b) => (b.giorno - a.giorno) || (a.min - b.min));
@@ -353,7 +349,7 @@ window.DGT_MOBILE = (function () {
       colA = col(m.MODELLI[rv.da], 'ink', 'assegnato oggi'); colB = col(m.MODELLI[rv.a], 'lime', 'proposto');
     } else {
       const va = d.prompt.versioni.find(v => v.v === rv.da) || d.prompt.versioni[0], vb = d.prompt.versioni.find(v => v.v === rv.a) || va;
-      const [L, R] = A.differenze(va.testo, vb.testo);
+      const [L, R] = differenze(va.testo, vb.testo);
       const tag = v => v.proposta ? 'lime' : v.v === d.prompt.corrente ? 'ink' : 'light';
       const col = (v, testo) => `<div class="m-doc ver"><div class="lb"><span class="chip ${tag(v)}">${ic('i-doc')}v${v.v}${v.proposta ? ' · proposta' : v.v === d.prompt.corrente ? ' · in produzione' : ''}</span><span>${v.proposta ? 'dal sistema' : esc(v.chi)} · ${esc(v.data)}</span></div><div class="dif">${testo}</div>${v.numeri ? `<div class="kvs"><div class="kv"><span>Task</span><b>${v.numeri.task}${v.numeri.prova ? ' in prova' : ''}</b></div><div class="kv"><span>Corretti · respinte</span><b>${v.numeri.corretti}% · ${v.numeri.respinte}%</b></div><div class="kv"><span>Costo per esito utile</span><b>${eur(v.numeri.costo)}</b></div></div>` : ''}</div>`;
       colA = col(va, L); colB = col(vb, R);
