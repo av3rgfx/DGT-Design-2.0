@@ -46,10 +46,16 @@
    stesso modello: la decisione sulla richiesta passa da qui a dati.js come
    m.decidi, così telefono e Console condividono lo stato.
 
+   Versione 13 (2026-09-06, sessione successiva): la pagina dei Costi
+   dell'azienda (per dipartimento, dipendente, cliente, modello, strumento,
+   con le pillole del periodo), aperta dal sesto cerchio del rail, dal numero
+   «spesi oggi» e dalle sezioni Spesa del mese e Costo. Dati in m.costi.
+
    API: DIREZIONE_A.render(m, opz) → HTML; DIREZIONE_A.monta(radice, m, opz)
-   disegna e collega i clic. opz = { pagina: 'home'|'richieste'|'dipartimento'|'dipendente'|'esecuzione',
+   disegna e collega i clic. opz = { pagina: 'home'|'richieste'|'dipartimento'|'dipendente'|'esecuzione'|'costi',
    dip: 'svi'|'mkt'|'ven'|'amm', id: id del dipendente, tendina: 'chiusa'|'aperta'|'estesa'|'dipendente'|'confronto'|'dossier',
-   richiesta: indice, pannello: 'richieste'|'riepilogo', editor: 'nuovo'|id, confronto: 'a,b' }.
+   richiesta: indice, pannello: 'richieste'|'riepilogo', editor: 'nuovo'|id, confronto: 'a,b',
+   periodo: { dipartimenti, dipendenti, clienti, modelli: 'oggi'|'mese'|'anno' } (pagina Costi) }.
    ===================================================================== */
 window.DIREZIONE_A = (function () {
   const { ic, esc, prefissa, iconaDip } = window.DGT_UI;
@@ -574,6 +580,20 @@ window.DIREZIONE_A = (function () {
 .task.spesa .body{padding-top:16px}
 .task.spesa .tt small{font-size:14px}
 .task.spesa .ripart{margin-top:14px}
+/* ===== pagina Costi (versione 13, 2026-09-06): righe della spesa per dipendente con il budget a barra, ripartizione per blocchi di tempo, legenda a capo nelle card strette ===== */
+.crow.sp{grid-template-columns:40px minmax(0,1fr) minmax(0,210px) 190px 130px 32px}
+.crow.sp .av{width:40px;height:40px}
+.crow.sp .v.mezzo{overflow:hidden;text-overflow:ellipsis}
+.crow.sp .bud{display:grid;gap:6px;align-content:center}
+.crow.sp .bud small{margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crow.sp .bud .prog{margin:0;height:8px}
+.crow.sp .bud .prog.oltre i{background:var(--badge-red)}
+.crow.sp .eur .badge{margin-right:10px;vertical-align:3px}
+.crow .v .pair{vertical-align:middle}.crow .v .pair .av{border-color:var(--av-anello-pelle,var(--card))}
+.ripart i.b1,.leg i.b1{background:var(--lime)}.ripart i.b2,.leg i.b2{background:var(--white)}.ripart i.b3,.leg i.b3{background:#6B6B6B}
+.leg.wrap{flex-wrap:wrap;row-gap:4px}
+.task.spesa.dpt .who{padding-right:72px}
+.task.lime .ripart{background:rgb(0 0 0/.12)}.task.lime .ripart i.standard,.task.lime .leg i.standard{background:var(--ink)}.task.lime .ripart i.esperto,.task.lime .leg i.esperto{background:var(--white)}.task.lime .leg{color:rgb(0 0 0/.6)}
 `;
 
   const S = n => `<i></i>`.repeat(n);
@@ -833,6 +853,7 @@ window.DIREZIONE_A = (function () {
         <span class="rb ${railAttivo === 'richieste' ? 'white' : ''}" data-az="pagina" data-pagina="richieste">${ic('i-bell')}</span>
         <span class="rb">${ic('i-chat')}</span>
         <span class="rb">${ic('i-cal')}</span>
+        <span class="rb ${railAttivo === 'costi' ? 'white' : ''}" data-az="pagina" data-pagina="costi" title="I costi dell'azienda">${ic('i-euro')}</span>
       </div>
       <div class="a-main">${corpo}</div>
       <div id="a-tendina">${tendina(m, opz)}</div>
@@ -845,7 +866,7 @@ window.DIREZIONE_A = (function () {
     const att = m.richiesteDi('attesa').length;
     const stats = `<div class="stat"><b>${lav.length}</b><span>al lavoro</span><span class="badge up">${ic('i-up')}1</span></div>
       <div class="stat"><b>${att}</b><span>da approvare</span><span class="badge down">${ic('i-bell')}${Math.min(2, att)}</span></div>
-      <div class="stat"><b>${m.costoOggi} €</b><span>spesi oggi</span><span class="badge down">${ic('i-dn')}12%</span></div>`;
+      <div class="stat" data-az="pagina" data-pagina="costi" title="I costi dell'azienda"><b>${m.costoOggi} €</b><span>spesi oggi</span><span class="badge down">${ic('i-dn')}12%</span></div>`;
     const corpo = `
       <section>
         <div class="shead"><h3>Al lavoro adesso</h3><span class="cnt"><b>${lav.length}</b><span>Esecuzioni</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
@@ -943,13 +964,9 @@ window.DIREZIONE_A = (function () {
     const lav = lst.filter(e => e.stato === 'lavoro').length;
     const stats = `<div class="stat"><b>${lav}</b><span>al lavoro</span><span class="badge up">${ic('i-up')}${lav}</span></div>
       <div class="stat"><b>${att.length}</b><span>da approvare</span>${att.length ? `<span class="badge down">${ic('i-bell')}${att.length}</span>` : ''}</div>
-      <div class="stat"><b>${costoOggi} €</b><span>spesi oggi</span></div>`;
-    // spesa del mese per cliente: richieste degli ultimi 30 giorni + esecuzioni di oggi
-    const perCliente = {};
-    m.richieste.filter(r => ids.includes(r.chi) && r.giorno <= 31).forEach(r => { const c = perCliente[r.cliente] = perCliente[r.cliente] || { cliente: r.cliente, consegne: 0, mese: 0, oggi: 0 }; c.mese += r.costo; if (r.stato === 'approvata') c.consegne++; if (r.giorno === 0) c.oggi += r.costo; });
-    lst.forEach(e => { const c = perCliente[e.att.cliente] = perCliente[e.att.cliente] || { cliente: e.att.cliente, consegne: 0, mese: 0, oggi: 0 }; c.mese += e.att.costo || 0; c.oggi += e.att.costo || 0; });
-    const costi = Object.values(perCliente).filter(c => c.mese > 0).sort((a, b) => b.mese - a.mese);
-    const totMese = costi.reduce((t, c) => t + c.mese, 0);
+      <div class="stat" data-az="pagina" data-pagina="costi" title="I costi dell'azienda"><b>${costoOggi} €</b><span>spesi oggi</span></div>`;
+    // spesa del mese per cliente: l'aggregatore dei costi (m.costi in dati.js, versione 13), lo stesso della pagina Costi
+    const cm = m.costi('mese', d.id);
     const corpo = `
       <section>
         <div class="shead"><h3>Oggi in ${esc(d.nome)}</h3><span class="cnt"><b>${esec.length}</b><span>Esecuzioni</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
@@ -972,9 +989,10 @@ window.DIREZIONE_A = (function () {
         ${att.length ? `<div class="cards">${att.map((r, i) => cardRichiesta(m, r, i)).join('')}</div>` : `<div class="vuoto">Niente da approvare da ${esc(d.nome)}</div>`}
       </section>
       <section>
-        <div class="shead"><h3>Spesa del mese</h3><span class="cnt"><b>${totMese} €</b><span>per cliente</span></span><span class="rb sm ghost">${ic('i-down')}</span>
-          <div class="filters"><span class="pill on">Ultimi 30 giorni</span><span class="pill">Oggi</span><span class="pill">Da inizio anno</span></div></div>
-        <div class="hlist">${costi.map(c => `<div class="crow"><span class="ico">${ic('i-euro')}</span><div class="tx"><b>${esc(c.cliente)}</b><span>${c.consegne} consegne approvate</span></div><span class="v">${c.oggi} €<small>oggi</small></span><span class="v">${Math.round(100 * c.mese / Math.max(1, totMese))}%<small>del dipartimento</small></span><span class="eur">${c.mese} €</span><span class="rb xs">${ic('i-ne')}</span></div>`).join('')}</div>
+        <div class="shead"><h3>Spesa del mese</h3><span class="cnt"><b>${eur(cm.totale)}</b><span>per cliente</span></span><span class="rb sm ghost">${ic('i-down')}</span>
+          <div class="filters"><span class="pill on">Ultimi 30 giorni</span><span class="pill">Oggi</span><span class="pill">Da inizio anno</span></div>
+          <div class="destra"><span class="pill" data-az="pagina" data-pagina="costi">Tutti i costi dell'azienda ${ic('i-ne')}</span></div></div>
+        <div class="hlist">${cm.perCliente.map(c => rigaCliente(m, c, 'mese', cm.totale, 'del dipartimento', d.id)).join('')}</div>
       </section>`;
     return cornice(m, opz, d.nome.toUpperCase(), stats, 'org', corpo, 'Nuovo obiettivo');
   }
@@ -1172,7 +1190,7 @@ window.DIREZIONE_A = (function () {
     const oggiN = m.richieste.filter(r => r.chi === e.id && r.giorno === 0).length + (e.stato === 'lavoro' || e.stato === 'errore' ? 1 : 0);
     const stats = `<div class="stat"><b>${oggiN}</b><span>task oggi</span></div>
       <div class="stat"><b>${att.length}</b><span>da approvare</span>${att.length ? `<span class="badge down">${ic('i-bell')}${att.length}</span>` : ''}</div>
-      <div class="stat"><b>${e.att.costo || 0} €</b><span>spesi oggi</span></div>`;
+      <div class="stat" data-az="pagina" data-pagina="costi" title="I costi dell'azienda"><b>${e.att.costo || 0} €</b><span>spesi oggi</span></div>`;
     const rev = d.revisioni.find(r => r.stato === 'attesa');
     const passate = d.revisioni.filter(r => r.stato !== 'attesa');
     const corpo = `
@@ -1319,7 +1337,8 @@ window.DIREZIONE_A = (function () {
       </section>
       <section>
         <div class="shead"><h3>Costo</h3><span class="cnt"><b>${eur(r.costo)}</b><span>Finora · stima a fine ${eur(r.stima)}</span></span><span class="rb sm ghost">${ic('i-sliders')}</span>
-          <div class="filters"><span class="pill on">Per modello</span><span class="pill">Per passo</span><span class="pill">Per strumento</span></div></div>
+          <div class="filters"><span class="pill on">Per modello</span><span class="pill">Per passo</span><span class="pill">Per strumento</span></div>
+          <div class="destra"><span class="pill" data-az="pagina" data-pagina="costi">Tutti i costi dell'azienda ${ic('i-ne')}</span></div></div>
         <div class="costo">
           <div class="ncard task ${oltre ? 'lime' : 'dark'} regola spesa">
             <div class="who"><span class="ico">${ic('i-euro')}</span><div><b>Costo dell'esecuzione</b><span>${r.n} passi · ${r.durata || '—'} · limite del giorno ${d.budget.giorno} €</span></div></div>
@@ -1331,6 +1350,112 @@ window.DIREZIONE_A = (function () {
         </div>
       </section>`;
     return cornice(m, opz, a.titolo.toUpperCase(), stats, 'home', corpo, '');
+  }
+
+  /* ---------- pagina Costi (versione 13, 2026-09-06) ----------
+     I costi dell'azienda: per dipartimento, per dipendente, per cliente, per modello, per strumento. Stessa cornice
+     (titolo COSTI; tre numeri: spesi oggi, spesa dei 30 giorni con il confronto con i 30 precedenti, quanto resta del
+     budget del mese). Si arriva dal sesto cerchio del rail (euro), dal numero «spesi oggi» della home, del dipartimento
+     e del dipendente, dalla sezione «Spesa del mese» del Dipartimento e da «Costo» dell'Esecuzione. Ogni sezione ha le
+     pillole dei periodi che i suoi dati reggono (oggi · ultimi 30 giorni · da inizio anno; per modello senza l'anno; per
+     strumento solo oggi). Dati in m.costi(periodo) (dati.js); riusa la card costo dell'esecuzione (.task.spesa), le
+     righe della spesa del mese (.crow) e i badge del confronto (delta). */
+  const PERIODO_COSTI = { oggi: 'Oggi', mese: 'Ultimi 30 giorni', anno: 'Da inizio anno' };
+  const PERIODO_LB = { oggi: 'oggi', mese: 'in 30 giorni', anno: 'da inizio anno' };
+  const pillePeriodo = (sez, cur, lista) => `<div class="filters">${lista.map(p => `<span class="pill${cur === p ? ' on' : ''}" data-az="periodo" data-sez="${sez}" data-v="${p}">${PERIODO_COSTI[p]}</span>`).join('')}</div>`;
+  const plurale = (n, uno, piu) => n === 1 ? uno : piu;
+  const consegneTx = n => `${n} ${plurale(n, 'consegna approvata', 'consegne approvate')}`;
+  /* ripartizione a pillola con la legenda: per modello (grigio / bianco / lime) o per blocchi di tempo (ultimi 30 giorni lime, 30 precedenti bianco, prima grigio) */
+  const ripartModelli = (lista, tot, extra, wrap) => `<div class="ripart">${lista.map(x => `<i class="${x.id}" style="width:${100 * x.costo / Math.max(0.1, tot)}%" title="${esc(x.nome)}"></i>`).join('')}</div><div class="leg${wrap ? ' wrap' : ''}">${lista.map(x => `<span><i class="${x.id}"></i>${esc(x.nome)} ${eur(x.costo)}</span>`).join('')}${extra || ''}</div>`;
+  const ripartBlocchi = b => ripartModelli([{ id: 'b1', nome: 'Ultimi 30 giorni', costo: b.ora }, { id: 'b2', nome: '30 precedenti', costo: b.prima }, { id: 'b3', nome: 'Prima', costo: b.prima2 }], b.ora + b.prima + b.prima2, '', true);
+  /* La card costo di un dipartimento: la card costo dell'esecuzione con la spesa del periodo, la ripartizione, la quota e le consegne; lime se oltre il limite del giorno (oggi) o il budget del mese. */
+  function cardCostoDip(m, x, periodo, tot, i) {
+    const d = x.d;
+    const oltre = periodo === 'oggi' ? x.oggi > x.budgetGiorno : x.budgetSpeso > x.budgetMese;
+    const tono = oltre ? 'lime' : (i % 2 ? 'dark' : 'gray');
+    const small = periodo === 'oggi' ? `su ${x.budgetGiorno} € al giorno` : periodo === 'mese' ? `di ${x.budgetMese} € al mese` : `dal ${esc(x.dal)}`;
+    const pct = Math.round(100 * x.spesa / Math.max(1, tot));
+    const k = periodo === 'anno' ? `Quota e consegne dal ${esc(x.dal)}` : periodo === 'oggi' ? 'Quota e consegne di oggi' : 'Quota e consegne approvate';
+    return `<div class="ncard task ${tono} spesa dpt">
+      <div class="who"><span class="ico">${ic(iconaDip[d.id])}</span><div><b>${esc(d.nome)}</b><span>${x.n} dipendent${plurale(x.n, 'e', 'i')}</span></div></div>
+      <div class="nt">${oltre ? `<span class="rb ghost" title="Oltre il limite">${ic('i-bell')}<i class="dot"></i></span>` : `<span class="rb ghost" data-az="pagina" data-pagina="dipartimento" data-dip="${d.id}" title="Apri ${esc(d.nome)}">${ic('i-ne')}</span>`}</div>
+      <div class="body"><div><div class="tt">${eur(x.spesa)} <small>${small}</small></div>${periodo === 'anno' ? ripartBlocchi(x.blocchi) : ripartModelli(x.modelli, x.spesa, '', true)}</div></div>
+      <div class="st"><span class="k">${k}</span><div class="row"><span class="sel"><span class="chip">${pct}%</span><span>${x.consegne} consegn${plurale(x.consegne, 'a', 'e')}</span>${ic('i-chev')}</span><span class="rb black" data-az="pagina" data-pagina="dipartimento" data-dip="${d.id}" title="Apri ${esc(d.nome)}">${ic('i-eye')}</span></div></div>
+    </div>`;
+  }
+  /* La card costo dell'azienda (sezione Per modello): la stessa card, a 517, con il totale, la ripartizione per modello e la riga di oggi sul limite del giorno. */
+  function cardCostoAzienda(m, c, periodo) {
+    const oltre = c.oggi > c.budgetGiorno, oltreMese = c.budgetSpeso > c.budgetMese;
+    return `<div class="ncard task ${(periodo === 'oggi' ? oltre : oltreMese) ? 'lime' : 'dark'} regola spesa">
+      <div class="who"><span class="ico">${ic('i-euro')}</span><div><b>${periodo === 'oggi' ? 'Spesa di oggi' : 'Spesa dei 30 giorni'}</b><span>${m.n} dipendenti · ${consegneTx(c.consegne)}</span></div></div>
+      <div class="nt"><span class="rb ghost">${ic('i-bell')}${oltre ? '<i class="dot"></i>' : ''}</span></div>
+      <div class="body"><div><div class="tt">${eur(c.totale)} <small>${periodo === 'oggi' ? `su ${c.budgetGiorno} € al giorno` : `di ${c.budgetMese} € di budget al mese`}</small></div>${ripartModelli(c.perModello, c.totale, `<span style="margin-left:auto">${c.esecuzioni} ${periodo === 'oggi' ? 'passi' : 'esecuzioni'}</span>`)}</div></div>
+      <div class="st"><span class="k">Oggi</span><div class="row"><span class="sel"><span>${c.oggi} € su ${c.budgetGiorno} € al giorno</span>${oltre ? `<span class="chip rosa">${ic('i-warn')}oltre il limite</span>` : `<span class="chip">${ic('i-check')}nel limite</span>`}${ic('i-chev')}</span><span class="rb ghost" data-az="pagina" data-pagina="richieste" title="Le regole di approvazione: spese sopra 50 €">${ic('i-ne')}</span></div></div>
+    </div>`;
+  }
+  /* La riga della spesa di un dipendente: avatar, etichetta, un valore del periodo (oggi l'esecuzione, nei 30 giorni il costo per esito utile, dalla creazione la data), il budget a barra (del giorno o del mese), la spesa con il badge del confronto, la freccia verso la pagina. */
+  function rigaCostoDipendente(m, x, periodo) {
+    const e = x.e, b = x.budget;
+    const lim = periodo === 'oggi' ? { v: b.oggi, di: b.giorno, lb: 'al giorno' } : { v: b.speso, di: b.mese, lb: 'al mese' };
+    const q = Math.min(100, Math.round(100 * lim.v / Math.max(1, lim.di))), oltre = lim.v > lim.di;
+    const mezzo = periodo === 'oggi' ? `${esc(e.att.titolo)}<small>${e.stato === 'lavoro' && e.att.passo ? `passo ${e.att.passo[0]} di ${e.att.passo[1]}` : esc(m.STATI[e.stato].breve.toLowerCase())}</small>`
+      : periodo === 'mese' ? `${eur(x.esito)}<small>per esito utile</small>` : `dal ${esc(x.d.dal)}<small>in produzione</small>`;
+    const badge = periodo === 'mese' ? delta(x.spesa, x.prima, false, v => v + ' €') : (periodo === 'oggi' && oltre ? `<span class="badge down">${ic('i-warn')}oltre</span>` : '');
+    return `<div class="crow sp${x.spesa ? '' : ' spenta'}">${av(m, e)}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e, true))}</span></div><span class="v mezzo">${mezzo}</span><span class="v bud"><small>${lim.v} di ${lim.di} € ${lim.lb}</small><span class="prog${oltre ? ' oltre' : ''}"><i style="width:${q}%"></i></span></span><span class="eur">${badge}${eur(x.spesa)}</span><span class="rb xs" data-az="pagina" data-pagina="dipendente" data-id="${e.id}" title="Apri">${ic('i-ne')}</span></div>`;
+  }
+  /* Oltre sedici dipendenti la vista compatta (regola 3): pillole a tre per riga, con la spesa in un chip; lime chi è oltre il budget. */
+  function rigaCostoCompatta(m, x, periodo) {
+    const e = x.e, b = x.budget, oltre = periodo === 'oggi' ? b.oggi > b.giorno : b.speso > b.mese;
+    return `<div class="erow${oltre ? ' lav' : ''}">${av(m, e)}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e, true))}${periodo === 'mese' ? ` · ${eur(x.esito)} per esito` : ''}</span></div><span class="chip${oltre ? ' onlime' : ''}"><span>${eur(x.spesa)}</span></span><span class="rb xs" data-az="pagina" data-pagina="dipendente" data-id="${e.id}" title="Apri">${ic('i-ne')}</span></div>`;
+  }
+  /* La riga della spesa per cliente (la stessa della sezione «Spesa del mese» del Dipartimento): consegne approvate, oggi, quota, spesa; la freccia apre le richieste del cliente (se ne ha: la spesa può venire solo da esecuzioni, come Zenith a 11). */
+  function rigaCliente(m, c, periodo, tot, ambito, dip) {
+    const pct = Math.round(100 * c.spesa / Math.max(1, tot));
+    const v1 = periodo === 'oggi' ? `${c.chi.length}<small>dipendent${plurale(c.chi.length, 'e', 'i')}</small>` : `${c.oggi} €<small>oggi</small>`;
+    return `<div class="crow"><span class="ico">${ic('i-euro')}</span><div class="tx"><b>${esc(c.cliente)}</b><span>${consegneTx(c.consegne)}</span></div><span class="v">${v1}</span><span class="v">${pct}%<small>${ambito}</small></span><span class="eur">${eur(c.spesa)}</span><span class="rb xs"${m.clienti.includes(c.cliente) ? ` data-az="pagina" data-pagina="richieste" data-cliente="${esc(c.cliente)}"${dip ? ` data-dip="${dip}"` : ''} title="Le richieste di ${esc(c.cliente)}"` : ''}>${ic('i-ne')}</span></div>`;
+  }
+  function rigaModello(m, md, periodo, totN) {
+    const medio = md.n ? md.costo / md.n : 0, unita = periodo === 'oggi' ? 'passi' : 'esecuzioni';
+    return `<div class="crow${md.n ? '' : ' spenta'}"><span class="ico">${ic(md.icona)}</span><div class="tx"><b>${esc(md.nome)}</b><span>listino ${esc(md.listino)}</span></div><span class="v">${md.n}<small>${unita} · ${Math.round(100 * md.n / Math.max(1, totN))}%</small></span><span class="v">${eur(medio)}<small>${periodo === 'oggi' ? 'per passo' : 'per esecuzione'}</small></span><span class="eur">${eur(md.costo)}</span><span class="rb xs">${ic('i-ne')}</span></div>`;
+  }
+  function rigaStrumento(m, s) {
+    return `<div class="crow"><span class="ico">${ic(s.icona)}</span><div class="tx"><b>${esc(s.nome)}</b><span>${s.chiamate} chiamat${plurale(s.chiamate, 'a', 'e')} in ${s.chi.length} esecuzion${plurale(s.chi.length, 'e', 'i')}</span></div><span class="v">${s.errore ? `<span class="chip rosa">${ic('i-warn')}Errore</span>` : `<span class="chip lime">${ic('i-check')}Usato</span>`}</span><span class="v">${pair(m, s.chi, 'xs', 3)}</span><span class="eur">${eur(s.costo)}</span><span class="rb xs" data-az="pagina" data-pagina="esecuzione" data-id="${s.chi[0]}" title="Apri l'esecuzione di ${esc(m.etichetta(m.byId[s.chi[0]]))}">${ic('i-ne')}</span></div>`;
+  }
+  function paginaCosti(m, opz) {
+    const per = Object.assign({ dipartimenti: 'mese', dipendenti: 'mese', clienti: 'mese', modelli: 'mese' }, opz.periodo || {});
+    const c30 = m.costi('mese'), resta = c30.budgetMese - c30.budgetSpeso;
+    const stats = `<div class="stat"><b>${m.costoOggi} €</b><span>spesi oggi</span>${m.costoOggi > c30.budgetGiorno ? `<span class="badge down">${ic('i-warn')}oltre</span>` : ''}</div>
+      <div class="stat"><b>${c30.totale} €</b><span>in 30 giorni</span>${delta(c30.totale, c30.prima, false, v => v + ' €')}</div>
+      <div class="stat"><b>${resta} €</b><span>restano di ${c30.budgetMese} €</span>${resta < 0 ? `<span class="badge down">${ic('i-warn')}oltre</span>` : ''}</div>`;
+    const cD = m.costi(per.dipartimenti), cE = m.costi(per.dipendenti), cC = m.costi(per.clienti), cM = m.costi(per.modelli), cS = m.costi('oggi');
+    const compatto = m.n > 16;
+    const corpo = `
+      <section>
+        <div class="shead"><h3>Per dipartimento</h3><span class="cnt"><b>${eur(cD.totale)}</b><span>${PERIODO_LB[per.dipartimenti]}</span></span><span class="rb sm ghost">${ic('i-sliders')}</span><span class="rb sm ghost">${ic('i-down')}</span>
+          ${pillePeriodo('dipartimenti', per.dipartimenti, ['oggi', 'mese', 'anno'])}</div>
+        <div class="cards riga">${cD.perDipartimento.map((x, i) => cardCostoDip(m, x, per.dipartimenti, cD.totale, i)).join('')}</div>
+      </section>
+      <section>
+        <div class="shead"><h3>Per dipendente</h3><span class="cnt"><b>${m.n}</b><span>Dipendenti · ${eur(cE.totale)} ${PERIODO_LB[per.dipendenti]}</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>${compatto ? `<span class="rb sm ghost">${ic('i-grid')}</span><span class="rb sm white">${ic('i-rows')}</span>` : ''}
+          ${pillePeriodo('dipendenti', per.dipendenti, ['oggi', 'mese', 'anno'])}</div>
+        ${compatto ? `<div class="elenco">${cE.perDipendente.map(x => rigaCostoCompatta(m, x, per.dipendenti)).join('')}</div>` : `<div class="hlist" style="margin-top:24px">${cE.perDipendente.map(x => rigaCostoDipendente(m, x, per.dipendenti)).join('')}</div>`}
+      </section>
+      <section>
+        <div class="shead"><h3>Per cliente</h3><span class="cnt"><b>${cC.perCliente.length}</b><span>Clienti · ${eur(cC.totale)} ${PERIODO_LB[per.clienti]}</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-down')}</span>
+          ${pillePeriodo('clienti', per.clienti, ['oggi', 'mese', 'anno'])}</div>
+        ${cC.perCliente.length ? `<div class="hlist" style="margin-top:24px">${cC.perCliente.map(c => rigaCliente(m, c, per.clienti, cC.totale, "dell'azienda")).join('')}</div>` : `<div class="vuoto">Nessuna spesa ${PERIODO_LB[per.clienti]}</div>`}
+      </section>
+      <section>
+        <div class="shead"><h3>Per modello</h3><span class="cnt"><b>${cM.esecuzioni}</b><span>${per.modelli === 'oggi' ? 'Passi oggi' : 'Esecuzioni in 30 giorni'} · ${eur(cM.totale)}</span></span><span class="rb sm ghost">${ic('i-sliders')}</span>
+          ${pillePeriodo('modelli', per.modelli, ['oggi', 'mese'])}</div>
+        <div class="costo">${cardCostoAzienda(m, cM, per.modelli)}<div class="hlist" style="margin-top:0">${cM.perModello.map(md => rigaModello(m, md, per.modelli, cM.esecuzioni)).join('')}</div></div>
+      </section>
+      <section>
+        <div class="shead"><h3>Per strumento</h3><span class="cnt"><b>${cS.chiamate}</b><span>Chiamate oggi · ${eur(cS.costoStrumenti)}</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
+          ${pillePeriodo('strumenti', 'oggi', ['oggi'])}</div>
+        ${cS.perStrumento.length ? `<div class="hlist" style="margin-top:24px">${cS.perStrumento.map(s => rigaStrumento(m, s)).join('')}</div>` : `<div class="vuoto">Nessuno strumento usato oggi</div>`}
+      </section>`;
+    return cornice(m, opz, 'COSTI', stats, 'costi', corpo, '');
   }
 
   /* ---------- tendina estesa delle versioni: dossier di una revisione, o confronto fra due versioni ---------- */
@@ -1404,13 +1529,13 @@ window.DIREZIONE_A = (function () {
   }
 
   function render(m, opz) {
-    opz = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, confronto: null, motivo: false }, opz || {});
-    return opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : opz.pagina === 'dipendente' ? dipendente(m, opz) : opz.pagina === 'esecuzione' ? esecuzione(m, opz) : home(m, opz);
+    opz = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, confronto: null, motivo: false, periodo: {} }, opz || {});
+    return opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : opz.pagina === 'dipendente' ? dipendente(m, opz) : opz.pagina === 'esecuzione' ? esecuzione(m, opz) : opz.pagina === 'costi' ? paginaCosti(m, opz) : home(m, opz);
   }
 
   /* Disegna e collega i clic: tendina, cambio pagina, filtri, decisioni. Ritorna lo stato. */
   function monta(radice, m, opz) {
-    const st = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, editor: null, confronto: null, motivo: false, log: 'tutto' }, opz || {});
+    const st = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, editor: null, confronto: null, motivo: false, log: 'tutto', periodo: { dipartimenti: 'mese', dipendenti: 'mese', clienti: 'mese', modelli: 'mese' } }, opz || {});
     const n = () => m.richiesteDi('attesa').length;
     /* parametri di avvio della pagina del dipendente: ?tendina=dossier (la revisione in sospeso del dipendente, estesa) e ?confronto=a,b (due versioni del prompt) */
     const idxRevisione = id => inAttesa(m).findIndex(r => r.tipo === 'revisione' && r.chi === id);
@@ -1498,8 +1623,10 @@ window.DIREZIONE_A = (function () {
       else if (az === 'succ') { if (n()) st.richiesta = (st.richiesta + 1) % n(); soloTendina(); }
       else if (az === 'vai') { st.richiesta = +el.dataset.idx; soloTendina(); }
       else if (az === 'richiesta') { if (ev.target.closest('[data-az="approva"],[data-az="rifiuta"]')) return; st.richiesta = +el.dataset.idx; st.tendina = 'estesa'; st.pannello = 'richieste'; soloTendina(); }
-      else if (az === 'pagina') { ev.stopPropagation(); st.pagina = el.dataset.pagina; if (el.dataset.dip) { st.dip = el.dataset.dip; if (st.pagina === 'richieste') st.filtri = { dip: el.dataset.dip }; } if (el.dataset.id) st.id = +el.dataset.id; if (el.dataset.chi) st.filtri = { chi: el.dataset.chi }; if (st.tendina === 'confronto' || st.tendina === 'estesa') st.tendina = 'aperta'; st.motivo = false; tutto(); window.scrollTo(0, 0); }
+      else if (az === 'pagina') { ev.stopPropagation(); st.pagina = el.dataset.pagina; if (el.dataset.dip) { st.dip = el.dataset.dip; if (st.pagina === 'richieste') st.filtri = { dip: el.dataset.dip }; } if (el.dataset.id) st.id = +el.dataset.id; if (el.dataset.chi) st.filtri = { chi: el.dataset.chi }; if (el.dataset.cliente) st.filtri = Object.assign(st.pagina === 'richieste' && el.dataset.dip ? { dip: el.dataset.dip } : {}, { cliente: el.dataset.cliente }); if (st.tendina === 'confronto' || st.tendina === 'estesa') st.tendina = 'aperta'; st.motivo = false; tutto(); window.scrollTo(0, 0); }
       else if (az === 'filtro') { const k = el.dataset.k, v = el.dataset.v; st.filtri[k] = (st.filtri[k] === v || v === 'tutti') ? undefined : v; tutto(); }
+      /* ---- pagina dei costi: il periodo di una sezione ---- */
+      else if (az === 'periodo') { st.periodo = Object.assign({}, st.periodo, { [el.dataset.sez]: el.dataset.v }); tutto(); }
       else if (az === 'azzera') { st.filtri = {}; tutto(); }
       else if (az === 'ordina') { st.ordine = el.dataset.v; tutto(); }
       else if (az === 'approva') { ev.stopPropagation(); decidi(el.dataset.id, 'approvata'); }

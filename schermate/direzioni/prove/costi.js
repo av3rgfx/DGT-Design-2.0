@@ -1,0 +1,121 @@
+// Prova cliccata della pagina Costi (versione 13): rail, numeri, pillole del periodo per sezione, collegamenti da e verso le altre pagine, 40.
+// Uso (dalla radice o da qualunque cartella): PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css node schermate/direzioni/prove/costi.js
+const path = require('path'), fs = require('fs');
+
+// Font locali: LOCAL_FONT_CSS (vedi design-system/tools/fetch-fonts.py); Playwright globale: PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules
+const css = process.env.LOCAL_FONT_CSS ? fs.readFileSync(process.env.LOCAL_FONT_CSS, 'utf8') : '';
+const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const file = q => 'file://' + path.resolve(__dirname, '../direzione-a.html') + (q ? '?' + q : '');
+let ok = 0, ko = 0;
+const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } else { ko++; console.log('  KO  ' + msg); } };
+(async () => {
+  const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', args: ['--no-sandbox'] });
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 1100 }, reducedMotion: 'reduce' });
+  const page = await ctx.newPage();
+  await page.route('https://fonts.googleapis.com/**', r => r.fulfill({ status: 200, contentType: 'text/css', body: css }));
+  const errors = []; page.on('pageerror', e => errors.push(e.message)); page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+  const txt = async sel => (await page.locator(sel).first().textContent()).replace(/\s+/g, ' ').trim();
+  const titolo = () => txt('.a-title');
+  const largo = async () => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth);
+  const stats = () => page.locator('.a-head .stat').allTextContents().then(a => a.map(t => t.replace(/\s+/g, ' ').trim()));
+
+  console.log('1. dal rail della home');
+  await page.goto(file('tendina=chiusa')); await page.waitForTimeout(400);
+  check((await page.locator('.a-rail .rb').count()) === 6, 'il rail ha sei cerchi');
+  await page.click('.a-rail [data-pagina="costi"]'); await page.waitForTimeout(300);
+  check(await titolo() === 'COSTI', 'titolo COSTI');
+  check(await page.locator('.a-rail [data-pagina="costi"].white').count() === 1, 'il cerchio euro è attivo');
+  const st = await stats(); console.log('    numeri:', st.join(' | '));
+  check(st[0].startsWith('124 €') && st[1].startsWith('613 €') && st[2].startsWith('967 €'), 'i tre numeri: 124 € oggi, 613 € in 30 giorni, 967 € restano');
+  check(st[1].includes('106 €'), 'badge del confronto con i 30 precedenti (+106 €)');
+  check(await largo(), 'nessuno sforo orizzontale');
+  const sez = await page.locator('.a-main > section').count(); check(sez === 5, 'cinque sezioni');
+  const cnt = await page.locator('.shead .cnt').allTextContents(); console.log('    intestazioni:', cnt.map(t => t.replace(/\s+/g, ' ').trim()).join(' | '));
+  check(cnt[0].includes('613 €') && cnt[1].includes('613 €') && cnt[2].includes('613 €') && cnt[3].includes('613 €'), 'le quattro sezioni a 30 giorni sommano allo stesso totale');
+  check((await page.locator('.a-main > section').nth(0).locator('.task.spesa').count()) === 4, 'quattro card costo dei dipartimenti');
+  check((await page.locator('.crow.sp').count()) === 11, 'undici righe dei dipendenti');
+  check((await page.locator('.a-main > section').nth(4).locator('.crow').count()) === 8, 'otto strumenti usati oggi');
+
+  console.log('2. le pillole del periodo, sezione per sezione');
+  await page.evaluate(() => window.scrollTo(0, 120));
+  await page.click('[data-az="periodo"][data-sez="dipartimenti"][data-v="oggi"]'); await page.waitForTimeout(300);
+  check((await page.evaluate(() => window.scrollY)) === 120, 'lo scorrimento resta dov\'era dopo il clic');
+  let c = await page.locator('.shead .cnt').allTextContents();
+  check(c[0].includes('124 €') && c[0].includes('oggi'), 'per dipartimento: oggi = 124 €');
+  check(c[1].includes('613 €'), 'per dipendente resta a 30 giorni (periodi indipendenti)');
+  const tts = await page.locator('.a-main > section').nth(0).locator('.task.spesa .tt').allTextContents();
+  console.log('    card oggi:', tts.map(t => t.replace(/\s+/g, ' ').trim()).join(' | '));
+  check(tts[0].includes('42 €') && tts[2].includes('61 €'), 'Sviluppo 42 € e Vendite 61 € oggi');
+  await page.click('[data-az="periodo"][data-sez="dipartimenti"][data-v="anno"]'); await page.waitForTimeout(300);
+  c = await page.locator('.shead .cnt').allTextContents();
+  check(c[0].includes('1356 €'), 'per dipartimento: da inizio anno = 1356 €');
+  check((await page.locator('.a-main > section').nth(0).locator('.leg i.b1').count()) === 4, 'da inizio anno la ripartizione è per blocchi di tempo');
+  await page.click('[data-az="periodo"][data-sez="dipendenti"][data-v="oggi"]'); await page.waitForTimeout(300);
+  const prima = await txt('.crow.sp .tx b'); check(prima === 'Ricerca lead', 'per dipendente oggi: primo Ricerca lead (61 €), ' + prima);
+  check((await txt('.crow.sp .v.mezzo')).includes('passo 5 di 6'), 'la riga di oggi mostra l\'esecuzione e il passo');
+  await page.click('[data-az="periodo"][data-sez="clienti"][data-v="anno"]'); await page.waitForTimeout(300);
+  c = await page.locator('.shead .cnt').allTextContents(); check(c[2].includes('1356 €'), 'per cliente da inizio anno = 1356 €');
+  await page.click('[data-az="periodo"][data-sez="modelli"][data-v="oggi"]'); await page.waitForTimeout(300);
+  c = await page.locator('.shead .cnt').allTextContents(); check(c[3].includes('17') && c[3].includes('Passi oggi'), 'per modello oggi: 17 passi');
+  check((await txt('.task.regola.spesa .who b')) === 'Spesa di oggi', 'la card dell\'azienda passa a «Spesa di oggi»');
+  check((await page.locator('[data-az="periodo"][data-sez="modelli"][data-v="anno"]').count()) === 0, 'per modello non offre l\'anno');
+  check((await page.locator('[data-az="periodo"][data-sez="strumenti"]').count()) === 1, 'per strumento solo oggi');
+  check(await largo(), 'nessuno sforo orizzontale dopo i cambi di periodo');
+
+  console.log('3. verso le altre pagine e ritorno');
+  await page.click('.a-main > section >> nth=0 >> .task.spesa >> nth=1 >> .nt [data-pagina="dipartimento"]'); await page.waitForTimeout(300);
+  check(await titolo() === 'MARKETING', 'dalla card Marketing alla pagina del dipartimento');
+  const sm = await page.locator('.a-main > section').last().locator('.shead .cnt').textContent();
+  check(sm.includes('135 €'), 'Spesa del mese di Marketing = 135 € (lo stesso numero della card)');
+  await page.click('.destra [data-pagina="costi"]'); await page.waitForTimeout(300);
+  check(await titolo() === 'COSTI', '«Tutti i costi dell\'azienda» dal Dipartimento');
+  await page.click('.crow.sp >> nth=0 >> [data-pagina="dipendente"]'); await page.waitForTimeout(300);
+  console.log('    pagina:', await titolo());
+  check((await titolo()) !== 'COSTI', 'dalla riga del dipendente alla sua pagina');
+  await page.click('.a-head .stat[data-pagina="costi"]'); await page.waitForTimeout(300);
+  check(await titolo() === 'COSTI', 'il numero «spesi oggi» del dipendente porta ai costi');
+  check((await page.locator('.a-main > section >> nth=2 >> .crow >> nth=1 >> .rb.xs[data-az]').count()) === 0, 'Zenith non ha richieste: la freccia è inerte');
+  await page.click('.a-main > section >> nth=2 >> .crow >> nth=2 >> [data-pagina="richieste"]'); await page.waitForTimeout(300);
+  check(await titolo() === 'RICHIESTE', 'dalla riga del cliente (Rossi Srl) alle richieste');
+  const pillOn = await page.locator('.fbar .pill.on').allTextContents();
+  console.log('    filtri attivi:', pillOn.map(t => t.trim()).join(' | '));
+  check(pillOn.some(t => t.trim() === 'Rossi Srl'), 'filtro cliente Rossi Srl attivo');
+  check((await txt('.fsum')).includes('1 filtro attivo'), 'un solo filtro attivo');
+  await page.click('.a-rail [data-pagina="home"]'); await page.waitForTimeout(300);
+  await page.click('.a-head .stat[data-pagina="costi"]'); await page.waitForTimeout(300);
+  check(await titolo() === 'COSTI', 'il numero «spesi oggi» della home porta ai costi');
+  await page.click('.a-main > section >> nth=4 >> .crow >> nth=0 >> [data-pagina="esecuzione"]'); await page.waitForTimeout(300);
+  check(await titolo() === '200 LEAD E-COMMERCE IN LOMBARDIA', 'dalla riga «Ricerca web» all\'esecuzione di Ricerca lead: ' + await titolo());
+  await page.click('.destra [data-pagina="costi"]'); await page.waitForTimeout(300);
+  check(await titolo() === 'COSTI', '«Tutti i costi dell\'azienda» dalla sezione Costo dell\'Esecuzione');
+  await page.click('.a-back'); await page.waitForTimeout(300);
+  check(await titolo() === 'NOVA STUDIO', 'indietro dai costi = home');
+
+  console.log('4. le decisioni cambiano i costi');
+  await page.goto(file('pagina=costi&tendina=aperta')); await page.waitForTimeout(400);
+  const c0 = (await page.locator('.shead .cnt').nth(2).textContent()).trim();
+  await page.click('.appr [data-az="approva"]'); await page.waitForTimeout(300);
+  check(await titolo() === 'COSTI', 'approvare dalla tendina lascia la pagina dei costi');
+  check(errors.length === 0, 'nessun errore in console finora');
+  await page.click('[data-az="periodo"][data-sez="clienti"][data-v="oggi"]'); await page.waitForTimeout(300);
+  const righeOggi = await page.locator('.a-main > section').nth(2).locator('.crow .tx').allTextContents();
+  console.log('    clienti oggi:', righeOggi.map(t => t.replace(/\s+/g, ' ').trim()).join(' | '));
+  check(righeOggi.some(t => t.includes('Madira Ink') && t.includes('1 consegna approvata')), 'Madira Ink ha una consegna approvata oggi dopo l\'approvazione del piano editoriale (la prima in coda)');
+
+  console.log('5. quaranta');
+  await page.goto(file('pagina=costi&tendina=chiusa&n=40')); await page.waitForTimeout(500);
+  check((await page.locator('.elenco .erow').count()) === 40, 'vista compatta: 40 pillole');
+  check((await page.locator('.crow.sp').count()) === 0, 'niente righe larghe a 40');
+  const s40 = await stats(); console.log('    numeri:', s40.join(' | '));
+  check(s40[0].startsWith('427 €') && s40[1].startsWith('2154 €'), '427 € oggi, 2154 € in 30 giorni');
+  check(await largo(), 'nessuno sforo orizzontale a 40');
+  await page.click('.elenco .erow >> nth=0 >> [data-pagina="dipendente"]'); await page.waitForTimeout(300);
+  check((await titolo()) !== 'COSTI', 'dalla pillola compatta alla pagina del dipendente: ' + await titolo());
+
+  console.log('6. il telefono carica ancora la Console');
+  await page.goto('file://' + path.resolve(__dirname, '../mobile.html')); await page.waitForTimeout(500);
+  check((await page.locator('.m-tel').count()) === 3, 'tre telefoni');
+  check(errors.length === 0, 'nessun errore in console: ' + JSON.stringify(errors));
+  console.log(`\n${ok} ok, ${ko} ko`);
+  await browser.close(); process.exit(ko ? 1 : 0);
+})().catch(e => { console.error('FALLITO', e); process.exit(1); });

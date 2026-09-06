@@ -212,6 +212,12 @@ direzione. Regole che valgono da qui in avanti:
     richiesta) e la **barra dei passi**, che è la barra agenda del sistema; poi Passi, Log con la barra di scrittura
     del titolare, Output con le consegne precedenti della serie, Costo. Ogni azione cambia il modello e si vede
     subito nella home e nel dipartimento.
+15. **La pagina dei Costi** (versione 13) nella stessa cornice, l'ultima pagina di prodotto: per dipartimento, per
+    dipendente, per cliente, per modello, per strumento, ognuna con le pillole del periodo che i suoi dati reggono
+    (oggi dalle esecuzioni, 30 giorni dal dossier, da inizio anno dalla creazione). **Un solo aggregatore** (`m.costi`
+    in `dati.js`) per la pagina e per la sezione «Spesa del mese» del Dipartimento: gli stessi numeri ovunque, e le
+    viste per dipartimento, dipendente, cliente e modello sommano allo stesso totale. Si arriva dal sesto cerchio del
+    rail (euro), dal numero «spesi oggi» e dalle pillole «Tutti i costi dell'azienda» nelle sezioni Spesa del mese e Costo.
 
 ### Versione 2 della direzione A (2026-09-04)
 
@@ -841,13 +847,72 @@ Screenshot (cornici con `screenshot-elementi.js`, `SCALE=2 H=1100`, `EVAL` per l
 https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9. **L'utente non ha ancora giudicato nessuna delle tre
 schermate** (solo la correzione della fascia sfocata, versione 11).
 
+### Versione 13: la pagina dei Costi (2026-09-06, sessione successiva)
+
+L'ultima pagina di prodotto della direzione A, costruita come da passaggio di consegne («Come riprendere», punti 3 e 4): stessa
+cornice, titolo **COSTI**, tre numeri, cinque sezioni con le pillole del periodo. Domanda a cui risponde: **dove vanno i soldi
+(dipartimento, dipendente, cliente, modello, strumento), oggi e nel mese, e se stiamo dentro il budget.** Nessun componente nuovo:
+la card costo dell'esecuzione, le righe della spesa del mese, i badge del confronto, la vista compatta oltre sedici.
+
+| # | Sezione | Che cosa c'è |
+|---|---|---|
+| 0 | Cornice | titolo COSTI; tre numeri: **spesi oggi** (`m.costoOggi`, lo stesso della home; badge rosa «oltre» se sopra la somma dei limiti del giorno, 124 su 115 € a 11), **in 30 giorni** (613 €; badge del confronto con i 30 precedenti, rosa se la spesa sale: +106 €), **restano di 1580 €** (quanto resta della somma dei budget del mese: 967 €; rosa «oltre» se negativo); niente pillola «Nuovo…» (come nelle pagine Dipendente ed Esecuzione: è una pagina che si legge); indietro → home; rail con il **sesto cerchio** (euro) attivo |
+| 1 | Per dipartimento | quattro **card costo** (la card Costo dell'esecuzione, 316: quattro in fila fanno i 1312 della griglia): icona e nome del dipartimento, dipendenti; spesa del periodo con il limite («su 30 € al giorno», «di 320 € al mese», «dal 1 lug»); **ripartizione a pillola** per modello con la legenda a capo, o **per blocchi di tempo** da inizio anno (ultimi 30 giorni lime, 30 precedenti bianco, prima grigio); riga «Quota e consegne»: chip della quota sull'azienda, consegne approvate, occhio → pagina del Dipartimento. Nell'intaglio un solo pulsante (la striscia «chi» ha bisogno dello spazio: «Amministrazione» non si tronca): la freccia verso il dipartimento, oppure la **campanella con il punto** se oltre il limite, e allora la card è lime con la ripartizione nero / bianco / grigio |
+| 2 | Per dipendente | righe 56 (`.crow.sp`) dal più caro: avatar 40, etichetta e «ruolo · dipartimento», un valore del periodo (oggi l'esecuzione con il passo o lo stato; nei 30 giorni il **costo per esito utile**; dalla creazione «dal 12 giu»), il **budget a barra** (8 px: del giorno per oggi, del mese altrimenti; rosa se oltre), la spesa con il **badge del confronto** con i 30 precedenti (oggi: «oltre» se sopra il limite del giorno), freccia → pagina del Dipendente; a 0 € la riga è spenta. **Oltre sedici** la vista compatta (regola 3): pillole a tre per riga con la spesa in un chip, lime chi è oltre il budget |
+| 3 | Per cliente | le **righe della spesa del mese** del Dipartimento, sull'azienda: cliente, consegne approvate, spesa di oggi (oggi: quanti dipendenti), quota, spesa; la freccia apre **Richieste filtrate sul cliente**, solo se ne ha (Zenith a 11 spende solo in esecuzioni: freccia inerte). La stessa riga e lo stesso aggregatore ora anche nella pagina Dipartimento, con la pillola «Tutti i costi dell'azienda» a destra |
+| 4 | Per modello | la **card costo dell'azienda** (517, la card Costo dell'esecuzione: totale su budget, ripartizione per modello, esecuzioni; riga «Oggi» sul limite del giorno con «nel limite» / «oltre il limite», freccia → Richieste per la regola «Spese sopra 50 €») e **tre righe**, una per modello: listino, esecuzioni (oggi: passi) con la quota, costo medio, costo totale. Periodi: oggi e 30 giorni (dalla creazione l'uso per modello non c'è nel modello) |
+| 5 | Per strumento | righe per strumento sommate per nome dalle esecuzioni di oggi: chiamate ed esecuzioni, chip Usato / Errore, **pila** di chi lo ha usato (dal più caro, con il «+N»), costo, freccia → l'esecuzione di chi ha speso di più. Solo oggi: il modello non tiene lo storico degli strumenti |
+
+**Da dove ci si arriva** (decisione presa costruendo, da confermare): il **sesto cerchio del rail** (euro, dopo il calendario:
+i cinque di prima non cambiano posto); il numero **«spesi oggi»** cliccabile nella home, nel Dipartimento e nel Dipendente; la
+pillola **«Tutti i costi dell'azienda»** a destra nella sezione «Spesa del mese» del Dipartimento e nella sezione «Costo»
+dell'Esecuzione.
+
+**I periodi** (scelta fatta costruendo, da confermare). Ogni sezione ha le sue pillole, **indipendenti** (cambiare il periodo di una
+non tocca le altre; lo scorrimento resta dov'è), e offre solo i periodi che i suoi dati reggono: **Oggi** (le esecuzioni di oggi,
+`e.att.costo`: lo stesso numero della home), **Ultimi 30 giorni** (il dossier del dipendente, `metriche.ora.spesa`, confrontato con
+i 30 precedenti; è il predefinito, come nella sezione «Spesa del mese») e **Da inizio anno** (dalla creazione del dipendente, a
+giugno: i 30 giorni, i 30 precedenti e le versioni del prompt più vecchie, task × costo per esito; per le consegne, task meno le
+respinte). Niente «7 giorni», proposto nel passaggio di consegne: il modello non ha una spesa settimanale per dipendente (le
+richieste sono un campione, non il registro, e a sette giorni avrebbero superato i 30). Per modello niente anno; per strumento solo
+oggi (una pillola sola, accesa).
+
+**L'aggregatore** (`m.costi(periodo, dip)` in `dati.js`, accanto a `costoOggi`): per dipendente, dipartimento, cliente, modello e
+strumento, con totali, budget, limiti del giorno e consegne. **Per cliente la spesa (e le consegne) di ogni dipendente si ripartisce
+fra i suoi clienti in proporzione alle richieste del periodo** (oggi: il cliente dell'esecuzione in corso; senza richieste il
+cliente dell'ultima esecuzione, altrimenti Nova Studio), con un arrotondamento che tiene esatta la somma: così le quattro viste
+sommano allo stesso totale (613 € a 11, 2154 € a 40), che è quello della testata. Prima la sezione «Spesa del mese» del
+Dipartimento contava le sole richieste (233 € per tutta l'azienda contro i 613 € dei dossier): ora legge lo stesso aggregatore, per
+cui i suoi numeri sono cambiati. Due correzioni di coerenza nei dati, necessarie perché la pagina mette i numeri uno accanto
+all'altro: il **budget speso del Social media manager** era 140 € contro i 43 € di spesa dei 30 giorni (ora 43, anche nel testo
+della revisione «+18 € al mese sul budget»); nei **dossier generati i costi per modello** ora ripartiscono la spesa dei 30 giorni
+(prima erano numeri a sé e non tornavano con la spesa né con il budget).
+
+**Prova cliccata** (Playwright, 48 verifiche, nessun errore di console, nessuno sforo orizzontale): sei cerchi nel rail e il sesto
+attivo; i tre numeri; le quattro sezioni allo stesso totale; pillole per sezione con lo scorrimento che resta dov'era e i periodi
+indipendenti; oggi 124 € (Sviluppo 42, Vendite 61), da inizio anno 1356 € con i blocchi di tempo; per dipendente oggi il primo è
+Ricerca lead con «passo 5 di 6»; per modello oggi 17 passi e la card «Spesa di oggi», niente anno; la card Marketing → Dipartimento
+con «Spesa del mese» = 135 € come nella card → «Tutti i costi» → Costi; riga del dipendente → pagina → «spesi oggi» → Costi; riga
+cliente → Richieste con il filtro «Rossi Srl» attivo (Zenith inerte); home «spesi oggi» → Costi; riga «Ricerca web» → l'esecuzione
+di Ricerca lead → «Tutti i costi» → Costi; indietro → home; approvare dalla tendina (il piano editoriale, primo in coda) lascia la
+pagina e Madira Ink ha una consegna approvata oggi; a 40 la vista compatta (40 pillole, 427 € oggi, 2154 € in 30 giorni) e dalla
+pillola alla pagina del dipendente; il telefono carica ancora la Console.
+
+Screenshot: `a-costi.png` (la pagina a 11, tendina aperta), `a-costi-40.png`, `a-costi-testata.png`, e le sezioni a due volte
+(`screenshot-elementi.js`, `SCALE=2 H=3200`, `CLICK` sulle pillole): `a-costi-dipartimenti.png`, `-dipartimenti-oggi`,
+`-dipartimenti-anno`, `a-costi-dipendenti.png`, `-dipendenti-oggi`, `-dipendenti-anno`, `a-costi-clienti.png`, `-clienti-oggi`,
+`-clienti-anno`, `a-costi-modelli.png`, `-modelli-oggi`, `a-costi-strumenti.png`. Artefatto della Console ripubblicato allo stesso
+indirizzo: https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34. Alla vista delle schermate **l'utente ha detto
+«bene»**, senza correzioni, e ha scelto la manutenzione come lavoro successivo (PR #10: https://github.com/av3rgfx/DGT-Design-2.0/pull/10).
+La prova cliccata è nel repository: `prove/costi.js`.
+
 ## 5. File
 
 | File | Ruolo |
 |---|---|
-| `dati.js` | modello sintetico (11 e 40) condiviso; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`), le richieste di tipo `revisione` e l'esecuzione (`esecuzioneDi`: sei scritte a mano, le altre generate); dal 2026-09-05 la decisione del titolare (`decidi`), condivisa fra Console e telefono; `azienda.scadenzaMese` per la linea del tempo del mobile |
+| `dati.js` | modello sintetico (11 e 40) condiviso; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`), le richieste di tipo `revisione` e l'esecuzione (`esecuzioneDi`: sei scritte a mano, le altre generate); dal 2026-09-05 la decisione del titolare (`decidi`), condivisa fra Console e telefono; `azienda.scadenzaMese` per la linea del tempo del mobile; dal 2026-09-06 l'aggregatore dei costi (`costi(periodo, dip)`, `spesaDi`) per la pagina Costi e la sezione «Spesa del mese» |
 | `comune.js` | sprite di icone di DGT, prefisso CSS, utilità |
-| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo); cliccabile; esporta `av`, `iconaTipo`, `nomeTipo` e `differenze` per il telefono |
+| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo), pagina Costi (per dipartimento, dipendente, cliente, modello, strumento, con le pillole del periodo per sezione; `?pagina=costi`); cliccabile; esporta `av`, `iconaTipo`, `nomeTipo` e `differenze` per il telefono |
 | `mobile.js` / `.html` | le approvazioni da mobile (versioni 11 e 12): cornice del telefono dello specimen, schermate «Da approvare», «Richiesta» (anche la revisione di performance con le due versioni a confronto e le quattro decisioni) e «Riepilogo di oggi» (linea del tempo, anche stato vuoto a coda finita), il rifiuto con motivo; tre telefoni affiancati che condividono il modello e la richiesta corrente; `DGT_MOBILE.monta`, `coda`; `?schermata=1|2|3&richiesta=0`, `?n=40` |
 | `avatar/avatar-dgt.js` | involucro degli avatar nel linguaggio della Console (colori, stati, simboli statici, animazione); `usa('orbe'|'kit')` sceglie la famiglia |
 | `avatar/avatar-orbe.js` | la famiglia «orbe» (versioni 5b, 5c, 7, 7b, 7c): cerchi dal seme con le pupille e lo sguardo del kit, un solo motore `requestAnimationFrame` con funzioni continue del tempo, sguardo che segue il puntatore; senza disco, con le pelli (`pelle('perla'|'grigio'|'chiaro'|'alone'|'disco')`, solo variabili CSS; perla predefinita); `fermo(t)`, `riprendi()`, `fotogramma(svg, t)` per gli screenshot |
@@ -860,6 +925,7 @@ schermate** (solo la correzione della fascia sfocata, versione 11).
 | `direzione-c.js` / `.html` | Mappa viva |
 | `confronto.html` | pagina di confronto con tab e selettore 11/40 |
 | `build-unico.js` | genera il file unico per l'artefatto (`node build-unico.js direzione-a.html out.html`) |
-| `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`); le cornici del telefono (`mobile-*.png`, sedici catture delle versioni 11 e 12) con `screenshot-elementi.js` |
+| `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`); le cornici del telefono (`mobile-*.png`, sedici catture delle versioni 11 e 12) e le sezioni della pagina Costi (`a-costi-*.png`, versione 13) con `screenshot-elementi.js` |
+| `prove/` | le prove cliccate con Playwright: `costi.js` (dal 2026-09-06, 48 verifiche della pagina dei Costi; legge `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH`). Le prove della Console e del mobile sono ancora da mettere nel repository (manutenzione) |
 
 Per gli screenshot: `design-system/tools/screenshot-page.js` (vedi `design-system/tools/README.md`).
