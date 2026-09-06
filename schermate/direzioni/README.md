@@ -7,10 +7,12 @@ prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decision
   https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
 - Schermate singole: `direzione-a.html`, `direzione-b.html`, `direzione-c.html`; con `?n=40` la prova di scala.
 - La direzione A è cliccabile (due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente per
-  creare e modificare i dipendenti, pagina Dipendente con la revisione di performance, pagina Esecuzione). Parametri:
+  creare e modificare i dipendenti, pagina Dipendente con la revisione di performance, pagina Esecuzione, pagina Costi). Parametri:
   `?pagina=dipartimento&dip=svi|mkt|ven|amm`, `?pagina=dipendente&id=4` (con `&tendina=dossier` il dossier della
   revisione in sospeso, con `&confronto=6,7` due versioni del prompt a confronto), `?pagina=esecuzione&id=4` (Nora al
-  lavoro; `id=3` Kim in errore, `id=5` Social media manager da approvare, `id=2` Tester QA pianificata),
+  lavoro; `id=3` Kim in errore, `id=5` Social media manager da approvare, `id=2` Tester QA pianificata), `?pagina=costi` (i
+  costi dell'azienda: per dipartimento, dipendente, cliente, modello e strumento, con le pillole del periodo in ogni sezione;
+  dal sesto cerchio del rail, dal numero «spesi oggi» e dalle sezioni Spesa del mese e Costo),
   `?tendina=chiusa|aperta|estesa`, `?pannello=richieste|riepilogo`, `?pagina=home|richieste`, `?richiesta=0`,
   `?editor=nuovo|<id dipendente>`, `?avatar=orbe|kit`, `?pelle=perla|grigio|chiaro|alone|disco` (la pelle dell'orbe
   senza disco; predefinita perla). Artefatto:
