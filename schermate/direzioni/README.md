@@ -33,11 +33,12 @@ prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decision
   rifiuto con motivo; dalla **versione 17** (2026-09-07) anche «Dipartimenti» (l'elenco dei quattro, dal secondo cerchio della
   navigazione, che era l'ultimo inerte) e «Dipartimento» (la pagina Dipartimento della Console ridotta: oggi, da approvare
   decidibili sul posto, dipendenti, obiettivi, spesa del mese), e in cima alla prima schermata il **quadro del giorno**, la
-  barra «Oggi in azienda» della Console ridotta alla colonna di 254 px; otto telefoni affiancati, cliccabili, che condividono
+  barra «Oggi in azienda» della Console ridotta alla colonna di 254 px in una **griglia due per due** (e la riga dei due
+  numeri grandi che cade, perché il quadro e il titolo dicono già quei conti); otto telefoni affiancati, cliccabili, che condividono
   il modello, la richiesta corrente, i fili e il dipartimento scelto con la
   Console (`m.decidi` e `m.scrivi` in `dati.js`). Parametri: `?schermata=1|…|8` (uno o più telefoni, es.
   `?schermata=2`), `?richiesta=0` (a 11: 2 e 3 sono le due revisioni), `?filo=<id dipendente>`, `?dip=svi|mkt|ven|amm`,
-  `?quadro=0|1|2|3` (0 toglie il quadro, 3 è la forma scelta, 1 e 2 le due scartate dello studio), `?n=40`, più quelli
+  `?quadro=0|1|2|3` (0 toglie il quadro, 2 è la forma scelta, 1 e 3 le due scartate dello studio), `?n=40`, più quelli
   dell'avatar.
   Artefatto: https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9
 - Avatar dei dipendenti AI in `avatar/`: `avatar-dgt.js` (involucro della Console, sceglie la famiglia con
@@ -51,8 +52,8 @@ prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decision
   `differenze`…). Ogni pagina lo carica subito dopo `comune.js` e mette in pagina `DGT_COMPONENTI.css` prima del CSS della
   Console (`direzione-a.js`, che tiene la cornice, le pagine, le tendine e `monta`).
 - Prove cliccate in `prove/` (con il `README.md` che dice il comando): `console.js` (82 verifiche: tendine, Richieste, editor del
-  dipendente, esecuzione, 40, la barra «Oggi in azienda» e la barra dei passi), `mobile.js` (39: le sei schermate, la revisione, il rifiuto con motivo, la prova, lo stato vuoto,
-  40), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le due pagine nuove, da dove ci si arriva, i filtri, la
+  dipendente, esecuzione, 40, la barra «Oggi in azienda» e la barra dei passi), `mobile.js` (69: le otto schermate, la revisione, il rifiuto con motivo, la prova, lo stato vuoto,
+  40, il quadro del giorno e i Dipartimenti), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le due pagine nuove, da dove ci si arriva, i filtri, la
   scrittura nel filo e le due tab del telefono):
   `PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css node schermate/direzioni/prove/console.js`
   (e così `mobile.js`, `costi.js`, `agenda-chat.js`).

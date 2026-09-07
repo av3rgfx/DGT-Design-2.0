@@ -33,7 +33,8 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check((await Promise.all([1, 2, 3, 4, 5, 6, 7, 8].map(schermata))).join(',') === '1,2,3,4,5,6,7,8', 'schermate da 1 a 8');
   let c = await coda(); console.log('    coda:', c.map(r => r.cosa).join(' | '));
   check(c.length === 4, 'quattro richieste in coda');
-  check(await txt(tel(1) + '.m-h1') === 'DA APPROVARE' && (await txt(tel(1) + '.m-stat .num')).startsWith('4'), 'titolo e numero «da approvare»');
+  /* dalla versione 17 il conto sta nel titolo, non più nella riga dei due numeri grandi (vedi la sezione 6) */
+  check(await txt(tel(1) + '.m-h1') === 'DA APPROVARE4', 'titolo e numero «da approvare»');
   check(await txt(tel(1) + '.meet .n') === '4' && await conta(tel(1) + '.m-coda .qrow[data-az="apri"]') === 4, 'campanella con 4, quattro righe in coda');
   check(await conta(tel(1) + '.task.lime') === 1 && (await txt(tel(1) + '.task .tt')) === c[0].cosa, 'la card lime della richiesta corrente');
   check(await txt(tel(2) + '.m-tit h2') === c[0].cosa, 'il telefono 2 mostra la stessa richiesta: ' + c[0].cosa);
@@ -90,11 +91,16 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   console.log('6. il quadro del giorno (versione 17)');
   await page.goto(file('')); await page.waitForTimeout(500);
   const quadro = tel(1) + '.m-quadro';
-  check(await conta(quadro + '.riga') === 1 && await conta(quadro + ' .qq') === 3, 'la schermata 1 porta il quadro: tre caselle (la forma scelta)');
-  const parole = await page.locator(quadro + ' .qq span').allTextContents();
-  check(parole.join(' ') === 'al lavoro ferma dopo', 'le tre parole: ' + parole.join(' · '));
-  /* la regola della correzione 16a: il quadro non ripete un numero che è già sulla stessa schermata (qui «approvate oggi») */
-  check(!parole.some(t => t.indexOf('approvate') >= 0), 'il quadro non ripete «approvate oggi», che è già uno dei due numeri grandi');
+  check(await conta(quadro + '.duedue') === 1 && await conta(quadro + ' .qq') === 4, 'la schermata 1 porta il quadro: quattro caselle in griglia (la forma scelta)');
+  /* solo le parole delle caselle: `> span` senza l'icona e senza la pila, che dentro ha i suoi span (avatar e «+N») */
+  const parole = await page.locator(quadro + ' .qq > span:not(.ico):not(.pair)').allTextContents();
+  check(parole.join(' ') === 'approvate al lavoro ferma dopo', 'le quattro parole: ' + parole.join(' · '));
+  /* la regola della correzione 16a: un elemento fisso non ripete quello che un altro dice già sulla stessa schermata.
+     La forma 2 tiene la casella «approvate», quindi cade la riga dei due numeri grandi: «approvate oggi» era lo stesso
+     conto a 60 px di distanza, «da approvare» è passato nel titolo. */
+  check(await conta(tel(1) + '.m-stats') === 0, 'col quadro «due per due» la riga dei due numeri grandi non c\'è: nessun conto ripetuto');
+  check((await txt(tel(1) + '.m-h1.conta b')) === String((await coda()).length), 'il titolo porta il conto delle richieste da approvare');
+  check(await page.evaluate(s => { const h = document.querySelector(s); return h.scrollWidth <= h.clientWidth + 1 && h.getBoundingClientRect().height / 1.25 < 60; }, tel(1) + '.m-h1.conta'), 'il titolo col conto sta su una riga sola, senza andare a capo');
   /* niente caselle tagliate: ogni parola sta dentro la sua casella */
   check(await page.evaluate(s => [...document.querySelectorAll(s + ' .qq > span:not(.ico):not(.pair)')].every(e => e.scrollWidth <= e.clientWidth + 1), tel(1) + '.m-quadro'), 'nessuna parola tagliata nelle caselle');
   const gruppi = await page.evaluate(() => modello.gruppiOggi());
@@ -106,10 +112,26 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(await schermata(1) === '5' && (await txt(tel(1) + '.m-nav .chi b')) === await page.evaluate(() => modello.etichetta(modello.gruppiOggi().errore[0])), 'la casella «ferma» apre la conversazione con chi è fermo');
   await page.goto(file('quadro=0')); await page.waitForTimeout(500);
   check(await conta('.m-quadro') === 0, '?quadro=0 rimette il telefono di prima');
+  check(await conta(tel(1) + '.m-stats .m-stat') === 2, 'senza quadro i due numeri grandi tornano: niente da ripetere');
   await page.goto(file('quadro=1')); await page.waitForTimeout(500);
   check(await conta(tel(1) + '.m-quadro.piani .qq') === 4, '?quadro=1 disegna la forma scartata «le quattro a due piani»');
-  await page.goto(file('quadro=2&n=40')); await page.waitForTimeout(600);
-  check(await conta(tel(1) + '.m-quadro.duedue .qq') === 4 && await page.evaluate(() => [...document.querySelectorAll('.m-quadro .qq > span:not(.ico):not(.pair)')].every(e => e.scrollWidth <= e.clientWidth + 1)), '?quadro=2 disegna «due per due», anche a quaranta senza tagli');
+  await page.goto(file('quadro=3')); await page.waitForTimeout(500);
+  check(await conta(tel(1) + '.m-quadro.riga .qq') === 3, '?quadro=3 disegna la forma scartata «la riga che parla»');
+  await page.goto(file('n=40')); await page.waitForTimeout(600);
+  check(await conta(tel(1) + '.m-quadro.duedue .qq') === 4 && await page.evaluate(() => [...document.querySelectorAll('.m-quadro .qq > span:not(.ico):not(.pair)')].every(e => e.scrollWidth <= e.clientWidth + 1)), 'il quadro «due per due» regge anche a quaranta, senza tagli');
+  /* Il prezzo della forma 2: è alta 118 px e spinge giù la card della richiesta. Le due misure che contano, sulla schermata
+     che serve a decidere: quanta card resta visibile sopra la barra di navigazione (senza quadro 256 su 256, con la 2
+     misurati 248; la forma 3, scartata, ne lasciava 240) e se la riga con approva e rifiuta ci sta sopra — prima di
+     togliere la riga dei due numeri grandi finiva sotto. Se un domani il quadro cresce, queste due lo dicono subito. */
+  await page.goto(file('')); await page.waitForTimeout(600);
+  const misure = await page.evaluate(() => {
+    const Z = 1.25, tel = document.querySelector('.m-tel'), nav = tel.querySelector('.m-bnav').getBoundingClientRect();
+    const card = tel.querySelector('.ncard.task').getBoundingClientRect();
+    const riga = tel.querySelector('.ncard.task .st .row').getBoundingClientRect();
+    return { visibile: Math.round((Math.min(card.bottom, nav.top) - card.top) / Z), sopra: riga.bottom <= nav.top, spazio: Math.round((nav.top - riga.bottom) / Z) };
+  });
+  check(misure.visibile >= 245, `della card della richiesta restano visibili ${misure.visibile} px su 256 sopra la navigazione`);
+  check(misure.sopra, `la riga con approva e rifiuta sta sopra la navigazione (${misure.spazio} px di margine)`);
   await passo('il quadro del giorno');
 
   console.log('7. la tab Dipartimenti (versione 17)');

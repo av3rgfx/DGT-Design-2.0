@@ -227,9 +227,11 @@ direzione. Regole che valgono da qui in avanti:
     tre schermate nelle due tab della navigazione in basso. Un solo aggregatore in `dati.js` (`giornata`, `settimana`,
     `scadenze`, `filoDi`, `scrivi`) per la Console e per il telefono.
 17. **Il quadro del giorno vale anche sul telefono** (versione 17): la barra «Oggi in azienda» della Console, ridotta alla
-    colonna di 254 px in una riga di caselle contate (numero e parola accanto), in cima alla sola schermata 1 — sul telefono
-    le schermate sono destinazioni separate e il quadro appartiene alla home, mentre l'Agenda *è* già la giornata. I conti
-    stanno nel modello (`m.gruppiOggi()`), uno solo per il desktop e per il telefono.
+    colonna di 254 px in una griglia due per due di caselle contate (icona o pila, numero, parola), in cima alla sola
+    schermata 1 — sul telefono le schermate sono destinazioni separate e il quadro appartiene alla home, mentre l'Agenda *è*
+    già la giornata. I conti stanno nel modello (`m.gruppiOggi()`), uno solo per il desktop e per il telefono. Il quadro
+    costa 118 px di schermo e **si pagano togliendo, non stringendo**: la riga dei due numeri grandi cade perché il quadro
+    dice già «approvate» (correzione 16a) e il titolo dice già «da approvare», che si prende il conto.
 18. **Un controllo si vede solo se fa quello che promette, con i dati che ci sono già** (versione 17). Due prove: *serve* in
     questa sezione? *si può fare* col modello? Chi le passa diventa vero, chi ne fallisce una sparisce; non ci sono controlli
     per figura. In concreto: «cerca» resta dove la lista può passare le **dodici righe** in una delle due taglie
@@ -1335,22 +1337,45 @@ va su due piani, o si va su due righe, o si tolgono caselle.
 | 2 | **Due per due** — la forma della Console quasi intera: icone, pila di avatar, occhiello «Oggi in azienda» e data | 132 px | **162 di 256 px** | la più leggibile, e la sola che dica *di chi* si parla | costa quasi un quarto dello schermo: la card scende da 226 a 358 px dalla cima e **la riga con approva e rifiuta finisce sotto la barra di navigazione**. Sulla schermata che serve a decidere, la decisione va cercata scorrendo |
 | 3 | **La riga che parla** — le tre caselle che chiedono un'azione, numero e parola accanto | 54 px | 240 di 256 px | la più economica; si legge come una frase, «3 al lavoro · 1 ferma · 3 dopo»; tutto a 11 px come il resto | cade «approvate», la sola che guarda al passato; niente pila (con la pila le tre caselle fanno 273 px) |
 
-**Scelta: la 3** (l'utente non ha risposto entro la sessione, come il prompt prevedeva). La ragione non è solo il costo:
-sulla schermata 1 i due numeri grandi sono «N da approvare» e **«N approvate oggi»**, quindi nelle forme 1 e 2 la casella
-«approvate» ripete quel numero a 60 px di distanza — è esattamente il difetto tolto dalla correzione 16a nella Console. La 3
-è l'unica che non lo rifà. Le due scartate restano dietro `?quadro=1|2` (come `?barra=0`), `?quadro=0` toglie il quadro.
+**Scelta dell'utente: la 2, «due per due»** (2026-09-07, alla fine della sessione; la sessione aveva applicato in via
+provvisoria la 3, che il prompt autorizzava in mancanza di risposta). Le due scartate restano dietro `?quadro=1|3` (come
+`?barra=0`), `?quadro=0` toglie il quadro.
+
+**Applicare la 2 ha voluto dire pagarne il contro, e la colonna «card visibile» della tabella è cambiata.** Il contro non era
+un'opinione: era una misura, 162 px su 256, con la riga di approva e rifiuta sotto la barra di navigazione. Due recuperi, in
+questo ordine:
+
+1. **Il conto ripetuto.** Sulla schermata 1 i due numeri grandi erano «N da approvare» e «N approvate oggi»; la casella
+   «approvate» del quadro ripete il secondo a 60 px di distanza — è il difetto tolto dalla correzione 16a nella Console
+   («un elemento fisso non ripete quello che un altro dice già»). Poteva cadere la casella o il numero grande: **cade il
+   numero grande**, perché la casella sta dentro la griglia scelta, porta un'icona e apre il Riepilogo, mentre il numero era
+   nudo. A quel punto nella riga dei due numeri ne resta uno solo, «N da approvare», che dice quello che dice già il titolo
+   sopra: **la riga intera cade e il conto passa nel titolo** («DA APPROVARE 4», a 26 px perché a 30 andrebbe a capo —
+   la riga ha 234 px liberi e il titolo a 30 ne chiede 214, che col numero fanno 243). Sono **78 px**.
+2. **Le misure strette del quadro**: padding 12 invece di 14, occhiello su una riga da 14, stacco 6, caselle da 40 invece di
+   42. Il quadro passa da 132 a **118 px**. Sono altri 14.
+
+**Risultato misurato: 248 px di card su 256, e la riga con approva e rifiuta torna sopra la barra di navigazione** (4 px di
+margine). La forma scelta dall'utente finisce così **migliore di tutte e tre le forme dello studio** sulla misura con cui
+avevo argomentato contro di lei — la 3 ne lasciava 240 con la riga 4 px *sotto* la navigazione, la 1 ne lascia 236 con 8 px
+sotto. Il quadro «due per due» resta quello scelto: griglia 2×2, icone, pila di avatar, occhiello e data.
+
+La lezione, che vale oltre questo caso: **il costo di una forma non è una proprietà della forma, è una proprietà della forma
+più quello che le sta intorno.** Avevo misurato la 2 dentro una schermata che ripeteva un conto; tolta la ripetizione, la
+classifica si è rovesciata. Due verifiche nuove in `prove/mobile.js` inchiodano le due misure, così non possono peggiorare in
+silenzio.
 
 **Dettagli.**
 - I conti sono quelli della Console: `gruppiOggi` è passato da `direzione-a.js` al modello (`m.gruppiOggi()` in `dati.js`),
   così il desktop e il telefono contano una volta sola.
 - Dove porta ogni casella: «al lavoro» e «dopo» all'**Agenda**; «ferma» alla **conversazione con chi è fermo**, perché dal
   telefono l'esecuzione non si riavvia e parlargli è l'unica cosa che si può fare (la Console apre l'Esecuzione, che il
-  telefono non ha); «approvate», nelle due forme scartate, al **Riepilogo di oggi**, dove sta il passato della giornata.
+  telefono non ha); «approvate» al **Riepilogo di oggi**, dove sta il passato della giornata.
 - Sul telefono cadono sempre i dettagli della Console («· Kim», «· dalle 15:00»): 254 px non li reggono a nessuna delle tre.
 - Il quadro sta **solo sulla schermata 1**: sul telefono le schermate sono destinazioni separate e il quadro del giorno
   appartiene alla home; l'Agenda (schermata 6) *è* già la giornata per esteso.
-- Nella forma 2 la pila non porta il «+N»: il numero della casella è a due centimetri e sarebbe lo stesso conto due volte.
-  A quaranta, con il «+10», «al lavoro» si tagliava.
+- Nella forma scelta la pila non porta il «+N»: il numero della casella è a due centimetri e sarebbe lo stesso conto due
+  volte (ancora la 16a). A quaranta, con il «+10», «al lavoro» si tagliava.
 
 #### B · La tab «Dipartimenti» (schermate 7 e 8)
 
@@ -1428,8 +1453,8 @@ scelta, per sezione); gli attrezzi comuni sono `cercaSez`, `filtraCerca`, `pille
 #### Verifica
 
 - Le quattro prove cliccate passano: `console.js` **97** (erano 82: quindici verifiche nuove sui controlli delle sezioni),
-  `mobile.js` **63** (erano 39: ventiquattro sul quadro del giorno e sui Dipartimenti), `costi.js` 48, `agenda-chat.js` 54.
-  In tutto **262**.
+  `mobile.js` **69** (erano 39: trenta sul quadro del giorno e sui Dipartimenti), `costi.js` 48, `agenda-chat.js` 54.
+  In tutto **268**.
 - Zero controlli inerti nelle **72 intestazioni** delle nove pagine, a undici e a quaranta, controllato dalla prova.
 - Nessuno schermo del telefono scorre di lato, a undici e a quaranta; nessuna parola tagliata nelle caselle del quadro né nei
   sottotitoli dell'elenco dei dipartimenti.
@@ -1438,7 +1463,7 @@ scelta, per sezione); gli attrezzi comuni sono `cercaSez`, `filtraCerca`, `pille
 
 #### Scelte fatte in costruzione, da confermare
 
-- La forma 3 del quadro del giorno (l'utente non ha risposto entro la sessione).
+- La forma 2 del quadro del giorno, «due per due» (scelta dall'utente il 2026-09-07).
 - «Da approvare» seconda invece che quarta nel dipartimento del telefono.
 - La casella «ferma» del quadro porta alla conversazione e non all'Agenda.
 - La soglia dei dodici per «cerca», e le sette sezioni che se la tengono.
@@ -1455,7 +1480,7 @@ scelta, per sezione); gli attrezzi comuni sono `cercaSez`, `filtraCerca`, `pille
 | `comune.js` | sprite di icone di DGT, prefisso CSS, utilità |
 | `../componenti.js` (`schermate/componenti.js`) | dal 2026-09-06 (versione 14) i componenti della Console condivisi con il telefono e con le pagine degli avatar: il CSS delle primitive (`.rb`, `.av`, `.pair`, `.pill`, `.chip`, `.dots`, `.badge`, `.ncard`/`.nt`, `.lead`, `.task`, `.crow`, `.hrow`, `.erow`, `.qrow`, `.dcard`, `.ripart`/`.leg`, e dalla versione 15 le bolle della chat `.msg`/`.bub`), `variabili`, e `av`, `pair`, `dots`, `chipStato`, `chipEsito`, `messaggio`, `iconaTipo`, `nomeTipo`, `eur`, `delta`, `differenze`; `window.DGT_COMPONENTI`, va caricato dopo `comune.js` e il suo CSS messo in pagina prima di quello della Console |
 | `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo), pagina Costi (per dipartimento, dipendente, cliente, modello, strumento, con le pillole del periodo per sezione; `?pagina=costi`), pagina Agenda (barra del giorno, eventi, scadenze, settimana; `?pagina=agenda`) e pagina Chat (fili, filo aperto, barra di scrittura; `?pagina=chat&filo=4`, versione 15); dalla versione 16 la barra «Oggi in azienda» è il quadro del giorno in caselle contate (`barraStato`, che legge `m.gruppiOggi()`; `?barra=0` rimette quella di prima) e la barra dei passi si stringe da sola; dalla versione 17 i controlli delle intestazioni di sezione seguono la regola «un controllo si vede solo se fa quello che promette» (`cercaSez`, `filtraCerca`, `pilleSez`, `filtraSez`, `contoSez`, stato in `st.cerca` e `st.sez`); cliccabile; dalla versione 14 prende le primitive da `../componenti.js` e tiene la cornice, le pagine, le tendine e `monta` |
-| `mobile.js` / `.html` | il telefono del titolare: le approvazioni (versioni 11 e 12, schermate «Da approvare», «Richiesta» — anche la revisione di performance con le due versioni a confronto e le quattro decisioni — e «Riepilogo di oggi», con il rifiuto con motivo e lo stato vuoto a coda finita) e, dalla versione 15, le due tab «Chat» (elenco dei fili e conversazione con la barra di scrittura) e «Agenda» (la giornata sulla linea del tempo, i prossimi giorni, le scadenze); dalla versione 17 il **quadro del giorno** in cima alla schermata 1 (`quadroGiorno`, tre forme dietro `?quadro=0|1|2|3`, la 3 è quella scelta) e la tab **Dipartimenti** (schermate 7 e 8: l'elenco e il dipartimento aperto); otto telefoni affiancati che condividono il modello, la richiesta corrente, il filo aperto e il dipartimento scelto; `DGT_MOBILE.monta`, `coda`; `?schermata=1…8&richiesta=0&filo=4&dip=mkt&quadro=`, `?n=40`; dalla versione 14 carica `../componenti.js` e non più `direzione-a.js` |
+| `mobile.js` / `.html` | il telefono del titolare: le approvazioni (versioni 11 e 12, schermate «Da approvare», «Richiesta» — anche la revisione di performance con le due versioni a confronto e le quattro decisioni — e «Riepilogo di oggi», con il rifiuto con motivo e lo stato vuoto a coda finita) e, dalla versione 15, le due tab «Chat» (elenco dei fili e conversazione con la barra di scrittura) e «Agenda» (la giornata sulla linea del tempo, i prossimi giorni, le scadenze); dalla versione 17 il **quadro del giorno** in cima alla schermata 1 (`quadroGiorno`, tre forme dietro `?quadro=0|1|2|3`, la 2 è quella scelta) e la tab **Dipartimenti** (schermate 7 e 8: l'elenco e il dipartimento aperto); otto telefoni affiancati che condividono il modello, la richiesta corrente, il filo aperto e il dipartimento scelto; `DGT_MOBILE.monta`, `coda`; `?schermata=1…8&richiesta=0&filo=4&dip=mkt&quadro=`, `?n=40`; dalla versione 14 carica `../componenti.js` e non più `direzione-a.js` |
 | `avatar/avatar-dgt.js` | involucro degli avatar nel linguaggio della Console (colori, stati, simboli statici, animazione); `usa('orbe'|'kit')` sceglie la famiglia |
 | `avatar/avatar-orbe.js` | la famiglia «orbe» (versioni 5b, 5c, 7, 7b, 7c): cerchi dal seme con le pupille e lo sguardo del kit, un solo motore `requestAnimationFrame` con funzioni continue del tempo, sguardo che segue il puntatore; senza disco, con le pelli (`pelle('perla'|'grigio'|'chiaro'|'alone'|'disco')`, solo variabili CSS; perla predefinita); `fermo(t)`, `riprendi()`, `fotogramma(svg, t)` per gli screenshot |
 | `confronto-avatar.html` | le due famiglie a confronto nelle viste della Console |
@@ -1470,7 +1495,7 @@ scelta, per sezione); gli attrezzi comuni sono `cercaSez`, `filtraCerca`, `pille
 | `scelta-barra.src.html` | la pagina delle quattro scelte per la barra «Oggi in azienda», con il voto condiviso: quella che il titolare ha mandato al collega. Sorgente, non pagina: le catture sono segnaposto `IMG:<nome>`, quindi non si apre da sola |
 | `costruisci-scelta.js` | costruisce `scelta-barra.html` dal sorgente, incorporando i PNG di `screenshot/` come data URI, più le otto catture del commutatore undici / quaranta (`node costruisci-scelta.js [out.html]`). Il risultato non entra nel repository (megabyte di base64): si rifà in un comando |
 | `scatta.js` | rigenera le catture di `screenshot/` dalla lista di parametri dichiarata nel file (`node scatta.js`, `console` / `barra` / `quadro` / `dip` / `controlli` per un gruppo, `--in <cartella>` per il confronto prima/dopo); le catture che restano fuori sono elencate in `FUORI` |
-| `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`); le cornici del telefono (`mobile-*.png`: le versioni 11 e 12, le quattro della revisione rifatte nella versione 14 e le tre schermate nuove `mobile-4-chat`, `mobile-5-filo`, `mobile-6-agenda` della versione 15) e le sezioni delle pagine Costi (`a-costi-*.png`, versione 13), Agenda e Chat (`a-agenda-*.png`, `a-chat-*.png`, versione 15) con `screenshot-elementi.js`; le catture dello studio della barra (`a-barra-*.png`, versione 16) e quelle della versione 17: le tre forme del quadro del giorno e le due schermate dei Dipartimenti (`m-*.png`), i controlli delle sezioni (`a-sez-*.png`). Si rigenerano con `scatta.js` |
-| `prove/` | le prove cliccate con Playwright, con il `README.md` che dice il comando: `console.js` (97 verifiche: tendine, Richieste, editor, esecuzione, 40, la barra «Oggi in azienda» e la barra dei passi, e dalla versione 17 i controlli delle intestazioni di sezione), `mobile.js` (63: le schermate delle approvazioni, revisione, rifiuto con motivo, prova, stato vuoto, 40, e dalla versione 17 il quadro del giorno e la tab Dipartimenti), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le pagine Agenda e Chat della Console e le due tab del telefono, versione 15); leggono `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH` |
+| `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`); le cornici del telefono (`mobile-*.png`: le versioni 11 e 12, le quattro della revisione rifatte nella versione 14 e le tre schermate nuove `mobile-4-chat`, `mobile-5-filo`, `mobile-6-agenda` della versione 15) e le sezioni delle pagine Costi (`a-costi-*.png`, versione 13), Agenda e Chat (`a-agenda-*.png`, `a-chat-*.png`, versione 15) con `screenshot-elementi.js`; le catture dello studio della barra (`a-barra-*.png`, versione 16) e quelle della versione 17: la forma scelta del quadro del giorno e le due scartate, le due schermate dei Dipartimenti (`m-*.png`), i controlli delle sezioni (`a-sez-*.png`). Si rigenerano con `scatta.js` |
+| `prove/` | le prove cliccate con Playwright, con il `README.md` che dice il comando: `console.js` (97 verifiche: tendine, Richieste, editor, esecuzione, 40, la barra «Oggi in azienda» e la barra dei passi, e dalla versione 17 i controlli delle intestazioni di sezione), `mobile.js` (69: le schermate delle approvazioni, revisione, rifiuto con motivo, prova, stato vuoto, 40, e dalla versione 17 il quadro del giorno e la tab Dipartimenti), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le pagine Agenda e Chat della Console e le due tab del telefono, versione 15); leggono `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH` |
 
 Per gli screenshot: `design-system/tools/screenshot-page.js` (vedi `design-system/tools/README.md`).

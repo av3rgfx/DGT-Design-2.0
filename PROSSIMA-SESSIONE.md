@@ -2,7 +2,8 @@
 
 Stato al 2026-09-07, fine della sessione dei **tre passi scelti dall'utente** (versione 17 della direzione A · Console).
 Fatti tutti e tre: **A** il quadro del giorno anche sul telefono (tre forme disegnate nel telefono vero, catturate e messe a
-confronto con i numeri; scelta e applicata la terza perché l'utente non ha risposto, come chiedeva il prompt); **B** la tab
+confronto con i numeri; **l'utente ha scelto la seconda, «due per due»**, e applicarla ha voluto dire pagarne il contro:
+vedi sotto); **B** la tab
 «Dipartimenti», che era l'ultimo cerchio inerte della navigazione, in due schermate nuove (7 e 8); **C** i controlli inerti,
 con una regola proposta prima di scrivere codice, fatta vedere su una sezione sola e poi applicata a tutte e trentadue.
 Nel farla è venuto fuori che **il conto di 61 era sbagliato per difetto**: i controlli senza azione erano **263**, perché la
@@ -24,12 +25,24 @@ dichiarati qui sotto. Tutto committato e pushato sul branch indicato sotto, con 
   (misurata: schermo 278,4, cornice fissa 300 × 620). Non bastava riordinare. La forma in linea della Console non ci sta
   nemmeno con tre caselle (273 px).
 - **Tre forme disegnate nel telefono vero e catturate** (`?quadro=1|2|3`, catture `m-quadro-*.png`): *le quattro a due piani*
-  (58 px, la parola scende a 10 px), *due per due* (132 px, la più leggibile ma **la riga con approva e rifiuta finisce sotto
-  la barra di navigazione**: della card da 256 px se ne vedono 162), *la riga che parla* (54 px, tre caselle, numero e parola
-  accanto). Pro e contro con le misure in `DIREZIONI.md`, «Versione 17», sezione A.
-- **Scelta la terza.** La ragione forte non è il costo: sulla schermata 1 i due numeri grandi sono «N da approvare» e
-  **«N approvate oggi»**, quindi nelle altre due la casella «approvate» ripete quel numero a 60 px — il difetto tolto dalla
-  correzione 16a. La terza è l'unica che non lo rifà. Le altre restano dietro `?quadro=1|2`, `?quadro=0` toglie il quadro.
+  (58 px, la parola scende a 10 px), *due per due* (132 px, la più leggibile ma **la riga con approva e rifiuta finiva sotto
+  la barra di navigazione**: della card da 256 px se ne vedevano 162), *la riga che parla* (54 px, tre caselle, numero e
+  parola accanto). Pro e contro con le misure in `DIREZIONI.md`, «Versione 17», sezione A.
+- **Scelta dell'utente: la 2, «due per due».** Le altre restano dietro `?quadro=1|3`, `?quadro=0` toglie il quadro.
+- **Il contro della 2 è stato pagato, non accettato.** Due recuperi, in ordine:
+  1. **Il conto ripetuto (78 px).** La casella «approvate» del quadro ripeteva il numero grande «N approvate oggi» a 60 px —
+     il difetto tolto dalla correzione 16a. È caduto il numero grande e non la casella (la casella sta nella griglia scelta,
+     porta un'icona e apre il Riepilogo; il numero era nudo). Rimasto un solo numero, «N da approvare», che ripeteva il
+     titolo sopra, **è caduta tutta la riga e il conto è passato nel titolo**: «DA APPROVARE 4», a 26 px e non a 30 perché a
+     30 va a capo (234 px liberi, titolo 214, più numero e stacco 243).
+  2. **Le misure strette del quadro (14 px)**: padding 12, occhiello su una riga da 14, stacco 6, caselle da 40. Il quadro
+     passa da 132 a **118 px**.
+- **Risultato misurato: 248 px di card su 256**, con la riga di approva e rifiuta **sopra** la navigazione (4 px di margine).
+  La forma scelta dall'utente è così **migliore di tutte e tre** sulla misura con cui la sessione aveva argomentato contro di
+  lei (la 3 lasciava 240 con la riga 4 px sotto la navigazione; la 1 ne lascia 236 con 8 px sotto). **La lezione, che vale
+  oltre questo caso: il costo di una forma non è una proprietà della forma, è una proprietà della forma più quello che le sta
+  intorno.** Misurata dentro una schermata che ripeteva un conto, la 2 sembrava la più cara; tolta la ripetizione, la
+  classifica si è rovesciata. Due verifiche nuove in `prove/mobile.js` inchiodano le due misure.
 - **`gruppiOggi` è passato nel modello** (`m.gruppiOggi()` in `dati.js`): la Console e il telefono contano una volta sola.
 - Il quadro sta **solo sulla schermata 1** (la home del telefono); l'Agenda è già la giornata per esteso.
 
@@ -81,11 +94,11 @@ dichiarati qui sotto. Tutto committato e pushato sul branch indicato sotto, con 
 ### Verifica
 
 - **Le quattro prove cliccate passano**: `console.js` **97** (erano 82), `mobile.js` **63** (erano 39), `costi.js` 48,
-  `agenda-chat.js` 54. In tutto **262** (erano 223).
+  `agenda-chat.js` 54. In tutto **268** (erano 223).
 - **Zero controlli inerti** nelle 72 intestazioni delle nove pagine, a undici e a quaranta, controllato dalla prova.
 - Le catture della Console cambiano tutte (le intestazioni sono su ogni pagina); le catture della **sola barra**
   (`a-barra-*.png`) sono identiche byte per byte: la barra della versione 16 non è stata toccata.
-- Catture nuove in `screenshot/`: `m-quadro-*.png` (le tre forme e il telefono di prima, a 11 e a 40), `m-dipartimenti*.png`,
+- Catture nuove in `screenshot/`: `m-quadro-*.png` (la forma scelta a 11 e a 40, le due scartate, il telefono di prima), `m-dipartimenti*.png`,
   `m-dipartimento*.png`, `m-chat-cerca.png`, `a-sez-*.png` (i controlli delle sezioni). Rigenerate le 25 della Console.
 - **`scatta.js` ha tre gruppi nuovi**: `quadro`, `dip`, `controlli` (48 catture in tutto, erano 32).
 - **Artefatti ripubblicati allo stesso indirizzo** con la versione 17:
@@ -252,8 +265,8 @@ dichiarati qui sotto. Tutto committato e pushato sul branch indicato sotto, con 
 38. **2026-09-07, questa sessione: fatti i tre passi.** A, B e C come da decisione 37, con il metodo di sempre (prove e catture
     prima, proposta prima di scrivere, prove e catture dopo). Scelte fatte in costruzione, da confermare (dettaglio in
     `DIREZIONI.md`, «Versione 17», ultimo paragrafo):
-    - **la forma 3 del quadro del giorno** («la riga che parla»), scelta perché l'utente non ha risposto entro la sessione:
-      le altre due restano dietro `?quadro=1|2` e la ragione della scelta è scritta;
+    - **la forma 2 del quadro del giorno** («due per due»), scelta dall'utente il 2026-09-07: le altre due restano dietro
+      `?quadro=1|3`, e con la 2 la riga dei due numeri grandi della schermata 1 non c'è (il conto sta nel titolo);
     - il quadro sta **solo sulla schermata 1**, non su tutte come nella Console;
     - la casella «ferma» del quadro porta alla **conversazione** con chi è fermo, non all'Agenda: dal telefono l'esecuzione
       non si riavvia;
@@ -337,7 +350,7 @@ testo cambiando pagina (lo stato è per sezione ma si azzera con `?pagina=`), e 
 
 - **Le prove cliccate** (`schermate/direzioni/prove/`, con il README che dice il comando):
   `export PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css` e poi
-  `node schermate/direzioni/prove/console.js` (97: tendine, Richieste, editor del dipendente, esecuzione, 40, la barra «Oggi in azienda» e la barra dei passi, e dalla versione 17 i controlli delle intestazioni di sezione), `mobile.js` (63: gli
+  `node schermate/direzioni/prove/console.js` (97: tendine, Richieste, editor del dipendente, esecuzione, 40, la barra «Oggi in azienda» e la barra dei passi, e dalla versione 17 i controlli delle intestazioni di sezione), `mobile.js` (69: gli
   otto telefoni, la revisione, le frecce, il rifiuto con motivo, la prova, lo stato vuoto, 40, e dalla versione 17 il quadro del
   giorno e la tab Dipartimenti; a ogni passo nessuno schermo che scorre di lato e console pulita), `costi.js` (48) e `agenda-chat.js` (54: le due pagine nuove, da dove ci si arriva, i filtri, la
   scrittura nel filo, le due tab del telefono); da qualunque cartella, leggono anche `CHROME_PATH`, girano con
@@ -428,6 +441,16 @@ testo cambiando pagina (lo stato è per sezione ma si azzera con `?pagina=`), e 
 - **I backtick dentro il CSS**: il CSS di `mobile.js` sta in un template literal, quindi un commento che cita
   `` `?quadro=1|2` `` con i backtick chiude la stringa e la pagina non carica («Unexpected identifier»). Nei commenti dentro
   il CSS si scrive `?quadro=1|2` senza apici.
+- **Un commento CSS chiuso due volte mangia la regola che segue, in silenzio.** Allungando un commento dentro il CSS di
+  `mobile.js` è rimasto un `*/` di troppo: il testo fra i due `*/` è diventato CSS invalido e si è portato via la regola
+  `.m-h1.conta` subito sotto. Niente errore in console, niente prova rossa — solo un titolo che restava a 30 px invece di
+  26. **Se una regola nuova non fa effetto, guardare i commenti sopra prima della specificità.** Si vede subito
+  rileggendo il blocco, o cercando `\*/` doppi.
+- **Uno spazio fra due elementi flex non è cosmetico**: `<h3>DA APPROVARE <b>4</b></h3>` con `white-space:nowrap` allarga il
+  nodo di testo quanto basta a mandare il titolo a capo. Il testo del DOM resta «DA APPROVARE4» ed è giusto così; è la
+  verifica che si adatta, non il markup.
+- **Le misure prese con `getBoundingClientRect` sui telefoni vanno divise per 1,25**: `.m-phones` ha `zoom:1.25`. Senza
+  dividere sembra che la barra di navigazione stia fuori dallo schermo.
 - **Un `const` usato prima della sua riga dentro la stessa funzione non è hoisting ma zona morta**: spostando un blocco di
   calcolo sopra `perModello` la pagina falliva a ogni render. Le funzioni si possono chiamare prima, i `const` no.
 - **Contare i controlli inerti a `grep` porta fuori strada**: la lista di 61 veniva da lì. Il conto giusto si fa aprendo le
@@ -439,8 +462,10 @@ testo cambiando pagina (lo stato è per sezione ma si azzera con `?pagina=`), e 
 
 1. **Il lavoro della prossima sessione non è scelto**: i tre passi della decisione 37 sono finiti. Vedi la sezione «Il lavoro
    della prossima sessione» per i quattro candidati, e chiedere all'utente.
-2. **Il giudizio dell'utente su tutta la versione 17** (il quadro del giorno sul telefono, i Dipartimenti, i controlli), e
-   sulle scelte di dettaglio della decisione 38.
+2. **Il giudizio dell'utente sul resto della versione 17** (i Dipartimenti, i controlli) e sulle scelte di dettaglio della
+   decisione 38. Del quadro del giorno l'utente ha già scelto la forma (la 2, «due per due», il 2026-09-07); resta da
+   sentire se gli va bene il prezzo pagato per applicarla, cioè la riga dei due numeri grandi caduta e il conto passato
+   nel titolo della schermata 1.
 3. **Le 84 frecce che non aprono niente**: la coda dichiarata della regola 25, da fare con una decisione dell'utente davanti.
 4. I giudizi in sospeso delle versioni 6, 8, 11, 12, 14, 15 e 15a; le scelte di dettaglio della barra (decisioni 33 e 34).
 5. I punti aperti elencati in «Come riprendere».

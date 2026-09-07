@@ -60,12 +60,12 @@ const CATTURE = [
   { g: 'barra', nome: 'a-barra-console-stato', q: '', h: 620, viewport: true },
   { g: 'barra', nome: 'a-barra-console-oggi', q: 'barra=0', h: 620, viewport: true },
   { g: 'barra', nome: 'a-barra-passi', q: 'pagina=esecuzione&id=1&tendina=chiusa', sel: '.etesta .a-sched', h: 1400 },
-  /* --- versione 17: il quadro del giorno sul telefono (la forma scelta e le due scartate) e la tab Dipartimenti --- */
+  /* --- versione 17: il quadro del giorno sul telefono (la forma scelta, «due per due», e le due scartate) e la tab Dipartimenti --- */
   { g: 'quadro', nome: 'm-quadro-niente', file: 'mobile.html', q: 'schermata=1&quadro=0', sel: '.m-tel', h: 1100 },
-  { g: 'quadro', nome: 'm-quadro-riga', file: 'mobile.html', q: 'schermata=1', sel: '.m-tel', h: 1100 },
-  { g: 'quadro', nome: 'm-quadro-riga-40', file: 'mobile.html', q: 'schermata=1&n=40', sel: '.m-tel', h: 1100 },
+  { g: 'quadro', nome: 'm-quadro-duedue', file: 'mobile.html', q: 'schermata=1', sel: '.m-tel', h: 1100 },
+  { g: 'quadro', nome: 'm-quadro-duedue-40', file: 'mobile.html', q: 'schermata=1&n=40', sel: '.m-tel', h: 1100 },
   { g: 'quadro', nome: 'm-quadro-piani', file: 'mobile.html', q: 'schermata=1&quadro=1', sel: '.m-tel', h: 1100 },
-  { g: 'quadro', nome: 'm-quadro-duedue', file: 'mobile.html', q: 'schermata=1&quadro=2', sel: '.m-tel', h: 1100 },
+  { g: 'quadro', nome: 'm-quadro-riga', file: 'mobile.html', q: 'schermata=1&quadro=3', sel: '.m-tel', h: 1100 },
   { g: 'dip', nome: 'm-dipartimenti', file: 'mobile.html', q: 'schermata=7', sel: '.m-tel', h: 1100 },
   { g: 'dip', nome: 'm-dipartimenti-40', file: 'mobile.html', q: 'schermata=7&n=40', sel: '.m-tel', h: 1100 },
   { g: 'dip', nome: 'm-dipartimento', file: 'mobile.html', q: 'schermata=8&dip=mkt', sel: '.m-tel', h: 1100 },

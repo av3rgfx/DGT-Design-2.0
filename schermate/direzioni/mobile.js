@@ -273,7 +273,8 @@ window.DGT_MOBILE = (function () {
 /* ===== il quadro del giorno sul telefono (versione 17, 2026-09-07): lo studio delle tre forme =====
    La barra «Oggi in azienda» della Console (versione 16) chiede 602 px di caselle e la colonna del telefono ne dà 254: non
    basta riordinare, le caselle vanno rimpicciolite. Il parametro ?quadro=1|2|3 disegna le tre forme dello studio, ?quadro=0
-   toglie il quadro (il telefono di prima). I conti sono quelli della Console: un aggregatore solo per tutti e due. */
+   toglie il quadro (il telefono di prima). La forma scelta dall'utente è la 2, «due per due». I conti sono quelli della
+   Console: un aggregatore solo per tutti e due. */
 .m-quadro{padding:14px 12px 0;display:grid;gap:6px;min-width:0}
 .m-quadro>*{min-width:0}
 .m-quadro .qq{border-radius:var(--r-pill);background:rgb(255 255 255/.5);box-shadow:inset 0 0 0 1px rgb(0 0 0/.09);color:var(--t2-light);white-space:nowrap;min-width:0}
@@ -289,12 +290,16 @@ window.DGT_MOBILE = (function () {
 .m-quadro.piani .qq{flex:1 1 0;display:grid;justify-items:center;align-content:center;gap:0;height:44px;padding:0 4px;font-size:10px;line-height:13px;overflow:hidden}
 .m-quadro.piani .qq b{font-size:17px}
 .m-quadro.piani .qq span{overflow:hidden;text-overflow:ellipsis;max-width:100%}
-/* forma 2 «due per due»: quattro caselle su due righe, la forma della Console quasi intera (icona o pila, numero, parola).
+/* forma 2 «due per due» (LA SCELTA DELL'UTENTE, 2026-09-07): quattro caselle su due righe, la forma della Console quasi
+   intera (icona o pila, numero, parola), con l'occhiello e la data sopra.
    La pila sta a 22 e non a 28: la casella è larga 124 e a 28 «al lavoro» si tagliava. */
-.m-quadro.duedue{gap:8px}
-.m-quadro.duedue .cap{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--t2-light);display:flex;justify-content:space-between;align-items:center;gap:8px;padding:0 4px}
+/* Le misure strette della forma 2 (padding 12 invece di 14, occhiello su una riga da 14, stacco 6, caselle da 40 invece di
+   42) fanno 20 px: sono quelli che riportano la riga «approva e rifiuta» sopra la barra di navigazione. Il quadro passa da
+   132 a 112 px e resta quello scelto: griglia due per due, icone, pila, occhiello e data. */
+.m-quadro.duedue{gap:6px;padding-top:12px}
+.m-quadro.duedue .cap{font-size:10px;line-height:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--t2-light);display:flex;justify-content:space-between;align-items:center;gap:8px;padding:0 4px}
 .m-quadro.duedue .griglia{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px}
-.m-quadro.duedue .qq{height:42px;display:flex;align-items:center;gap:6px;padding:0 9px 0 5px;font-size:11px}
+.m-quadro.duedue .qq{height:40px;display:flex;align-items:center;gap:6px;padding:0 9px 0 5px;font-size:11px}
 .m-quadro.duedue .qq b{font-size:18px;flex:none}
 .m-quadro.duedue .qq .ico{width:30px;height:30px}
 .m-quadro.duedue .qq .ico svg{width:14px;height:14px}
@@ -305,7 +310,21 @@ window.DGT_MOBILE = (function () {
    correzione 16a). La pila dice chi, il numero dice quanti. */
 .m-quadro.duedue .qq .pair .more{display:none}
 .m-quadro.duedue .qq span{overflow:hidden;text-overflow:ellipsis}
-/* forma 3 «la riga che parla»: una riga sola, le tre caselle che chiedono un'azione, numero e parola accanto.
+/* Il prezzo della forma 2, pagato dove costa meno. Il quadro «due per due» partiva a 132 px: la card della richiesta
+   scendeva così in basso che ne restavano visibili 162 px su 256 e la riga con approva e rifiuta finiva sotto la barra di
+   navigazione — sulla schermata che serve a decidere, la decisione andava cercata scorrendo. Due recuperi:
+   1. le misure strette qui sopra portano il quadro da 132 a 118 px;
+   2. cade la riga dei due numeri grandi (78 px). «Approvate oggi» era lo stesso conto della casella «approvate» del
+      quadro a 60 px di distanza (correzione 16a: un elemento fisso non ripete quello che un altro dice già); «da
+      approvare» resta, ma dentro il titolo, che diceva già la stessa parola.
+   Risultato misurato: della card restano visibili 238 px su 256 (erano 162; la forma 3, scartata, ne lasciava 240).
+   Col quadro 0, 1 o 3 la riga dei due numeri grandi resta com'era.
+   Il titolo col conto sta a 26 px e non a 30: la riga ha 234 px liberi e a 30 «DA APPROVARE» ne chiede 214, che col numero
+   e lo stacco fanno 243 e mandano il titolo a capo. A 26 ne chiede 186: 215 in tutto, e restano 19 px anche col conto a due
+   cifre. È anche la misura dei numeri grandi che sostituisce, così titolo e conto si leggono come una riga sola. */
+.m-h1.conta{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:26px;line-height:32px;white-space:nowrap;padding-top:12px}
+.m-h1.conta b{font-weight:300;font-size:26px;line-height:30px;flex:none;letter-spacing:0}
+/* forma 3 «la riga che parla» (scartata): una riga sola, le tre caselle che chiedono un'azione, numero e parola accanto.
    Niente pila: con la pila le tre caselle sommano 273 px e la colonna ne dà 254. */
 .m-quadro.riga .riga{display:flex;gap:6px;min-width:0}
 .m-quadro.riga .qq{flex:none;display:flex;align-items:center;gap:6px;height:40px;padding:0 13px;font-size:11px;overflow:hidden}
@@ -413,9 +432,9 @@ window.DGT_MOBILE = (function () {
     </div>`;
   }
 
-  /* La forma scelta dello studio: «la riga che parla». Le altre due restano dietro ?quadro=1|2 per il confronto, come
+  /* La forma scelta dall'utente: «due per due» (2026-09-07). Le altre due restano dietro ?quadro=1|3 per il confronto, come
      ?barra=0 nella Console; ?quadro=0 toglie il quadro e rimette il telefono di prima. */
-  const QUADRO = 3;
+  const QUADRO = 2;
 
   /* ---------- il quadro del giorno (versione 17, 2026-09-07) ----------
      La barra «Oggi in azienda» della Console sul telefono. Stessi conti (`m.gruppiOggi()`), tre forme messe a confronto
@@ -438,10 +457,10 @@ window.DGT_MOBILE = (function () {
     /* 1 · le quattro a due piani: una riga sola, il numero sopra la parola. Niente icone, niente pila: solo i conti. */
     if (forma === 1) return `<div class="m-quadro piani"><div class="riga">${caselle.map(c =>
       `<span class="qq ${c.cls}" ${c.az} title="${esc(c.ti)}"><b>${c.n}</b><span>${esc(c.tx)}</span></span>`).join('')}</div></div>`;
-    /* 2 · due per due: la forma della Console quasi intera (icona o pila, numero, parola), con l'occhiello e la data */
+    /* 2 · due per due (la forma scelta): la Console quasi intera (icona o pila, numero, parola), con l'occhiello e la data */
     if (forma === 2) return `<div class="m-quadro duedue"><div class="cap"><span>Oggi in azienda</span><span>${esc(m.azienda.data)}</span></div>
       <div class="griglia">${caselle.map(c => `<span class="qq ${c.cls}" ${c.az} title="${esc(c.ti)}">${conIcona(c, 2)}<b>${c.n}</b><span>${esc(c.tx)}</span></span>`).join('')}</div></div>`;
-    /* 3 · la riga che parla: le tre che chiedono un'azione (via «approvate», la sola che guarda al passato), numero e parola accanto */
+    /* 3 · la riga che parla (scartata): le tre che chiedono un'azione (via «approvate», la sola che guarda al passato) */
     return `<div class="m-quadro riga"><div class="riga">${caselle.filter(c => c.tx !== 'approvate').map(c =>
       `<span class="qq ${c.cls}" ${c.az} title="${esc(c.ti)}"><b>${c.n}</b><span>${esc(c.tx)}</span></span>`).join('')}</div></div>`;
   }
@@ -470,11 +489,17 @@ window.DGT_MOBILE = (function () {
       <div class="m-scroll">
         <div class="m-nav"><span class="m-logo">DGT</span><span class="r"><span class="av persona">${esc(m.azienda.titolare.iniziali)}</span></span></div>
         ${st.quadro ? quadroGiorno(m, st.quadro) : ''}
-        <h3 class="m-h1">DA APPROVARE</h3>
+        ${st.quadro === 2
+          /* con il quadro «due per due» il titolo porta il conto e la riga dei due numeri grandi cade: «approvate oggi» lo
+             dice già la casella del quadro (correzione 16a) e «da approvare» lo dice il titolo. Vedi il commento sotto. */
+          /* niente spazio fra la parola e il numero: sono due elementi flex e lo spazio, con nowrap, allarga il primo
+             quanto basta a mandare il titolo a capo (misurato: 234 px liberi, 222 senza spazio, oltre con) */
+          ? `<h3 class="m-h1 conta">DA APPROVARE<b>${c.length}</b></h3>`
+          : `<h3 class="m-h1">DA APPROVARE</h3>
         <div class="m-stats">
           <div class="m-stat"><span class="num">${c.length}${c.length ? `<span class="badge down">${ic('i-bell')}${Math.min(2, c.length)}</span>` : ''}</span><span>da approvare</span></div>
           <div class="m-stat"><span class="num">${oggiOk}${oggiOk ? `<span class="badge up">${ic('i-up')}${oggiOk}</span>` : ''}</span><span>approvate oggi</span></div>
-        </div>
+        </div>`}
         ${r ? cardCorrente(m, r, idx, c.length) : ''}
         ${codaHtml}
       </div>
