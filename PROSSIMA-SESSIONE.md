@@ -10,7 +10,10 @@ Nel farla è venuto fuori che **il conto di 61 era sbagliato per difetto**: i co
 lista non contava le settantasei pillole di filtro delle intestazioni. Ne restano 128, tutti fuori dalla lista dell'utente e
 dichiarati qui sotto. Tutto committato e pushato sul branch indicato sotto, con la PR aperta verso `main`.
 
-**L'utente non ha ancora visto né giudicato niente di questa sessione.**
+**L'utente ha visto e giudicato la sessione** (decisione 39, a fine giornata): ha scelto la **forma 2** del quadro del
+giorno, ha detto di ripartire dal **candidato 1** e ha proposto lui il **candidato 5** (la chat di dipartimento), da
+approfondire quando toccherà. Restano da giudicare i Dipartimenti, i controlli, e il prezzo pagato per applicare la forma 2
+(la riga dei due numeri grandi tolta dalla schermata 1).
 
 ## Stato
 
@@ -277,14 +280,24 @@ dichiarati qui sotto. Tutto committato e pushato sul branch indicato sotto, con 
       scaricamento non parte;
     - il titolo del dipartimento che si stringe oltre i dodici caratteri.
 
+39. **2026-09-07, fine della sessione: l'utente ha scelto la forma 2 del quadro del giorno e il lavoro delle prossime
+    sessioni.** Tre cose decise in una volta:
+    - **il quadro del giorno è la forma 2, «due per due»** (la sessione aveva applicato in via provvisoria la 3, come il
+      prompt autorizzava in mancanza di risposta). Applicarla ha voluto dire pagarne il contro misurato: vedi la sezione
+      «A» dello Stato e `DIREZIONI.md`, «Versione 17», sezione A;
+    - **il lavoro riparte dal candidato 1** (le 84 frecce) e prosegue nell'ordine dei candidati;
+    - **la chat di dipartimento entra come candidato 5**, da approfondire con lui quando toccherà, non da scrivere di
+      slancio: sue parole, «poi lo approfondiremo quando sarà il suo momento».
+
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti sintetici di DGT; documenti in italiano.
 
 ## Il lavoro della prossima sessione
 
-**Non è ancora scelto**: i tre passi della decisione 37 sono finiti tutti e tre. La prima cosa da fare all'avvio è **far
-vedere all'utente che cosa è cambiato** e chiedergli il prossimo lavoro. Se non risponde e bisogna scegliere, questi sono i
-candidati, dal più maturo al più discutibile, con i numeri contati il 2026-09-07.
+**Scelto dall'utente il 2026-09-07, a fine sessione: si comincia dal candidato 1 e si va avanti in quest'ordine.** I
+candidati sono elencati dal più maturo al più discutibile, con i numeri contati il 2026-09-07. Il **5** è nuovo, proposto
+dall'utente nella stessa conversazione: è il più interessante dei cinque ma va approfondito con lui prima di scriverlo, e
+lui lo sa («poi lo approfondiremo quando sarà il suo momento»).
 
 ### 1 · Le 84 frecce che non aprono niente (la coda naturale della versione 17)
 
@@ -312,15 +325,62 @@ Le mutazioni che il modello non ha e che si vedono nell'interfaccia: «Sposta» 
 settimana non si aprono, il dipendente non risponde da solo nella chat, il «non letto» non sopravvive al ricaricamento, lo
 stato vuoto del dipendente appena creato. Sono lavori di modello, non di design.
 
+### 5 · La chat di dipartimento (proposta dell'utente, 2026-09-07)
+
+**Idea sua, in due parti**: (a) scrivere *al dipartimento* e non solo al singolo — dargli un obiettivo, una correzione, un
+appunto; (b) un agente che da quella nota distribuisce da solo i compiti ai dipendenti. E, a parte, (c) far comunicare i
+dipendenti fra loro e condividere memorie e conoscenze per un obiettivo comune.
+
+**Il giudizio dato all'utente in conversazione** (da riportare a lui prima di scrivere codice, perché è lì che si decide):
+
+- **(a) Il filo di dipartimento: sì, ed è la parte che vale.** Il livello esiste già nel modello e non ha voce: gli obiettivi
+  sono già di dipartimento e hanno già una squadra (`chi: [1, 2, 3]` in `dati.js`), ma al dipartimento non si può parlare —
+  se un obiettivo è in ritardo bisogna scegliere uno dei suoi e ripetere la stessa cosa agli altri. E la pagina Dipartimento
+  (Console e telefono, appena fatta nella versione 17) oggi è un rapporto da leggere: un filo la renderebbe il posto da cui
+  si guida.
+- **(b) La distribuzione automatica: sì, ma come proposta da approvare, non in silenzio.** La spina dorsale del prodotto è
+  «il titolare approva ogni uscita»; se un agente sparpaglia comandi senza mostrarli, il titolare perde di vista che cosa è
+  stato chiesto a chi. Il pattern esiste già e non va inventato: **la distribuzione diventa una richiesta come la revisione
+  di performance** (si approva, si chiedono modifiche, si rifiuta). Poi i compiti compaiono nei fili dei singoli **citando la
+  nota di dipartimento da cui vengono**, così il filo del dipendente resta il registro completo.
+- **(c) Dipendenti che parlano fra loro: separare le due cose.** *Condividere conoscenza* sì — e per metà c'è già: lo
+  strumento «Archivio del cliente» (brief, post approvati, tono di voce) compare 15 volte nel modello, ed è conoscenza
+  condivisa; anche le dipendenze ci sono, scritte a mano (nel log del Tester QA: «Il deploy in staging di Kim è in errore: se
+  non si sblocca, i test partono sulla versione precedente»). *Farli chiacchierare* no: è traffico macchina-macchina che
+  nessuno leggerà, e soprattutto **indebolisce la cosa che il prodotto fa meglio, l'attribuzione** — oggi ogni euro e ogni
+  consegna risalgono a un dipendente e a un'esecuzione, e ci stanno sopra tutta la pagina Costi e la revisione di
+  performance. Quindi: l'archivio come **oggetto di prima classe** del dipartimento o del cliente, con l'interfaccia che
+  mostra **chi ci ha messo cosa e chi l'ha usata**; le dipendenze come **legame sull'obiettivo o sull'esecuzione**
+  («aspetta il passo 3 di Kim»). Novanta per cento del valore, niente manichetta.
+
+**La domanda aperta, che è una decisione dell'utente e non di design**: *chi parla nel filo del dipartimento?* Un
+dipartimento non è una persona. Risposta economica: parla DGT, con i messaggi `sistema` che già esistono. Risposta
+ambiziosa: un **coordinatore** di dipartimento — e nel vocabolario degli avatar il ruolo «Coordinatore» c'è già
+(`avatar-motore.js`, «il fulcro stabile della squadra»). Ma è un personaggio nuovo nel prodotto: va deciso prima, non
+scoperto dopo.
+
+**Ordine consigliato quando toccherà**: prima il filo (scrivere al dipartimento, i messaggi che arrivano ai fili dei singoli
+citando l'origine), poi la distribuzione come proposta da approvare. Il modello ha già quasi tutto: `filoDi` è indicizzato
+per dipendente e andrebbe indicizzato per soggetto (`dip:mkt`), e l'interfaccia della chat esiste già su Console e telefono.
+
+**Trovato mentre si rispondeva, da sistemare quando si tocca questa zona**: l'obiettivo `o2` («Area riservata Zenith»)
+dichiara `chi: [1, 2]`, ma **Kim (id 3) ci lavora** — la sua esecuzione dichiara `obiettivo: 'o2'` — e non è nell'elenco.
+Squadra dichiarata e squadra reale già non coincidono; un filo di dipartimento renderebbe questo scarto visibile.
+
 ## Come riprendere
 
 **I tre artefatti sono in pari** (Console, telefono e pagina della scelta: vedi «Stato»), quindi non c'è niente da recuperare
 prima di cominciare. Quando si ripubblica: `build-unico.js`, poi lo strumento con `url`, dopo aver letto la versione
 pubblicata per intero (vedi «Note tecniche»).
 
-**Prima cosa: mostrare all'utente che cosa è cambiato** (il quadro del giorno sul telefono, le due schermate dei
-Dipartimenti, le intestazioni ripulite) e chiedere il prossimo lavoro. Se manda correzioni su questa versione, applicarle
-prima di tutto il resto.
+**Prima cosa: il candidato 1, le 84 frecce.** La versione 17 l'utente l'ha già vista e giudicata (ha scelto la forma 2 del
+quadro del giorno, decisione 39), e ha già detto da dove ripartire: candidato 1, poi gli altri in ordine. Non serve
+rifargli il giro di presentazione. Se manda correzioni sulla 17, quelle vengono prima di tutto il resto.
+
+**Le frecce vanno fatte vedere prima di applicarle**, perché toccarle cambia ogni riga e ogni card del prodotto: catture di
+prima e dopo affiancate, su una sezione sola, poi la decisione dell'utente, poi tutte. La regola 25 dice già che cosa
+farne — la freccia resta dove la riga ha una destinazione, sparisce dove non ce l'ha — quindi il lavoro non è decidere la
+regola, è mostrare che cosa diventa il prodotto quando la si applica.
 
 **Non rimettere in discussione**: la direzione A, la barra «Oggi in azienda» della versione 16 con la correzione 16a, gli
 avatar della versione 10, la regola «niente emoji».
@@ -460,29 +520,46 @@ testo cambiando pagina (lo stato è per sezione ma si azzera con `?pagina=`), e 
 
 ## Cosa manca
 
-1. **Il lavoro della prossima sessione non è scelto**: i tre passi della decisione 37 sono finiti. Vedi la sezione «Il lavoro
-   della prossima sessione» per i quattro candidati, e chiedere all'utente.
+1. **Le 84 frecce che non aprono niente**: il lavoro scelto per la prossima sessione (candidato 1, decisione 39). La regola
+   c'è già (regola 25); quello che manca è il prima/dopo davanti agli occhi dell'utente prima di applicarla a tutte.
 2. **Il giudizio dell'utente sul resto della versione 17** (i Dipartimenti, i controlli) e sulle scelte di dettaglio della
-   decisione 38. Del quadro del giorno l'utente ha già scelto la forma (la 2, «due per due», il 2026-09-07); resta da
-   sentire se gli va bene il prezzo pagato per applicarla, cioè la riga dei due numeri grandi caduta e il conto passato
-   nel titolo della schermata 1.
-3. **Le 84 frecce che non aprono niente**: la coda dichiarata della regola 25, da fare con una decisione dell'utente davanti.
+   decisione 38. Del quadro del giorno la forma l'ha scelta (la 2); resta da sentire se gli va bene **il prezzo pagato per
+   applicarla**, cioè la riga dei due numeri grandi caduta e il conto passato nel titolo della schermata 1. È l'unica
+   decisione di design presa dentro la sua scelta, quindi va risollevata e non data per buona.
+3. **La chat di dipartimento (candidato 5)**: approfondirla con l'utente quando toccherà. Le due domande da portargli sono
+   già scritte nel candidato: *chi parla nel filo* (DGT o un coordinatore come personaggio) e se la distribuzione dei
+   compiti deve passare per l'approvazione come la revisione di performance.
 4. I giudizi in sospeso delle versioni 6, 8, 11, 12, 14, 15 e 15a; le scelte di dettaglio della barra (decisioni 33 e 34).
 5. I punti aperti elencati in «Come riprendere».
 
 ### Prompt di avvio suggerito per la prossima sessione
 
 ```
-Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md (in particolare «Stato» e «Il lavoro della prossima sessione»). Controlla la
-PR #14: se è unita riparti da main con un branch nuovo, altrimenti continua sullo stesso branch.
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md (in particolare «Stato», «Il lavoro della prossima sessione» e «Come
+riprendere»). Controlla la PR #14: se è unita riparti da main con un branch nuovo, altrimenti continua sullo stesso branch.
 
 Lavoriamo nella direzione A · Console (schermate/componenti.js, schermate/direzioni/direzione-a.js, dati.js, comune.js,
 avatar/, mobile.js): niente emoji, solo le icone dello sprite; gli avatar sono quelli della versione 10; i colori restano
-quelli del sistema. La barra «Oggi in azienda» della versione 16 con la correzione 16a è decisa, e così la versione 17
-(il quadro del giorno sul telefono, la tab Dipartimenti, la regola dei controlli): non rimetterle in discussione.
+quelli del sistema. Sono decise e non si rimettono in discussione: la direzione A, la barra «Oggi in azienda» della
+versione 16 con la correzione 16a, e tutta la versione 17 — il quadro del giorno sul telefono nella forma 2 «due per due»
+che ho scelto io, la tab Dipartimenti, la regola dei controlli (regola 25).
 
-Prima cosa: fammi vedere che cosa è cambiato nella versione 17 e aspetta il mio giudizio. Se non rispondo, scegli tu il
-lavoro fra i candidati della sezione «Il lavoro della prossima sessione» e dimmi quale hai scelto e perché.
+Questa sessione facciamo il candidato 1: le 84 frecce di riga che non aprono niente. La regola c'è già (regola 25: la
+freccia resta dove la riga ha una destinazione e sparisce dove non ce l'ha), quindi non me la riproporre. Quello che
+voglio vedere è che cosa diventa il prodotto quando la si applica, perché tocca ogni riga e ogni card:
+
+1. Contale e raggruppale per famiglia (storico delle Richieste, casi del colloquio, righe dei costi, rendimento, passi,
+   log, revisioni passate, le sparse), e per ogni famiglia dimmi se la riga una destinazione ce l'ha o no.
+2. Applica la regola a UNA famiglia sola e fammi vedere il prima/dopo affiancato, catturato. Aspetta che scelga.
+3. Poi applicala a tutte, con lo stesso prima/dopo alla fine.
+
+Se non rispondo al punto 2, scegli tu e dimmi che cosa hai scelto e perché.
+
+Due cose da risollevare, non da dare per buone: (a) nella versione 17, per far stare il quadro «due per due», hai tolto
+dalla schermata 1 del telefono la riga dei due numeri grandi e spostato il conto nel titolo — dimmi che aspetto ha e se
+lo tengo; (b) il candidato 5, la chat di dipartimento: NON scriverlo questa sessione, ma quando avremo finito il
+candidato 1 portami le due domande aperte che hai già scritto lì (chi parla nel filo, e se la distribuzione dei compiti
+passa dall'approvazione).
 
 Il metodo di sempre: prima lancia le quattro prove di prove/ e cattura le pagine con scatta.js (base di confronto). Alla
 fine prove aggiornate, screenshot, i tre artefatti ripubblicati allo stesso indirizzo, DIREZIONI.md (versione 18),
