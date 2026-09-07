@@ -114,7 +114,7 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
 
   console.log('6. il telefono carica');
   await page.goto('file://' + path.resolve(__dirname, '../mobile.html')); await page.waitForTimeout(500);
-  check((await page.locator('.m-tel').count()) === 6, 'sei telefoni');
+  check((await page.locator('.m-tel').count()) === 8, 'otto telefoni');
   check(errors.length === 0, 'nessun errore in console: ' + JSON.stringify(errors));
   console.log(`\n${ok} ok, ${ko} ko`);
   await browser.close(); process.exit(ko ? 1 : 0);

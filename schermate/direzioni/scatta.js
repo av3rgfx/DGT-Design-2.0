@@ -14,7 +14,7 @@ const FUORI = [
   'b-11.png', 'b-40.png', 'c-11.png', 'c-40.png',       // direzioni B e C, 2026-09-04: catturate con un altro font locale
   'avatar-orbe-pellicola.png',                          // la pellicola del moto: script mai entrato nel repository
   'avatar-identita.png', 'avatar-pelli.png', 'avatar-confronto.png',   // le pagine di studio dell'avatar
-  'mobile*.png',                                        // il telefono: mobile.html, cornici per elemento con CLICK/EVAL
+  'mobile*.png',                                        // il telefono, catture vecchie: mobile.html con CLICK/EVAL (le nuove sono i gruppi `quadro` e `dip`)
   'a-costi-*.png', 'a-agenda-*.png', 'a-chat-filo.png', // le sezioni per elemento (non portano la barra)
   'a-barra-momenti*.png', 'a-barra-misura*.png',        // le due strade scartate dello studio della barra (versione 16)
   'a-barra-console-momenti.png', 'a-barra-console-misura.png', 'a-barra-passi-prima.png',
@@ -60,6 +60,24 @@ const CATTURE = [
   { g: 'barra', nome: 'a-barra-console-stato', q: '', h: 620, viewport: true },
   { g: 'barra', nome: 'a-barra-console-oggi', q: 'barra=0', h: 620, viewport: true },
   { g: 'barra', nome: 'a-barra-passi', q: 'pagina=esecuzione&id=1&tendina=chiusa', sel: '.etesta .a-sched', h: 1400 },
+  /* --- versione 17: il quadro del giorno sul telefono (la forma scelta, «due per due», e le due scartate) e la tab Dipartimenti --- */
+  { g: 'quadro', nome: 'm-quadro-niente', file: 'mobile.html', q: 'schermata=1&quadro=0', sel: '.m-tel', h: 1100 },
+  { g: 'quadro', nome: 'm-quadro-duedue', file: 'mobile.html', q: 'schermata=1', sel: '.m-tel', h: 1100 },
+  { g: 'quadro', nome: 'm-quadro-duedue-40', file: 'mobile.html', q: 'schermata=1&n=40', sel: '.m-tel', h: 1100 },
+  { g: 'quadro', nome: 'm-quadro-piani', file: 'mobile.html', q: 'schermata=1&quadro=1', sel: '.m-tel', h: 1100 },
+  { g: 'quadro', nome: 'm-quadro-riga', file: 'mobile.html', q: 'schermata=1&quadro=3', sel: '.m-tel', h: 1100 },
+  { g: 'dip', nome: 'm-dipartimenti', file: 'mobile.html', q: 'schermata=7', sel: '.m-tel', h: 1100 },
+  { g: 'dip', nome: 'm-dipartimenti-40', file: 'mobile.html', q: 'schermata=7&n=40', sel: '.m-tel', h: 1100 },
+  { g: 'dip', nome: 'm-dipartimento', file: 'mobile.html', q: 'schermata=8&dip=mkt', sel: '.m-tel', h: 1100 },
+  { g: 'dip', nome: 'm-dipartimento-giu', file: 'mobile.html', q: 'schermata=8&dip=mkt', sel: '.m-tel', h: 1100, eval: "document.querySelector('.m-scroll').scrollTop=560" },
+  { g: 'dip', nome: 'm-dipartimento-amm', file: 'mobile.html', q: 'schermata=8&dip=amm', sel: '.m-tel', h: 1100 },
+  { g: 'dip', nome: 'm-chat-cerca', file: 'mobile.html', q: 'schermata=4', sel: '.m-tel', h: 1100, clic: '[data-az="mcerca"]', eval: "(()=>{const i=document.querySelector('input[data-mcerca]');i.value='mar';i.dispatchEvent(new Event('input',{bubbles:true}))})()" },
+  /* --- versione 17: i controlli delle intestazioni di sezione, la regola applicata --- */
+  { g: 'controlli', nome: 'a-sez-dipendenti', q: 'tendina=chiusa', sel: '.a-main section:nth-of-type(3) .shead', h: 1400 },
+  { g: 'controlli', nome: 'a-sez-cerca', q: 'tendina=chiusa', sel: '.a-main section:nth-of-type(3)', h: 1400, clic: '[data-az="cerca"][data-sez="home.dipendenti"]', eval: "(()=>{const i=document.querySelector('input[data-cerca]');i.value='ma';i.dispatchEvent(new Event('input',{bubbles:true}))})()" },
+  { g: 'controlli', nome: 'a-sez-log', q: 'pagina=esecuzione&id=4&tendina=chiusa', sel: '.a-main section:nth-of-type(3) .shead', h: 1400, clic: '[data-az="cerca"][data-sez="esec.log"]' },
+  { g: 'controlli', nome: 'a-sez-costo-passo', q: 'pagina=esecuzione&id=4&tendina=chiusa', sel: '.a-main section:nth-of-type(5)', h: 1400, clic: '[data-az="sez"][data-sez="esec.costo"][data-v="passo"]' },
+  { g: 'controlli', nome: 'a-sez-spesa-oggi', q: 'pagina=dipartimento&dip=svi&tendina=chiusa', sel: '.a-main section:nth-of-type(5)', h: 1400, clic: '[data-az="periodo"][data-sez="dip.spesa"][data-v="oggi"]' },
 ];
 
 (async () => {

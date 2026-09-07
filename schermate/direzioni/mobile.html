@@ -17,8 +17,10 @@
 <script src="dati.js"></script>
 <script src="mobile.js"></script>
 <script>
-  // Parametri: ?schermata=1|2|3|4|5|6 (uno o più telefoni, es. ?schermata=2 o ?schermata=1,4; predefinito 1,2,3,4,5,6: i sei telefoni)
-  // 1 Da approvare · 2 Richiesta · 3 Riepilogo di oggi · 4 Chat · 5 Conversazione · 6 Agenda.  ?richiesta=0 (indice nella coda)  ?filo=<id dipendente>
+  // Parametri: ?schermata=1|…|8 (uno o più telefoni, es. ?schermata=2 o ?schermata=1,4; predefinito 1,…,8: gli otto telefoni)
+  // 1 Da approvare · 2 Richiesta · 3 Riepilogo di oggi · 4 Chat · 5 Conversazione · 6 Agenda · 7 Dipartimenti · 8 Dipartimento.
+  // ?richiesta=0 (indice nella coda)  ?filo=<id dipendente>  ?dip=svi|mkt|ven|amm (il dipartimento della schermata 8)
+  // ?quadro=0|1|2|3 il quadro del giorno in cima alla schermata 1 (versione 17). Scelta: 2 «due per due»; 1 «le quattro a due piani» e 3 «la riga che parla» sono le forme scartate dello studio; 0 = niente, il telefono di prima
   // ?n=11|40 e gli stessi parametri dell'avatar della Console (?avatar= ?pelle= ?identita= ?palette= ?corpo= ?occhi= ?segnale= ?carattere=)
   const q = new URLSearchParams(location.search);
   DGT_UI.iconeInserisci();
@@ -29,8 +31,8 @@
   DGT_UI.stile('css-componenti', DGT_COMPONENTI.css);   // i componenti condivisi con la Console (schermate/componenti.js, classi .dirA)
   DGT_UI.stile('css-m', DGT_MOBILE.css);    // le cornici del telefono e le tre schermate
   const modello = DGT_DATI.modello(DGT_DATI.nDaUrl());
-  const schermate = (q.get('schermata') || '1,2,3,4,5,6').split(',').map(Number).filter(s => s >= 1 && s <= 6);
-  DGT_MOBILE.monta(document.getElementById('root'), modello, { schermate, richiesta: +(q.get('richiesta') || 0), filo: +(q.get('filo') || 0) });
+  const schermate = (q.get('schermata') || '1,2,3,4,5,6,7,8').split(',').map(Number).filter(s => s >= 1 && s <= 8);
+  DGT_MOBILE.monta(document.getElementById('root'), modello, { schermate, richiesta: +(q.get('richiesta') || 0), filo: +(q.get('filo') || 0), dip: q.get('dip') || '', quadro: q.has('quadro') ? +q.get('quadro') : undefined });
 </script>
 </body>
 </html>

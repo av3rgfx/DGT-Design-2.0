@@ -1,91 +1,123 @@
 # Prossima sessione — passaggio di consegne
 
-Stato al 2026-09-07, fine della sessione della **barra «Oggi in azienda»** (versione 16 della direzione A · Console): lo studio UX
-chiesto dall'utente, tre strade disegnate nella Console vera e la terza applicata — la barra non finge più una linea del tempo e
-dice il giorno in quattro caselle contate e nominate. Nella stessa sessione, sullo stesso componente, sono stati corretti due
-difetti della **barra dei passi** dell'Esecuzione (usciva dalla pagina e veniva tagliata in silenzio). Tutto è committato e
-pushato sul branch indicato sotto, con la PR aperta verso `main`. **L'utente ha visto la barra nuova e ha confermato la
-strada 3** («confermo la Strada 3», 2026-09-06): il codice era già quello, quindi non è cambiato niente dopo la conferma.
-Il 7 settembre, con la scelta a lui, è stata tolta la casella che ripeteva la linguetta lime (correzione 16a) e i **tre
-artefatti** sono stati ripubblicati allo stesso indirizzo: Console, telefono e la pagina della scelta condivisa col collega.
+Stato al 2026-09-07, fine della sessione dei **tre passi scelti dall'utente** (versione 17 della direzione A · Console).
+Fatti tutti e tre: **A** il quadro del giorno anche sul telefono (tre forme disegnate nel telefono vero, catturate e messe a
+confronto con i numeri; **l'utente ha scelto la seconda, «due per due»**, e applicarla ha voluto dire pagarne il contro:
+vedi sotto); **B** la tab
+«Dipartimenti», che era l'ultimo cerchio inerte della navigazione, in due schermate nuove (7 e 8); **C** i controlli inerti,
+con una regola proposta prima di scrivere codice, fatta vedere su una sezione sola e poi applicata a tutte e trentadue.
+Nel farla è venuto fuori che **il conto di 61 era sbagliato per difetto**: i controlli senza azione erano **263**, perché la
+lista non contava le settantasei pillole di filtro delle intestazioni. Ne restano 128, tutti fuori dalla lista dell'utente e
+dichiarati qui sotto. Tutto committato e pushato sul branch indicato sotto, con la PR aperta verso `main`.
 
-**Il lavoro della prossima sessione è già scelto** (decisione 37): i tre passi che avevo proposto — la barra del giorno anche
-sul telefono, la tab «Dipartimenti», i controlli inerti — dimensionati con i numeri veri nella sezione «Il lavoro della
-prossima sessione», che è la prima cosa da leggere dopo questo cappello.
+**L'utente ha visto e giudicato la sessione** (decisione 39, a fine giornata): ha scelto la **forma 2** del quadro del
+giorno, ha detto di ripartire dal **candidato 1** e ha proposto lui il **candidato 5** (la chat di dipartimento), da
+approfondire quando toccherà. Restano da giudicare i Dipartimenti, i controlli, e il prezzo pagato per applicare la forma 2
+(la riga dei due numeri grandi tolta dalla schermata 1).
 
 ## Stato
 
-- Branch: `claude/console-oggi-azienda-bar-kzetlz` (da `main`: la **PR #12 era già unita** all'inizio della sessione, quindi si è
-  ripartiti da `main`, come chiedeva il prompt). A fine sessione è aperta la **PR #13** verso `main`
-  (https://github.com/av3rgfx/DGT-Design-2.0/pull/13): se all'avvio della prossima sessione risulta già unita, ripartire da `main`
-  con un branch nuovo; se è ancora aperta, continuare sullo stesso branch e la PR si aggiorna da sola.
-- **La barra «Oggi in azienda»** (`barraStato` e `gruppiOggi` in `direzione-a.js`): dentro la pista lime, quattro caselle contate
-  e nominate — *2 approvate*, *3 al lavoro* (bianca piena, con la pila di chi lavora), *1 ferma · Kim* (rosa),
-  *3 dopo · dalle 15:00* — ognuna cliccabile verso il posto giusto (Richieste, Esecuzione ferma, Agenda). **Quello che aspetta
-  il titolare non sta nella barra**: lo dice la linguetta lime «N da approvare» (`.a-mini`), fissa su tutte e sette le pagine e
-  l'unica che apre la coda (correzione 16a, vedi la decisione 35). Legge il modello vero
-  (stati dei dipendenti e richieste in attesa), non più la lista parallela `m.agenda`, che non conosceva gli errori. Sopra i
-  sedici dipendenti i dettagli (il nome di chi è fermo, l'ora del prossimo) cedono il posto ai numeri. `?barra=0` rimette la
-  barra di prima, e con quel parametro la pagina è **identica byte per byte** a prima della sessione.
-- **Che cosa si è scostato dal riferimento, e perché**: resta tutta la forma (pillola bianca 64, titolo 18, chip della data,
-  pista lime 52, pillole con le pile di avatar, cerchio 52 in fondo); cade **l'asse del tempo** — gli orari fra i blocchi, i
-  separatori e il marcatore nero dell'ora. Motivo, con i numeri: in DGT la scala cambiava di otto volte fra un blocco e l'altro
-  (3,4 px/min su una consegna, 13,4 sul segmento in corso, 1 px per le quattro ore e mezza di vuoto del pomeriggio), il
-  marcatore stava al bordo del segmento verde e non a un'ora (a 40 lo stesso «10:42» si spostava di 12 px), i quattro stati
-  distavano 1,1–1,2 : 1 di contrasto e la barra mostrava 4 delle 8 esecuzioni della giornata, tacendo **proprio sulle due su cui
-  il titolare deve agire**. Nel riferimento l'asse del tempo è legittimo: lì la barra è l'agenda personale di una giornata di
-  appuntamenti. Tutto in `DIREZIONI.md`, «Versione 16», sezioni 1 e 4; regola 24 in `SYSTEM-DESIGN.md`.
-- **Le due strade scartate** restano scritte in `DIREZIONI.md` e catturate, non nel codice: «i tre momenti» (la forma del
-  riferimento con i blocchi nominati: a 40 taglia tre etichette) e «la giornata a misura» (la pista proporzionale alle ore:
-  onesta ma muta, e duplica in peggio la barra del giorno della pagina Agenda).
-- **La barra dei passi dell'Esecuzione** (stesso componente): due difetti trovati e corretti. (a) `.etesta` era una griglia senza
-  colonne dichiarate, la colonna implicita cresceva a `max-content` e con sette passi la barra arrivava a **2180 px** dentro un
-  contenitore da 1312; `.a-app` ha `overflow:hidden`, quindi tre passi su sette non erano sullo schermo e nessuna prova se ne
-  accorgeva. Rimedio: `grid-template-columns:minmax(0,1fr)`, lo stesso che `.a-main` ha già. (b) Sette passi per esteso chiedono
-  1600 px e la pista ne ha 990: ora i passi conclusi di un'esecuzione lunga lasciano il nome (tengono spunta e durata), oltre tre
-  conclusi restano gli ultimi due e gli altri si contano («+3 fatti»), i passi da fare oltre i due successivi si contano
-  («+2 da fare»); il passo in corso e quello in errore restano sempre per esteso. Verificato su **tutte e 51 le esecuzioni** del
-  modello (11 e 40): nessuna sfora.
-- **Le quattro prove cliccate** passano: `prove/console.js` **82** (erano 64: diciotto verifiche nuove sulla barra e sulla barra
-  dei passi, comprese le due che impediscono alla barra di tornare a ripetere la linguetta), `mobile.js` 39, `costi.js` 48,
-  `agenda-chat.js` 54. In tutto **223**.
-- **Niente altro è cambiato**: confronto a pixel delle venticinque catture della Console prima e dopo — il riquadro delle
-  differenze è sempre quello della barra (`x 426–1203, y 34–85`, circa 29 500 pixel), tranne `a-esecuzione.png` e
-  `a-esecuzione-attesa.png`, che cambiano anche nella barra dei passi (il difetto corretto qui sopra). `a-1920.png` cambia nello
-  stesso riquadro scalato di 1,333. Il telefono non è toccato: `mobile.png` rigenerato è identico byte per byte.
-- **Strumento nuovo: `schermate/direzioni/scatta.js`.** I parametri con cui erano state fatte le catture di `screenshot/` non
-  stavano scritti in nessun posto e andavano ricostruiti a mano ogni sessione (in questa, due sono stati ricostruiti sbagliati e
-  scoperti solo dal confronto a pixel: quasi tutte le pagine erano state catturate con `tendina=chiusa`, e `a-1920.png` è la
-  pagina del Dipendente, non la home). Ora la lista è dichiarata nel file: `node schermate/direzioni/scatta.js` rigenera tutto,
-  `console` o `barra` un gruppo solo, `--in <cartella>` scrive altrove per il confronto prima/dopo. Le catture che restano a mano
-  sono elencate in `FUORI` dentro il file (direzioni B e C, pellicola del moto, cornici del telefono, sezioni per elemento, le
-  due strade scartate).
-- Screenshot nuovi in `schermate/direzioni/screenshot/`: `a-barra-oggi.png` (la barra di prima), `a-barra-momenti.png`,
-  `a-barra-misura.png`, `a-barra-stato.png` (le tre strade), le stesse con `-40`, le quattro nella Console
-  (`a-barra-console-*.png`), `a-barra-passi-prima.png` e `a-barra-passi.png`. Rigenerate le 25 catture della Console.
-- **Artefatti ripubblicati allo stesso indirizzo, con la versione 16 e la correzione 16a:**
-  [Console](https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34) (444 KB) e
-  [telefono](https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9) (322 KB). I due file unici si rigenerano in
-  un comando (`node schermate/direzioni/build-unico.js direzione-a.html /percorso/console.html` e `… mobile.html /percorso/…`).
-  Al primo tentativo la chiamata era stata **negata dal classificatore dei permessi** della modalità automatica dopo la lettura
-  per intero della versione pubblicata; ripetuta dopo la stessa lettura è passata. Se ricapita: rileggere e riprovare.
-- **Artefatto della scelta ripubblicato** (https://claude.ai/code/artifact/3a3fcb9e-c894-4a83-9cdb-54820f65756f): le immagini
-  della strada 3 sono quelle a quattro caselle, l'occhiello dice «Decisa: la strada 3» e sotto la bilancia c'è il poscritto
-  sulla correzione 16a. Il voto condiviso resta aperto. **Sorgente e costruttore stanno nel repository** (richiesta
-  dell'utente): `schermate/direzioni/scelta-barra.src.html` — che non si apre da solo, le catture sono segnaposto `IMG:<nome>` —
-  e `node schermate/direzioni/costruisci-scelta.js`, che ci incorpora i PNG di `screenshot/`. La pagina costruita
-  (`scelta-barra.html`, 1,8 MB di base64) è in `.gitignore` come i file unici degli altri artefatti.
+- Branch: `claude/console-direzione-a-mobile-vdb1tb` (da `main`: la **PR #13 era già unita** all'inizio della sessione, quindi
+  si è ripartiti da `main`, come chiedeva il prompt). A fine sessione è aperta la **PR #14** verso `main`: se all'avvio della
+  prossima sessione risulta già unita, ripartire da `main` con un branch nuovo; se è ancora aperta, continuare sullo stesso
+  branch e la PR si aggiorna da sola.
+
+### A · Il quadro del giorno sul telefono (versione 17)
+
+- **Il nodo, con i numeri**: le quattro caselle della Console sommano **602 px**, la colonna del telefono ne dà **254,4**
+  (misurata: schermo 278,4, cornice fissa 300 × 620). Non bastava riordinare. La forma in linea della Console non ci sta
+  nemmeno con tre caselle (273 px).
+- **Tre forme disegnate nel telefono vero e catturate** (`?quadro=1|2|3`, catture `m-quadro-*.png`): *le quattro a due piani*
+  (58 px, la parola scende a 10 px), *due per due* (132 px, la più leggibile ma **la riga con approva e rifiuta finiva sotto
+  la barra di navigazione**: della card da 256 px se ne vedevano 162), *la riga che parla* (54 px, tre caselle, numero e
+  parola accanto). Pro e contro con le misure in `DIREZIONI.md`, «Versione 17», sezione A.
+- **Scelta dell'utente: la 2, «due per due».** Le altre restano dietro `?quadro=1|3`, `?quadro=0` toglie il quadro.
+- **Il contro della 2 è stato pagato, non accettato.** Due recuperi, in ordine:
+  1. **Il conto ripetuto (78 px).** La casella «approvate» del quadro ripeteva il numero grande «N approvate oggi» a 60 px —
+     il difetto tolto dalla correzione 16a. È caduto il numero grande e non la casella (la casella sta nella griglia scelta,
+     porta un'icona e apre il Riepilogo; il numero era nudo). Rimasto un solo numero, «N da approvare», che ripeteva il
+     titolo sopra, **è caduta tutta la riga e il conto è passato nel titolo**: «DA APPROVARE 4», a 26 px e non a 30 perché a
+     30 va a capo (234 px liberi, titolo 214, più numero e stacco 243).
+  2. **Le misure strette del quadro (14 px)**: padding 12, occhiello su una riga da 14, stacco 6, caselle da 40. Il quadro
+     passa da 132 a **118 px**.
+- **Risultato misurato: 248 px di card su 256**, con la riga di approva e rifiuta **sopra** la navigazione (4 px di margine).
+  La forma scelta dall'utente è così **migliore di tutte e tre** sulla misura con cui la sessione aveva argomentato contro di
+  lei (la 3 lasciava 240 con la riga 4 px sotto la navigazione; la 1 ne lascia 236 con 8 px sotto). **La lezione, che vale
+  oltre questo caso: il costo di una forma non è una proprietà della forma, è una proprietà della forma più quello che le sta
+  intorno.** Misurata dentro una schermata che ripeteva un conto, la 2 sembrava la più cara; tolta la ripetizione, la
+  classifica si è rovesciata. Due verifiche nuove in `prove/mobile.js` inchiodano le due misure.
+- **`gruppiOggi` è passato nel modello** (`m.gruppiOggi()` in `dati.js`): la Console e il telefono contano una volta sola.
+- Il quadro sta **solo sulla schermata 1** (la home del telefono); l'Agenda è già la giornata per esteso.
+
+### B · La tab «Dipartimenti» (schermate 7 e 8)
+
+- **7 · l'elenco**: una riga per dipartimento con la pila dei suoi, i conti del giorno, la spesa di oggi e il numero lime di
+  quante richieste di quel dipartimento aspettano. Il sottotitolo dice «N dipendenti · M al lavoro», e se c'è un errore
+  «M al lavoro · K ferme» in rosa (in 130 px non stanno tutti e tre i conti).
+- **8 · il dipartimento aperto**: i tre numeri della Console e le sue cinque sezioni, con **un solo spostamento** — «Da
+  approvare» sale dalla quarta alla seconda posizione, e le righe sono decidibili sul posto (`m.decidi`). I dipendenti
+  portano alla conversazione, l'unica pagina del dipendente che il telefono ha.
+- **Un difetto trovato e corretto**: `AMMINISTRAZIONE` a 30 px chiede 292 px e la riga ne ha 234 — usciva dallo schermo.
+  Oltre i dodici caratteri il titolo si stringe a 22 px.
+- Aggiornati la navigazione (il secondo cerchio non è più inerte), `NOMI`, `?schermata=` (ora 1…8), `?dip=`; i telefoni
+  predefiniti sono otto.
+
+### C · I controlli inerti: la regola
+
+**La regola, in una riga: un controllo si vede solo se fa quello che promette, con i dati che ci sono già.** Due prove —
+*serve* in questa sezione? *si può fare* col modello? — e chi le passa diventa vero, chi ne fallisce una sparisce.
+
+| Famiglia | Prima | Dopo |
+|---|---|---|
+| cerchio «cerca» nelle intestazioni | 22 | **7 veri**, 15 spariti |
+| cerchio «filtri» (i cursori) | 22 | **0** |
+| cerchio «scarica» | 6 | **0** |
+| cerchi «griglia» e «righe» | 2 | **2 veri** |
+| pillole di filtro nelle intestazioni | 76 inerti | **57 vere**, 19 sparite |
+| «Impostazioni del dipartimento», la matita «Modifica» del prompt | 2 | **0** |
+| telefono: «Cerca» ×2, «Ordina» ×2, «Ordina e filtra», «Commenta» | 6 | **2 veri**, 4 spariti |
+| freccia «indietro» sulla home, i due cerchi della card obiettivo | 3 | **2 veri**, 1 sparito |
+
+- **La soglia di «cerca»: più di dodici righe** in una delle due taglie dell'azienda. Le sette che restano, con le righe
+  contate a 11 → 40: Dipendenti della home (12 → 41), Storico (16 → 28), Colloquio (16), Log (fino a 13), Costi per
+  dipendente (11 → 40), Eventi di oggi (8 → 26), Conversazioni (11 → 40).
+- **Come funziona**: il cerchio si apre in un campo al suo posto, filtra a ogni tasto, il conto «N di M» sta nel **contatore
+  della sezione** e non anche nel campo (lo stesso numero non si scrive due volte a 300 px: regola 24), Esc o × chiudono.
+  Attrezzi comuni in `direzione-a.js`: `cercaSez`, `filtraCerca`, `pilleSez`, `filtraSez`, `contoSez`; stato in `st.cerca` e
+  `st.sez`.
+- **Le pillole tolte e perché**: i giorni passati della sezione «Oggi» del dipendente, i 90 giorni e il «per cliente» del
+  Rendimento, i mesi passati del Budget, «Esempi allegati» e «Regole del dipartimento» del soul prompt, «Questo mese» della
+  settimana, «Connessioni» e «Aggiungi uno strumento», «Concluse oggi» del dipartimento e «In corso / Pianificate / Errori»
+  di «Al lavoro adesso» (quelle liste contengono solo chi lavora).
+- **Che cosa resta inerte, dichiarato**: **84 frecce `i-ne`** in fondo a righe e card che non aprono niente (toglierle cambia
+  ogni riga e ogni card del prodotto: **da fare con una decisione dell'utente davanti**), **36 indicatori nell'intaglio delle
+  card** (campanella col punto, matita, bersaglio, scarica del Riepilogo: dicono uno stato e vengono dal riferimento) e **9
+  campanelle** in alto a destra della cornice. In tutto 128.
+
+### Verifica
+
+- **Le quattro prove cliccate passano**: `console.js` **97** (erano 82), `mobile.js` **63** (erano 39), `costi.js` 48,
+  `agenda-chat.js` 54. In tutto **268** (erano 223).
+- **Zero controlli inerti** nelle 72 intestazioni delle nove pagine, a undici e a quaranta, controllato dalla prova.
+- Le catture della Console cambiano tutte (le intestazioni sono su ogni pagina); le catture della **sola barra**
+  (`a-barra-*.png`) sono identiche byte per byte: la barra della versione 16 non è stata toccata.
+- Catture nuove in `screenshot/`: `m-quadro-*.png` (la forma scelta a 11 e a 40, le due scartate, il telefono di prima), `m-dipartimenti*.png`,
+  `m-dipartimento*.png`, `m-chat-cerca.png`, `a-sez-*.png` (i controlli delle sezioni). Rigenerate le 25 della Console.
+- **`scatta.js` ha tre gruppi nuovi**: `quadro`, `dip`, `controlli` (48 catture in tutto, erano 32).
+- **Artefatti ripubblicati allo stesso indirizzo** con la versione 17:
+  [Console](https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34),
+  [telefono](https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9) e
+  [la pagina della scelta della barra](https://claude.ai/code/artifact/3a3fcb9e-c894-4a83-9cdb-54820f65756f), che cambia
+  perché due delle sue otto immagini sono catture di pagina intera e portano le intestazioni nuove.
 - Artefatti precedenti, non ripubblicati (le loro pagine non cambiano): identità degli orbi
-  https://claude.ai/code/artifact/1fc2ee53-3c23-4462-922a-cd581a90b6d6 (`avatar-identita.html`), pelli dell'orbe
-  https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569 (`avatar-pelli.html`), le due famiglie kit/orbe
-  https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526 (`confronto-avatar.html`), confronto A/B/C
-  https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f (`confronto.html`), specimen
+  https://claude.ai/code/artifact/1fc2ee53-3c23-4462-922a-cd581a90b6d6, pelli dell'orbe
+  https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569, le due famiglie kit/orbe
+  https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526, confronto A/B/C
+  https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f, specimen
   https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b.
-- Documento unico: `SYSTEM-DESIGN.md` (riga «Barra agenda» della sezione 6 riscritta con il prima e il dopo, riga «Pagina
-  Esecuzione» con la barra che si stringe, **regola 24**, sezione 9 con le verifiche, sezione 11 con il branch). Studio e
-  versioni della direzione A: `schermate/direzioni/DIREZIONI.md`, «Versione 16» (sette sezioni: che cosa dice oggi la barra con
-  le misure, che cosa dovrebbe dire, le tre strade con pro e contro, la raccomandazione con lo scostamento dichiarato, la barra
-  dei passi, la verifica, le scelte da confermare) e sezione 5 con `scatta.js`.
+- Documenti: `SYSTEM-DESIGN.md` (**regola 25**, riga «Intestazione di sezione» e riga «Mobile» della sezione 6, sezione 9 con
+  le verifiche, sezione 11 con i branch), `schermate/direzioni/DIREZIONI.md` («Versione 17» con le tre parti e le regole di
+  scala 17 e 18), i tre README.
 - Regole in `CLAUDE.md`: invariate (direzione A, avatar della versione 10, niente emoji).
 
 ## Decisioni dell'utente (in ordine)
@@ -233,131 +265,162 @@ prossima sessione», che è la prima cosa da leggere dopo questo cappello.
     conferma è della *strada*, non delle scelte di dettaglio elencate nella decisione 33 (le parole delle caselle, quante
     caselle, la duplicazione nella home): quelle restano da confermare, e se l'utente non le solleva vanno lasciate come sono.
 
+38. **2026-09-07, questa sessione: fatti i tre passi.** A, B e C come da decisione 37, con il metodo di sempre (prove e catture
+    prima, proposta prima di scrivere, prove e catture dopo). Scelte fatte in costruzione, da confermare (dettaglio in
+    `DIREZIONI.md`, «Versione 17», ultimo paragrafo):
+    - **la forma 2 del quadro del giorno** («due per due»), scelta dall'utente il 2026-09-07: le altre due restano dietro
+      `?quadro=1|3`, e con la 2 la riga dei due numeri grandi della schermata 1 non c'è (il conto sta nel titolo);
+    - il quadro sta **solo sulla schermata 1**, non su tutte come nella Console;
+    - la casella «ferma» del quadro porta alla **conversazione** con chi è fermo, non all'Agenda: dal telefono l'esecuzione
+      non si riavvia;
+    - nel dipartimento del telefono **«Da approvare» è la seconda sezione**, non la quarta come nella Console;
+    - **la soglia dei dodici** per «cerca», e le sette sezioni che se la tengono;
+    - le pillole tolte perché il modello non ha il dato (elenco nella sezione «Stato»);
+    - **«scarica» sparisce da tutte e sei** le sezioni invece di scaricare davvero: nella sandbox dell'artefatto uno
+      scaricamento non parte;
+    - il titolo del dipartimento che si stringe oltre i dodici caratteri.
+
+39. **2026-09-07, fine della sessione: l'utente ha scelto la forma 2 del quadro del giorno e il lavoro delle prossime
+    sessioni.** Tre cose decise in una volta:
+    - **il quadro del giorno è la forma 2, «due per due»** (la sessione aveva applicato in via provvisoria la 3, come il
+      prompt autorizzava in mancanza di risposta). Applicarla ha voluto dire pagarne il contro misurato: vedi la sezione
+      «A» dello Stato e `DIREZIONI.md`, «Versione 17», sezione A;
+    - **il lavoro riparte dal candidato 1** (le 84 frecce) e prosegue nell'ordine dei candidati;
+    - **la chat di dipartimento entra come candidato 5**, da approfondire con lui quando toccherà, non da scrivere di
+      slancio: sue parole, «poi lo approfondiremo quando sarà il suo momento».
+
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti sintetici di DGT; documenti in italiano.
 
 ## Il lavoro della prossima sessione
 
-L'utente ha scelto (decisione 37) di **procedere con i tre passi proposti**. Sono di taglia molto diversa: i numeri qui sotto
-sono contati nel codice il 2026-09-07, non stimati a occhio. Consiglio di farli in quest'ordine, che va dal più piccolo e
-autonomo al più grande e più discutibile.
+**Scelto dall'utente il 2026-09-07, a fine sessione: si comincia dal candidato 1 e si va avanti in quest'ordine.** I
+candidati sono elencati dal più maturo al più discutibile, con i numeri contati il 2026-09-07. Il **5** è nuovo, proposto
+dall'utente nella stessa conversazione: è il più interessante dei cinque ma va approfondito con lui prima di scriverlo, e
+lui lo sa («poi lo approfondiremo quando sarà il suo momento»).
 
-### A · La barra nuova anche sul telefono (la più piccola, ~mezza giornata)
+### 1 · Le 84 frecce che non aprono niente (la coda naturale della versione 17)
 
-Oggi il telefono non ha nessun quadro del giorno in cima: la prima schermata parte dal titolo «DA APPROVARE» e da due numeri,
-e la giornata si vede solo scendendo nel Riepilogo. La Console, dalla versione 16, ce l'ha in tutte e sette le pagine.
+È l'unica famiglia di controlli inerti rimasta che sia davvero una famiglia di *controlli*. Contate: 12 nello storico
+approvato delle Richieste, 12 sui casi del colloquio, 10 sulle righe dei costi del dipendente, 5 sulle righe del rendimento,
+4 sulle righe dei passi, 6 nel log, 4 sui costi, 3 sulle revisioni passate, e le altre sparse. La regola 25 dice già che cosa
+farne: **la freccia resta dove la riga ha una destinazione e sparisce dove non ce l'ha.** Quello che serve prima è la
+decisione dell'utente, perché toglierle cambia l'aspetto di ogni riga e ogni card del prodotto — è per questo che in questa
+sessione le ho lasciate. Da fare con un prima/dopo davanti agli occhi.
 
-- **Il nodo, misurato il 2026-09-07**: le quattro caselle della Console sommano **584 px** (130 «approvate», 156 «al lavoro»,
-  134 «ferma · Kim», 164 «dopo · dalle 15:00») più tre spazi da 6 = **602 px**, dentro una pista da 790. Lo schermo del
-  telefono è largo **278 px** e la colonna di contenuto ne dà **~254** (la card della richiesta li misura). Servono due volte
-  e mezzo lo spazio che c'è: **non basta riordinare, le caselle vanno anche rimpicciolite** — parole più corte, numero e
-  parola su due righe, o niente pila di avatar. Da tenere presente quando si disegnano le strade: due caselle affiancate come
-  sono oggi fanno già 292 px e sforano.
-- **Le strade da disegnare e far vedere** (non scegliere da soli): caselle 2 × 2 con la forma ridotta (la barra passerebbe da
-  64 a ~112 px, e la cornice del telefono è fissa: va verificato che il resto scenda senza tagli); una riga sola che scorre di
-  lato (contro la regola «lo schermo non scorre mai in orizzontale» che vale in tutto `mobile.js` — probabilmente da
-  scartare, ma vale disegnarla per mostrare perché); le sole caselle che chiedono un'azione, senza «approvate», che è la sola
-  che guarda al passato.
-- **Dove**: `mobile.js`, sopra `m-h1` nella schermata 1; il codice da cui partire è `barraStato` e `gruppiOggi` in
-  `direzione-a.js` (righe ~577–626). I dati sono già lì, l'aggregatore è condiviso.
-- **Attenzione**: la casella «ferma» in rosa e la linguetta lime non devono litigare con la campanella lime della navigazione,
-  che è a pochi pixel (correzione dell'utente del 2026-09-05: per quello sotto la navigazione c'è la fascia sfocata).
+### 2 · I giudizi in sospeso
 
-### B · La tab «Dipartimenti» del telefono (media, ~una giornata)
+L'utente non ha mai giudicato: la pagina del Dipendente (versione 6), quella dell'Esecuzione (versione 8), le schermate del
+telefono (11 e 12), la revisione sul telefono (14), le pagine Agenda e Chat (15), gli avatar ricentrati (15a) e adesso
+tutta la versione 17. Non blocca, ma è una lista che si allunga: vale la pena chiederglielo.
 
-È l'**ultimo cerchio inerte della navigazione** (`mobile.js` riga ~299: `<span class="rb" title="Dipartimenti">` senza
-`data-az`). Gli altri tre portano tutti a una schermata.
+### 3 · Le scelte di dettaglio della barra, mai sollevate
 
-- **Che cosa mostra**: da decidere e da proporre. Il materiale c'è tutto in `dati.js`: `m.perDip`, `m.obiettiviDi(dip)`,
-  `m.costi('mese', dip)`, `m.dipendenti` con stato e attività. La forma naturale è due schermate — l'elenco dei quattro
-  dipartimenti (schermata 7) e il dipartimento aperto (8) — sul modello della pagina Dipartimento della Console, ridotta.
-- **Da non dimenticare**: la navigazione in basso va aggiornata (`navigazione(m, n, attiva)` prende l'indice della tab attiva),
-  `NOMI` in fondo a `mobile.js`, il parametro `?schermata=` (oggi 1…6) e la sua riga di commento in `mobile.html`.
+Le parole delle caselle («approvate» contro «consegnate», «ferma» contro «in errore»), l'ultima ripetizione «al lavoro» nella
+sola home, quante caselle. La strada è confermata (decisione 34); queste no. Se non le solleva lui, vanno lasciate come sono.
 
-### C · I controlli inerti (la più grande, e la più da discutere prima di scrivere)
+### 4 · I punti aperti del modello
 
-Qui la lista che ho scritto per mesi era **sbagliata per difetto**. Contati nel codice:
+Le mutazioni che il modello non ha e che si vedono nell'interfaccia: «Sposta» dell'agenda non sposta davvero, i giorni della
+settimana non si aprono, il dipendente non risponde da solo nella chat, il «non letto» non sopravvive al ricaricamento, lo
+stato vuoto del dipendente appena creato. Sono lavori di modello, non di design.
 
-| Dove | Che cosa | Quanti |
-|---|---|---|
-| Console, intestazioni di sezione | cerchio «cerca» (`i-search`) | **22** |
-| Console, intestazioni di sezione | cerchio «filtri» (`i-sliders`) | **22** |
-| Console, intestazioni di sezione | cerchio «scarica» (`i-down`) | **6** |
-| Console | «Impostazioni del dipartimento», «Modifica», il cerchio «griglia» | 3 |
-| Console, Dipartimento | le tre pillole «Ultimi 30 giorni / Oggi / Da inizio anno» della «Spesa del mese» (la pagina Costi ha le sue, funzionanti) | 3 |
-| Telefono | «Cerca», «Ordina» × 2, «Ordina e filtra», «Commenta» | 5 |
+### 5 · La chat di dipartimento (proposta dell'utente, 2026-09-07)
 
-**Sono 61 controlli, di cui 50 cerchi su 32 intestazioni di sezione: non è un pomeriggio, ed è soprattutto una domanda di design prima che di codice.**
-Un cerchio «cerca» su una sezione di quattro card non serve a niente: farlo funzionare sarebbe onesto quanto toglierlo, e
-costerebbe di più. Prima di scrivere una riga va proposta all'utente una **regola**, del tipo: il cerchio resta e diventa vero
-solo dove la lista può superare N voci (le richieste, i dipendenti a 40, il log dell'esecuzione, i costi per cliente); altrove
-sparisce. Poi si applica la regola e si conta quanti ne restano. Le tre pillole della «Spesa del mese» sono un caso a parte e
-facile: la pagina Costi ha già le stesse pillole funzionanti (`?pagina=costi`), e `m.costi(periodo, dip)` accetta già il
-periodo — è quasi solo collegare.
+**Idea sua, in due parti**: (a) scrivere *al dipartimento* e non solo al singolo — dargli un obiettivo, una correzione, un
+appunto; (b) un agente che da quella nota distribuisce da solo i compiti ai dipendenti. E, a parte, (c) far comunicare i
+dipendenti fra loro e condividere memorie e conoscenze per un obiettivo comune.
 
-**Se il tempo non basta per tutti e tre**, A e B sono finiti e mostrabili; C si può fermare dopo la regola condivisa e le tre
-pillole, lasciando i cerchi delle intestazioni alla sessione dopo. Meglio due lavori chiusi che tre a metà.
+**Il giudizio dato all'utente in conversazione** (da riportare a lui prima di scrivere codice, perché è lì che si decide):
+
+- **(a) Il filo di dipartimento: sì, ed è la parte che vale.** Il livello esiste già nel modello e non ha voce: gli obiettivi
+  sono già di dipartimento e hanno già una squadra (`chi: [1, 2, 3]` in `dati.js`), ma al dipartimento non si può parlare —
+  se un obiettivo è in ritardo bisogna scegliere uno dei suoi e ripetere la stessa cosa agli altri. E la pagina Dipartimento
+  (Console e telefono, appena fatta nella versione 17) oggi è un rapporto da leggere: un filo la renderebbe il posto da cui
+  si guida.
+- **(b) La distribuzione automatica: sì, ma come proposta da approvare, non in silenzio.** La spina dorsale del prodotto è
+  «il titolare approva ogni uscita»; se un agente sparpaglia comandi senza mostrarli, il titolare perde di vista che cosa è
+  stato chiesto a chi. Il pattern esiste già e non va inventato: **la distribuzione diventa una richiesta come la revisione
+  di performance** (si approva, si chiedono modifiche, si rifiuta). Poi i compiti compaiono nei fili dei singoli **citando la
+  nota di dipartimento da cui vengono**, così il filo del dipendente resta il registro completo.
+- **(c) Dipendenti che parlano fra loro: separare le due cose.** *Condividere conoscenza* sì — e per metà c'è già: lo
+  strumento «Archivio del cliente» (brief, post approvati, tono di voce) compare 15 volte nel modello, ed è conoscenza
+  condivisa; anche le dipendenze ci sono, scritte a mano (nel log del Tester QA: «Il deploy in staging di Kim è in errore: se
+  non si sblocca, i test partono sulla versione precedente»). *Farli chiacchierare* no: è traffico macchina-macchina che
+  nessuno leggerà, e soprattutto **indebolisce la cosa che il prodotto fa meglio, l'attribuzione** — oggi ogni euro e ogni
+  consegna risalgono a un dipendente e a un'esecuzione, e ci stanno sopra tutta la pagina Costi e la revisione di
+  performance. Quindi: l'archivio come **oggetto di prima classe** del dipartimento o del cliente, con l'interfaccia che
+  mostra **chi ci ha messo cosa e chi l'ha usata**; le dipendenze come **legame sull'obiettivo o sull'esecuzione**
+  («aspetta il passo 3 di Kim»). Novanta per cento del valore, niente manichetta.
+
+**La domanda aperta, che è una decisione dell'utente e non di design**: *chi parla nel filo del dipartimento?* Un
+dipartimento non è una persona. Risposta economica: parla DGT, con i messaggi `sistema` che già esistono. Risposta
+ambiziosa: un **coordinatore** di dipartimento — e nel vocabolario degli avatar il ruolo «Coordinatore» c'è già
+(`avatar-motore.js`, «il fulcro stabile della squadra»). Ma è un personaggio nuovo nel prodotto: va deciso prima, non
+scoperto dopo.
+
+**Ordine consigliato quando toccherà**: prima il filo (scrivere al dipartimento, i messaggi che arrivano ai fili dei singoli
+citando l'origine), poi la distribuzione come proposta da approvare. Il modello ha già quasi tutto: `filoDi` è indicizzato
+per dipendente e andrebbe indicizzato per soggetto (`dip:mkt`), e l'interfaccia della chat esiste già su Console e telefono.
+
+**Trovato mentre si rispondeva, da sistemare quando si tocca questa zona**: l'obiettivo `o2` («Area riservata Zenith»)
+dichiara `chi: [1, 2]`, ma **Kim (id 3) ci lavora** — la sua esecuzione dichiara `obiettivo: 'o2'` — e non è nell'elenco.
+Squadra dichiarata e squadra reale già non coincidono; un filo di dipartimento renderebbe questo scarto visibile.
 
 ## Come riprendere
 
 **I tre artefatti sono in pari** (Console, telefono e pagina della scelta: vedi «Stato»), quindi non c'è niente da recuperare
-prima di cominciare. Quando si ripubblica: `build-unico.js`, poi lo strumento con `url`, dopo aver letto la versione pubblicata
-per intero (vedi «Note tecniche»).
+prima di cominciare. Quando si ripubblica: `build-unico.js`, poi lo strumento con `url`, dopo aver letto la versione
+pubblicata per intero (vedi «Note tecniche»).
 
-**La strada della barra è confermata** (decisione 34) e la correzione 16a è applicata: non c'è niente da rifare lì. Il lavoro
-scelto per questa sessione è quello della sezione precedente (A, B, C).
+**Prima cosa: il candidato 1, le 84 frecce.** La versione 17 l'utente l'ha già vista e giudicata (ha scelto la forma 2 del
+quadro del giorno, decisione 39), e ha già detto da dove ripartire: candidato 1, poi gli altri in ordine. Non serve
+rifargli il giro di presentazione. Se manda correzioni sulla 17, quelle vengono prima di tutto il resto.
 
-Se l'utente chiede **correzioni di dettaglio sulla barra** (la strada resta la 3), i punti su cui è più probabile che voglia
-intervenire, in ordine:
-- **le parole**: «approvate» contro «consegnate», «ferma» contro «in errore»;
-- **l'ultima ripetizione**, «al lavoro» nella sola home: se dà fastidio si toglie anche quella casella, ma si perde la pila di
-  chi lavora, che il numero grande non ha; l'alternativa è cambiare i numeri grandi, che però vengono dal riferimento;
-- **il tempo che manca**: se vuole rivedere *quando*, la strada 2 («la giornata a misura») è disegnata e catturata, e si può
-  rimettere in due modi — al posto delle caselle, o come seconda riga sotto di esse (la barra passerebbe da 64 a 96 px e
-  scenderebbe tutta la cornice, che è fissa: `.a-head` a 112, `.a-rail` a 260, `.a-main` a 232);
-- **le caselle sono quattro** (erano cinque: vedi la correzione 16a): se ne vuole meno, la prima a cadere è «approvate», la
-  sola che guarda al passato.
+**Le frecce vanno fatte vedere prima di applicarle**, perché toccarle cambia ogni riga e ogni card del prodotto: catture di
+prima e dopo affiancate, su una sezione sola, poi la decisione dell'utente, poi tutte. La regola 25 dice già che cosa
+farne — la freccia resta dove la riga ha una destinazione, sparisce dove non ce l'ha — quindi il lavoro non è decidere la
+regola, è mostrare che cosa diventa il prodotto quando la si applica.
+
+**Non rimettere in discussione**: la direzione A, la barra «Oggi in azienda» della versione 16 con la correzione 16a, gli
+avatar della versione 10, la regola «niente emoji».
 
 **Il metodo di sempre**, prima e dopo: rifare i font locali (`fetch-fonts.py`), lanciare le **quattro** prove di `prove/` e
-catturare le pagine prima di toccare qualcosa (base di confronto, ora con `scatta.js --in <cartella>`); leggere `CLAUDE.md`,
-`SYSTEM-DESIGN.md` (sezioni 2, 6, 8, 9 e 10, regola 24) e `DIREZIONI.md` (sezione 4 dalla versione 14, sezione 5); controllare
-branch e PR (vedi «Stato»). **Se l'utente manda correzioni** su lavori precedenti (le pagine Agenda e Chat, gli avatar
-ricentrati, il mobile), applicarle prima: le scelte da confermare stanno nelle decisioni 23, 26, 28, 30, 31 e 33. Alla fine:
-prove aggiornate, screenshot con `scatta.js`, artefatti ripubblicati allo stesso indirizzo, `DIREZIONI.md` (versione 17),
-`SYSTEM-DESIGN.md`, i README, questo file, commit, push e PR.
+catturare le pagine prima di toccare qualcosa (base di confronto, con `scatta.js --in <cartella>`); leggere `CLAUDE.md`,
+`SYSTEM-DESIGN.md` (sezioni 2, 6, 8, 9 e 10, regole 24 e 25) e `DIREZIONI.md` (sezione 4 dalla versione 14, sezione 5);
+controllare branch e PR (vedi «Stato»). Alla fine: prove aggiornate, screenshot con `scatta.js`, artefatti ripubblicati allo
+stesso indirizzo, `DIREZIONI.md`, `SYSTEM-DESIGN.md`, i README, questo file, commit, push e PR.
 
-Punti aperti ereditati (non chiesti dall'utente, da non toccare senza richiesta): la tendina del passo e i filtri inerti
-dell'Esecuzione; le tre pillole della sezione «Spesa del mese» del Dipartimento (la pagina dei Costi ha le sue, funzionanti); i
-cerchi cerca / filtri / scarica delle intestazioni; le frecce inerti delle righe per modello; «Ripeti»; lo stato vuoto del
-dipendente appena creato; la pagina del Dipendente (versione 6), quella dell'Esecuzione (versione 8), le schermate del mobile
-(11 e 12) e la revisione sul telefono (14) mai giudicate; sul telefono la tab «Dipartimenti», i cerchi «filtri» e «ordina», il
-download e la matita delle card del Riepilogo sono inerti; il badge rosa «campanella 2» accanto al numero «da approvare» copia
-quello della riga WORKSPACE della Console (`min(2, n)`) e non ha ancora un significato nel modello; il badge «↓12%» del numero
-«spesi oggi» nella home è decorativo; `design-system/tokens.css` porta solo tre token di moto e un easing diverso da quello dello
-specimen (`cubic-bezier(.2,.8,.2,1)` contro `(.22,1,.36,1)`).
+Punti aperti ereditati (non chiesti dall'utente, da non toccare senza richiesta): la tendina del passo dell'Esecuzione; le
+frecce inerti delle righe (vedi «Il lavoro della prossima sessione», candidato 1); «Ripeti»; lo stato vuoto del dipendente
+appena creato; il badge rosa «campanella 2» accanto al numero «da approvare» copia quello della riga WORKSPACE della Console
+(`min(2, n)`) e non ha ancora un significato nel modello; il badge «↓12%» del numero «spesi oggi» nella home è decorativo;
+`design-system/tokens.css` porta solo tre token di moto e un easing diverso da quello dello specimen
+(`cubic-bezier(.2,.8,.2,1)` contro `(.22,1,.36,1)`).
 Punti aperti della versione 15: nell'agenda «Sposta» porta all'agenda ma non sposta davvero l'orario (il modello non ha una
 mutazione per farlo) e i giorni della settimana non si aprono; nella chat il dipendente non risponde da solo alla nota del
 titolare e non c'è ricerca dentro il filo; il «non letto» si azzera aprendo il filo e non sopravvive al ricaricamento.
-Punti aperti nuovi della versione 16: la lista `m.agenda` in `dati.js` non la legge più nessuno tranne la barra di prima
-(`?barra=0`). Ora che la strada è confermata si potrebbe togliere, ma toglierebbe anche il confronto con la barra vecchia:
-farlo solo se l'utente lo chiede; il telefono non ha il quadro del giorno in cima; nella barra
-dei passi il «+N da fare» e il «+N fatti» non sono cliccabili (la lista dei Passi qui sotto li ha tutti).
+Punti aperti della versione 16: la lista `m.agenda` in `dati.js` non la legge più nessuno tranne la barra di prima
+(`?barra=0`); nella barra dei passi il «+N da fare» e il «+N fatti» non sono cliccabili.
+Punti aperti nuovi della versione 17: le 84 frecce (candidato 1); sul telefono restano inerti il download e la matita
+nell'intaglio delle card del Riepilogo (indicatori del riferimento, come le campanelle); la ricerca di sezione non ricorda il
+testo cambiando pagina (lo stato è per sezione ma si azzera con `?pagina=`), e non c'è ricerca dentro il filo della chat.
 
 ## Strumenti (`design-system/tools/` e `schermate/direzioni/prove/`)
 
 - **Le prove cliccate** (`schermate/direzioni/prove/`, con il README che dice il comando):
   `export PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css` e poi
-  `node schermate/direzioni/prove/console.js` (82: tendine, Richieste, editor del dipendente, esecuzione, 40, e dalla versione 16 la barra «Oggi in azienda» e la barra dei passi), `mobile.js` (39: i
-  sei telefoni, la revisione, le frecce, il rifiuto con motivo, la prova, lo stato vuoto, 40; a ogni passo nessuno schermo che
-  scorre di lato e console pulita), `costi.js` (48) e `agenda-chat.js` (54: le due pagine nuove, da dove ci si arriva, i filtri, la
+  `node schermate/direzioni/prove/console.js` (97: tendine, Richieste, editor del dipendente, esecuzione, 40, la barra «Oggi in azienda» e la barra dei passi, e dalla versione 17 i controlli delle intestazioni di sezione), `mobile.js` (69: gli
+  otto telefoni, la revisione, le frecce, il rifiuto con motivo, la prova, lo stato vuoto, 40, e dalla versione 17 il quadro del
+  giorno e la tab Dipartimenti; a ogni passo nessuno schermo che scorre di lato e console pulita), `costi.js` (48) e `agenda-chat.js` (54: le due pagine nuove, da dove ci si arriva, i filtri, la
   scrittura nel filo, le due tab del telefono); da qualunque cartella, leggono anche `CHROME_PATH`, girano con
   `reducedMotion: 'reduce'`, escono con 1 se una verifica fallisce. Attenzione: Playwright scorre da solo per cliccare un elemento
   fuori dallo schermo, quindi una verifica sullo scorrimento va fatta con l'elemento già visibile; nella pagina Richieste le
   richieste in attesa sono card `.task[data-az="richiesta"]` (le righe `.hrow` sono lo storico); `.elenco .erow` comprende la card
   «Aggiungi» (`:not(.add)`) e, nella chat, le righe dei fili sono `.erow.filo`.
-- **`schermate/direzioni/scatta.js`** (versione 16) — rigenera le catture di `screenshot/` dalla lista di parametri dichiarata
-  nel file, così non vanno più ricostruiti a mano: `node schermate/direzioni/scatta.js` (tutto), `… scatta.js console` o `barra`
-  (un gruppo), `… scatta.js a-11 a-40` (una o più), `--in /percorso` (scrive altrove, per il confronto prima/dopo). Stesse
+- **`schermate/direzioni/scatta.js`** (versione 17: 48 catture, cinque gruppi) — rigenera le catture di `screenshot/` dalla lista
+  di parametri dichiarata nel file, così non vanno più ricostruiti a mano: `node schermate/direzioni/scatta.js` (tutto),
+  `… scatta.js console` / `barra` / `quadro` / `dip` / `controlli` (un gruppo), `… scatta.js a-11 a-40` (una o più), `--in /percorso` (scrive altrove, per il confronto prima/dopo). Stesse
   variabili delle prove. Le catture che restano a mano sono elencate in `FUORI` dentro il file. **Attenzione**: quasi tutte le
   pagine della Console sono catturate con `tendina=chiusa`, e `a-1920.png` è la pagina del Dipendente a 1920×1080 solo viewport;
   ricostruirli a occhio porta a differenze enormi che non c'entrano con il lavoro (è successo in questa sessione, scoperto dal
@@ -429,47 +492,76 @@ dei passi il «+N da fare» e il «+N fatti» non sono cliccabili (la lista dei 
 - Lo z-index del telefono, la linea del tempo a segmenti, `m.decidi`, l'orbe della versione 10, gli intagli con `--behind`, le
   tendine, la Console che si scala con `zoom`, le differenze LCS, la card costo su fondo lime, la striscia «chi» e il rail: come
   nelle note delle sessioni precedenti (storia di questo file in git, commit `b50f659`, `d2b625c`, `044e363`, `f3a5d53`, `5d20ff9`).
+- **Il campo che filtra mentre si scrive dentro una pagina che si ridisegna tutta**: `tutto()` rifà l'HTML, quindi a ogni
+  tasto il fuoco e il cursore vanno rimessi a mano (`focus({preventScroll:true})` e `setSelectionRange` sulla posizione
+  salvata prima). Senza `preventScroll` la pagina salta al campo a ogni lettera.
+- **Un avatar con il bordo dà un falso positivo sul taglio del testo**: `scrollWidth > clientWidth` è vero per `.av` (21
+  contro 19) per via del bordo di 2 px. Le verifiche sul testo tagliato devono selezionare solo le etichette
+  (`.qq > span:not(.ico):not(.pair)`), non tutti gli `span` dentro la casella.
+- **I backtick dentro il CSS**: il CSS di `mobile.js` sta in un template literal, quindi un commento che cita
+  `` `?quadro=1|2` `` con i backtick chiude la stringa e la pagina non carica («Unexpected identifier»). Nei commenti dentro
+  il CSS si scrive `?quadro=1|2` senza apici.
+- **Un commento CSS chiuso due volte mangia la regola che segue, in silenzio.** Allungando un commento dentro il CSS di
+  `mobile.js` è rimasto un `*/` di troppo: il testo fra i due `*/` è diventato CSS invalido e si è portato via la regola
+  `.m-h1.conta` subito sotto. Niente errore in console, niente prova rossa — solo un titolo che restava a 30 px invece di
+  26. **Se una regola nuova non fa effetto, guardare i commenti sopra prima della specificità.** Si vede subito
+  rileggendo il blocco, o cercando `\*/` doppi.
+- **Uno spazio fra due elementi flex non è cosmetico**: `<h3>DA APPROVARE <b>4</b></h3>` con `white-space:nowrap` allarga il
+  nodo di testo quanto basta a mandare il titolo a capo. Il testo del DOM resta «DA APPROVARE4» ed è giusto così; è la
+  verifica che si adatta, non il markup.
+- **Le misure prese con `getBoundingClientRect` sui telefoni vanno divise per 1,25**: `.m-phones` ha `zoom:1.25`. Senza
+  dividere sembra che la barra di navigazione stia fuori dallo schermo.
+- **Un `const` usato prima della sua riga dentro la stessa funzione non è hoisting ma zona morta**: spostando un blocco di
+  calcolo sopra `perModello` la pagina falliva a ogni render. Le funzioni si possono chiamare prima, i `const` no.
+- **Contare i controlli inerti a `grep` porta fuori strada**: la lista di 61 veniva da lì. Il conto giusto si fa aprendo le
+  pagine e prendendo `.rb` e `.pill` senza `data-az` **e senza un antenato con `data-az`** (una freccia dentro una riga
+  cliccabile non è inerte). Lo script è in `scratchpad` ma la ricetta è questa; le prove ora tengono il conto a zero nelle
+  intestazioni.
 
 ## Cosa manca
 
-1. **I tre passi scelti dall'utente** (decisione 37): la barra sul telefono, la tab «Dipartimenti», i controlli inerti. Sono il
-   lavoro della prossima sessione, dimensionati nella sezione «Il lavoro della prossima sessione».
-2. **Le scelte di dettaglio della barra**, mai sollevate dall'utente e quindi ancora da confermare (decisioni 33 e 34): le
-   parole delle caselle, l'ultima ripetizione («al lavoro», nella sola home), quante caselle. La strada, invece, è confermata,
-   e la ripetizione più grossa è già stata tolta con la correzione 16a (decisione 35).
-3. **Il giudizio dell'utente** sulle pagine Agenda e Chat (versione 15, decisione 30), sugli avatar ricentrati (15a, decisione
-   31), sulla revisione sul telefono (decisione 28), sulle schermate del mobile (versioni 11 e 12, decisione 23), sulla pagina
-   del Dipendente (versione 6) e su quella dell'Esecuzione (versione 8): in sospeso, non blocca. La pagina dei Costi ha avuto un
-   «bene» (decisione 27).
-4. I punti aperti ereditati e quelli nuovi della versione 16 (vedi «Come riprendere»).
+1. **Le 84 frecce che non aprono niente**: il lavoro scelto per la prossima sessione (candidato 1, decisione 39). La regola
+   c'è già (regola 25); quello che manca è il prima/dopo davanti agli occhi dell'utente prima di applicarla a tutte.
+2. **Il giudizio dell'utente sul resto della versione 17** (i Dipartimenti, i controlli) e sulle scelte di dettaglio della
+   decisione 38. Del quadro del giorno la forma l'ha scelta (la 2); resta da sentire se gli va bene **il prezzo pagato per
+   applicarla**, cioè la riga dei due numeri grandi caduta e il conto passato nel titolo della schermata 1. È l'unica
+   decisione di design presa dentro la sua scelta, quindi va risollevata e non data per buona.
+3. **La chat di dipartimento (candidato 5)**: approfondirla con l'utente quando toccherà. Le due domande da portargli sono
+   già scritte nel candidato: *chi parla nel filo* (DGT o un coordinatore come personaggio) e se la distribuzione dei
+   compiti deve passare per l'approvazione come la revisione di performance.
+4. I giudizi in sospeso delle versioni 6, 8, 11, 12, 14, 15 e 15a; le scelte di dettaglio della barra (decisioni 33 e 34).
+5. I punti aperti elencati in «Come riprendere».
 
 ### Prompt di avvio suggerito per la prossima sessione
 
 ```
-Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md (in particolare «Il lavoro della prossima sessione»). Controlla la PR #13: se è
-unita riparti da main con un branch nuovo, altrimenti continua sullo stesso branch.
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md (in particolare «Stato», «Il lavoro della prossima sessione» e «Come
+riprendere»). Controlla la PR #14: se è unita riparti da main con un branch nuovo, altrimenti continua sullo stesso branch.
 
 Lavoriamo nella direzione A · Console (schermate/componenti.js, schermate/direzioni/direzione-a.js, dati.js, comune.js,
-avatar/, mobile.js): niente emoji, solo le icone dello sprite; gli avatar sono quelli della versione 10 (tinta, occhi lilguy,
-punto di stato, gesto nelle pile); i colori restano quelli del sistema. La barra «Oggi in azienda» della versione 16, con la
-correzione 16a, è decisa: non rimetterla in discussione.
+avatar/, mobile.js): niente emoji, solo le icone dello sprite; gli avatar sono quelli della versione 10; i colori restano
+quelli del sistema. Sono decise e non si rimettono in discussione: la direzione A, la barra «Oggi in azienda» della
+versione 16 con la correzione 16a, e tutta la versione 17 — il quadro del giorno sul telefono nella forma 2 «due per due»
+che ho scelto io, la tab Dipartimenti, la regola dei controlli (regola 25).
 
-Questa sessione facciamo i tre passi che ho scelto, in quest'ordine:
+Questa sessione facciamo il candidato 1: le 84 frecce di riga che non aprono niente. La regola c'è già (regola 25: la
+freccia resta dove la riga ha una destinazione e sparisce dove non ce l'ha), quindi non me la riproporre. Quello che
+voglio vedere è che cosa diventa il prodotto quando la si applica, perché tocca ogni riga e ogni card:
 
-A · La barra del giorno anche sul telefono, che in cima non ha nessun quadro dell'azienda. Le quattro caselle della Console
-chiedono 602 px e sullo schermo ce ne sono 254, quindi vanno anche rimpicciolite, non solo riordinate: disegnami due o tre
-forme possibili dentro il telefono vero, catturale, dimmi pro e contro e consigliami la tua. Se non rispondo scegli tu e
-applicala.
+1. Contale e raggruppale per famiglia (storico delle Richieste, casi del colloquio, righe dei costi, rendimento, passi,
+   log, revisioni passate, le sparse), e per ogni famiglia dimmi se la riga una destinazione ce l'ha o no.
+2. Applica la regola a UNA famiglia sola e fammi vedere il prima/dopo affiancato, catturato. Aspetta che scelga.
+3. Poi applicala a tutte, con lo stesso prima/dopo alla fine.
 
-B · La tab «Dipartimenti» del telefono, l'ultimo cerchio inerte della navigazione. Proponimi che cosa mostra prima di
-scriverla, poi falla.
+Se non rispondo al punto 2, scegli tu e dimmi che cosa hai scelto e perché.
 
-C · I controlli inerti. Sono 61 (22 «cerca», 22 «filtri», 6 «scarica», più gli altri: il conto sta in PROSSIMA-SESSIONE.md).
-Prima di scrivere codice proponimi una regola su quali diventano veri e quali spariscono, e fammela vedere applicata a una
-sezione sola. Poi applicala a tutte. Se il tempo non basta, chiudi bene A e B e fermati a C dopo la regola e le tre pillole
-della «Spesa del mese»: meglio due lavori finiti che tre a metà.
+Due cose da risollevare, non da dare per buone: (a) nella versione 17, per far stare il quadro «due per due», hai tolto
+dalla schermata 1 del telefono la riga dei due numeri grandi e spostato il conto nel titolo — dimmi che aspetto ha e se
+lo tengo; (b) il candidato 5, la chat di dipartimento: NON scriverlo questa sessione, ma quando avremo finito il
+candidato 1 portami le due domande aperte che hai già scritto lì (chi parla nel filo, e se la distribuzione dei compiti
+passa dall'approvazione).
 
-Il metodo di sempre: prima lancia le quattro prove di prove/ e cattura le pagine con scatta.js (base di confronto). Alla fine
-prove aggiornate, screenshot, i tre artefatti ripubblicati allo stesso indirizzo, DIREZIONI.md (versione 17),
+Il metodo di sempre: prima lancia le quattro prove di prove/ e cattura le pagine con scatta.js (base di confronto). Alla
+fine prove aggiornate, screenshot, i tre artefatti ripubblicati allo stesso indirizzo, DIREZIONI.md (versione 18),
 SYSTEM-DESIGN.md, i README e PROSSIMA-SESSIONE.md, commit, push e PR. Alla fine mostrami cosa è cambiato e fermati.
 ```
