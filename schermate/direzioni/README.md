@@ -43,14 +43,25 @@ prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decision
   il CSS delle primitive, le variabili e le funzioni che le stampano (`av`, `pair`, `chipStato`, `iconaTipo`, `eur`,
   `differenze`…). Ogni pagina lo carica subito dopo `comune.js` e mette in pagina `DGT_COMPONENTI.css` prima del CSS della
   Console (`direzione-a.js`, che tiene la cornice, le pagine, le tendine e `monta`).
-- Prove cliccate in `prove/` (con il `README.md` che dice il comando): `console.js` (64 verifiche: tendine, Richieste, editor del
-  dipendente, esecuzione, 40), `mobile.js` (39: le sei schermate, la revisione, il rifiuto con motivo, la prova, lo stato vuoto,
+- Prove cliccate in `prove/` (con il `README.md` che dice il comando): `console.js` (82 verifiche: tendine, Richieste, editor del
+  dipendente, esecuzione, 40, la barra «Oggi in azienda» e la barra dei passi), `mobile.js` (39: le sei schermate, la revisione, il rifiuto con motivo, la prova, lo stato vuoto,
   40), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le due pagine nuove, da dove ci si arriva, i filtri, la
   scrittura nel filo e le due tab del telefono):
   `PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css node schermate/direzioni/prove/console.js`
   (e così `mobile.js`, `costi.js`, `agenda-chat.js`).
 - File unico per l'artefatto: `node build-unico.js /percorso/confronto-unico.html`.
+- La pagina delle quattro scelte per la barra, con il voto condiviso: sorgente `scelta-barra.src.html` (le catture sono
+  segnaposto `IMG:<nome>`, quindi non si apre da sola), `node costruisci-scelta.js` la costruisce incorporando i PNG di
+  `screenshot/`. Artefatto: https://claude.ai/code/artifact/3a3fcb9e-c894-4a83-9cdb-54820f65756f
 - Screenshot: `LOCAL_FONT_CSS=/tmp/fonts.css node ../../design-system/tools/screenshot-page.js "direzione-a.html?n=40" out.png`.
+  Le catture di `screenshot/` si rigenerano tutte con `scatta.js`, che ne dichiara i parametri:
+  `PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css node schermate/direzioni/scatta.js`
+  (`console` o `barra` per un gruppo solo, `--in <cartella>` per il confronto prima/dopo). Le catture che restano a mano
+  sono dichiarate in `FUORI` dentro il file.
+- La barra «Oggi in azienda» (versione 16): dentro la pista ci sono le caselle contate del giorno (approvate, al lavoro,
+  ferme, dopo), non più i blocchi con l'asse del tempo; quello che aspetta il titolare lo dice la linguetta lime, non la
+  barra (correzione 16a). `?barra=0` rimette quella di prima. Studio, strade
+  scartate e numeri in `DIREZIONI.md`, «Versione 16».
 - L'identità degli orbi (versione 10, proposta in attesa di scelta): `avatar-identita.html`, un configuratore con corpo
   (perla, piatta, con orlo), palette (scura, vivace, pastello), occhi (attuali, punti grandi, lilguy, neri, colorati) e
   identità (tinta per dipendente, dipartimento, nessuna), nove strade preimpostate e la Console vera;

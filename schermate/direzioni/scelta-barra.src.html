@@ -1,0 +1,599 @@
+<title>Quale barra per la Console</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600&display=swap">
+<style>
+/* Palette e misure dal sistema di design di DGT (schermate/componenti.js): nero, lime, Urbanist, pillole e cerchi.
+   Il tema chiaro usa le superfici chiare della Console (il pannello Riepilogo, #F4F4F4 e #FCFCFC). */
+:root{
+  --nero:#000; --card:#1C1C1C; --card-top:#262626; --riga:rgb(255 255 255/.12); --riga-forte:rgb(255 255 255/.2);
+  --ink:#FCFCFC; --t2:#9A9A9A; --t3:#6B6B6B;
+  --lime:#B8FC64; --lime-deep:#A8E65D; --su-lime:#0A0A0A; --lime-testo:#B8FC64;
+  --rosa:#F9A3A3; --rosa-ink:#7A1F1F; --rosa-tenue:rgb(249 163 163/.16);
+  --fondo:#0A0A0A; --piano:linear-gradient(180deg,var(--card-top),var(--card)); --lastra:#000;
+  --r-pill:9999px; --r-card:28px; --r-inner:18px;
+  --font:"Urbanist",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --colonna:min(100% - 2.5rem, 62rem);
+}
+:root:not([data-theme="dark"]){
+  --nero:#FFF; --card:#FCFCFC; --card-top:#FFF; --riga:rgb(0 0 0/.1); --riga-forte:rgb(0 0 0/.18);
+  --ink:#0A0A0A; --t2:#5E5E5E; --t3:#8A8A8A;
+  --rosa:#B4443F; --rosa-ink:#FFF; --rosa-tenue:rgb(180 68 63/.1);
+  --fondo:#F4F4F4; --piano:#FCFCFC; --lastra:#000; --lime-testo:#4E7A10;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --nero:#000; --card:#1C1C1C; --card-top:#262626; --riga:rgb(255 255 255/.12); --riga-forte:rgb(255 255 255/.2);
+    --ink:#FCFCFC; --t2:#9A9A9A; --t3:#6B6B6B;
+    --rosa:#F9A3A3; --rosa-ink:#7A1F1F; --rosa-tenue:rgb(249 163 163/.16);
+    --lime-testo:#B8FC64; --fondo:#0A0A0A; --piano:linear-gradient(180deg,var(--card-top),var(--card));
+  }
+}
+:root[data-theme="dark"]{
+  --nero:#000; --card:#1C1C1C; --card-top:#262626; --riga:rgb(255 255 255/.12); --riga-forte:rgb(255 255 255/.2);
+  --ink:#FCFCFC; --t2:#9A9A9A; --t3:#6B6B6B;
+  --rosa:#F9A3A3; --rosa-ink:#7A1F1F; --rosa-tenue:rgb(249 163 163/.16);
+  --lime-testo:#B8FC64; --fondo:#0A0A0A; --piano:linear-gradient(180deg,var(--card-top),var(--card));
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--fondo);color:var(--ink);font:400 17px/26px var(--font);-webkit-font-smoothing:antialiased}
+h1,h2,h3,p,ul,figure{margin:0}
+ul{list-style:none;padding:0}
+a{color:inherit;text-underline-offset:3px;text-decoration-color:var(--lime-testo)}
+:focus-visible{outline:2px solid var(--lime-testo);outline-offset:3px;border-radius:6px}
+.col{width:var(--colonna);margin-inline:auto}
+.k{font:600 11px/16px var(--font);letter-spacing:.09em;text-transform:uppercase;color:var(--t3)}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- testata ---------- */
+header{padding:clamp(3rem,7vw,6rem) 0 0}
+.eyebrow{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:1.6rem}
+.tag{display:inline-flex;align-items:center;height:26px;padding:0 12px;border-radius:var(--r-pill);
+  background:var(--piano);border:1px solid var(--riga);font:400 12px/1 var(--font);color:var(--t2)}
+.tag.viva{background:var(--lime);color:var(--su-lime);border-color:transparent;font-weight:500}
+h1{font-weight:300;font-size:clamp(2.6rem,6.4vw,4.6rem);line-height:1.04;letter-spacing:-.02em;text-wrap:balance;max-width:18ch}
+h1 em{font-style:normal;color:var(--lime-testo)}
+.lead{margin-top:1.8rem;max-width:60ch;font-size:clamp(1.05rem,1.9vw,1.28rem);line-height:1.6;color:var(--t2)}
+.lead b{color:var(--ink);font-weight:500}
+
+/* ---------- le prove ---------- */
+.prove{margin-top:clamp(3rem,6vw,4.5rem);border-top:1px solid var(--riga);padding-top:2rem}
+.prove h2{font-weight:400;font-size:1.35rem;line-height:1.3;margin-bottom:.4rem}
+.prove .sotto{color:var(--t2);font-size:.98rem;max-width:64ch;margin-bottom:2rem}
+.griglia{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1px;background:var(--riga);
+  border:1px solid var(--riga);border-radius:var(--r-inner);overflow:hidden}
+.fatto{background:var(--fondo);padding:1.4rem 1.5rem 1.6rem;display:grid;gap:.55rem;align-content:start}
+.fatto>b{font-weight:300;font-size:2.9rem;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.fatto .k{color:var(--t3)}
+.fatto p{font-size:.94rem;line-height:1.5;color:var(--t2)}
+.fatto p b{font-weight:500;color:var(--ink)}
+
+/* ---------- comandi ---------- */
+.comandi{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem;margin:clamp(3rem,6vw,4.5rem) 0 1.6rem}
+.comandi .k{margin-right:.4rem}
+.pill{display:inline-flex;align-items:center;gap:.5rem;height:40px;padding:0 18px;border-radius:var(--r-pill);
+  border:1px solid var(--riga-forte);background:transparent;color:var(--ink);font:400 14px/1 var(--font);
+  cursor:pointer;white-space:nowrap;transition:background .16s,color .16s,border-color .16s}
+.pill:hover{border-color:var(--ink)}
+.pill[aria-pressed="true"]{background:var(--ink);color:var(--fondo);border-color:transparent}
+
+/* ---------- le opzioni ---------- */
+.opz{border-top:1px solid var(--riga);padding:clamp(2.4rem,5vw,3.4rem) 0}
+.opz.consigliata{border-top-color:var(--lime-testo)}
+.testa{display:grid;grid-template-columns:auto 1fr;gap:1.1rem 1.4rem;align-items:baseline}
+.cifra{font-weight:300;font-size:clamp(3rem,7vw,4.4rem);line-height:.85;color:var(--t3);font-variant-numeric:tabular-nums}
+.opz.consigliata .cifra{color:var(--lime-testo)}
+.titolo{display:grid;gap:.7rem}
+.titolo h2{font-weight:400;font-size:clamp(1.6rem,3.4vw,2.15rem);line-height:1.15;letter-spacing:-.01em;text-wrap:balance}
+.badges{display:flex;flex-wrap:wrap;gap:.45rem}
+.dice{grid-column:1/-1;color:var(--t2);max-width:66ch;font-size:1.02rem;line-height:1.62}
+.dice b{color:var(--ink);font-weight:500}
+
+/* la lastra: le catture sono schermate di un prodotto nero, quindi restano su nero anche nel tema chiaro */
+.lastra{margin-top:1.8rem;background:var(--lastra);border-radius:var(--r-card);padding:clamp(.9rem,2vw,1.4rem);
+  border:1px solid var(--riga-forte);overflow:hidden}
+.lastra img{display:block;width:100%;height:auto;border-radius:10px}
+.lastra .didascalia{margin-top:.85rem;font:400 12px/1.5 var(--font);color:#8A8A8A;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.lastra .didascalia span:last-child{color:#6B6B6B}
+details.contesto{margin-top:.9rem}
+details.contesto summary{cursor:pointer;display:inline-flex;align-items:center;gap:.5rem;font-size:.92rem;color:var(--t2);
+  list-style:none;border-bottom:1px dotted var(--riga-forte);padding-bottom:2px}
+details.contesto summary::-webkit-details-marker{display:none}
+details.contesto summary:hover{color:var(--ink)}
+details.contesto .lastra{margin-top:1rem}
+
+.bilancia{display:grid;grid-template-columns:repeat(auto-fit,minmax(19rem,1fr));gap:1.6rem 2.4rem;margin-top:2rem}
+.bilancia section{display:grid;gap:.85rem;align-content:start}
+.bilancia li{display:grid;grid-template-columns:auto 1fr;gap:.75rem;font-size:.98rem;line-height:1.55;color:var(--t2)}
+.bilancia li b{color:var(--ink);font-weight:500}
+.segno{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;flex:none;margin-top:2px;
+  font:600 12px/1 var(--font)}
+.pro .segno{background:var(--lime);color:var(--su-lime)}
+.contro .segno{background:var(--rosa);color:var(--rosa-ink)}
+
+/* riga del voto */
+.voto{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem;margin-top:2rem;padding-top:1.5rem;border-top:1px dashed var(--riga)}
+.scegli{height:44px;padding:0 22px;border-radius:var(--r-pill);border:1px solid var(--riga-forte);background:transparent;
+  color:var(--ink);font:500 14px/1 var(--font);cursor:pointer;transition:background .16s,color .16s,border-color .16s}
+.scegli:hover{border-color:var(--lime-testo)}
+.scegli[aria-pressed="true"]{background:var(--lime);color:var(--su-lime);border-color:transparent}
+.chi{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;font-size:.92rem;color:var(--t2)}
+.persona{display:inline-flex;align-items:center;gap:.45rem;height:32px;padding:0 12px 0 4px;border-radius:var(--r-pill);
+  background:var(--piano);border:1px solid var(--riga);font-size:.86rem}
+.iniziali{width:24px;height:24px;border-radius:50%;background:var(--lime);color:var(--su-lime);display:grid;place-items:center;
+  font:500 11px/1 var(--font)}
+.vuoto{color:var(--t3);font-size:.9rem}
+
+/* ---------- la decisione ---------- */
+.decisione{margin-top:clamp(3rem,6vw,4.5rem);border:1px solid var(--riga);border-radius:var(--r-card);
+  padding:clamp(1.6rem,3.4vw,2.4rem);background:var(--piano)}
+.decisione h2{font-weight:400;font-size:1.5rem;line-height:1.25;margin-bottom:.4rem}
+.decisione .sotto{color:var(--t2);font-size:.98rem;max-width:58ch}
+.campi{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.6rem}
+.campo{flex:1 1 14rem;display:grid;gap:.45rem;min-width:0}
+input[type=text]{height:46px;border-radius:var(--r-pill);border:1px solid var(--riga-forte);background:var(--fondo);
+  color:var(--ink);padding:0 18px;font:400 15px/1 var(--font);width:100%}
+input[type=text]::placeholder{color:var(--t3)}
+input[type=text]:focus{outline:none;border-color:var(--lime)}
+.tabellone{display:grid;gap:.6rem;margin-top:1.8rem;padding-top:1.5rem;border-top:1px solid var(--riga)}
+.riga{display:grid;grid-template-columns:2.2rem 1fr auto;gap:1rem;align-items:center;padding:.7rem 0;border-bottom:1px solid var(--riga)}
+.riga:last-child{border-bottom:0}
+.riga .n{font-weight:300;font-size:1.5rem;color:var(--t3);font-variant-numeric:tabular-nums}
+.riga .nome{font-size:1rem}
+.riga .nome small{display:block;color:var(--t2);font-size:.86rem;margin-top:2px}
+.riga .conta{display:inline-flex;align-items:center;gap:.5rem}
+.barretta{width:clamp(3rem,12vw,8rem);height:8px;border-radius:var(--r-pill);background:var(--riga);overflow:hidden}
+.barretta i{display:block;height:100%;background:var(--lime);border-radius:var(--r-pill);transition:width .3s}
+.riga b{font-weight:400;font-variant-numeric:tabular-nums;min-width:1.2rem;text-align:right}
+.note{display:grid;gap:.8rem;margin-top:1.5rem}
+.nota{display:grid;grid-template-columns:auto 1fr;gap:.75rem;align-items:start;font-size:.96rem;line-height:1.55}
+.nota .iniziali{margin-top:2px}
+.nota b{font-weight:500}
+.nota span{color:var(--t2)}
+.stato{margin-top:1.2rem;font-size:.88rem;color:var(--t3)}
+
+footer{border-top:1px solid var(--riga);margin-top:clamp(3rem,6vw,4.5rem);padding:2rem 0 clamp(3rem,6vw,5rem);
+  color:var(--t3);font-size:.92rem;line-height:1.6}
+footer p+p{margin-top:.6rem}
+footer a{color:var(--t2)}
+
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header class="col">
+  <div class="eyebrow">
+    <span class="tag">DGT · Console</span>
+    <span class="tag">Versione 16</span>
+    <span class="tag">6 settembre 2026</span>
+    <span class="tag viva">Decisa: la strada 3</span>
+  </div>
+  <h1>Quale barra <em>«Oggi in azienda»</em></h1>
+  <p class="lead">La barra verde in cima alla Console viene dal riferimento e non si spiega a colpo d'occhio.
+  Qui ci sono <b>quattro scelte</b>: lasciarla com'è, o una delle tre strade disegnate nella Console vera.
+  <b>Il titolare ha scelto la strada 3</b>, che è nel codice dal 7 settembre; il voto resta aperto e sulla pagina,
+  perché una testa in più si legge sempre.</p>
+</header>
+
+<div class="col prove">
+  <h2>Perché la stiamo cambiando</h2>
+  <p class="sotto">Quattro cose misurate sulla barra di oggi, sul modello a undici dipendenti.</p>
+  <div class="griglia">
+    <div class="fatto">
+      <span class="k">Scala</span>
+      <b>8×</b>
+      <p>Quanto cambia la scala fra un blocco e l'altro: 3,4 px al minuto su una consegna, 13,4 sul segmento in corso.
+      Sembra una linea del tempo, non lo è.</p>
+    </div>
+    <div class="fatto">
+      <span class="k">Il vuoto del pomeriggio</span>
+      <b>1 px</b>
+      <p>Lo spazio dato alle quattro ore e mezza in cui non parte niente: il buco più lungo della giornata è
+      l'elemento più piccolo della barra.</p>
+    </div>
+    <div class="fatto">
+      <span class="k">Contrasto fra gli stati</span>
+      <b>1,1 : 1</b>
+      <p>Fra «concluso» e «pianificato». I quattro stati sono codificati in riempimenti che l'occhio non separa:
+      restano solo le forme.</p>
+    </div>
+    <div class="fatto">
+      <span class="k">Che cosa mostra</span>
+      <b>4 di 8</b>
+      <p>Le esecuzioni della giornata che entrano nella barra. Le due che mancano sono quella <b>ferma per errore</b>
+      e quella che <b>aspetta l'approvazione</b>.</p>
+    </div>
+  </div>
+</div>
+
+<div class="col comandi">
+  <span class="k">Azienda</span>
+  <button class="pill" type="button" data-n="11" aria-pressed="true">Undici dipendenti</button>
+  <button class="pill" type="button" data-n="40" aria-pressed="false">Quaranta dipendenti</button>
+</div>
+
+<main class="col">
+
+  <article class="opz" id="opz-0">
+    <div class="testa">
+      <span class="cifra num">0</span>
+      <div class="titolo">
+        <h2>Lasciarla com'è</h2>
+        <div class="badges"><span class="tag">La barra del riferimento, copiata dalla versione 1</span></div>
+      </div>
+      <p class="dice">Dice la durata dell'ultima consegna, l'ora, quanti stanno lavorando e due orari.
+      Per intero, il testo che stampa è <b>«38 min · 10:42 · 3 al lavoro · 15:00 · 17:00»</b>: cinque numeri e nessun nome.</p>
+    </div>
+    <figure class="lastra">
+      <img data-barra="oggi" src="IMG:a-barra-oggi" alt="La barra di oggi: pillola bianca con la durata, segmento verde «3 al lavoro», due orari.">
+      <figcaption class="didascalia"><span>La barra di oggi</span><span data-quanti>undici dipendenti</span></figcaption>
+    </figure>
+    <details class="contesto">
+      <summary>Vedila nella Console</summary>
+      <figure class="lastra"><img src="IMG:a-barra-console-oggi" alt="La home della Console con la barra di oggi in cima."></figure>
+    </details>
+    <div class="bilancia">
+      <section class="pro"><span class="k">Che cosa risolve</span><ul>
+        <li><span class="segno">+</span><span>Niente da rifare, e resta <b>identica al riferimento</b>.</span></li>
+        <li><span class="segno">+</span><span>La forma è già approvata e già in tutte le sette pagine.</span></li>
+      </ul></section>
+      <section class="contro"><span class="k">Che cosa costa</span><ul>
+        <li><span class="segno">−</span><span>Non si spiega: è la segnalazione da cui parte tutto.</span></li>
+        <li><span class="segno">−</span><span>Tace su <b>ciò che è fermo</b> e su <b>ciò che aspetta il titolare</b>.</span></li>
+        <li><span class="segno">−</span><span>A quaranta dipendenti dice esattamente quanto a undici.</span></li>
+      </ul></section>
+    </div>
+    <div class="voto">
+      <button class="scegli" type="button" data-scelta="0" aria-pressed="false">Scegli questa</button>
+      <div class="chi" data-chi="0"><span class="vuoto">Nessuno l'ha scelta</span></div>
+    </div>
+  </article>
+
+  <article class="opz" id="opz-1">
+    <div class="testa">
+      <span class="cifra num">1</span>
+      <div class="titolo">
+        <h2>I tre momenti</h2>
+        <div class="badges"><span class="tag">La forma del riferimento, i blocchi nominati</span></div>
+      </div>
+      <p class="dice">Ogni blocco dice che cos'è: l'ultima consegna con il suo titolo e la campanella
+      <b>«da approvare»</b>, il segmento verde con <b>«adesso · 3 al lavoro»</b>, chi è fermo in rosa,
+      l'ora del prossimo. È la lezione della barra dei passi dell'Esecuzione, che in casa funziona già.</p>
+    </div>
+    <figure class="lastra">
+      <img data-barra="momenti" src="IMG:a-barra-momenti" alt="La barra con i blocchi nominati: la consegna da approvare, adesso 3 al lavoro, Kim ferma in rosa, le 15:00.">
+      <figcaption class="didascalia"><span>Strada 1 · i tre momenti</span><span data-quanti>undici dipendenti</span></figcaption>
+    </figure>
+    <details class="contesto">
+      <summary>Vedila nella Console</summary>
+      <figure class="lastra"><img src="IMG:a-barra-console-momenti" alt="La home della Console con la barra dei tre momenti in cima."></figure>
+    </details>
+    <div class="bilancia">
+      <section class="pro"><span class="k">Che cosa risolve</span><ul>
+        <li><span class="segno">+</span><span>Ogni blocco <b>dice che cos'è</b>: sparisce la lettura a indovinare.</span></li>
+        <li><span class="segno">+</span><span>È lo <b>scostamento più piccolo</b> dal riferimento: cambia il contenuto, non la forma.</span></li>
+        <li><span class="segno">+</span><span>L'errore entra in cima, dove oggi non c'è.</span></li>
+      </ul></section>
+      <section class="contro"><span class="k">Che cosa costa</span><ul>
+        <li><span class="segno">−</span><span>Resta la <b>falsa linea del tempo</b>: le larghezze continuano a non voler dire niente.</span></li>
+        <li><span class="segno">−</span><span>Non ci sta: a undici taglia un titolo, <b>a quaranta ne taglia tre</b>. Sono 790 px per quattro blocchi con un nome.</span></li>
+      </ul></section>
+    </div>
+    <div class="voto">
+      <button class="scegli" type="button" data-scelta="1" aria-pressed="false">Scegli questa</button>
+      <div class="chi" data-chi="1"><span class="vuoto">Nessuno l'ha scelta</span></div>
+    </div>
+  </article>
+
+  <article class="opz" id="opz-2">
+    <div class="testa">
+      <span class="cifra num">2</span>
+      <div class="titolo">
+        <h2>La giornata a misura</h2>
+        <div class="badges"><span class="tag">Proporzionale alle ore</span></div>
+      </div>
+      <p class="dice">La pista diventa chiara e <b>proporzionale alle ore</b>, dalle 08 alle 19: le fasce dicono quando
+      si lavora, la riga rosa sotto è la finestra dell'esecuzione ferma, i riquadri tratteggiati sono i pianificati al
+      loro posto vero, e <b>«adesso» sta davvero alle 10:42</b>.</p>
+    </div>
+    <figure class="lastra">
+      <img data-barra="misura" src="IMG:a-barra-misura" alt="La barra proporzionale alle ore: le ore da 08 a 19, la fascia verde del mattino, la riga rosa dell'errore, i riquadri tratteggiati del pomeriggio.">
+      <figcaption class="didascalia"><span>Strada 2 · la giornata a misura</span><span data-quanti>undici dipendenti</span></figcaption>
+    </figure>
+    <details class="contesto">
+      <summary>Vedila nella Console</summary>
+      <figure class="lastra"><img src="IMG:a-barra-console-misura" alt="La home della Console con la barra proporzionale alle ore in cima."></figure>
+    </details>
+    <div class="bilancia">
+      <section class="pro"><span class="k">Che cosa risolve</span><ul>
+        <li><span class="segno">+</span><span>La barra <b>diventa onesta</b>: quello che sembra una linea del tempo lo è.</span></li>
+        <li><span class="segno">+</span><span>Si vede il picco del mattino e <b>il vuoto del pomeriggio</b>, che oggi è 1 px.</span></li>
+        <li><span class="segno">+</span><span>Scala a quaranta senza cambiare: è una densità, non un elenco.</span></li>
+      </ul></section>
+      <section class="contro"><span class="k">Che cosa costa</span><ul>
+        <li><span class="segno">−</span><span><b>Resta muta</b>: in 24 px di fascia non c'è posto per un nome.</span></li>
+        <li><span class="segno">−</span><span>Serve una legenda, che si mangia 215 px di pista.</span></li>
+        <li><span class="segno">−</span><span>Duplica in piccolo e in peggio la <b>barra del giorno della pagina Agenda</b>, che ha le corsie e i titoli.</span></li>
+      </ul></section>
+    </div>
+    <div class="voto">
+      <button class="scegli" type="button" data-scelta="2" aria-pressed="false">Scegli questa</button>
+      <div class="chi" data-chi="2"><span class="vuoto">Nessuno l'ha scelta</span></div>
+    </div>
+  </article>
+
+  <article class="opz consigliata" id="opz-3">
+    <div class="testa">
+      <span class="cifra num">3</span>
+      <div class="titolo">
+        <h2>La riga di stato</h2>
+        <div class="badges">
+          <span class="tag viva">Scelta dal titolare · 7 settembre</span>
+          <span class="tag">Nel codice, con la correzione 16a</span>
+        </div>
+      </div>
+      <p class="dice">La barra smette di fingersi una linea del tempo e diventa <b>il quadro del giorno</b>: quante
+      consegne approvate, chi lavora (con la pila di chi), <b>chi è fermo e come si chiama</b>, quante partono dopo
+      e da che ora. Quattro caselle, e ognuna porta dove si agisce.</p>
+    </div>
+    <figure class="lastra">
+      <img data-barra="stato" src="IMG:a-barra-stato" alt="La barra a caselle: 2 approvate, 3 al lavoro con la pila degli avatar, 1 ferma Kim in rosa, 3 dopo dalle 15:00.">
+      <figcaption class="didascalia"><span>Strada 3 · la riga di stato</span><span data-quanti>undici dipendenti</span></figcaption>
+    </figure>
+    <details class="contesto">
+      <summary>Vedila nella Console</summary>
+      <figure class="lastra"><img src="IMG:a-barra-console-stato" alt="La home della Console con la riga di stato in cima."></figure>
+    </details>
+    <div class="bilancia">
+      <section class="pro"><span class="k">Che cosa risolve</span><ul>
+        <li><span class="segno">+</span><span>Risponde alle <b>quattro domande del colpo d'occhio</b>: che cosa è fermo, che cosa aspetta te, chi lavora, che cosa parte dopo.</span></li>
+        <li><span class="segno">+</span><span>Porta <b>l'errore in cima</b>. Oggi non c'è in nessun punto sintetico della Console: si trova solo scorrendo la griglia dei dipendenti.</span></li>
+        <li><span class="segno">+</span><span>A quaranta cambiano solo i numeri: niente si taglia.</span></li>
+      </ul></section>
+      <section class="contro"><span class="k">Che cosa costa</span><ul>
+        <li><span class="segno">−</span><span>La barra <b>non dice più quando</b>: il tempo lo dice la pagina Agenda.</span></li>
+        <li><span class="segno">−</span><span>È lo <b>scostamento più grande</b> dal riferimento: cadono gli orari, i separatori e il marcatore dell'ora.</span></li>
+        <li><span class="segno">−</span><span>Nella <b>sola home</b> ripete un numero già grande lì sotto. Nelle altre sei pagine è l'unico posto dove lo stato dell'azienda resta scritto.</span></li>
+      </ul></section>
+    </div>
+    <p class="dice" style="margin-top:1.4rem"><b>Correzione 16a, 7 settembre.</b> Le prime immagini avevano
+    <b>cinque</b> caselle: la quinta, «aspettano te», diceva lo stesso numero della pillola lime che sta fissa in tutte
+    e sette le pagine — sulla schermata del Dipartimento due volte a 430 px di distanza, e nella home una terza. È stata
+    tolta: <b>la barra dice che cosa sta facendo l'azienda, la pillola lime che cosa devi fare tu</b>. Le immagini qui
+    sopra sono quelle di adesso, a quattro caselle.</p>
+    <div class="voto">
+      <button class="scegli" type="button" data-scelta="3" aria-pressed="false">Scegli questa</button>
+      <div class="chi" data-chi="3"><span class="vuoto">Nessuno l'ha scelta</span></div>
+    </div>
+  </article>
+
+  <div class="decisione" id="decisione">
+    <h2>La decisione</h2>
+    <p class="sotto">Scrivi il tuo nome, poi scegli una delle quattro qui sopra. Il voto e la nota restano sulla
+    pagina e li vede anche chi la apre dopo di te.</p>
+    <div class="campi">
+      <label class="campo"><span class="k">Chi sei</span>
+        <input type="text" id="nome" placeholder="Il tuo nome" maxlength="28" autocomplete="off"></label>
+      <label class="campo" style="flex:2 1 22rem"><span class="k">Una nota, se vuoi</span>
+        <input type="text" id="nota" placeholder="Che cosa ti convince o non ti convince" maxlength="140" autocomplete="off"></label>
+    </div>
+    <div class="tabellone" id="tabellone"></div>
+    <div class="note" id="note"></div>
+    <p class="stato" id="stato">Carico i voti…</p>
+  </div>
+
+</main>
+
+<footer class="col">
+  <p>Lo studio completo, con le misure e le due strade scartate, sta in <b>DIREZIONI.md</b> («Versione 16») del
+  repository DGT-Design-2.0; la regola nel documento di sistema è la 24.</p>
+  <p>La strada 3 è nel codice, con <b>223 verifiche cliccate</b> che passano; nel prodotto <code>?barra=0</code>
+  rimette quella di prima. Se dal voto viene fuori un'altra strada si cambia: sono tutte disegnate.</p>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+  var OPZIONI = [
+    { id: '0', nome: 'Lasciarla com’è', sotto: 'la barra del riferimento' },
+    { id: '1', nome: 'I tre momenti', sotto: 'la forma del riferimento, i blocchi nominati' },
+    { id: '2', nome: 'La giornata a misura', sotto: 'proporzionale alle ore' },
+    { id: '3', nome: 'La riga di stato', sotto: 'il quadro del giorno · raccomandata' }
+  ];
+  var BARRE = ['oggi', 'momenti', 'misura', 'stato'];
+
+  /* --- il numero di dipendenti: undici o quaranta, come ?n= nella Console --- */
+  var SRC = window.__BARRE__;
+  document.querySelectorAll('.comandi .pill').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var n = b.dataset.n;
+      document.querySelectorAll('.comandi .pill').forEach(function (x) {
+        x.setAttribute('aria-pressed', String(x === b));
+      });
+      BARRE.forEach(function (k) {
+        var img = document.querySelector('img[data-barra="' + k + '"]');
+        if (img) img.src = SRC[k + (n === '40' ? '40' : '')];
+      });
+      document.querySelectorAll('[data-quanti]').forEach(function (s) {
+        s.textContent = n === '40' ? 'quaranta dipendenti' : 'undici dipendenti';
+      });
+    });
+  });
+
+  /* --- il voto: un documento per persona, condiviso da chi apre la pagina --- */
+  var CHIAVE = 'dgt-barra-votante';
+  var mio = null;
+  try { mio = localStorage.getItem(CHIAVE); } catch (e) { mio = null; }
+  if (!mio) {
+    mio = 'v' + Math.random().toString(36).slice(2, 10);
+    try { localStorage.setItem(CHIAVE, mio); } catch (e) { /* sessione privata: il voto vale per questa visita */ }
+  }
+
+  var voti = {};                 // id → { nome, scelta, nota }
+  var db = null, doc = null;
+  var elNome = document.getElementById('nome');
+  var elNota = document.getElementById('nota');
+  var elStato = document.getElementById('stato');
+  var elTab = document.getElementById('tabellone');
+  var elNote = document.getElementById('note');
+
+  var iniziali = function (n) {
+    var p = String(n || '?').trim().split(/\s+/);
+    return ((p[0] || '?')[0] + (p.length > 1 ? p[p.length - 1][0] : '')).toUpperCase();
+  };
+  var creaPersona = function (v) {
+    var s = document.createElement('span');
+    s.className = 'persona';
+    var i = document.createElement('span');
+    i.className = 'iniziali';
+    i.textContent = iniziali(v.nome);
+    s.appendChild(i);
+    s.appendChild(document.createTextNode(v.nome || 'Senza nome'));
+    return s;
+  };
+
+  function disegna() {
+    var lista = Object.keys(voti).map(function (k) { return voti[k]; })
+      .filter(function (v) { return v && v.scelta != null; });
+    var tot = lista.length;
+
+    /* chi ha scelto che cosa, sotto ogni opzione */
+    OPZIONI.forEach(function (o) {
+      var box = document.querySelector('[data-chi="' + o.id + '"]');
+      if (!box) return;
+      var suoi = lista.filter(function (v) { return String(v.scelta) === o.id; });
+      box.textContent = '';
+      if (!suoi.length) {
+        var vuoto = document.createElement('span');
+        vuoto.className = 'vuoto';
+        vuoto.textContent = 'Nessuno l’ha scelta';
+        box.appendChild(vuoto);
+      } else {
+        suoi.forEach(function (v) { box.appendChild(creaPersona(v)); });
+      }
+    });
+
+    /* il tabellone */
+    elTab.textContent = '';
+    OPZIONI.forEach(function (o) {
+      var n = lista.filter(function (v) { return String(v.scelta) === o.id; }).length;
+      var riga = document.createElement('div');
+      riga.className = 'riga';
+      var num = document.createElement('span');
+      num.className = 'n num';
+      num.textContent = o.id;
+      var nome = document.createElement('span');
+      nome.className = 'nome';
+      var b = document.createElement('b');
+      b.style.fontWeight = '400';
+      b.textContent = o.nome;
+      var small = document.createElement('small');
+      small.textContent = o.sotto;
+      nome.appendChild(b);
+      nome.appendChild(small);
+      var conta = document.createElement('span');
+      conta.className = 'conta';
+      var barra = document.createElement('span');
+      barra.className = 'barretta';
+      var i = document.createElement('i');
+      i.style.width = (tot ? Math.round(100 * n / tot) : 0) + '%';
+      barra.appendChild(i);
+      var cifra = document.createElement('b');
+      cifra.textContent = String(n);
+      conta.appendChild(barra);
+      conta.appendChild(cifra);
+      riga.appendChild(num);
+      riga.appendChild(nome);
+      riga.appendChild(conta);
+      elTab.appendChild(riga);
+    });
+
+    /* le note */
+    elNote.textContent = '';
+    lista.filter(function (v) { return v.nota; }).forEach(function (v) {
+      var d = document.createElement('div');
+      d.className = 'nota';
+      var i = document.createElement('span');
+      i.className = 'iniziali';
+      i.textContent = iniziali(v.nome);
+      var t = document.createElement('span');
+      var b = document.createElement('b');
+      b.textContent = (v.nome || 'Senza nome') + ' · ';
+      t.appendChild(b);
+      t.appendChild(document.createTextNode(v.nota));
+      d.appendChild(i);
+      d.appendChild(t);
+      elNote.appendChild(d);
+    });
+
+    /* i pulsanti «scegli questa» */
+    var mioVoto = voti[mio];
+    document.querySelectorAll('.scegli').forEach(function (b) {
+      var on = mioVoto && String(mioVoto.scelta) === b.dataset.scelta;
+      b.setAttribute('aria-pressed', String(!!on));
+      b.textContent = on ? 'È la tua scelta' : 'Scegli questa';
+    });
+
+    elStato.textContent = tot === 0 ? 'Ancora nessun voto.'
+      : tot === 1 ? 'Un voto finora.' : tot + ' voti finora.';
+  }
+
+  disegna();
+
+  function salva(patch) {
+    if (!doc) return;
+    var v = voti[mio] || {};
+    var nuovo = {
+      nome: (elNome.value || '').trim() || v.nome || '',
+      scelta: patch.scelta != null ? patch.scelta : (v.scelta != null ? v.scelta : null),
+      nota: patch.nota != null ? patch.nota : ((elNota.value || '').trim() || v.nota || ''),
+      quando: new Date().toISOString()
+    };
+    if (nuovo.scelta == null) return;      // si scrive solo quando c'è una scelta
+    voti[mio] = nuovo;
+    disegna();
+    doc.set(nuovo).catch(function () {
+      elStato.textContent = 'Il voto non si è salvato: riprova.';
+    });
+  }
+
+  document.querySelectorAll('.scegli').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (!doc) return;
+      if (!(elNome.value || '').trim() && !(voti[mio] && voti[mio].nome)) {
+        elNome.focus();
+        elStato.textContent = 'Scrivi il tuo nome, poi scegli.';
+        return;
+      }
+      salva({ scelta: b.dataset.scelta });
+    });
+  });
+  var attesa = null;
+  function differita() {
+    clearTimeout(attesa);
+    attesa = setTimeout(function () { if (voti[mio]) salva({}); }, 700);
+  }
+  elNome.addEventListener('input', differita);
+  elNota.addEventListener('input', differita);
+
+  var senzaVoto = function () {
+    elStato.textContent = 'Su questa vista il voto non è disponibile: la pagina resta leggibile.';
+    document.querySelectorAll('.scegli').forEach(function (b) { b.disabled = true; b.style.opacity = '.5'; });
+    elNome.disabled = elNota.disabled = true;
+  };
+  if (typeof claude === 'undefined' || !claude || typeof claude.use !== 'function') { senzaVoto(); return; }
+  claude.use('db').then(function (d) {
+    if (!d) { senzaVoto(); return; }
+    db = d;
+    doc = db.doc('voti/' + mio);
+    db.collection('voti').onSnapshot(function (snap) {
+      voti = {};
+      (snap.docs || []).forEach(function (x) { voti[x.id] = x.data; });
+      var v = voti[mio];
+      if (v) {
+        if (!elNome.value && v.nome) elNome.value = v.nome;
+        if (!elNota.value && v.nota) elNota.value = v.nota;
+      }
+      disegna();
+    }, function () { elStato.textContent = 'Non riesco a leggere i voti adesso.'; });
+  }).catch(senzaVoto);
+})();
+</script>

@@ -1,4 +1,4 @@
-// Prova cliccata della Console (direzione A): le tendine del titolare, la pagina Richieste, l'editor del dipendente, le azioni dell'esecuzione, quaranta.
+// Prova cliccata della Console (direzione A): le tendine del titolare, la pagina Richieste, l'editor del dipendente, le azioni dell'esecuzione, quaranta, la barra «Oggi in azienda».
 // Uso (dalla radice o da qualunque cartella): PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css node schermate/direzioni/prove/console.js
 const path = require('path'), fs = require('fs');
 
@@ -153,6 +153,49 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   await clic('.a-rail [data-pagina="richieste"]');
   check(await titolo() === 'RICHIESTE' && await conta('.task[data-az="richiesta"]') === n40, 'pagina Richieste a 40: ' + n40 + ' card da approvare');
   check(await largo(), 'nessuno sforo orizzontale nella pagina Richieste a 40');
+
+  console.log('6. la barra «Oggi in azienda» (versione 16): le caselle contate, che non ripetono la linguetta, dove portano, la barra dei passi');
+  await vai('');
+  const barra = () => page.evaluate(() => [...document.querySelectorAll('.a-sched .tl .qua')].map(e => e.textContent.replace(/\s+/g, ' ').trim()));
+  const conteggi = () => page.evaluate(() => ({
+    lavoro: modello.dipendenti.filter(e => e.stato === 'lavoro').length,
+    errore: modello.dipendenti.filter(e => e.stato === 'errore').length,
+    piani: modello.dipendenti.filter(e => e.stato === 'pianificato').length,
+    attesa: modello.richiesteDi('attesa').length,
+    approvate: modello.richieste.filter(r => r.giorno === 0 && r.stato === 'approvata').length }));
+  let c = await conteggi(), caselle = await barra();
+  console.log('    caselle:', caselle.join(' | '));
+  check(caselle.length === 4, 'quattro caselle: approvate, al lavoro, ferme, dopo');
+  check(!caselle.some(t => /aspettano te/.test(t)), 'la barra non ripete «da approvare»: lo dice la linguetta lime');
+  check(await conta('.a-mini[data-pannello="richieste"], .a-tend.aperta') >= 1, 'la linguetta lime (o la tendina aperta) c\'è sempre');
+  check(caselle[0] === c.approvate + 'approvate' && caselle[1].includes(c.lavoro + 'al lavoro'), 'i primi due numeri sono quelli del modello (' + c.approvate + ', ' + c.lavoro + ')');
+  check(caselle[2].startsWith(c.errore + 'ferm') && caselle[3].startsWith(c.piani + 'dopo'), 'ferme e dopo sono quelli del modello (' + c.errore + ', ' + c.piani + ')');
+  check(await conta('.a-sched .tl .qua.err') === 1, 'la casella di chi è fermo è rosa: la barra di prima non lo diceva');
+  check(await conta('.a-sched .tl .now') === 0 && await conta('.a-sched .tl .ev') === 0, 'niente marcatore dell\'ora né blocchi: la barra non finge più una linea del tempo');
+  await clic('.a-sched .tl .qua.err');
+  check(await titolo().then(t => t.length > 0) && await conta('.etesta .a-sched') === 1, 'la casella rosa apre l\'esecuzione ferma: ' + await titolo());
+  await vai('');
+  await clic('.a-sched .tl .qua.poi');
+  check(await titolo() === 'AGENDA', 'la casella «dopo» apre l\'agenda');
+  await vai('');
+  await clic('.a-sched .tl .qua:nth-child(1)');
+  check(await titolo() === 'RICHIESTE', 'la casella «approvate» apre le richieste');
+  /* la barra dei passi dell'Esecuzione: sta dentro la pagina e non taglia niente (prima cresceva a 2180 px su 1440) */
+  const pista = () => page.evaluate(() => { const t = document.querySelector('.etesta .a-sched .tl'); return { sforo: t.scrollWidth - t.clientWidth, barra: Math.round(document.querySelector('.etesta .a-sched').getBoundingClientRect().width) }; });
+  for (const id of [1, 3, 5, 7]) {
+    await vai('pagina=esecuzione&id=' + id);
+    const p = await pista();
+    check(p.sforo === 0 && p.barra <= 1312, 'esecuzione ' + id + ': la barra dei passi sta nella pagina (' + p.barra + ' px, sforo ' + p.sforo + ')');
+  }
+  await vai('pagina=esecuzione&id=1');
+  check(await conta('.etesta .tl .live') === 1 && (await txt('.etesta .tl .live')).includes('passo 3'), 'il passo in corso resta per esteso nella barra');
+  check(await conta('.etesta .tl .ev.resto') === 1, 'i passi da fare oltre i due successivi si contano in una pillola');
+  await vai('n=40');
+  c = await conteggi(); caselle = await barra();
+  console.log('    caselle a 40:', caselle.join(' | '));
+  check(caselle.length === 4 && caselle[1].includes(c.lavoro + 'al lavoro') && caselle[3].startsWith(c.piani + 'dopo'), 'a quaranta la barra ha le stesse quattro caselle, con i numeri di quaranta');
+  check(await page.evaluate(() => { const t = document.querySelector('.a-sched .tl'); return t.scrollWidth - t.clientWidth; }) === 0, 'a quaranta la barra non sfora');
+
   check(errors.length === 0, 'nessun errore in console: ' + JSON.stringify(errors));
   console.log(`\n${ok} ok, ${ko} ko`);
   await browser.close(); process.exit(ko ? 1 : 0);
