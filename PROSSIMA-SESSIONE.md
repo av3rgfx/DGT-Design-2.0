@@ -76,7 +76,7 @@ Sull'insieme di riferimento (a quaranta i numeri crescono, le famiglie no). Tabe
 ### Verifica
 
 - **Le quattro prove cliccate passano**: `console.js` **107** (erano 97: dieci verifiche nuove sulle frecce),
-  `mobile.js` **70** (era 69), `costi.js` 48, `agenda-chat.js` 54. In tutto **279** (erano 268).
+  `mobile.js` **74** (era 69: una sulle frecce e quattro sullo studio del conto nel titolo), `costi.js` 48, `agenda-chat.js` 54. In tutto **283** (erano 268).
 - Zero frecce senza azione su tredici pagine, quattro viste e le due taglie; le due dell'anteprima dell'editor sono
   contate a parte e dichiarate.
 - **Sessantacinque liste** con più di una riga, tutte con le righe sulla stessa griglia (è la prova che tiene in piedi
@@ -107,6 +107,23 @@ Sull'insieme di riferimento (a quaranta i numeri crescono, le famiglie no). Tabe
   («Versione 18» con il censimento, le diciotto famiglie, le tre lezioni, i riquadri dei pixel e le scelte da
   confermare), i quattro README.
 - Regole in `CLAUDE.md`: invariate (direzione A, avatar della versione 10, niente emoji).
+
+### Coda: la misura del conto nel titolo (studio del 2026-09-07)
+
+Alla vista della versione 18 l'utente ha chiesto di rivedere il prezzo pagato nella versione 17 per far stare il quadro
+«due per due» (la riga dei due numeri grandi tolta e il conto passato nel titolo). Tre forme dietro `?conta=`, catturate
+e affiancate in `m-conta-titolo.png`:
+
+| `?conta=` | Che cos'è | Card visibile | La riga di approva e rifiuta |
+|---|---|---|---|
+| **1** (la scelta di adesso) | conto a 26, come il titolo | 248 px su 256 | sopra, 4 px di margine |
+| **2** (la strada di mezzo) | titolo a 26, conto a **36** | 244 px su 256 | sopra |
+| **0** (com'era prima) | la riga dei due numeri grandi | 176 px su 256 | **sotto** |
+
+**La strada di mezzo costa 4 px** e nessuna delle due va a capo, nemmeno con un conto a tre cifre. Una correzione a
+quello che diceva la versione 17: il titolo sta a 26 px per la larghezza della *parola*, non per la misura del numero.
+Quattro verifiche nuove in `prove/mobile.js`. **`CONTA = 1` resta la forma attiva** finché l'utente non sceglie: le
+undici catture del telefono sono identiche byte per byte.
 
 ## Decisioni dell'utente (in ordine)
 
@@ -303,8 +320,31 @@ dipendenti fra loro e condividere memorie e conoscenze per un obiettivo comune.
   l'archivio come **oggetto di prima classe** con l'interfaccia che mostra chi ci ha messo cosa e chi l'ha usata; le
   dipendenze come **legame sull'obiettivo o sull'esecuzione**.
 
-**Le due domande aperte da portargli** (sono state consegnate a fine della sessione della versione 18, come chiedeva il
-prompt; se non ha risposto, vanno rifatte prima di scrivere):
+**Le due domande sono state portate all'utente il 2026-09-07 e la prima è passata da un consiglio di cinque pareri
+indipendenti con revisione incrociata anonima** (`llm-council`). Il verdetto, da confermare con lui:
+
+- **Chi parla nel filo: DGT che indossa il dipartimento** (la strada «economica», ma non nella forma nuda). Tre
+  consiglieri su cinque avevano scelto il Coordinatore-dipendente; tutti e cinque però hanno proposto una terza strada, e
+  le terze strade convergono su due requisiti che la scelta secca non soddisfa: la distribuzione **costa e può
+  sbagliare**, quindi va attribuita; e va **correggibile**, quindi la sua logica deve essere un prompt versionato con un
+  posto dove stare. La sintesi che li soddisfa senza inventare una specie nuova: nel filo parla il **dipartimento**
+  (disco con l'icona del dipartimento, nome «Coordinamento Marketing» — non un avatar con gli occhi: la regola 19 vale
+  per i dipendenti, e il prodotto ha già il disco nero con l'icona per chi non è una persona); il **prompt di
+  coordinamento è una proprietà del dipartimento**, versionato e modificabile nella pagina Dipartimento come il soul
+  prompt lo è in quella del Dipendente; il **costo va sulla riga «coordinamento» del dipartimento**, che in `m.costi` è
+  già un'entità di costo. Conto dei dipendenti invariato, rendimento non inquinato, e la frase che il prodotto può dire
+  di sé: *DGT non assume manager, il management è il software*.
+- **Una parola sola per l'oggetto nuovo**: il consiglio ha notato che «piano / assegnazione / revisione / distribuzione»
+  sono quattro parole per una cosa. Proposta: **il piano** (`tipo: 'piano'` accanto a post, documento, lista, revisione),
+  che contiene **compiti**, uno per dipendente.
+- **Punti ciechi segnalati dalla revisione incrociata, da presidiare quando si scrive**: nessuno aveva detto che cosa il
+  titolare **smette** di approvare (senza una risposta il lavoro *aggiunge* approvazioni invece di toglierle); annullare
+  una distribuzione non restituisce i token già spesi, quindi serve un **preventivo prima**, non un rollback dopo; il
+  filo non deve nascere vuoto («Nessuno coordina il Marketing» è una funzione di punta che chiede un rito prima di
+  servire); e va deciso se i dipendenti **possono rispondere** nel filo del dipartimento — se no non è una chat, è un
+  modulo.
+
+**Le due domande, per esteso** (se l'utente non le conferma, vanno rifatte prima di scrivere):
 
 1. **Chi parla nel filo del dipartimento?** Un dipartimento non è una persona. Risposta economica: parla **DGT**, con i
    messaggi `sistema` che già esistono e che il filo sa già disegnare — zero personaggi nuovi. Risposta ambiziosa: un
@@ -397,7 +437,7 @@ non un controllo) e le quattro liste miste, in cui la colonna resta e qualche ce
   `node schermate/direzioni/prove/console.js` (**107**: tendine, Richieste, editor del dipendente, esecuzione, 40, la barra
   «Oggi in azienda» e la barra dei passi, i controlli delle intestazioni di sezione e, dalla versione 18, **le frecce di
   riga**: zero inerti su tredici pagine, le 65 liste allineate, il confronto che si apre dalla revisione passata),
-  `mobile.js` (**70**: gli otto telefoni, la revisione, le frecce, il rifiuto con motivo, la prova, lo stato vuoto, 40, il
+  `mobile.js` (**74**: gli otto telefoni, la revisione, le frecce, il rifiuto con motivo, la prova, lo stato vuoto, 40, il
   quadro del giorno e la tab Dipartimenti; a ogni passo nessuno schermo che scorre di lato e console pulita), `costi.js`
   (48) e `agenda-chat.js` (54); da qualunque cartella, leggono anche `CHROME_PATH`, girano con `reducedMotion: 'reduce'`,
   escono con 1 se una verifica fallisce. Attenzione: Playwright scorre da solo per cliccare un elemento fuori dallo
@@ -503,9 +543,9 @@ non un controllo) e le quattro liste miste, in cui la colonna resta e qualche ce
    con la cella vuota): è l'unica che si vede e si può ribaltare.
 2. **La chat di dipartimento (candidato 5)**: le due domande sono scritte per esteso nella sezione «Il lavoro della
    prossima sessione» e vanno risposte **prima** di scrivere codice.
-3. **Il giudizio sulla versione 17** (i Dipartimenti, i controlli) e sul prezzo pagato per la forma 2 del quadro: la riga
-   dei due numeri grandi caduta dalla schermata 1 e il conto passato nel titolo. **Portato all'utente a fine sessione
-   della versione 18**; se non ha risposto, va rifatto.
+3. **La scelta fra le tre misure del conto nel titolo** (`?conta=0|1|2`, studio del 2026-09-07): l'utente ha visto le tre
+   forme affiancate in `m-conta-titolo.png` e deve dire quale tiene. Finché non decide resta la 1. Resta anche da sentire
+   il **giudizio sulla versione 17** (i Dipartimenti, i controlli).
 4. I giudizi in sospeso delle versioni 6, 8, 11, 12, 14, 15 e 15a; le scelte di dettaglio della barra (decisioni 33 e 34).
 5. I punti aperti elencati in «Come riprendere».
 

@@ -132,6 +132,32 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   });
   check(misure.visibile >= 245, `della card della richiesta restano visibili ${misure.visibile} px su 256 sopra la navigazione`);
   check(misure.sopra, `la riga con approva e rifiuta sta sopra la navigazione (${misure.spazio} px di margine)`);
+  /* Lo studio della misura del conto nel titolo (2026-09-07): `?conta=` mette a confronto le tre forme. Quella scelta
+     resta la 1 (numero a 26, come il titolo); la 2 è la strada di mezzo (numero a 36) e costa 4 px di card; la 0 rimette
+     la riga dei due numeri grandi e fa ricadere la riga di approva e rifiuta sotto la navigazione — è il prezzo che la
+     forma 2 del quadro ha già pagato una volta, e questa prova impedisce di ripagarlo per sbaglio. */
+  const cardVisibile = () => page.evaluate(() => {
+    const Z = 1.25, tel = document.querySelector('.m-tel'), nav = tel.querySelector('.m-bnav').getBoundingClientRect();
+    const card = tel.querySelector('.ncard.task').getBoundingClientRect();
+    const riga = tel.querySelector('.ncard.task .st .row').getBoundingClientRect();
+    const h1 = tel.querySelector('.m-h1'), num = h1.querySelector('b');
+    return { visibile: Math.round((Math.min(card.bottom, nav.top) - card.top) / Z), sopra: riga.bottom <= nav.top,
+      misura: num ? getComputedStyle(num).fontSize : '', righe: Math.round((h1.getBoundingClientRect().height / Z - 12) / (parseFloat(getComputedStyle(h1).lineHeight) / Z)) };
+  });
+  await page.goto(file('conta=2')); await page.waitForTimeout(600);
+  const mezzo = await cardVisibile();
+  check(mezzo.misura === '36px' && mezzo.righe === 1, 'la strada di mezzo: il conto sale a 36 e il titolo resta su una riga');
+  check(mezzo.sopra && mezzo.visibile >= 240, `e costa 4 px: della card ne restano ${mezzo.visibile}, con la riga di approva e rifiuta ancora sopra la navigazione`);
+  /* il titolo non va a capo con nessun conto: a undici sono 4, ma il numero non ha un tetto nel modello */
+  check(await page.evaluate(() => {
+    const h1 = document.querySelector('.m-tel .m-h1.conta'), num = h1.querySelector('b'), era = num.textContent;
+    const ok = ['4', '47', '147'].every(t => { num.textContent = t; const r = num.getBoundingClientRect(), c = h1.getBoundingClientRect();
+      return r.right <= c.right + 0.5 && c.height / 1.25 <= 50; });
+    num.textContent = era; return ok;
+  }), 'e regge fino a tre cifre senza sforare né andare a capo');
+  await page.goto(file('conta=0')); await page.waitForTimeout(600);
+  const riga0 = await cardVisibile();
+  check(await conta(tel(1) + '.m-stats .m-stat') === 2 && !riga0.sopra, `?conta=0 rimette la riga dei due numeri grandi, e la riga di approva e rifiuta ritorna sotto la navigazione (${riga0.visibile} px di card su 256): è il prezzo che la forma 2 ha pagato`);
   await passo('il quadro del giorno');
 
   console.log('7. la tab Dipartimenti (versione 17)');

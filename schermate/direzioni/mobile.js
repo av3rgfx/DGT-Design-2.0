@@ -324,6 +324,10 @@ window.DGT_MOBILE = (function () {
    cifre. È anche la misura dei numeri grandi che sostituisce, così titolo e conto si leggono come una riga sola. */
 .m-h1.conta{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:26px;line-height:32px;white-space:nowrap;padding-top:12px}
 .m-h1.conta b{font-weight:300;font-size:26px;line-height:30px;flex:none;letter-spacing:0}
+/* la strada di mezzo (?conta=2): il titolo resta a 26 e il conto sale a 36, così il numero torna a essere la prima cosa
+   che si vede — quello che faceva la riga dei due numeri grandi — senza ricomprarne i 78 px di altezza. La riga non
+   cresce perché il numero eredita l'interlinea del titolo e le cifre non hanno discendenti. */
+.m-h1.conta.grande b{font-size:36px;line-height:32px}
 /* forma 3 «la riga che parla» (scartata): una riga sola, le tre caselle che chiedono un'azione, numero e parola accanto.
    Niente pila: con la pila le tre caselle sommano 273 px e la colonna ne dà 254. */
 .m-quadro.riga .riga{display:flex;gap:6px;min-width:0}
@@ -436,6 +440,12 @@ window.DGT_MOBILE = (function () {
      ?barra=0 nella Console; ?quadro=0 toglie il quadro e rimette il telefono di prima. */
   const QUADRO = 2;
 
+  /* La misura del conto nel titolo della schermata 1 (studio del 2026-09-07, dopo la scelta della forma 2). Col quadro
+     «due per due» la riga dei due numeri grandi è caduta e «da approvare» è passato nel titolo: resta da decidere quanto
+     grande sia quel numero. 1 = come il titolo (26); 2 = la strada di mezzo, titolo 26 e numero 36; 0 = la riga dei due
+     numeri grandi torna al suo posto. `?conta=` sceglie. */
+  const CONTA = 1;
+
   /* ---------- il quadro del giorno (versione 17, 2026-09-07) ----------
      La barra «Oggi in azienda» della Console sul telefono. Stessi conti (`m.gruppiOggi()`), tre forme messe a confronto
      nello studio; `?quadro=` sceglie (0 = niente, il telefono di prima). Sul telefono cadono sempre i dettagli della
@@ -489,12 +499,14 @@ window.DGT_MOBILE = (function () {
       <div class="m-scroll">
         <div class="m-nav"><span class="m-logo">DGT</span><span class="r"><span class="av persona">${esc(m.azienda.titolare.iniziali)}</span></span></div>
         ${st.quadro ? quadroGiorno(m, st.quadro) : ''}
-        ${st.quadro === 2
+        ${st.quadro === 2 && st.conta
           /* con il quadro «due per due» il titolo porta il conto e la riga dei due numeri grandi cade: «approvate oggi» lo
-             dice già la casella del quadro (correzione 16a) e «da approvare» lo dice il titolo. Vedi il commento sotto. */
+             dice già la casella del quadro (correzione 16a) e «da approvare» lo dice il titolo. Vedi il commento sotto.
+             ?conta= sceglie la misura del numero: 1 come il titolo (26), 2 la strada di mezzo (36), 0 rimette la riga dei
+             due numeri grandi anche col quadro 2, per il confronto. */
           /* niente spazio fra la parola e il numero: sono due elementi flex e lo spazio, con nowrap, allarga il primo
              quanto basta a mandare il titolo a capo (misurato: 234 px liberi, 222 senza spazio, oltre con) */
-          ? `<h3 class="m-h1 conta">DA APPROVARE<b>${c.length}</b></h3>`
+          ? `<h3 class="m-h1 conta${st.conta === 2 ? ' grande' : ''}">DA APPROVARE<b>${c.length}</b></h3>`
           : `<h3 class="m-h1">DA APPROVARE</h3>
         <div class="m-stats">
           <div class="m-stat"><span class="num">${c.length}${c.length ? `<span class="badge down">${ic('i-bell')}${Math.min(2, c.length)}</span>` : ''}</span><span>da approvare</span></div>
@@ -760,7 +772,7 @@ window.DGT_MOBILE = (function () {
      quello che si decide su uno si vede subito sugli altri (e nella Console, che legge lo stesso modello). */
   function monta(radice, m, opz) {
     opz = opz || {};
-    const st = { richiesta: opz.richiesta || 0, filo: opz.filo || ((m.fili()[0] || {}).e || m.dipendenti[0]).id, quadro: opz.quadro === undefined ? QUADRO : opz.quadro, dip: opz.dip || m.dipartimenti[0].id, cerca: undefined };
+    const st = { richiesta: opz.richiesta || 0, filo: opz.filo || ((m.fili()[0] || {}).e || m.dipendenti[0]).id, quadro: opz.quadro === undefined ? QUADRO : opz.quadro, conta: opz.conta === undefined ? CONTA : opz.conta, dip: opz.dip || m.dipartimenti[0].id, cerca: undefined };
     const tels = (opz.schermate && opz.schermate.length ? opz.schermate : [1, 2, 3, 4, 5, 6, 7, 8]).map((s, i) => ({ n: i + 1, schermata: s >= 2 && s <= 8 ? s : 1, motivo: false }));
     const n = () => coda(m).length;
     radice.innerHTML = `<div class="m-page">

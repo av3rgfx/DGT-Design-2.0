@@ -1593,6 +1593,34 @@ che perdono l'intaglio). Si compongono con
 - Il gallone `i-chevr` del log resta dov'è (la riga che apre una richiesta): la regola dice dove sta una freccia, non
   quale freccia.
 
+#### Coda: la misura del conto nel titolo (studio del 2026-09-07)
+
+Alla vista della versione 18 l'utente ha chiesto di rivedere il prezzo pagato nella versione 17 per far stare il quadro
+«due per due»: la riga dei due numeri grandi tolta dalla schermata 1 e il conto passato dentro il titolo. Tre forme
+disegnate nel telefono vero dietro `?conta=`, catturate e affiancate in `m-conta-titolo.png`:
+
+| `?conta=` | Che cos'è | Card visibile sopra la navigazione | La riga di approva e rifiuta |
+|---|---|---|---|
+| **1** (la scelta di adesso) | conto a 26, come il titolo | **248** px su 256 | sopra, 4 px di margine |
+| **2** (la strada di mezzo) | titolo a 26, conto a **36** | **244** px su 256 | sopra |
+| **0** (com'era prima) | la riga dei due numeri grandi | **176** px su 256 | **sotto**: la decisione va cercata scorrendo |
+
+**La strada di mezzo costa 4 px.** Il numero torna a essere la prima cosa che si vede — quello che faceva la riga dei due
+numeri grandi — senza ricomprarne i 78 px di altezza: il conto eredita l'interlinea del titolo e le cifre non hanno
+discendenti, quindi la riga cresce di 4 px e basta. Misurato: nessuna delle due forme va a capo o sfora, **nemmeno con un
+conto a tre cifre** (il modello ne fa 4 a undici dipendenti e 7 a quaranta, ma il numero non ha un tetto).
+
+Una correzione a quello che diceva la versione 17: il commento nel codice motivava il titolo a 26 px con lo spazio che
+resta al conto a due cifre. Il conto non c'entra — a 26 come a 36 ci stanno tre cifre senza sforare. **Quello che manda
+il titolo a capo è la parola**: «DA APPROVARE» a 30 px chiede 214 px su 222 di riga libera, e col numero e lo stacco non
+ci sta. Il titolo sta a 26 per la sua larghezza, non per la misura del numero.
+
+Quattro verifiche nuove in `prove/mobile.js` inchiodano le tre misure, e la terza (`?conta=0` che rifà cadere la riga di
+approva e rifiuta sotto la navigazione) impedisce di ripagare per sbaglio un prezzo già pagato una volta.
+
+**La forma scelta resta la 1** finché l'utente non decide: `CONTA = 1` in `mobile.js`, le altre due dietro il parametro
+come `?quadro=1|3`. Le undici catture del gruppo `quadro` e `dip` sono identiche byte per byte prima e dopo.
+
 
 ## 5. File
 

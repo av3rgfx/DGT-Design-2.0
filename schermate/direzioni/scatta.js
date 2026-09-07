@@ -70,6 +70,11 @@ const CATTURE = [
   { g: 'quadro', nome: 'm-quadro-duedue-40', file: 'mobile.html', q: 'schermata=1&n=40', sel: '.m-tel', h: 1100 },
   { g: 'quadro', nome: 'm-quadro-piani', file: 'mobile.html', q: 'schermata=1&quadro=1', sel: '.m-tel', h: 1100 },
   { g: 'quadro', nome: 'm-quadro-riga', file: 'mobile.html', q: 'schermata=1&quadro=3', sel: '.m-tel', h: 1100 },
+  /* lo studio della misura del conto nel titolo (2026-09-07, dopo la scelta della forma 2): le tre forme messe a
+     confronto in `m-conta-titolo.png`. `conta=0` rimette la riga dei due numeri grandi, 1 è la scelta, 2 la strada di mezzo. */
+  { g: 'quadro', nome: 'm-conta-riga', file: 'mobile.html', q: 'schermata=1&quadro=2&conta=0', sel: '.m-tel', h: 1100 },
+  { g: 'quadro', nome: 'm-conta-26', file: 'mobile.html', q: 'schermata=1&quadro=2&conta=1', sel: '.m-tel', h: 1100 },
+  { g: 'quadro', nome: 'm-conta-36', file: 'mobile.html', q: 'schermata=1&quadro=2&conta=2', sel: '.m-tel', h: 1100 },
   { g: 'dip', nome: 'm-dipartimenti', file: 'mobile.html', q: 'schermata=7', sel: '.m-tel', h: 1100 },
   { g: 'dip', nome: 'm-dipartimenti-40', file: 'mobile.html', q: 'schermata=7&n=40', sel: '.m-tel', h: 1100 },
   { g: 'dip', nome: 'm-dipartimento', file: 'mobile.html', q: 'schermata=8&dip=mkt', sel: '.m-tel', h: 1100 },
