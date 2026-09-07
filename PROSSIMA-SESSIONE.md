@@ -286,6 +286,17 @@ undici catture del telefono sono identiche byte per byte.
     - **l'anteprima dell'editor tiene matita e freccia**, dichiarata come i 45 indicatori della versione 17;
     - il gallone `i-chevr` del log resta dov'è: la regola dice dove sta una freccia, non quale freccia.
 
+41. **2026-09-07, dopo la versione 18: due decisioni dell'utente in una volta.**
+    - **I nomi delle due modalità della distribuzione**: `Fai pure` e `Chiedimi prima`, scelti fra le coppie proposte
+      (l'altra era «Distribuisci / Proponi»). Sono parole sue: non si cambiano. Il dettaglio di come funziona la pillola
+      sta nel candidato 5 qui sotto.
+    - **Regola fondamentale nuova, scritta in `CLAUDE.md`: ogni dubbio progettuale passa dal consiglio.** Sue parole:
+      «ogni volta che c'è un dubbio progettuale passalo tramite llm-council dando ad ogni consigliere il contesto adatto
+      per poter dare un giudizio reale». Nasce dalla prima applicazione della stessa giornata (la domanda su chi parla
+      nel filo del dipartimento), dove il consiglio ha ribaltato una scelta che sembrava un aut-aut. La regola dice anche
+      che cosa **non** è un dubbio progettuale — quello che si può misurare o contare — e che il contesto va scritto per
+      esteso, perché è la parte che decide la qualità della risposta.
+
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti sintetici di DGT; documenti in italiano.
 
@@ -351,10 +362,19 @@ indipendenti con revisione incrociata anonima** (`llm-council`). Il verdetto, da
    **Coordinatore** di dipartimento, un dipendente vero con avatar, tinta e voce (il ruolo esiste già nel vocabolario
    degli avatar, `avatar-motore.js`: «il fulcro stabile della squadra») — più caldo, ma è un personaggio nuovo nel
    prodotto e cambia il conto dei dipendenti, i costi e la pagina Dipartimento.
-2. **La distribuzione dei compiti passa per l'approvazione?** Cioè: quando il titolare scrive «l'obiettivo Zenith è in
-   ritardo, recuperate», l'agente **propone** il piano dei compiti come richiesta da approvare (coerente con tutto il
-   resto del prodotto, ma aggiunge un passo a ogni nota), oppure **distribuisce e basta** e il titolare lo scopre nei
-   fili dei singoli (più veloce, ma è la prima uscita del prodotto che non passa da lui).
+2. **La distribuzione dei compiti passa per l'approvazione? RISPOSTA DELL'UTENTE, 2026-09-07: sceglie lui, ogni volta.**
+   Non una delle due modalità ma **tutte e due, con una pillola nella barra di scrittura**: `Fai pure` (il piano parte) e
+   `Chiedimi prima` (il piano diventa una richiesta da approvare). **Le due parole sono scelte sue** fra le coppie
+   proposte, e non si cambiano. Tre cose da rispettare quando si scriverà:
+   - **la scelta vale sulla distribuzione, mai sulle consegne**: chi fa cosa può partire da solo, quello che esce va
+     approvato come sempre. In una riga: *smetti di approvare chi fa cosa, non che cosa esce.* Senza questo confine
+     «Fai pure» spegne in silenzio la spina dorsale del prodotto;
+   - **il valore di partenza è `Chiedimi prima`**, e la scelta si ricorda **per dipartimento** (uno di cui ti fidi resta
+     su «Fai pure», uno nuovo resta su «Chiedimi prima»): la pillola nella barra serve all'eccezione, a un tocco;
+   - **anche con `Fai pure` il piano si vede e si ferma**: compare nel filo con chi ha preso cosa, porta il suo
+     **preventivo prima** («4 compiti a 3 dipendenti, circa 12 €») ed è revocabile su quello che non è ancora partito.
+     Il preventivo prima e non il rimborso dopo, perché annullare non restituisce i token già spesi (punto cieco colto
+     dalla revisione incrociata del consiglio).
 
 **Ordine consigliato quando toccherà**: prima il filo, poi la distribuzione. `filoDi` è indicizzato per dipendente e
 andrebbe indicizzato per soggetto (`dip:mkt`); l'interfaccia della chat esiste già su Console e telefono.
@@ -405,7 +425,9 @@ vanno risposte prima di scrivere codice**: chi parla nel filo, e se la distribuz
 versione 17 (il quadro «due per due», i Dipartimenti, la regola 25), la regola 26 delle frecce, gli avatar della versione
 10, la regola «niente emoji».
 
-**Il metodo di sempre**, prima e dopo: rifare i font locali (`fetch-fonts.py`), lanciare le **quattro** prove di `prove/` e
+**Il metodo di sempre**, e da adesso con una regola in più: **ogni dubbio progettuale passa dal consiglio prima del
+codice** (`llm-council`, regola fondamentale in `CLAUDE.md`, decisione 41). Non tutto è un dubbio progettuale: quello che
+si misura si misura. Per il resto, prima e dopo: rifare i font locali (`fetch-fonts.py`), lanciare le **quattro** prove di `prove/` e
 catturare le pagine prima di toccare qualcosa (base di confronto, con `scatta.js --in <cartella>`); leggere `CLAUDE.md`,
 `SYSTEM-DESIGN.md` (sezioni 2, 6, 8, 9 e 10, regole 24, 25 e 26) e `DIREZIONI.md` (sezione 4 dalla versione 14, sezione 5);
 controllare branch e PR (vedi «Stato»). Alla fine: prove aggiornate, screenshot con `scatta.js`, artefatti ripubblicati allo
@@ -541,8 +563,9 @@ non un controllo) e le quattro liste miste, in cui la colonna resta e qualche ce
 1. **Il giudizio dell'utente sulla versione 18**: le frecce toccano ogni riga e ogni card, e le catture del prima/dopo
    sono pronte. In particolare va risollevata la scelta della decisione 40 sulle **liste miste** (la colonna che resta
    con la cella vuota): è l'unica che si vede e si può ribaltare.
-2. **La chat di dipartimento (candidato 5)**: le due domande sono scritte per esteso nella sezione «Il lavoro della
-   prossima sessione» e vanno risposte **prima** di scrivere codice.
+2. **La chat di dipartimento (candidato 5)**: la seconda domanda ha risposta (la pillola `Fai pure` / `Chiedimi prima`,
+   decisione 41). **Resta aperta la prima**: chi parla nel filo. Il consiglio ha dato il suo verdetto — DGT che indossa
+   il dipartimento — ma l'utente non l'ha ancora confermato, e finché non lo fa non si scrive.
 3. **La scelta fra le tre misure del conto nel titolo** (`?conta=0|1|2`, studio del 2026-09-07): l'utente ha visto le tre
    forme affiancate in `m-conta-titolo.png` e deve dire quale tiene. Finché non decide resta la 1. Resta anche da sentire
    il **giudizio sulla versione 17** (i Dipartimenti, i controlli).
@@ -561,11 +584,14 @@ restano quelli del sistema. Sono decise e non si rimettono in discussione: la di
 della versione 16 con la correzione 16a, la versione 17 (quadro «due per due», Dipartimenti, regola 25) e la regola 26
 delle frecce di riga della versione 18.
 
-Questa sessione facciamo il candidato 5, la chat di dipartimento — quello che ti ho proposto io. Prima del codice
-voglio rispondere alle due domande che hai scritto nel passaggio di consegne: chi parla nel filo del dipartimento (DGT
-con i messaggi «sistema», o un Coordinatore come personaggio nuovo) e se la distribuzione dei compiti passa per
-l'approvazione come la revisione di performance. Fammele vedere con i pro e i contro e i numeri, e se non rispondo
-scegli tu e dimmi che cosa hai scelto e perché.
+Vale la regola fondamentale nuova: ogni dubbio progettuale passa dal consiglio (llm-council) prima del codice, con il
+contesto scritto per esteso a ogni consigliere. Quello che si può misurare o contare non è un dubbio progettuale: lì
+misuri.
+
+Questa sessione facciamo il candidato 5, la chat di dipartimento. Della seconda domanda ho già deciso: la pillola nella
+barra di scrittura con «Fai pure» e «Chiedimi prima», predefinito «Chiedimi prima», ricordata per dipartimento, e vale
+sulla distribuzione dei compiti, mai sulle consegne. Resta aperta la prima: chi parla nel filo. Riportami il verdetto
+del consiglio (DGT che indossa il dipartimento) con le sue conseguenze, e aspetta che scelga.
 
 Poi costruisci nell'ordine che consigli tu: prima il filo di dipartimento (scrivere al dipartimento, i messaggi che
 arrivano ai fili dei singoli citando l'origine), poi la distribuzione. Prima di scrivere fammi vedere che forma prende

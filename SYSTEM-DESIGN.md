@@ -145,6 +145,11 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
   `.dirA`, variabili e funzioni che le stampano), condivise dalla Console, dal telefono e dalle pagine degli avatar. Una
   schermata nuova carica `comune.js`, `componenti.js` e poi il proprio file, dichiara `variabili` sulla propria radice e
   mette in pagina il CSS dei componenti prima del proprio.
+- **Prima di scrivere, il dubbio progettuale passa dal consiglio** (regola fondamentale del 2026-09-07, per esteso in
+  `CLAUDE.md`): una scelta che cambia che cosa il prodotto è o come lo si usa, e che ha più di una risposta difendibile,
+  va portata alla skill `llm-council` con il contesto scritto per esteso, e il verdetto va in `PROSSIMA-SESSIONE.md`
+  marcato «da confermare» finché l'utente non risponde. Quello che si può misurare o contare non è un dubbio
+  progettuale: lì si guarda la pagina.
 
 ## 9. Verifiche fatte
 

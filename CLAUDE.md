@@ -14,5 +14,25 @@ Repository di design del prodotto DGT (sistema operativo aziendale per agenti AI
 - **Niente emoji**, né nel prodotto né nel sistema di design (regola fondamentale, 2026-09-04): al loro posto le icone del
   sistema, disegnate per DGT nello sprite (`schermate/direzioni/comune.js`; lo specimen ha il suo). La fiamma delle pillole
   «caldo», «urgenti», «da approvare», «in ritardo» è l'icona `i-fire`.
+- **Ogni dubbio progettuale passa dal consiglio** (regola fondamentale, 2026-09-07): quando c'è una scelta di progetto con
+  più di una risposta difendibile, prima di scrivere codice va passata dalla skill `llm-council` — cinque pareri
+  indipendenti, revisione incrociata anonima, sintesi. Poi la decisione la prende l'utente: il consiglio prepara la
+  domanda, non la chiude.
+  - **È un dubbio progettuale** una scelta che cambia che cosa il prodotto è o come lo si usa e che ha più di una
+    risposta sensata: chi parla in una schermata, se un'azione passa per l'approvazione, che forma prende un componente
+    nuovo, quale parola nomina un oggetto nuovo, che cosa il titolare smette di vedere.
+  - **Non lo è** quello che si può misurare (aprire la pagina e prendere le misure), quello che si può contare nel
+    codice, quello che una regola già scritta decide, e le scelte con un valore ovvio. Lì si guarda, non si vota.
+  - **Il contesto va scritto per esteso e uguale per tutti**, ed è la parte che decide la qualità della risposta: che cos'è
+    DGT, la sua spina dorsale (il titolare approva ogni uscita; ogni euro e ogni consegna risalgono a un dipendente e a
+    un'esecuzione), che cosa esiste già nel modello e nelle pagine, le due o tre strade con il loro prezzo **in numeri**,
+    e il criterio con cui giudicare, con le parole dell'utente. A ogni consigliere si chiede anche l'obiezione più forte
+    alla propria scelta, una terza strada, e le conseguenze concrete sull'interfaccia già costruita.
+  - **La revisione incrociata non si salta**: nella prima applicazione (7 settembre, la chat di dipartimento) le cose che
+    hanno cambiato la risposta sono venute da lì e non dai pareri — una proposta che violava la regola 19 degli avatar,
+    il fatto che nessuno avesse detto che cosa il titolare *smette* di approvare, e quattro parole diverse usate per lo
+    stesso oggetto nuovo.
+  - Il verdetto e i punti ciechi si scrivono in `PROSSIMA-SESSIONE.md` accanto alla decisione, marcati **da confermare**
+    finché l'utente non risponde.
 - Le regole UX e i brief precedenti sono stati eliminati su richiesta dell'utente (2026-09-03).
 - Lingua dei documenti: italiano.
