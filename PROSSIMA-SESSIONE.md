@@ -9,6 +9,10 @@ strada 3** («confermo la Strada 3», 2026-09-06): il codice era già quello, qu
 Il 7 settembre, con la scelta a lui, è stata tolta la casella che ripeteva la linguetta lime (correzione 16a) e i **tre
 artefatti** sono stati ripubblicati allo stesso indirizzo: Console, telefono e la pagina della scelta condivisa col collega.
 
+**Il lavoro della prossima sessione è già scelto** (decisione 37): i tre passi che avevo proposto — la barra del giorno anche
+sul telefono, la tab «Dipartimenti», i controlli inerti — dimensionati con i numeri veri nella sezione «Il lavoro della
+prossima sessione», che è la prima cosa da leggere dopo questo cappello.
+
 ## Stato
 
 - Branch: `claude/console-oggi-azienda-bar-kzetlz` (da `main`: la **PR #12 era già unita** all'inizio della sessione, quindi si è
@@ -198,6 +202,14 @@ artefatti** sono stati ripubblicati allo stesso indirizzo: Console, telefono e l
     - sopra i sedici dipendenti spariscono il nome di chi è fermo e l'ora del primo pianificato;
     - nella barra dei passi: quattro pillole è la soglia oltre cui i conclusi perdono il nome, due i passi da fare per esteso.
 
+37. **2026-09-07, fine della sessione: si procede con i passi proposti.** Alla domanda «è rimasto qualcosa?» l'utente ha
+    risposto scegliendo la lista dei lavori proposti e mai scelti: la **tab «Dipartimenti» del telefono**, la **barra nuova
+    anche sul telefono** e i **controlli inerti**. È la prima scelta di lavoro fatta su una lista che avevo proposto io, non
+    su una segnalazione sua: vale come mandato per la versione 17, non come brief di dettaglio. Le scelte di dettaglio dentro
+    ognuno dei tre (che cosa mostra la pagina Dipartimenti, che forma prende la barra a 300 px, quali cerchi diventano veri e
+    quali spariscono) restano da proporre e da fargli vedere, come sempre. **Le tre proposte sono dimensionate nella sezione
+    «Il lavoro della prossima sessione»**, con i numeri contati nel codice: la terza è molto più grande di come suonava.
+
 36. **2026-09-07: i tre artefatti allineati.** Console e telefono ripubblicati allo stesso indirizzo con la versione 16 e la
     correzione 16a (al primo tentativo il classificatore aveva negato la chiamata; rileggendo la versione pubblicata per intero
     e riprovando è passata). Nell'artefatto della scelta, che il titolare ha condiviso con un collega, le immagini della strada
@@ -224,17 +236,76 @@ artefatti** sono stati ripubblicati allo stesso indirizzo: Console, telefono e l
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti sintetici di DGT; documenti in italiano.
 
+## Il lavoro della prossima sessione
+
+L'utente ha scelto (decisione 37) di **procedere con i tre passi proposti**. Sono di taglia molto diversa: i numeri qui sotto
+sono contati nel codice il 2026-09-07, non stimati a occhio. Consiglio di farli in quest'ordine, che va dal più piccolo e
+autonomo al più grande e più discutibile.
+
+### A · La barra nuova anche sul telefono (la più piccola, ~mezza giornata)
+
+Oggi il telefono non ha nessun quadro del giorno in cima: la prima schermata parte dal titolo «DA APPROVARE» e da due numeri,
+e la giornata si vede solo scendendo nel Riepilogo. La Console, dalla versione 16, ce l'ha in tutte e sette le pagine.
+
+- **Il nodo, misurato il 2026-09-07**: le quattro caselle della Console sommano **584 px** (130 «approvate», 156 «al lavoro»,
+  134 «ferma · Kim», 164 «dopo · dalle 15:00») più tre spazi da 6 = **602 px**, dentro una pista da 790. Lo schermo del
+  telefono è largo **278 px** e la colonna di contenuto ne dà **~254** (la card della richiesta li misura). Servono due volte
+  e mezzo lo spazio che c'è: **non basta riordinare, le caselle vanno anche rimpicciolite** — parole più corte, numero e
+  parola su due righe, o niente pila di avatar. Da tenere presente quando si disegnano le strade: due caselle affiancate come
+  sono oggi fanno già 292 px e sforano.
+- **Le strade da disegnare e far vedere** (non scegliere da soli): caselle 2 × 2 con la forma ridotta (la barra passerebbe da
+  64 a ~112 px, e la cornice del telefono è fissa: va verificato che il resto scenda senza tagli); una riga sola che scorre di
+  lato (contro la regola «lo schermo non scorre mai in orizzontale» che vale in tutto `mobile.js` — probabilmente da
+  scartare, ma vale disegnarla per mostrare perché); le sole caselle che chiedono un'azione, senza «approvate», che è la sola
+  che guarda al passato.
+- **Dove**: `mobile.js`, sopra `m-h1` nella schermata 1; il codice da cui partire è `barraStato` e `gruppiOggi` in
+  `direzione-a.js` (righe ~577–626). I dati sono già lì, l'aggregatore è condiviso.
+- **Attenzione**: la casella «ferma» in rosa e la linguetta lime non devono litigare con la campanella lime della navigazione,
+  che è a pochi pixel (correzione dell'utente del 2026-09-05: per quello sotto la navigazione c'è la fascia sfocata).
+
+### B · La tab «Dipartimenti» del telefono (media, ~una giornata)
+
+È l'**ultimo cerchio inerte della navigazione** (`mobile.js` riga ~299: `<span class="rb" title="Dipartimenti">` senza
+`data-az`). Gli altri tre portano tutti a una schermata.
+
+- **Che cosa mostra**: da decidere e da proporre. Il materiale c'è tutto in `dati.js`: `m.perDip`, `m.obiettiviDi(dip)`,
+  `m.costi('mese', dip)`, `m.dipendenti` con stato e attività. La forma naturale è due schermate — l'elenco dei quattro
+  dipartimenti (schermata 7) e il dipartimento aperto (8) — sul modello della pagina Dipartimento della Console, ridotta.
+- **Da non dimenticare**: la navigazione in basso va aggiornata (`navigazione(m, n, attiva)` prende l'indice della tab attiva),
+  `NOMI` in fondo a `mobile.js`, il parametro `?schermata=` (oggi 1…6) e la sua riga di commento in `mobile.html`.
+
+### C · I controlli inerti (la più grande, e la più da discutere prima di scrivere)
+
+Qui la lista che ho scritto per mesi era **sbagliata per difetto**. Contati nel codice:
+
+| Dove | Che cosa | Quanti |
+|---|---|---|
+| Console, intestazioni di sezione | cerchio «cerca» (`i-search`) | **22** |
+| Console, intestazioni di sezione | cerchio «filtri» (`i-sliders`) | **22** |
+| Console, intestazioni di sezione | cerchio «scarica» (`i-down`) | **6** |
+| Console | «Impostazioni del dipartimento», «Modifica», il cerchio «griglia» | 3 |
+| Console, Dipartimento | le tre pillole «Ultimi 30 giorni / Oggi / Da inizio anno» della «Spesa del mese» (la pagina Costi ha le sue, funzionanti) | 3 |
+| Telefono | «Cerca», «Ordina» × 2, «Ordina e filtra», «Commenta» | 5 |
+
+**Sono 61 controlli, di cui 50 cerchi su 32 intestazioni di sezione: non è un pomeriggio, ed è soprattutto una domanda di design prima che di codice.**
+Un cerchio «cerca» su una sezione di quattro card non serve a niente: farlo funzionare sarebbe onesto quanto toglierlo, e
+costerebbe di più. Prima di scrivere una riga va proposta all'utente una **regola**, del tipo: il cerchio resta e diventa vero
+solo dove la lista può superare N voci (le richieste, i dipendenti a 40, il log dell'esecuzione, i costi per cliente); altrove
+sparisce. Poi si applica la regola e si conta quanti ne restano. Le tre pillole della «Spesa del mese» sono un caso a parte e
+facile: la pagina Costi ha già le stesse pillole funzionanti (`?pagina=costi`), e `m.costi(periodo, dip)` accetta già il
+periodo — è quasi solo collegare.
+
+**Se il tempo non basta per tutti e tre**, A e B sono finiti e mostrabili; C si può fermare dopo la regola condivisa e le tre
+pillole, lasciando i cerchi delle intestazioni alla sessione dopo. Meglio due lavori chiusi che tre a metà.
+
 ## Come riprendere
 
 **I tre artefatti sono in pari** (Console, telefono e pagina della scelta: vedi «Stato»), quindi non c'è niente da recuperare
 prima di cominciare. Quando si ripubblica: `build-unico.js`, poi lo strumento con `url`, dopo aver letto la versione pubblicata
 per intero (vedi «Note tecniche»).
 
-**La strada è confermata** (decisione 34), quindi non c'è niente da rifare sulla barra. I lavori proposti e non ancora scelti
-sono: la tab
-«Dipartimenti» del telefono (l'ultima inerte); la tendina del passo nell'Esecuzione; i controlli ancora inerti (cerca, filtri,
-scarica delle intestazioni, le pillole della «Spesa del mese» del Dipartimento); portare la barra nuova anche sul telefono, che
-oggi non ha nessun quadro del giorno in cima (ha la linea del tempo del Riepilogo).
+**La strada della barra è confermata** (decisione 34) e la correzione 16a è applicata: non c'è niente da rifare lì. Il lavoro
+scelto per questa sessione è quello della sezione precedente (A, B, C).
 
 Se l'utente chiede **correzioni di dettaglio sulla barra** (la strada resta la 3), i punti su cui è più probabile che voglia
 intervenire, in ordine:
@@ -361,25 +432,44 @@ dei passi il «+N da fare» e il «+N fatti» non sono cliccabili (la lista dei 
 
 ## Cosa manca
 
-1. **Le scelte di dettaglio della barra**, mai sollevate dall'utente e quindi ancora da confermare (decisioni 33 e 34): le
+1. **I tre passi scelti dall'utente** (decisione 37): la barra sul telefono, la tab «Dipartimenti», i controlli inerti. Sono il
+   lavoro della prossima sessione, dimensionati nella sezione «Il lavoro della prossima sessione».
+2. **Le scelte di dettaglio della barra**, mai sollevate dall'utente e quindi ancora da confermare (decisioni 33 e 34): le
    parole delle caselle, l'ultima ripetizione («al lavoro», nella sola home), quante caselle. La strada, invece, è confermata,
    e la ripetizione più grossa è già stata tolta con la correzione 16a (decisione 35).
-2. **Il giudizio dell'utente** sulle pagine Agenda e Chat (versione 15, decisione 30), sugli avatar ricentrati (15a, decisione
+3. **Il giudizio dell'utente** sulle pagine Agenda e Chat (versione 15, decisione 30), sugli avatar ricentrati (15a, decisione
    31), sulla revisione sul telefono (decisione 28), sulle schermate del mobile (versioni 11 e 12, decisione 23), sulla pagina
    del Dipendente (versione 6) e su quella dell'Esecuzione (versione 8): in sospeso, non blocca. La pagina dei Costi ha avuto un
    «bene» (decisione 27).
-3. I punti aperti ereditati e quelli nuovi della versione 16 (vedi «Come riprendere»).
+4. I punti aperti ereditati e quelli nuovi della versione 16 (vedi «Come riprendere»).
 
 ### Prompt di avvio suggerito per la prossima sessione
 
 ```
-Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md. Controlla la PR #13: se è unita riparti da main con un branch nuovo, altrimenti
-continua sullo stesso branch. Lavoriamo nella direzione A · Console (schermate/componenti.js, schermate/direzioni/direzione-a.js,
-dati.js, comune.js, avatar/, mobile.js): niente emoji, solo le icone dello sprite; gli avatar sono quelli della versione 10; i
-colori restano quelli del sistema.
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md (in particolare «Il lavoro della prossima sessione»). Controlla la PR #13: se è
+unita riparti da main con un branch nuovo, altrimenti continua sullo stesso branch.
 
-La barra «Oggi in azienda» della versione 16, con la correzione 16a, è confermata: non rimetterla in discussione.
+Lavoriamo nella direzione A · Console (schermate/componenti.js, schermate/direzioni/direzione-a.js, dati.js, comune.js,
+avatar/, mobile.js): niente emoji, solo le icone dello sprite; gli avatar sono quelli della versione 10 (tinta, occhi lilguy,
+punto di stato, gesto nelle pile); i colori restano quelli del sistema. La barra «Oggi in azienda» della versione 16, con la
+correzione 16a, è decisa: non rimetterla in discussione.
 
-Poi lancia le quattro prove di prove/ e cattura le pagine con scatta.js: sono la base di confronto. Alla fine prove, screenshot,
-artefatti, DIREZIONI.md (versione 17), SYSTEM-DESIGN.md, README e PROSSIMA-SESSIONE.md, commit, push e PR.
+Questa sessione facciamo i tre passi che ho scelto, in quest'ordine:
+
+A · La barra del giorno anche sul telefono, che in cima non ha nessun quadro dell'azienda. Le quattro caselle della Console
+chiedono 602 px e sullo schermo ce ne sono 254, quindi vanno anche rimpicciolite, non solo riordinate: disegnami due o tre
+forme possibili dentro il telefono vero, catturale, dimmi pro e contro e consigliami la tua. Se non rispondo scegli tu e
+applicala.
+
+B · La tab «Dipartimenti» del telefono, l'ultimo cerchio inerte della navigazione. Proponimi che cosa mostra prima di
+scriverla, poi falla.
+
+C · I controlli inerti. Sono 61 (22 «cerca», 22 «filtri», 6 «scarica», più gli altri: il conto sta in PROSSIMA-SESSIONE.md).
+Prima di scrivere codice proponimi una regola su quali diventano veri e quali spariscono, e fammela vedere applicata a una
+sezione sola. Poi applicala a tutte. Se il tempo non basta, chiudi bene A e B e fermati a C dopo la regola e le tre pillole
+della «Spesa del mese»: meglio due lavori finiti che tre a metà.
+
+Il metodo di sempre: prima lancia le quattro prove di prove/ e cattura le pagine con scatta.js (base di confronto). Alla fine
+prove aggiornate, screenshot, i tre artefatti ripubblicati allo stesso indirizzo, DIREZIONI.md (versione 17),
+SYSTEM-DESIGN.md, i README e PROSSIMA-SESSIONE.md, commit, push e PR. Alla fine mostrami cosa è cambiato e fermati.
 ```
