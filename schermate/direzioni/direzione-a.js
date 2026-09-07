@@ -73,7 +73,6 @@ window.DIREZIONE_A = (function () {
 /* le superfici chiare della cornice (barra agenda, tendina, documento del prompt, righe delle versioni, card del modello scelto, barra del giorno dell'Agenda, filo aperto della Chat): l'orbe si inverte come sulle superfici chiare dei componenti (schermate/componenti.js) */
 .a-sched .av svg.orbe,.vrow.on .av svg.orbe,.vrow.prop .av svg.orbe,.a-tend .av svg.orbe,.pdoc .av svg.orbe,.lead.mod.on .av svg.orbe,.giorno .av svg.orbe,.erow.filo.on .av svg.orbe{--av-c-corpo:var(--av-inv-corpo);--av-c-orlo:var(--av-inv-orlo);--av-c-orlo-w:var(--av-inv-orlo-w);--av-c-luce:var(--av-inv-luce);--av-occhi-neutri:#FCFCFC;--av-c-bordo:0;--av-c-zeta:#FCFCFC}
 .a-tend .ncard .av svg.orbe,.a-tend .appr .av svg.orbe{--av-c-corpo:initial;--av-c-orlo:initial;--av-c-orlo-w:initial;--av-c-luce:initial;--av-occhi-neutri:initial;--av-c-bordo:initial;--av-c-zeta:initial}
-.a-head .impost{margin-left:auto}
 /* impaginazione della console */
 .a-logo{position:absolute;left:28px;top:40px;height:40px;display:flex;align-items:center;font-weight:600;font-size:22px;letter-spacing:.12em;color:var(--white)}
 .a-sched{position:absolute;left:102px;top:28px;right:158px;height:64px;border-radius:var(--r-pill);background:var(--white);color:var(--ink);display:flex;align-items:center;gap:14px;padding:6px 6px 6px 22px}
@@ -136,6 +135,14 @@ window.DIREZIONE_A = (function () {
 .shead .rb.sm{width:46px;height:46px}
 .shead .filters{display:flex;gap:8px;margin-left:8px;overflow:hidden;mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);flex:1;min-width:0}
 .shead .destra{margin-left:auto;display:flex;gap:8px;flex:none}
+/* il campo di ricerca di una sezione (versione 17): prende il posto del cerchio «cerca» quando si apre, con il conto «N di M» */
+.shead .scerca{display:inline-flex;align-items:center;gap:10px;height:46px;padding:0 6px 0 18px;border-radius:var(--r-pill);background:rgb(255 255 255/.07);box-shadow:inset 0 0 0 1px rgb(255 255 255/.18);flex:none}
+.shead .scerca>i{display:grid;place-items:center;color:var(--t2);flex:none}
+.shead .scerca>i svg{width:16px;height:16px}
+.shead .scerca input{width:190px;min-width:0;background:transparent;border:0;outline:none;color:var(--white);font:400 15px/20px var(--font);-webkit-font-smoothing:antialiased}
+.shead .scerca input::placeholder{color:var(--t2)}
+.shead .scerca .n{font-size:13px;color:var(--t2);white-space:nowrap;flex:none}
+.shead .scerca .rb.xs{border-color:rgb(255 255 255/.18);flex:none}
 .cards{display:flex;gap:16px;margin-top:24px;flex-wrap:wrap}
 .cards.riga{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:-26px;padding-right:26px}
 .cards.riga::-webkit-scrollbar{display:none}
@@ -543,7 +550,7 @@ window.DIREZIONE_A = (function () {
       <div class="who"><span class="ico">${ic('i-target')}</span><div><b>${esc(o.cliente)}</b><span>scadenza ${esc(o.scadenza)} · ${o.chi.length} dipendent${o.chi.length === 1 ? 'e' : 'i'}</span></div></div>
       <div class="nt"><span class="rb ghost">${ic('i-bell')}${o.stato === 'ritardo' ? '<i class="dot"></i>' : ''}</span><span class="rb ghost">${ic('i-ne')}</span></div>
       <div class="body"><div><div class="tt">${esc(o.titolo)}</div><div class="meta"><b>${o.avanz}%</b><span>·</span><b>${o.consegne[0]} di ${o.consegne[1]}</b><span>consegne</span></div><div class="prog"><i style="width:${o.avanz}%"></i></div><div class="next">Prossima: ${esc(o.prossima)}</div></div></div>
-      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${pair(m, o.chi, 'xs', 2)}<span>${st}</span>${ic('i-chev')}</span><span class="rb ghost">${ic('i-chat')}</span><span class="rb black">${ic('i-eye')}</span></div></div>
+      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${pair(m, o.chi, 'xs', 2)}<span>${st}</span>${ic('i-chev')}</span><span class="rb ghost" data-az="pagina" data-pagina="chat" data-id="${o.chi[0]}" title="Scrivi a ${esc(m.etichetta(m.byId[o.chi[0]]))}">${ic('i-chat')}</span><span class="rb black" data-az="pagina" data-pagina="richieste" data-cliente="${esc(o.cliente)}" title="Le richieste di ${esc(o.cliente)}">${ic('i-eye')}</span></div></div>
     </div>`;
   }
   function cardDipartimento(m, d) {
@@ -574,6 +581,41 @@ window.DIREZIONE_A = (function () {
   function rigaDipendente(m, e) {
     return `<div class="erow${e.stato === 'lavoro' ? ' lav' : ''}">${av(m, e)}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e, true))}</span></div>${e.stato === 'lavoro' ? `<span class="chip onlime"><span>${esc(e.att.titolo)}</span></span>` : chipStato(m, e)}<span class="rb xs" data-az="modifica" data-id="${e.id}" title="Modifica">${ic('i-pen')}</span><span class="rb xs" data-az="pagina" data-pagina="dipendente" data-id="${e.id}" title="Apri">${ic('i-ne')}</span></div>`;
   }
+  /* ---- I controlli delle intestazioni di sezione (versione 17, 2026-09-07) ----
+     La regola: **un controllo si vede solo se fa quello che promette, con i dati che ci sono già.** Due prove — serve in
+     questa sezione? si può fare col modello? — e chi le passa diventa vero, chi ne fallisce una sparisce. Da qui:
+     · «cerca» resta nelle **sette** sezioni che mostrano più di dodici righe in una delle due taglie dell'azienda
+       (Dipendenti della home 12→41, Storico 16→28, Colloquio 16, Log fino a 13, Per dipendente 11→40, Eventi di oggi 8→26,
+       Conversazioni 11→40) ed è un campo che filtra mentre si scrive, con il conto «N di M»; nelle altre quindici sparisce:
+       un cerchio «cerca» su una sezione di quattro card non serve a niente;
+     · il cerchio «filtri» (i cursori) sparisce da **tutte e ventidue**: dove ci sono le pillole il filtro è già lì e
+       visibile, dove non ci sono il cerchio non ha niente da aprire;
+     · «scarica» sparisce da **tutte e sei**: la pagina gira anche come artefatto, in una sandbox dove uno scaricamento non
+       parte, e un pulsante che non scarica è una promessa. I cerchi `i-down` nell'intaglio delle card del Riepilogo sono
+       del riferimento e restano;
+     · le **pillole** di una sezione diventano vere quando sono un filtro su un campo che il modello ha (stato, dipartimento,
+       tipo, periodo, esito) e spariscono quando chiedono un dato che non esiste (i mesi passati del budget, «Questo mese»
+       dell'agenda, «Esempi allegati» del prompt) o quando filtrerebbero una lista che quel valore non contiene
+       («Pianificate» in «Al lavoro adesso», che mostra solo chi lavora).
+     Lo stato: `st.cerca` (il testo cercato, per sezione: assente = cerchio chiuso) e `st.sez` (la pillola scelta, per sezione). */
+  const SOGLIA_CERCA = 12;   // più di dodici righe in una delle due taglie: sotto, la lista sta in una schermata e si legge
+  const testoDi = (opz, sez) => (((opz && opz.cerca) || {})[sez] || '').trim();
+  /* Il cerchio «cerca» chiuso, o il campo aperto con il conto delle righe viste su quelle che ci sono. */
+  function cercaSez(opz, sez, tot, cosa) {
+    const t = ((opz && opz.cerca) || {})[sez];
+    if (t === undefined) return `<span class="rb sm ghost" data-az="cerca" data-sez="${sez}" title="Cerca fra ${tot} ${esc(cosa)}">${ic('i-search')}</span>`;
+    return `<span class="scerca"><i>${ic('i-search')}</i><input type="text" data-cerca="${sez}" value="${esc(t)}" placeholder="Cerca fra ${tot} ${esc(cosa)}" autocomplete="off" spellcheck="false" aria-label="Cerca fra ${tot} ${esc(cosa)}"><span class="rb xs" data-az="cerca-chiudi" data-sez="${sez}" title="Chiudi la ricerca">${ic('i-x')}</span></span>`;
+  }
+  /* Il contatore della sezione dice quante righe si vedono su quante ce ne sono: il «N di M» sta qui e non anche nel campo
+     di ricerca, che è a trecento pixel (la regola della correzione 16a: lo stesso numero non si scrive due volte). */
+  const contoSez = (viste, tot, etichetta) => `<span class="cnt"><b>${viste === tot ? tot : viste + ' di ' + tot}</b><span>${esc(etichetta)}</span></span>`;
+  /* Filtra una lista col testo cercato; `campi` dà il testo di una voce (nome, cliente, ruolo…). */
+  const filtraCerca = (opz, sez, lista, campi) => { const q = testoDi(opz, sez).toLowerCase(); return q ? lista.filter(x => String(campi(x) || '').toLowerCase().indexOf(q) >= 0) : lista; };
+  /* Le pillole di una sezione: voci = [valore, testo, predicato o null, icona o ''], la prima è sempre «tutte». */
+  const valSez = (opz, sez, voci) => { const v = ((opz && opz.sez) || {})[sez]; return voci.some(x => x[0] === v) ? v : voci[0][0]; };
+  const pilleSez = (opz, sez, voci) => `<div class="filters">${voci.map(v => `<span class="pill${valSez(opz, sez, voci) === v[0] ? ' on' : ''}" data-az="sez" data-sez="${sez}" data-v="${esc(v[0])}">${v[3] || ''}${v[1]}</span>`).join('')}</div>`;
+  const filtraSez = (opz, sez, lista, voci) => { const f = (voci.find(x => x[0] === valSez(opz, sez, voci)) || voci[0])[2]; return f ? lista.filter(f) : lista; };
+
   /* ---- Lo studio della barra «Oggi in azienda» (versione 16, 2026-09-06) ----
      La barra di oggi (`barraOggi`, `?barra=0`) è la barra agenda del riferimento copiata dalla versione 1: legge `m.agenda`,
      una lista scritta a mano che ha solo tre stati (fatto, in corso, pianificato) e non conosce né gli errori né le consegne
@@ -581,14 +623,9 @@ window.DIREZIONE_A = (function () {
      attesa), lo stesso dato della pagina Agenda: così l'errore e le approvazioni esistono. Lo studio ha disegnato tre strade
      nella Console vera (i tre momenti, la giornata a misura, la riga di stato) e ha scelto la terza: le altre due restano nelle
      catture e in `DIREZIONI.md`, «Versione 16», con i pro e i contro. `?barra=0` rimette la barra di prima, per il confronto. */
-  /* I gruppi del giorno per la barra: dal modello, non dalla lista parallela `m.agenda`. Le richieste che aspettano il
-     titolare non ci sono: le dice già la linguetta lime «N da approvare», fissa su tutte le pagine (vedi il commento sopra). */
-  function gruppiOggi(m) {
-    const per = s => m.dipendenti.filter(e => e.stato === s);
-    const piani = per('pianificato').slice().sort((a, b) => String(a.att.quando || '').localeCompare(String(b.att.quando || '')));
-    const fatte = m.richieste.filter(r => r.giorno === 0 && r.stato === 'approvata').length;
-    return { corso: per('lavoro'), errore: per('errore'), piani, fatte };
-  }
+  /* I gruppi del giorno stanno nel modello (`m.gruppiOggi()`, dati.js): dalla versione 17 li legge anche il quadro del
+     giorno del telefono, e il conto è uno solo. Le richieste che aspettano il titolare non ci sono: le dice già la
+     linguetta lime «N da approvare», fissa su tutte le pagine (vedi il commento sopra). */
   /* La barra «Oggi in azienda» (versione 16, scelta dello studio e confermata dall'utente): niente asse del tempo, le caselle
      del giorno contate e nominate — approvate, al lavoro, ferme, dopo — ognuna con la sua icona e la strada per agire. Con
      l'azienda grande i dettagli (il nome di chi è fermo, l'ora del prossimo) cedono il posto ai numeri.
@@ -597,7 +634,7 @@ window.DIREZIONE_A = (function () {
      schermata, tre nella home e nel Dipartimento (correzione chiesta dall'utente, 2026-09-06). La barra dice che cosa fa
      l'azienda, la linguetta che cosa devi fare tu. */
   function barraStato(m) {
-    const g = gruppiOggi(m), q = [], largo = m.n <= 16;
+    const g = m.gruppiOggi(), q = [], largo = m.n <= 16;
     if (g.fatte) q.push(`<span class="qua" data-az="pagina" data-pagina="richieste" title="Le richieste al titolare"><span class="ico">${ic('i-check')}</span><b>${g.fatte}</b><span>approvate</span></span>`);
     q.push(`<span class="qua viva" data-az="pagina" data-pagina="agenda" title="L'agenda dell'azienda">${pair(m, g.corso.map(e => e.id), 'xs', largo ? 3 : 2)}<b>${g.corso.length}</b><span>al lavoro</span></span>`);
     if (g.errore.length) {
@@ -761,12 +798,11 @@ window.DIREZIONE_A = (function () {
       <span class="a-logo">DGT</span>
       ${barraAgenda(m, opz)}
       <div class="a-tr"><span class="rb">${ic('i-bell')}<i class="dot"></i></span><span class="av persona">${esc(m.azienda.titolare.iniziali)}</span></div>
-      <span class="rb a-back" ${indietro}>${ic('i-left')}</span>
+      ${indietro ? `<span class="rb a-back" ${indietro}>${ic('i-left')}</span>` : ''}
       <div class="a-head">
         <h3 class="a-title${lungo}">${esc(titolo)}</h3>
         ${nuovo ? `<span class="a-new"><i>${ic('i-plus')}</i>${nuovo}</span>` : ''}
         <div class="a-stats">${stats}</div>
-        ${opz.pagina === 'dipartimento' ? `<span class="rb ghost impost" title="Impostazioni del dipartimento">${ic('i-sliders')}</span>` : ''}
       </div>
       <div class="a-rail">
         <span class="rb ${railAttivo === 'home' ? 'white' : ''}" data-az="pagina" data-pagina="home">${ic('i-list')}</span>
@@ -781,33 +817,48 @@ window.DIREZIONE_A = (function () {
     </div>`;
   }
 
+  /* Le pillole delle sezioni della home. «Al lavoro adesso» mostra soltanto chi sta lavorando: «In corso» sarebbe una
+     tautologia e «Pianificate» ed «Errori» filtrerebbero una lista che quei valori non contiene — restano le due che
+     dicono qualcosa sulla lista che c'è. */
+  const PILLE_LAVORO = m => [['tutte', 'Tutte', null], ['attesa', 'Da approvare', e => m.richiesteDi('attesa').some(r => r.chi === e.id), ic('i-fire')], ['sola', 'Senza approvazioni', e => !m.richiesteDi('attesa').some(r => r.chi === e.id)]];
+  const PILLE_DIPART = m => [['tutti', 'Tutti', null], ['lavoro', 'Al lavoro', d => (m.perDip[d.id] || []).some(e => e.stato === 'lavoro')], ['attesa', 'Con approvazioni', d => (m.perDip[d.id] || []).some(e => m.richiesteDi('attesa').some(r => r.chi === e.id))], ['errore', 'Con errori', d => (m.perDip[d.id] || []).some(e => e.stato === 'errore'), ic('i-fire')]];
+  /* le pillole della sezione «Dipendenti»: il dipartimento, che il modello ha su ogni dipendente */
+  const PILLE_DIP = m => [['tutti', 'Tutti', null], ...m.dipartimenti.map(d => [d.id, esc(d.nome), e => e.dip === d.id])];
   function home(m, opz) {
     const lav = m.alLavoro.slice().sort((a, b) => (m.richiesteDi('attesa').some(x => x.chi === b.id) ? 1 : 0) - (m.richiesteDi('attesa').some(x => x.chi === a.id) ? 1 : 0));
-    const compatto = m.n > 16;
+    /* le due forme della card dipendente: a card fino a sedici, a righe oltre; i due cerchi dell'intestazione le scelgono */
+    const compatto = opz.forma ? opz.forma === 'righe' : m.n > 16;
+    const dip = filtraCerca(opz, 'home.dipendenti', filtraSez(opz, 'home.dipendenti', m.dipendenti, PILLE_DIP(m)), e => m.etichetta(e) + ' ' + m.sotto(e, true) + ' ' + e.ruolo);
+    const lavF = filtraSez(opz, 'home.lavoro', lav, PILLE_LAVORO(m));
+    const dipa = filtraSez(opz, 'home.dipartimenti', m.dipartimenti, PILLE_DIPART(m));
     const att = m.richiesteDi('attesa').length;
     const stats = `<div class="stat"><b>${lav.length}</b><span>al lavoro</span><span class="badge up">${ic('i-up')}1</span></div>
       <div class="stat"><b>${att}</b><span>da approvare</span><span class="badge down">${ic('i-bell')}${Math.min(2, att)}</span></div>
       <div class="stat" data-az="pagina" data-pagina="costi" title="I costi dell'azienda"><b>${m.costoOggi} €</b><span>spesi oggi</span><span class="badge down">${ic('i-dn')}12%</span></div>`;
     const corpo = `
       <section>
-        <div class="shead"><h3>Al lavoro adesso</h3><span class="cnt"><b>${lav.length}</b><span>Esecuzioni</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
-          <div class="filters"><span class="pill on">Tutte</span><span class="pill">${ic('i-fire')}Da approvare</span><span class="pill">In corso</span><span class="pill">Pianificate</span><span class="pill">Errori</span></div></div>
-        <div class="cards riga">${lav.map((e, i) => cardAttivita(m, e, i)).join('')}</div>
+        <div class="shead"><h3>Al lavoro adesso</h3>${contoSez(lavF.length, lav.length, 'Esecuzioni')}
+          ${pilleSez(opz, 'home.lavoro', PILLE_LAVORO(m))}</div>
+        ${lavF.length ? `<div class="cards riga">${lavF.map((e, i) => cardAttivita(m, e, i)).join('')}</div>` : `<div class="vuoto">Nessuna esecuzione con questo filtro</div>`}
       </section>
       <section>
-        <div class="shead"><h3>Dipartimenti</h3><span class="cnt"><b>${m.dipartimenti.length}</b><span>Dipartimenti</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
-          <div class="filters"><span class="pill on">Tutti</span><span class="pill">Al lavoro</span><span class="pill">Con approvazioni</span><span class="pill">Con errori</span></div></div>
-        <div class="cards">${m.dipartimenti.map(d => cardDipartimento(m, d)).join('')}</div>
+        <div class="shead"><h3>Dipartimenti</h3>${contoSez(dipa.length, m.dipartimenti.length, 'Dipartimenti')}
+          ${pilleSez(opz, 'home.dipartimenti', PILLE_DIPART(m))}</div>
+        ${dipa.length ? `<div class="cards">${dipa.map(d => cardDipartimento(m, d)).join('')}</div>` : `<div class="vuoto">Nessun dipartimento con questo filtro</div>`}
       </section>
       <section>
-        <div class="shead"><h3>Dipendenti</h3><span class="cnt"><b>${m.n}</b><span>Dipendenti</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span><span class="rb sm ${compatto ? 'ghost' : 'white'}">${ic('i-grid')}</span><span class="rb sm ${compatto ? 'white' : 'ghost'}">${ic('i-rows')}</span>
-          <div class="filters"><span class="pill on">Tutti</span>${m.dipartimenti.map(d => `<span class="pill">${esc(d.nome)}</span>`).join('')}</div></div>
-        ${compatto ? `<div class="elenco">${m.dipendenti.map(e => rigaDipendente(m, e)).join('')}<div class="erow add" data-az="nuovo"><span class="rb xs">${ic('i-plus')}</span>Aggiungi un dipendente</div></div>` : `<div class="cards dipendenti">${m.dipendenti.map(e => cardDipendente(m, e)).join('')}${cardAggiungi(m)}</div>`}
+        <div class="shead"><h3>Dipendenti</h3>${contoSez(dip.length, m.n, 'Dipendenti')}${cercaSez(opz, 'home.dipendenti', m.n, 'dipendenti')}<span class="rb sm ${compatto ? 'ghost' : 'white'}" data-az="forma" data-v="card" title="A card">${ic('i-grid')}</span><span class="rb sm ${compatto ? 'white' : 'ghost'}" data-az="forma" data-v="righe" title="A righe">${ic('i-rows')}</span>
+          ${pilleSez(opz, 'home.dipendenti', PILLE_DIP(m))}</div>
+        ${dip.length ? (compatto ? `<div class="elenco">${dip.map(e => rigaDipendente(m, e)).join('')}<div class="erow add" data-az="nuovo"><span class="rb xs">${ic('i-plus')}</span>Aggiungi un dipendente</div></div>` : `<div class="cards dipendenti">${dip.map(e => cardDipendente(m, e)).join('')}${cardAggiungi(m)}</div>`) : `<div class="vuoto">Nessun dipendente con questa ricerca o questo filtro</div>`}
       </section>`;
     return cornice(m, opz, m.azienda.titolo, stats, 'home', corpo, 'Nuovo obiettivo');
   }
 
   /* ---------- pagina Richieste ---------- */
+  /* Le pillole dello Storico raggruppano (per giorno, per dipendente, per cliente): il modello ha tutti e tre i campi. */
+  const PILLE_STORICO = [['giorno', 'Per giorno', null], ['chi', 'Per dipendente', null], ['cliente', 'Per cliente', null]];
+  const PILLE_REGOLE = [['tutte', 'Tutte', null], ['attive', 'Attive', g => g.attiva], ['spente', 'Spente', g => !g.attiva]];
+  const raggruppa = (lst, chiave) => { const k = []; lst.forEach(x => { const c = chiave(x); const g = k.find(y => y.nome === c); if (g) g.lst.push(x); else k.push({ nome: c, lst: [x] }); }); return k.sort((a, b) => b.lst.length - a.lst.length || a.nome.localeCompare(b.nome)); };
   function cardRichiesta(m, r, i) {
     const chi = m.byId[r.chi];
     const idx = inAttesa(m).indexOf(r);
@@ -850,29 +901,42 @@ window.DIREZIONE_A = (function () {
       <div class="stat"><b>${oggiOk}</b><span>approvate oggi</span><span class="badge up">${ic('i-up')}${oggiOk}</span></div>
       <div class="stat"><b>${daRifare}</b><span>da rifare</span><span class="badge down">${ic('i-dn')}${daRifare}</span></div>
       <div class="stat"><b>${m.richieste.length}</b><span>in tutto</span></div>`;
-    const gruppi = ['oggi', 'ieri', 'settimana', 'mese', 'prima'].map(per => ({ per, lst: storico.filter(r => m.periodoDi(r) === per) })).filter(g => g.lst.length);
+    /* lo storico: la ricerca sul nome della consegna, del dipendente e del cliente; le tre pillole raggruppano (per giorno,
+       per dipendente, per cliente) — sono l'unico posto della Console dove una pillola cambia il raggruppamento e non il filtro */
+    const sto = filtraCerca(opz, 'richieste.storico', storico, r => r.cosa + ' ' + m.etichetta(m.byId[r.chi]) + ' ' + r.cliente);
+    const perCosa = valSez(opz, 'richieste.storico', PILLE_STORICO);
+    const gruppi = perCosa === 'chi' ? raggruppa(sto, r => m.etichetta(m.byId[r.chi]))
+      : perCosa === 'cliente' ? raggruppa(sto, r => r.cliente)
+      : ['oggi', 'ieri', 'settimana', 'mese', 'prima'].map(per => ({ nome: nomePeriodo[per], lst: sto.filter(r => m.periodoDi(r) === per) })).filter(g => g.lst.length);
+    const reg = filtraSez(opz, 'richieste.regole', m.regole, PILLE_REGOLE);
     const corpo = `
       <section>${barraFiltri(m, f, m.richieste.length, tutte.length)}</section>
       <section>
-        <div class="shead"><h3>Da approvare</h3><span class="cnt"><b>${att.length}</b><span>Richieste</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
+        <div class="shead"><h3>Da approvare</h3><span class="cnt"><b>${att.length}</b><span>Richieste</span></span>
           <div class="filters"><span class="pill${opz.ordine === 'recenti' ? '' : ' on'}" data-az="ordina" data-v="vecchie">Più vecchie prima</span><span class="pill${opz.ordine === 'recenti' ? ' on' : ''}" data-az="ordina" data-v="recenti">Più recenti prima</span></div>
           <div class="destra">${att.length ? `<span class="pill lime" data-az="approva-tutte">${ic('i-check')}Approva tutte (${att.length})</span>` : ''}</div></div>
         ${att.length ? `<div class="cards">${att.map((r, i) => cardRichiesta(m, r, i)).join('')}</div>` : `<div class="vuoto">Niente da approvare con questi filtri</div>`}
       </section>
       <section>
-        <div class="shead"><h3>Storico</h3><span class="cnt"><b>${storico.length}</b><span>Decise</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span><span class="rb sm ghost">${ic('i-down')}</span>
-          <div class="filters"><span class="pill on">Per giorno</span><span class="pill">Per dipendente</span><span class="pill">Per cliente</span></div></div>
-        ${gruppi.length ? gruppi.map(g => `<div class="hgroup"><b>${nomePeriodo[g.per]}</b>${g.lst.length} richieste · ${g.lst.reduce((t, r) => t + r.costo, 0)} €</div><div class="hlist">${g.lst.map(r => rigaStorico(m, r)).join('')}</div>`).join('') : `<div class="vuoto">Nessuna richiesta decisa con questi filtri</div>`}
+        <div class="shead"><h3>Storico</h3>${contoSez(sto.length, storico.length, 'Decise')}${cercaSez(opz, 'richieste.storico', storico.length, 'richieste decise')}
+          ${pilleSez(opz, 'richieste.storico', PILLE_STORICO)}</div>
+        ${gruppi.length ? gruppi.map(g => `<div class="hgroup"><b>${esc(g.nome)}</b>${g.lst.length} richieste · ${g.lst.reduce((t, r) => t + r.costo, 0)} €</div><div class="hlist">${g.lst.map(r => rigaStorico(m, r)).join('')}</div>`).join('') : `<div class="vuoto">Nessuna richiesta decisa con questa ricerca o questi filtri</div>`}
       </section>
       <section class="regole">
-        <div class="shead"><h3>Regole di approvazione</h3><span class="cnt"><b>${m.regole.length}</b><span>Regole</span></span><span class="rb sm ghost">${ic('i-sliders')}</span>
-          <div class="filters"><span class="pill on">Tutte</span><span class="pill">Attive</span><span class="pill">Spente</span></div></div>
-        <div class="cards">${m.regole.map(g => `<div class="ncard lead${g.attiva ? '' : ' spenta'}"><span class="ico">${ic(g.icona)}</span><div class="nt"><span class="rb ghost">${ic('i-ne')}</span></div><div class="name md">${esc(g.nome)}</div><div class="role">${esc(g.desc)}</div><div class="ft"><div><span class="k">Modo</span><span class="sel">${esc(g.modo)}${ic('i-chev')}</span></div><div><span class="k">Stato</span>${g.attiva ? `<span class="chip lime">${ic('i-check')}Attiva</span>` : `<span class="chip">Spenta</span>`}</div></div></div>`).join('')}</div>
+        <div class="shead"><h3>Regole di approvazione</h3>${contoSez(reg.length, m.regole.length, 'Regole')}
+          ${pilleSez(opz, 'richieste.regole', PILLE_REGOLE)}</div>
+        <div class="cards">${reg.map(g => `<div class="ncard lead${g.attiva ? '' : ' spenta'}"><span class="ico">${ic(g.icona)}</span><div class="nt"><span class="rb ghost">${ic('i-ne')}</span></div><div class="name md">${esc(g.nome)}</div><div class="role">${esc(g.desc)}</div><div class="ft"><div><span class="k">Modo</span><span class="sel">${esc(g.modo)}${ic('i-chev')}</span></div><div><span class="k">Stato</span>${g.attiva ? `<span class="chip lime">${ic('i-check')}Attiva</span>` : `<span class="chip">Spenta</span>`}</div></div></div>`).join('')}</div>
       </section>`;
     return cornice(m, opz, 'RICHIESTE', stats, 'richieste', corpo, 'Nuova regola');
   }
 
   /* ---------- pagina Dipartimento ---------- */
+  /* Le pillole delle sezioni del dipartimento. «Oggi in ‹dip›» elenca le esecuzioni di oggi (in corso, pianificate, ferme):
+     «Concluse oggi» è caduta perché quella lista non le contiene. */
+  const PILLE_ESEC = [['tutte', 'Tutte', null], ['lavoro', 'In corso', e => e.stato === 'lavoro'], ['pianificato', 'Pianificate', e => e.stato === 'pianificato'], ['errore', 'Errori', e => e.stato === 'errore', ic('i-fire')]];
+  const PILLE_STATO_DIP = [['tutti', 'Tutti', null], ['lavoro', 'Al lavoro', e => e.stato === 'lavoro'], ['libero', 'Liberi', e => e.stato === 'libero'], ['errore', 'Con errori', e => e.stato === 'errore', ic('i-fire')]];
+  const TITOLO_SPESA = { mese: 'Spesa del mese', oggi: 'Spesa di oggi', anno: "Spesa dall'inizio dell'anno" };
+  const PILLE_OBIETTIVI = [['tutti', 'Tutti', null], ['ritardo', 'In ritardo', o => o.stato === 'ritardo', ic('i-fire')], ['corso', 'In corso', o => o.stato === 'corso'], ['nuovo', 'Da iniziare', o => o.stato === 'nuovo'], ['concluso', 'Conclusi', o => o.stato === 'concluso']];
   function dipartimento(m, opz) {
     const d = m.dipartimenti.find(x => x.id === opz.dip) || m.dipartimenti[0];
     const lst = m.perDip[d.id];
@@ -886,34 +950,39 @@ window.DIREZIONE_A = (function () {
     const stats = `<div class="stat"><b>${lav}</b><span>al lavoro</span><span class="badge up">${ic('i-up')}${lav}</span></div>
       <div class="stat"><b>${att.length}</b><span>da approvare</span>${att.length ? `<span class="badge down">${ic('i-bell')}${att.length}</span>` : ''}</div>
       <div class="stat" data-az="pagina" data-pagina="costi" title="I costi dell'azienda"><b>${costoOggi} €</b><span>spesi oggi</span></div>`;
-    // spesa del mese per cliente: l'aggregatore dei costi (m.costi in dati.js, versione 13), lo stesso della pagina Costi
-    const cm = m.costi('mese', d.id);
+    const esecF = filtraSez(opz, 'dip.oggi', esec, PILLE_ESEC);
+    const lstF = filtraSez(opz, 'dip.dipendenti', lst, PILLE_STATO_DIP);
+    const obF = filtraSez(opz, 'dip.obiettivi', ob, PILLE_OBIETTIVI);
+    /* spesa per cliente: l'aggregatore dei costi (m.costi in dati.js, versione 13), lo stesso della pagina Costi, che
+       accettava già il periodo — le tre pillole erano inerti soltanto perché nessuno gliele passava (versione 17) */
+    const perSpesa = ['mese', 'oggi', 'anno'].includes(opz.periodo && opz.periodo['dip.spesa']) ? opz.periodo['dip.spesa'] : 'mese';
+    const cm = m.costi(perSpesa, d.id);
     const corpo = `
       <section>
-        <div class="shead"><h3>Oggi in ${esc(d.nome)}</h3><span class="cnt"><b>${esec.length}</b><span>Esecuzioni</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
-          <div class="filters"><span class="pill on">Tutte</span><span class="pill">In corso</span><span class="pill">Pianificate</span><span class="pill">Errori</span><span class="pill">Concluse oggi</span></div></div>
-        ${esec.length ? `<div class="cards riga">${esec.map((e, i) => cardEsecuzione(m, e, i)).join('')}</div>` : `<div class="vuoto">Nessuna esecuzione oggi in ${esc(d.nome)}</div>`}
+        <div class="shead"><h3>Oggi in ${esc(d.nome)}</h3>${contoSez(esecF.length, esec.length, 'Esecuzioni')}
+          ${pilleSez(opz, 'dip.oggi', PILLE_ESEC)}</div>
+        ${esecF.length ? `<div class="cards riga">${esecF.map((e, i) => cardEsecuzione(m, e, i)).join('')}</div>` : `<div class="vuoto">Nessuna esecuzione oggi in ${esc(d.nome)} con questo filtro</div>`}
       </section>
       <section>
-        <div class="shead"><h3>Dipendenti</h3><span class="cnt"><b>${lst.length}</b><span>Dipendenti</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
-          <div class="filters"><span class="pill on">Tutti</span><span class="pill">Al lavoro</span><span class="pill">Liberi</span><span class="pill">Con errori</span></div></div>
-        <div class="cards dipendenti">${lst.map(e => cardDipendente(m, e)).join('')}${cardAggiungi(m, d.id)}</div>
+        <div class="shead"><h3>Dipendenti</h3>${contoSez(lstF.length, lst.length, 'Dipendenti')}
+          ${pilleSez(opz, 'dip.dipendenti', PILLE_STATO_DIP)}</div>
+        <div class="cards dipendenti">${lstF.map(e => cardDipendente(m, e)).join('')}${cardAggiungi(m, d.id)}</div>
       </section>
       <section>
-        <div class="shead"><h3>Obiettivi</h3><span class="cnt"><b>${ob.length}</b><span>Obiettivi</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
-          <div class="filters"><span class="pill on">Tutti</span><span class="pill">${ic('i-fire')}In ritardo</span><span class="pill">In corso</span><span class="pill">Da iniziare</span><span class="pill">Conclusi</span></div></div>
-        ${ob.length ? `<div class="cards">${ob.map((o, i) => cardObiettivo(m, o, i)).join('')}</div>` : `<div class="vuoto">Nessun obiettivo assegnato a ${esc(d.nome)}</div>`}
+        <div class="shead"><h3>Obiettivi</h3>${contoSez(obF.length, ob.length, 'Obiettivi')}
+          ${pilleSez(opz, 'dip.obiettivi', PILLE_OBIETTIVI)}</div>
+        ${obF.length ? `<div class="cards">${obF.map((o, i) => cardObiettivo(m, o, i)).join('')}</div>` : `<div class="vuoto">Nessun obiettivo di ${esc(d.nome)} con questo filtro</div>`}
       </section>
       <section>
-        <div class="shead"><h3>Da approvare</h3><span class="cnt"><b>${att.length}</b><span>Richieste</span></span><span class="rb sm ghost">${ic('i-search')}</span>
+        <div class="shead"><h3>Da approvare</h3><span class="cnt"><b>${att.length}</b><span>Richieste</span></span>
           <div class="filters"><span class="pill" data-az="pagina" data-pagina="richieste" data-dip="${d.id}">Tutte le richieste di ${esc(d.nome)} ${ic('i-ne')}</span></div></div>
         ${att.length ? `<div class="cards">${att.map((r, i) => cardRichiesta(m, r, i)).join('')}</div>` : `<div class="vuoto">Niente da approvare da ${esc(d.nome)}</div>`}
       </section>
       <section>
-        <div class="shead"><h3>Spesa del mese</h3><span class="cnt"><b>${eur(cm.totale)}</b><span>per cliente</span></span><span class="rb sm ghost">${ic('i-down')}</span>
-          <div class="filters"><span class="pill on">Ultimi 30 giorni</span><span class="pill">Oggi</span><span class="pill">Da inizio anno</span></div>
+        <div class="shead"><h3>${esc(TITOLO_SPESA[perSpesa])}</h3><span class="cnt"><b>${eur(cm.totale)}</b><span>per cliente</span></span>
+          ${pillePeriodo('dip.spesa', perSpesa, ['mese', 'oggi', 'anno'])}
           <div class="destra"><span class="pill" data-az="pagina" data-pagina="costi">Tutti i costi dell'azienda ${ic('i-ne')}</span></div></div>
-        <div class="hlist">${cm.perCliente.map(c => rigaCliente(m, c, 'mese', cm.totale, 'del dipartimento', d.id)).join('')}</div>
+        ${cm.perCliente.length ? `<div class="hlist">${cm.perCliente.map(c => rigaCliente(m, c, perSpesa, cm.totale, 'del dipartimento', d.id)).join('')}</div>` : `<div class="vuoto">Nessuna spesa in questo periodo</div>`}
       </section>`;
     return cornice(m, opz, d.nome.toUpperCase(), stats, 'org', corpo, 'Nuovo obiettivo');
   }
@@ -981,12 +1050,18 @@ window.DIREZIONE_A = (function () {
       <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${att ? `<span class="chip ink">${ic('i-bell')}Da approvare</span><span>aspetta il titolare</span>` : `<span class="chip">Libero</span><span>nessuna esecuzione in corso</span>`}${ic('i-chev')}</span><span class="rb ghost" data-az="pagina" data-pagina="chat" data-id="${e.id}" title="Scrivi a ${esc(m.etichetta(e))}">${ic('i-chat')}</span><span class="rb black" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Passi, log e output">${ic('i-eye')}</span></div></div>
     </div>`;
   }
+  /* Le pillole delle sezioni del dipendente. Cadono quelle che chiedono un dato che il dossier non tiene: i giorni passati
+     della sezione «Oggi», i 90 giorni e il «per cliente» del Rendimento (ci sono solo i 30 giorni e i 30 precedenti), i mesi
+     passati del Budget, «Esempi allegati» e «Regole del dipartimento» del soul prompt. */
+  const PILLE_REVISIONE = [['tutte', 'Tutte', null], ['prompt', 'Soul prompt', r => r.tipo === 'prompt'], ['modello', 'Modello', r => r.tipo === 'modello']];
+  const PILLE_STRUMENTI = [['tutti', 'Tutti', null], ['attivi', 'Attivi', s => s.attivo], ['spenti', 'Spenti', s => !s.attivo]];
+  const PILLE_CASI = [['tutti', 'Tutti i casi', null], ['superati', 'Superati', x => x.esito === 'superato'], ['no', 'Non superati', x => x.esito !== 'superato', ic('i-fire')]];
   function sezioneOggi(m, e) {
     const oggi = m.richieste.filter(r => r.chi === e.id && r.giorno === 0).sort((a, b) => b.min - a.min);
     const card = (e.stato === 'lavoro' || e.stato === 'errore' || e.stato === 'pianificato') ? cardEsecuzione(m, e, 0) : cardUltima(m, e);
     return `<section>
-      <div class="shead"><h3>Oggi</h3><span class="cnt"><b>${oggi.length}</b><span>Richieste</span></span><span class="rb sm ghost">${ic('i-search')}</span>
-        <div class="filters"><span class="pill on">Oggi</span><span class="pill">Ieri</span><span class="pill">Questa settimana</span></div></div>
+      <div class="shead"><h3>Oggi</h3><span class="cnt"><b>${oggi.length}</b><span>Richieste</span></span>
+        <div class="destra"><span class="pill" data-az="pagina" data-pagina="richieste" data-chi="${e.id}">Tutte le richieste di ${esc(m.etichetta(e))} ${ic('i-ne')}</span></div></div>
       <div class="oggi"><div class="cards riga" style="margin:0">${card}</div><div class="hlist" style="margin-top:0">${oggi.length ? oggi.map(r => rigaStorico(m, r)).join('') : `<div class="vuoto" style="margin:0;height:56px">Nessuna richiesta oggi</div>`}</div></div>
     </section>`;
   }
@@ -996,8 +1071,8 @@ window.DIREZIONE_A = (function () {
     const riga = (icona, nome, sub, v1, v2, badge) => `<div class="crow rend"><span class="ico">${ic(icona)}</span><div class="tx"><b>${nome}</b><span>${sub}</span></div><span class="v">${v1}</span><span class="v">${v2}</span><span class="eur">${badge}</span><span class="rb xs">${ic('i-ne')}</span></div>`;
     const decise = m.richieste.filter(r => r.chi === e.id && r.stato !== 'attesa').sort((a, b) => (a.giorno - b.giorno) || (b.min - a.min)).slice(0, 6);
     return `<section>
-      <div class="shead"><h3>Rendimento</h3><span class="cnt"><b>${o.task}</b><span>Task in 30 giorni</span></span><span class="rb sm ghost">${ic('i-sliders')}</span><span class="rb sm ghost">${ic('i-down')}</span>
-        <div class="filters"><span class="pill on">Ultimi 30 giorni</span><span class="pill">Ultimi 90 giorni</span><span class="pill">Da inizio anno</span><span class="pill">Per cliente</span></div></div>
+      <div class="shead"><h3>Rendimento</h3><span class="cnt"><b>${o.task}</b><span>Task in 30 giorni</span></span>
+        <div class="destra"><span class="pill" data-az="pagina" data-pagina="costi">${ic('i-euro')}I costi dell'azienda ${ic('i-ne')}</span></div></div>
       <div class="hlist" style="margin-top:24px">
         ${riga('i-check', 'Approvate al primo colpo', 'consegne accettate senza modifiche', `${o.approvate}<small>${q(o.approvate, o.task)}</small>`, `${p.approvate}<small>nei 30 precedenti</small>`, delta(o.approvate, p.approvate, true))}
         ${riga('i-pen', 'Corrette da un umano', 'il titolare ha chiesto modifiche', `${o.modifiche}<small>${q(o.modifiche, o.task)}</small>`, `${p.modifiche}<small>nei 30 precedenti</small>`, delta(o.modifiche, p.modifiche, false))}
@@ -1020,11 +1095,10 @@ window.DIREZIONE_A = (function () {
     const cur = d.prompt.versioni.find(v => v.v === d.prompt.corrente) || d.prompt.versioni[0];
     const prec = d.prompt.versioni.find(v => v.v === cur.v - 1);
     return `<section>
-      <div class="shead"><h3>Mansione e soul prompt</h3><span class="cnt"><b>v${cur.v}</b><span>Corrente dal ${esc(cur.data)}</span></span><span class="rb sm ghost">${ic('i-search')}</span>
-        <div class="filters"><span class="pill on">Testo</span><span class="pill">Esempi allegati</span><span class="pill">Regole del dipartimento</span></div>
+      <div class="shead"><h3>Mansione e soul prompt</h3><span class="cnt"><b>v${cur.v}</b><span>Corrente dal ${esc(cur.data)}</span></span>
         <div class="destra">${prec ? `<span class="pill" data-az="confronta" data-id="${e.id}" data-a="${prec.v}" data-b="${cur.v}">${ic('i-expand')}Confronta v${prec.v} e v${cur.v}</span>` : ''}</div></div>
       <div class="prompt">
-        <div class="pdoc"><div class="nt"><span class="rb sm" title="Modifica">${ic('i-pen')}</span>${prec ? `<span class="rb sm" data-az="confronta" data-id="${e.id}" data-a="${prec.v}" data-b="${cur.v}" title="Confronta con la v${prec.v}">${ic('i-expand')}</span>` : ''}</div>
+        <div class="pdoc"><div class="nt">${prec ? `<span class="rb sm" data-az="confronta" data-id="${e.id}" data-a="${prec.v}" data-b="${cur.v}" title="Confronta con la v${prec.v}">${ic('i-expand')}</span>` : ''}</div>
           <div class="lb"><span class="chip ink">${ic('i-doc')}Soul prompt · v${cur.v}</span><span>${esc(cur.chi)} · ${esc(cur.data)} · ${esc(cur.nota)}</span></div>
           ${cur.testo.map(p => `<p>${esc(p)}</p>`).join('')}
           <div class="kv"><span>Con questa versione</span><b>${cur.numeri.task} task · ${cur.numeri.corretti}% corretti · ${cur.numeri.respinte}% respinte · ${eur(cur.numeri.costo)} per esito</b></div>
@@ -1038,7 +1112,7 @@ window.DIREZIONE_A = (function () {
     const tot = Object.values(uso).reduce((t, u) => t + u.esecuzioni, 0), costoTot = Object.values(uso).reduce((t, u) => t + u.costo, 0);
     const cardMod = md => { const u = uso[md.id] || { esecuzioni: 0, costo: 0 }; const on = md.id === mo.assegnato; return `<div class="ncard lead mod${on ? ' on' : ''}" data-az="assegna" data-id="${e.id}" data-v="${md.id}" title="${on ? 'Assegnato' : 'Assegna ' + md.nome}"><span class="ico">${ic(md.icona)}</span><div class="nt"><span class="rb ghost">${ic(on ? 'i-check' : 'i-ne')}</span></div><div class="name md">${esc(md.nome)}</div><div class="role">${esc(md.desc)}</div><div class="ft"><div><span class="k">30 giorni</span><span class="v">${u.esecuzioni}<small>esecuzioni · ${Math.round(100 * u.esecuzioni / Math.max(1, tot))}%</small></span></div><div><span class="k">Costo</span><span class="v">${u.costo} €<small>${esc(md.costo.split(' ')[0])} l'una</small></span></div></div></div>`; };
     return `<section>
-      <div class="shead"><h3>Modello</h3><span class="cnt"><b>${esc(m.MODELLI[mo.assegnato].nome)}</b><span>Assegnato</span></span><span class="rb sm ghost">${ic('i-sliders')}</span>
+      <div class="shead"><h3>Modello</h3><span class="cnt"><b>${esc(m.MODELLI[mo.assegnato].nome)}</b><span>Assegnato</span></span>
         <div class="filters"><span class="pill${mo.automatica ? ' on' : ''}" data-az="auto" data-id="${e.id}" data-v="1">Scelta automatica</span><span class="pill${mo.automatica ? '' : ' on'}" data-az="auto" data-id="${e.id}" data-v="0">Solo il modello assegnato</span></div></div>
       <div class="cards modelli">
         ${Object.values(m.MODELLI).map(cardMod).join('')}
@@ -1048,13 +1122,13 @@ window.DIREZIONE_A = (function () {
       </div>
     </section>`;
   }
-  function sezioneStrumenti(m, e, d) {
+  function sezioneStrumenti(m, e, d, opz) {
     const attivi = d.strumenti.filter(s => s.attivo).length;
+    const str = filtraSez(opz, 'dipendente.strumenti', d.strumenti, PILLE_STRUMENTI);
     return `<section>
-      <div class="shead"><h3>Strumenti e connessioni</h3><span class="cnt"><b>${attivi}</b><span>Attivi su ${d.strumenti.length}</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
-        <div class="filters"><span class="pill on">Tutti</span><span class="pill">Attivi</span><span class="pill">Spenti</span><span class="pill">Connessioni</span></div>
-        <div class="destra"><span class="pill">${ic('i-plus')}Aggiungi uno strumento</span></div></div>
-      <div class="cards regole">${d.strumenti.map(s => `<div class="ncard lead${s.attivo ? '' : ' spenta'}" data-az="strumento" data-id="${e.id}" data-v="${s.id}" title="${s.attivo ? 'Spegni' : 'Accendi'}"><span class="ico">${ic(s.icona)}</span><div class="nt"><span class="rb ghost">${ic('i-ne')}</span></div><div class="name md">${esc(s.nome)}</div><div class="role">${esc(s.desc)}</div><div class="ft"><div><span class="k">Ultimo uso</span><span class="sel">${esc(s.ultimo)}${ic('i-chev')}</span></div><div><span class="k">Stato</span>${s.attivo ? `<span class="chip lime">${ic('i-check')}Attivo</span>` : `<span class="chip">Spento</span>`}</div></div></div>`).join('')}</div>
+      <div class="shead"><h3>Strumenti e connessioni</h3>${contoSez(str.length, d.strumenti.length, 'Strumenti · ' + attivi + ' attivi')}
+        ${pilleSez(opz, 'dipendente.strumenti', PILLE_STRUMENTI)}</div>
+      <div class="cards regole">${str.map(s => `<div class="ncard lead${s.attivo ? '' : ' spenta'}" data-az="strumento" data-id="${e.id}" data-v="${s.id}" title="${s.attivo ? 'Spegni' : 'Accendi'}"><span class="ico">${ic(s.icona)}</span><div class="nt"><span class="rb ghost">${ic('i-ne')}</span></div><div class="name md">${esc(s.nome)}</div><div class="role">${esc(s.desc)}</div><div class="ft"><div><span class="k">Ultimo uso</span><span class="sel">${esc(s.ultimo)}${ic('i-chev')}</span></div><div><span class="k">Stato</span>${s.attivo ? `<span class="chip lime">${ic('i-check')}Attivo</span>` : `<span class="chip">Spento</span>`}</div></div></div>`).join('')}</div>
       <div class="hgroup"><b>Connessioni</b>${d.connessioni.length} · con l'ultimo uso</div>
       <div class="hlist">${d.connessioni.map(c => `<div class="crow"><span class="ico">${ic('i-org')}</span><div class="tx"><b>${esc(c.nome)}</b><span>${esc(c.desc)}</span></div><span class="v">${c.stato === 'attiva' ? `<span class="chip lime">${ic('i-check')}Attiva</span>` : `<span class="chip rosa">${ic('i-warn')}Scaduta il ${esc(c.ultimo)}</span>`}</span><span class="v">${esc(c.ultimo)}<small>ultimo uso</small></span><span class="eur">${c.stato === 'attiva' ? '' : `<span class="chip ink">${ic('i-bolt')}Rinnova</span>`}</span><span class="rb xs">${ic('i-ne')}</span></div>`).join('')}</div>
     </section>`;
@@ -1062,8 +1136,7 @@ window.DIREZIONE_A = (function () {
   function sezioneBudget(m, e, d) {
     const b = d.budget, q = Math.min(100, Math.round(100 * b.speso / Math.max(1, b.mese))), oltre = b.oggi > b.giorno;
     return `<section>
-      <div class="shead"><h3>Budget e permessi</h3><span class="cnt"><b>${b.speso} €</b><span>Spesi su ${b.mese} € al mese</span></span><span class="rb sm ghost">${ic('i-sliders')}</span>
-        <div class="filters"><span class="pill on">Settembre</span><span class="pill">Agosto</span><span class="pill">Da inizio anno</span></div></div>
+      <div class="shead"><h3>Budget e permessi</h3><span class="cnt"><b>${b.speso} €</b><span>Spesi su ${b.mese} € al mese</span></span></div>
       <div class="bp">
         <div class="ncard task ${oltre ? 'lime' : 'dark'} budget">
           <div class="who"><span class="ico">${ic('i-euro')}</span><div><b>Budget del mese</b><span>${b.mese} €/mese · ${b.giorno} €/giorno</span></div></div>
@@ -1075,13 +1148,14 @@ window.DIREZIONE_A = (function () {
       </div>
     </section>`;
   }
-  function sezioneColloquio(m, e, d) {
+  function sezioneColloquio(m, e, d, opz) {
     const c = d.colloquio, ok = c.casi.filter(x => x.esito === 'superato').length, sup = c.esito === 'superato';
+    const casi = filtraCerca(opz, 'dipendente.colloquio', filtraSez(opz, 'dipendente.colloquio', c.casi, PILLE_CASI), x => x.nome + ' ' + x.atteso);
     const chipEs = x => x.esito === 'superato' ? `<span class="chip lime">${ic('i-check')}Superato</span>` : x.esito === 'parziale' ? `<span class="chip">${ic('i-pen')}Parziale</span>` : `<span class="chip rosa">${ic('i-x')}Fallito</span>`;
     const ripeti = c.inCorso ? `<span class="pill lime">${ic('i-play')}Colloquio in corso · 0 di ${c.casi.length} casi</span>` : `<span class="pill" data-az="colloquio" data-id="${e.id}">${ic('i-target')}Ripeti il colloquio</span>`;
     return `<section>
-      <div class="shead"><h3>Colloquio</h3><span class="cnt"><b>${c.punteggio}</b><span>Su 100 · soglia ${c.soglia}</span></span><span class="rb sm ghost">${ic('i-search')}</span>
-        <div class="filters"><span class="pill on">Ultimo colloquio</span><span class="pill">Tutti i casi</span><span class="pill">Solo falliti</span></div>
+      <div class="shead"><h3>Colloquio</h3>${contoSez(casi.length, c.casi.length, 'Casi · ' + c.punteggio + ' su 100')}${cercaSez(opz, 'dipendente.colloquio', c.casi.length, 'casi del colloquio')}
+        ${pilleSez(opz, 'dipendente.colloquio', PILLE_CASI)}
         <div class="destra">${ripeti}</div></div>
       <div class="coll">
         <div class="ncard task ${sup ? 'gray' : 'lime'} esito">
@@ -1090,7 +1164,7 @@ window.DIREZIONE_A = (function () {
           <div class="body"><div><div class="tt">${c.punteggio} <small>su 100</small></div><div class="prog"><i style="width:${c.punteggio}%"></i></div><div class="meta"><b>${ok} di ${c.casi.length}</b><span>casi superati</span><b>soglia ${c.soglia}</b></div></div></div>
           <div class="st"><span class="k">Vale per</span><div class="row"><span class="sel"><span class="chip ink">${ic('i-doc')}v${c.versione}</span><span>${c.versione === d.prompt.corrente ? 'la versione corrente' : 'una versione precedente: da ripetere'}</span>${ic('i-chev')}</span><span class="rb black" data-az="colloquio" data-id="${e.id}" title="Ripeti il colloquio">${ic('i-play')}</span></div></div>
         </div>
-        <div class="hlist" style="margin-top:0">${c.casi.map((x, i) => `<div class="hrow caso"><span class="ora">${i + 1}</span><div class="tx"><b>${esc(x.nome)}</b><span>atteso: ${esc(x.atteso)}</span></div>${chipEs(x)}<span class="eur">${x.punteggio}</span><span class="rb xs">${ic('i-ne')}</span></div>`).join('')}</div>
+        <div class="hlist" style="margin-top:0">${casi.length ? casi.map((x, i) => `<div class="hrow caso"><span class="ora">${i + 1}</span><div class="tx"><b>${esc(x.nome)}</b><span>atteso: ${esc(x.atteso)}</span></div>${chipEs(x)}<span class="eur">${x.punteggio}</span><span class="rb xs">${ic('i-ne')}</span></div>`).join('') : `<div class="vuoto" style="margin:0;height:56px">Nessun caso con questa ricerca o questo filtro</div>`}</div>
       </div>
       <div class="hgroup"><b>Colloqui precedenti</b>${c.storico.length} · uno per versione o modello</div>
       <div class="hlist">${c.storico.map(s => `<div class="crow"><span class="ico">${ic('i-target')}</span><div class="tx"><b>${esc(s.data)} · prompt v${s.versione}</b><span>${esc(m.MODELLI[s.modello].nome)}</span></div><span class="v">${s.punteggio}<small>su 100</small></span><span class="v">${s.esito === 'superato' ? `<span class="chip lime">${ic('i-check')}Superato</span>` : `<span class="chip rosa">${ic('i-x')}Non superato</span>`}</span><span class="eur"></span><span class="rb xs">${ic('i-ne')}</span></div>`).join('')}</div>
@@ -1105,24 +1179,30 @@ window.DIREZIONE_A = (function () {
       <div class="stat"><b>${att.length}</b><span>da approvare</span>${att.length ? `<span class="badge down">${ic('i-bell')}${att.length}</span>` : ''}</div>
       <div class="stat" data-az="pagina" data-pagina="costi" title="I costi dell'azienda"><b>${e.att.costo || 0} €</b><span>spesi oggi</span></div>`;
     const rev = d.revisioni.find(r => r.stato === 'attesa');
+    const revF = filtraSez(opz, 'dipendente.revisione', rev ? [rev] : [], PILLE_REVISIONE)[0] || null;
     const passate = d.revisioni.filter(r => r.stato !== 'attesa');
     const corpo = `
       ${testataDipendente(m, e, d)}
       <section>
-        <div class="shead"><h3>Revisione di performance</h3><span class="cnt"><b>${rev ? 1 : 0}</b><span>In sospeso</span></span><span class="rb sm ghost">${ic('i-search')}</span>
-          <div class="filters"><span class="pill on">Tutte</span><span class="pill">Soul prompt</span><span class="pill">Modello</span></div></div>
-        ${rev ? `<div class="cards" style="display:block">${cardRevisione(m, e, d, rev)}</div>` : `<div class="vuoto">Nessuna revisione in sospeso: il sistema ne propone una quando i numeri dei 30 giorni peggiorano rispetto ai 30 precedenti</div>`}
+        <div class="shead"><h3>Revisione di performance</h3><span class="cnt"><b>${revF ? 1 : 0}</b><span>In sospeso</span></span>
+          ${pilleSez(opz, 'dipendente.revisione', PILLE_REVISIONE)}</div>
+        ${revF ? `<div class="cards" style="display:block">${cardRevisione(m, e, d, revF)}</div>` : `<div class="vuoto">${rev ? 'La revisione in sospeso non è di questo tipo' : 'Nessuna revisione in sospeso: il sistema ne propone una quando i numeri dei 30 giorni peggiorano rispetto ai 30 precedenti'}</div>`}
         ${passate.length ? `<div class="hgroup"><b>Revisioni passate</b>${passate.length} · chi ha deciso, quando, con quale effetto misurato</div><div class="hlist">${passate.map(r => rigaRevisione(m, r)).join('')}</div>` : ''}
       </section>
       ${sezioneOggi(m, e)}
       ${sezioneRendimento(m, e, d)}
       ${sezionePrompt(m, e, d)}
       ${sezioneModello(m, e, d)}
-      ${sezioneStrumenti(m, e, d)}
+      ${sezioneStrumenti(m, e, d, opz)}
       ${sezioneBudget(m, e, d)}
-      ${sezioneColloquio(m, e, d)}`;
+      ${sezioneColloquio(m, e, d, opz)}`;
     return cornice(m, opz, m.etichetta(e).toUpperCase(), stats, 'org', corpo, '');
   }
+
+  /* Le pillole delle sezioni dell'Esecuzione: lo stato del passo e della consegna, e le tre viste del costo. */
+  const PILLE_PASSI = [['tutti', 'Tutti', null], ['fatti', 'Fatti', p => p.stato === 'fatto'], ['dafare', 'Da fare', p => p.stato === 'da fare' || p.stato === 'corso'], ['strumenti', 'Con strumenti', p => (p.strumenti || []).length > 0]];
+  const PILLE_OUTPUT = [['tutte', 'Tutte', null], ['attesa', 'Da approvare', o => o.stato === 'attesa', ic('i-fire')], ['bozza', 'In corso', o => o.stato === 'bozza'], ['fatte', 'Fatte', o => o.stato === 'fatto' || o.stato === 'approvata']];
+  const PILLE_COSTO = [['modello', 'Per modello', null], ['passo', 'Per passo', null], ['strumento', 'Per strumento', null]];
 
   /* ---------- pagina Esecuzione (versione 8, 2026-09-04) ----------
      Si apre dall'«occhio» e dalla freccia nell'intaglio delle card esecuzione. Stessa cornice
@@ -1237,34 +1317,45 @@ window.DIREZIONE_A = (function () {
       <div class="stat"><b>${eur(r.costo)}</b><span>spesi</span>${r.costo > d.budget.giorno ? `<span class="badge down">${ic('i-warn')}oltre</span>` : ''}</div>
       <div class="stat"><b>${r.durata || '—'}</b><span>${e.stato === 'lavoro' ? 'da ' + esc(a.da) : e.stato === 'errore' ? 'fermo dalle ' + esc(a.da) : e.stato === 'pianificato' ? 'parte alle ' + esc(a.quando) : 'in tutto'}</span></div>`;
     const filtro = opz.log || 'tutto';
-    const voci = x.log.filter(v => filtro === 'tutto' || v.tipo === filtro || (filtro === 'nota' && v.tipo === 'titolare')).slice().reverse();
+    const passiF = filtraSez(opz, 'esec.passi', x.passi, PILLE_PASSI);
+    const outF = filtraSez(opz, 'esec.output', x.output, PILLE_OUTPUT);
+    const voci = filtraCerca(opz, 'esec.log', x.log.filter(v => filtro === 'tutto' || v.tipo === filtro || (filtro === 'nota' && v.tipo === 'titolare')), v => v.testo + ' ' + v.ora).slice().reverse();
     const conta = t => x.log.filter(v => v.tipo === t).length;
     const pillLog = (v, testo) => `<span class="pill${filtro === v ? ' on' : ''}" data-az="filtro-log" data-v="${v}">${testo}</span>`;
     const serie = x.serie.map(id => m.richieste.find(q => q.id === id)).filter(Boolean).sort((p, q) => (p.giorno - q.giorno) || (q.min - p.min));
     const perModello = {}; x.passi.forEach(p => { if (p.stato !== 'da fare') perModello[p.modello] = Math.round(10 * ((perModello[p.modello] || 0) + p.costo)) / 10; });
+    /* la lista della sezione «Costo»: le tre pillole scelgono su che cosa si spende — per modello, per passo, per strumento.
+       Sono tre viste degli stessi numeri dell'esecuzione, nessuno nuovo. */
+    const rigaCosto = (icona, nome, sotto, v1, v2, importo, spenta) => `<div class="crow${spenta ? ' spenta' : ''}"><span class="ico">${ic(icona)}</span><div class="tx"><b>${esc(nome)}</b><span>${sotto}</span></div><span class="v">${v1}</span><span class="v">${v2}</span><span class="eur">${eur(importo)}</span><span class="rb xs">${ic('i-ne')}</span></div>`;
+    const perCosto = valSez(opz, 'esec.costo', PILLE_COSTO);
+    const righeCosto = perCosto === 'passo'
+      ? x.passi.map(p => rigaCosto('i-rows', 'Passo ' + p.n + ' · ' + p.nome, esc(p.strumenti.join(', ') || 'nessuno strumento'), `<span class="chip${p.stato === 'errore' ? ' rosa' : p.stato === 'fatto' ? ' lime' : ''}">${p.stato === 'errore' ? ic('i-warn') : p.stato === 'fatto' ? ic('i-check') : ic('i-clock')}${p.stato === 'fatto' ? 'Fatto' : p.stato === 'errore' ? 'Errore' : p.stato === 'corso' ? 'In corso' : 'Da fare'}</span>`, esc(p.durata || (p.stima ? p.stima + ' stimati' : '—')), p.costo || 0, !p.costo)).join('')
+      : perCosto === 'strumento'
+      ? x.strumentiUso.map(s => rigaCosto(s.icona, s.nome, s.chiamate ? s.chiamate + ' chiamat' + (s.chiamate === 1 ? 'a' : 'e') : 'non usato', s.errore ? `<span class="chip rosa">${ic('i-warn')}Errore</span>` : s.chiamate ? `<span class="chip lime">${ic('i-check')}Usato</span>` : `<span class="chip">Non usato</span>`, esc(x.passi.filter(p => p.strumenti.includes(s.nome)).map(p => 'passo ' + p.n).join(', ') || '—'), s.costo, !s.chiamate)).join('')
+      : Object.values(m.MODELLI).map(md => rigaCosto(md.icona, md.nome, esc(md.costo), `<span class="chip${perModello[md.id] ? ' lime' : ''}">${perModello[md.id] ? ic('i-check') : ''}${x.passi.filter(p => p.modello === md.id).length} pass${x.passi.filter(p => p.modello === md.id).length === 1 ? 'o' : 'i'}</span>`, `${Math.round(100 * (perModello[md.id] || 0) / Math.max(0.1, r.costo))}%<small>del costo</small>`, perModello[md.id] || 0, !perModello[md.id])).join('');
     const oltre = r.costo > d.budget.giorno;
     const corpo = `
       ${testataEsecuzione(m, e, x, r)}
       <section>
-        <div class="shead"><h3>Passi</h3><span class="cnt"><b>${r.fatti}</b><span>Fatti su ${r.n}</span></span><span class="rb sm ghost">${ic('i-sliders')}</span>
-          <div class="filters"><span class="pill on">Tutti</span><span class="pill">Fatti</span><span class="pill">Da fare</span><span class="pill">Con strumenti</span></div></div>
-        <div class="hlist" style="margin-top:24px">${x.passi.map(p => rigaPasso(m, e, p)).join('')}</div>
+        <div class="shead"><h3>Passi</h3>${contoSez(passiF.length, r.n, 'Passi · ' + r.fatti + ' fatti')}
+          ${pilleSez(opz, 'esec.passi', PILLE_PASSI)}</div>
+        <div class="hlist" style="margin-top:24px">${passiF.length ? passiF.map(p => rigaPasso(m, e, p)).join('') : `<div class="vuoto" style="margin:0;height:56px">Nessun passo con questo filtro</div>`}</div>
       </section>
       <section>
-        <div class="shead"><h3>Log</h3><span class="cnt"><b>${x.log.length}</b><span>Voci</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-down')}</span>
+        <div class="shead"><h3>Log</h3>${contoSez(voci.length, x.log.length, 'Voci')}${cercaSez(opz, 'esec.log', x.log.length, 'voci del log')}
           <div class="filters">${pillLog('tutto', 'Tutto')}${pillLog('passo', `Passi · ${conta('passo')}`)}${pillLog('strumento', `Strumenti · ${conta('strumento')}`)}${pillLog('richiesta', `Richieste · ${conta('richiesta')}`)}${pillLog('errore', `Errori · ${conta('errore')}`)}${pillLog('nota', `Note · ${conta('nota') + conta('titolare')}`)}</div></div>
-        <div class="hlist" style="margin-top:24px">${voci.length ? voci.map(v => rigaLog(m, e, v)).join('') : `<div class="vuoto" style="margin:0;height:56px">Nessuna voce di questo tipo</div>`}</div>
+        <div class="hlist" style="margin-top:24px">${voci.length ? voci.map(v => rigaLog(m, e, v)).join('') : `<div class="vuoto" style="margin:0;height:56px">Nessuna voce con questa ricerca o questo tipo</div>`}</div>
         <div class="chat">${av(m, e, 's')}<input type="text" data-campo="chat" placeholder="Scrivi a ${esc(m.etichetta(e))}: una nota per ${r.cur ? 'il passo in corso' : 'la prossima esecuzione'}…" maxlength="160"><span class="rb sm" data-az="esec-invia" data-id="${e.id}" title="Invia">${ic('i-send')}</span></div>
       </section>
       <section>
-        <div class="shead"><h3>Output</h3><span class="cnt"><b>${x.output.length}</b><span>Consegne</span></span><span class="rb sm ghost">${ic('i-search')}</span>
-          <div class="filters"><span class="pill on">Tutte</span><span class="pill">${ic('i-fire')}Da approvare</span><span class="pill">In corso</span><span class="pill">Approvate</span></div></div>
-        <div class="cards">${x.output.map(o => cardOutput(m, e, o)).join('')}</div>
+        <div class="shead"><h3>Output</h3>${contoSez(outF.length, x.output.length, 'Consegne')}
+          ${pilleSez(opz, 'esec.output', PILLE_OUTPUT)}</div>
+        ${outF.length ? `<div class="cards">${outF.map(o => cardOutput(m, e, o)).join('')}</div>` : `<div class="vuoto">Nessuna consegna con questo filtro</div>`}
         ${serie.length ? `<div class="hgroup"><b>Consegne precedenti della serie</b>${serie.length} · con l'esito del titolare<span class="link" data-az="pagina" data-pagina="richieste" data-chi="${e.id}">Tutte le richieste di ${esc(m.etichetta(e))} ${ic('i-ne')}</span></div><div class="hlist">${serie.map(q => rigaStorico(m, q)).join('')}</div>` : ''}
       </section>
       <section>
-        <div class="shead"><h3>Costo</h3><span class="cnt"><b>${eur(r.costo)}</b><span>Finora · stima a fine ${eur(r.stima)}</span></span><span class="rb sm ghost">${ic('i-sliders')}</span>
-          <div class="filters"><span class="pill on">Per modello</span><span class="pill">Per passo</span><span class="pill">Per strumento</span></div>
+        <div class="shead"><h3>Costo</h3><span class="cnt"><b>${eur(r.costo)}</b><span>Finora · stima a fine ${eur(r.stima)}</span></span>
+          ${pilleSez(opz, 'esec.costo', PILLE_COSTO)}
           <div class="destra"><span class="pill" data-az="pagina" data-pagina="costi">Tutti i costi dell'azienda ${ic('i-ne')}</span></div></div>
         <div class="costo">
           <div class="ncard task ${oltre ? 'lime' : 'dark'} regola spesa">
@@ -1273,7 +1364,7 @@ window.DIREZIONE_A = (function () {
             <div class="body"><div><div class="tt">${eur(r.costo)} <small>di ${eur(r.stima)} stimati</small></div><div class="ripart">${Object.values(m.MODELLI).map(md => `<i class="${md.id}" style="width:${100 * (perModello[md.id] || 0) / Math.max(0.1, r.costo)}%" title="${md.nome}"></i>`).join('')}</div><div class="leg">${Object.values(m.MODELLI).map(md => `<span><i class="${md.id}"></i>${md.nome} ${eur(perModello[md.id] || 0)}</span>`).join('')}</div></div></div>
             <div class="st"><span class="k">Oggi</span><div class="row"><span class="sel"><span>${d.budget.oggi} € su ${d.budget.giorno} € al giorno</span>${oltre ? `<span class="chip rosa">${ic('i-warn')}oltre il limite</span>` : `<span class="chip">${ic('i-check')}nel limite</span>`}${ic('i-chev')}</span><span class="rb ghost" data-az="pagina" data-pagina="dipendente" data-id="${e.id}" title="Budget e permessi">${ic('i-ne')}</span></div></div>
           </div>
-          <div class="hlist" style="margin-top:0">${x.strumentiUso.map(s => `<div class="crow${s.chiamate ? '' : ' spenta'}"><span class="ico">${ic(s.icona)}</span><div class="tx"><b>${esc(s.nome)}</b><span>${s.chiamate ? s.chiamate + ' chiamat' + (s.chiamate === 1 ? 'a' : 'e') : 'non usato'}</span></div><span class="v">${s.errore ? `<span class="chip rosa">${ic('i-warn')}Errore</span>` : s.chiamate ? `<span class="chip lime">${ic('i-check')}Usato</span>` : `<span class="chip">Non usato</span>`}</span><span class="v">${x.passi.filter(p => p.strumenti.includes(s.nome)).map(p => 'passo ' + p.n).join(', ') || '—'}</span><span class="eur">${eur(s.costo)}</span><span class="rb xs">${ic('i-ne')}</span></div>`).join('')}</div>
+          <div class="hlist" style="margin-top:0">${righeCosto}</div>
         </div>
       </section>`;
     return cornice(m, opz, a.titolo.toUpperCase(), stats, 'home', corpo, '');
@@ -1355,30 +1446,31 @@ window.DIREZIONE_A = (function () {
       <div class="stat"><b>${c30.totale} €</b><span>in 30 giorni</span>${delta(c30.totale, c30.prima, false, v => v + ' €')}</div>
       <div class="stat"><b>${resta} €</b><span>restano di ${c30.budgetMese} €</span>${resta < 0 ? `<span class="badge down">${ic('i-warn')}oltre</span>` : ''}</div>`;
     const cD = m.costi(per.dipartimenti), cE = m.costi(per.dipendenti), cC = m.costi(per.clienti), cM = m.costi(per.modelli), cS = m.costi('oggi');
+    const spesaE = filtraCerca(opz, 'costi.dipendenti', cE.perDipendente, x => m.etichetta(x.e) + ' ' + m.sotto(x.e, true) + ' ' + x.e.ruolo);
     const compatto = m.n > 16;
     const corpo = `
       <section>
-        <div class="shead"><h3>Per dipartimento</h3><span class="cnt"><b>${eur(cD.totale)}</b><span>${PERIODO_LB[per.dipartimenti]}</span></span><span class="rb sm ghost">${ic('i-sliders')}</span><span class="rb sm ghost">${ic('i-down')}</span>
+        <div class="shead"><h3>Per dipartimento</h3><span class="cnt"><b>${eur(cD.totale)}</b><span>${PERIODO_LB[per.dipartimenti]}</span></span>
           ${pillePeriodo('dipartimenti', per.dipartimenti, ['oggi', 'mese', 'anno'])}</div>
         <div class="cards riga">${cD.perDipartimento.map((x, i) => cardCostoDip(m, x, per.dipartimenti, cD.totale, i)).join('')}</div>
       </section>
       <section>
-        <div class="shead"><h3>Per dipendente</h3><span class="cnt"><b>${m.n}</b><span>Dipendenti · ${eur(cE.totale)} ${PERIODO_LB[per.dipendenti]}</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>${compatto ? `<span class="rb sm ghost">${ic('i-grid')}</span><span class="rb sm white">${ic('i-rows')}</span>` : ''}
+        <div class="shead"><h3>Per dipendente</h3>${contoSez(spesaE.length, m.n, 'Dipendenti · ' + eur(cE.totale) + ' ' + PERIODO_LB[per.dipendenti])}${cercaSez(opz, 'costi.dipendenti', m.n, 'dipendenti')}
           ${pillePeriodo('dipendenti', per.dipendenti, ['oggi', 'mese', 'anno'])}</div>
-        ${compatto ? `<div class="elenco">${cE.perDipendente.map(x => rigaCostoCompatta(m, x, per.dipendenti)).join('')}</div>` : `<div class="hlist" style="margin-top:24px">${cE.perDipendente.map(x => rigaCostoDipendente(m, x, per.dipendenti)).join('')}</div>`}
+        ${spesaE.length ? (compatto ? `<div class="elenco">${spesaE.map(x => rigaCostoCompatta(m, x, per.dipendenti)).join('')}</div>` : `<div class="hlist" style="margin-top:24px">${spesaE.map(x => rigaCostoDipendente(m, x, per.dipendenti)).join('')}</div>`) : `<div class="vuoto">Nessun dipendente con questa ricerca</div>`}
       </section>
       <section>
-        <div class="shead"><h3>Per cliente</h3><span class="cnt"><b>${cC.perCliente.length}</b><span>Clienti · ${eur(cC.totale)} ${PERIODO_LB[per.clienti]}</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-down')}</span>
+        <div class="shead"><h3>Per cliente</h3><span class="cnt"><b>${cC.perCliente.length}</b><span>Clienti · ${eur(cC.totale)} ${PERIODO_LB[per.clienti]}</span></span>
           ${pillePeriodo('clienti', per.clienti, ['oggi', 'mese', 'anno'])}</div>
         ${cC.perCliente.length ? `<div class="hlist" style="margin-top:24px">${cC.perCliente.map(c => rigaCliente(m, c, per.clienti, cC.totale, "dell'azienda")).join('')}</div>` : `<div class="vuoto">Nessuna spesa ${PERIODO_LB[per.clienti]}</div>`}
       </section>
       <section>
-        <div class="shead"><h3>Per modello</h3><span class="cnt"><b>${cM.esecuzioni}</b><span>${per.modelli === 'oggi' ? 'Passi oggi' : 'Esecuzioni in 30 giorni'} · ${eur(cM.totale)}</span></span><span class="rb sm ghost">${ic('i-sliders')}</span>
+        <div class="shead"><h3>Per modello</h3><span class="cnt"><b>${cM.esecuzioni}</b><span>${per.modelli === 'oggi' ? 'Passi oggi' : 'Esecuzioni in 30 giorni'} · ${eur(cM.totale)}</span></span>
           ${pillePeriodo('modelli', per.modelli, ['oggi', 'mese'])}</div>
         <div class="costo">${cardCostoAzienda(m, cM, per.modelli)}<div class="hlist" style="margin-top:0">${cM.perModello.map(md => rigaModello(m, md, per.modelli, cM.esecuzioni)).join('')}</div></div>
       </section>
       <section>
-        <div class="shead"><h3>Per strumento</h3><span class="cnt"><b>${cS.chiamate}</b><span>Chiamate oggi · ${eur(cS.costoStrumenti)}</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
+        <div class="shead"><h3>Per strumento</h3><span class="cnt"><b>${cS.chiamate}</b><span>Chiamate oggi · ${eur(cS.costoStrumenti)}</span></span>
           ${pillePeriodo('strumenti', 'oggi', ['oggi'])}</div>
         ${cS.perStrumento.length ? `<div class="hlist" style="margin-top:24px">${cS.perStrumento.map(s => rigaStrumento(m, s)).join('')}</div>` : `<div class="vuoto">Nessuno strumento usato oggi</div>`}
       </section>`;
@@ -1393,6 +1485,9 @@ window.DIREZIONE_A = (function () {
      obiettivi con una data, dal più vicino); **la settimana**, sette righe con i pianificati che si ripetono, le prossime
      consegne e le scadenze. I dati sono l'aggregatore di `dati.js` (`giornata`, `settimana`, `scadenze`): nessun numero nuovo.
      Si arriva dal quinto cerchio del rail, dal cerchio della barra «Oggi in azienda» e dalla pillola «Sposta» dell'Esecuzione. */
+  /* Le pillole delle Scadenze ordinano: per data (com'era) o per dipartimento; il modello ha tutti e due i campi.
+     «Questo mese» della «Settimana» è caduta: il modello non ha una vista mensile (punto aperto della versione 15). */
+  const PILLE_SCADENZE = [['data', 'Per data', null], ['dip', 'Per dipartimento', null]];
   const NOME_EV = { corso: 'In corso', attesa: 'Da approvare', errore: 'Errore', pianificato: 'Pianificato', fatto: 'Concluso' };
   const ICONA_EV = { corso: 'i-play', attesa: 'i-bell', errore: 'i-warn', pianificato: 'i-clock', fatto: 'i-check' };
   /* La barra del giorno: la pista lime da un'ora tonda all'altra, un blocco per evento sulla prima corsia libera. */
@@ -1443,9 +1538,12 @@ window.DIREZIONE_A = (function () {
   function agenda(m, opz) {
     const ev = m.giornata(), scad = m.scadenze(), set = m.settimana();
     const f = opz.agenda || 'tutti';
-    const visti = ev.filter(x => f === 'tutti' || x.stato === f);
+    const visti = filtraCerca(opz, 'agenda.eventi', ev.filter(x => f === 'tutti' || x.stato === f), x => x.titolo + ' ' + (x.cliente || '') + ' ' + m.etichetta(m.byId[x.chi]));
     const piani = ev.filter(x => x.stato === 'pianificato');
     const vicine = scad.filter(s => s.giorni <= 7);
+    /* le due pillole delle Scadenze ordinano: per data (com'era) o raccogliendo il dipartimento, poi la data */
+    const scadOrd = valSez(opz, 'agenda.scadenze', PILLE_SCADENZE) === 'dip'
+      ? scad.slice().sort((a, b) => a.o.dip.localeCompare(b.o.dip) || (a.quando - b.quando)) : scad;
     const stats = `<div class="stat"><b>${ev.length}</b><span>eventi oggi</span><span class="badge up">${ic('i-play')}${ev.filter(x => x.stato === 'corso').length}</span></div>
       <div class="stat"><b>${piani.length}</b><span>ancora da partire</span><span class="badge flat">${ic('i-clock')}${esc((piani[0] || {}).da || '—')}</span></div>
       <div class="stat"><b>${vicine.length}</b><span>scadenze in settimana</span>${vicine.some(s => s.o.stato === 'ritardo') ? `<span class="badge down">${ic('i-warn')}${vicine.filter(s => s.o.stato === 'ritardo').length}</span>` : ''}</div>`;
@@ -1459,25 +1557,24 @@ window.DIREZIONE_A = (function () {
         </div>
       </section>
       <section>
-        <div class="shead"><h3>Eventi di oggi</h3><span class="cnt"><b>${visti.length}</b><span>di ${ev.length}</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
+        <div class="shead"><h3>Eventi di oggi</h3><span class="cnt"><b>${visti.length}</b><span>di ${ev.length}</span></span>${cercaSez(opz, 'agenda.eventi', ev.length, 'eventi di oggi')}
           <div class="filters">${pill('tutti', 'Tutti')}${pill('corso', 'In corso')}${pill('attesa', 'Da approvare', ic('i-fire'))}${pill('pianificato', 'Pianificati')}${pill('errore', 'Errori')}</div></div>
         ${visti.length ? `<div class="cards riga">${visti.map(x => cardEvento(m, x)).join('')}</div>` : `<div class="vuoto">Nessun evento di questo tipo oggi</div>`}
       </section>
       <section>
-        <div class="shead"><h3>Scadenze</h3><span class="cnt"><b>${scad.length}</b><span>Obiettivi con una data</span></span><span class="rb sm ghost">${ic('i-sliders')}</span>
-          <div class="filters"><span class="pill on">Per data</span><span class="pill">Per dipartimento</span></div></div>
+        <div class="shead"><h3>Scadenze</h3><span class="cnt"><b>${scad.length}</b><span>Obiettivi con una data</span></span>
+          ${pilleSez(opz, 'agenda.scadenze', PILLE_SCADENZE)}</div>
         <div class="costo">
           <div class="dcard"><div class="nt"><span class="rb sm">${ic('i-target')}</span></div><h5>Obiettivo del mese:</h5><p class="goal">${m.azienda.obiettivoMese}</p>
             <div class="kv"><span>Scadenza</span><b>${esc(m.azienda.scadenzaMese || '')}</b></div>
             <div class="kv"><span>Scadenze entro sette giorni</span><b>${vicine.length}</b></div>
             <div class="kv"><span>In ritardo</span><b>${m.obiettivi.filter(o => o.stato === 'ritardo').length}</b></div>
           </div>
-          <div class="hlist" style="margin-top:0">${scad.map(s => rigaScadenza(m, s)).join('')}</div>
+          <div class="hlist" style="margin-top:0">${scadOrd.map(s => rigaScadenza(m, s)).join('')}</div>
         </div>
       </section>
       <section>
-        <div class="shead"><h3>La settimana</h3><span class="cnt"><b>${set.reduce((t, g) => t + g.voci.length, 0) + ev.length}</b><span>Impegni</span></span><span class="rb sm ghost">${ic('i-search')}</span>
-          <div class="filters"><span class="pill on">Sette giorni</span><span class="pill">Questo mese</span></div></div>
+        <div class="shead"><h3>La settimana</h3><span class="cnt"><b>${set.reduce((t, g) => t + g.voci.length, 0) + ev.length}</b><span>Impegni</span></span></div>
         <div class="hlist" style="margin-top:24px">${set.map(g => rigaGiorno(m, g)).join('')}</div>
       </section>`;
     return cornice(m, opz, 'AGENDA', stats, 'agenda', corpo, 'Nuovo evento');
@@ -1528,7 +1625,7 @@ window.DIREZIONE_A = (function () {
   function chat(m, opz) {
     const tutti = m.fili();
     const f = opz.chatf || 'tutti';
-    const visti = tutti.filter(x => f === 'tutti' ? true : f === 'nuovi' ? x.nuovi > 0 : x.e.stato === f);
+    const visti = filtraCerca(opz, 'chat.fili', tutti.filter(x => f === 'tutti' ? true : f === 'nuovi' ? x.nuovi > 0 : x.e.stato === f), x => m.etichetta(x.e) + ' ' + m.sotto(x.e, true) + ' ' + ((x.ultimo || {}).testo || ''));
     const e = filoScelto(m, opz);
     const daLeggere = tutti.filter(x => x.nuovi > 0).length;
     const messaggi = tutti.reduce((t, x) => t + m.filoDi(x.e).length, 0);
@@ -1538,7 +1635,7 @@ window.DIREZIONE_A = (function () {
     const pill = (v, testo) => `<span class="pill${f === v ? ' on' : ''}" data-az="chat-filtro" data-v="${v}">${testo}</span>`;
     const corpo = `
       <section>
-        <div class="shead"><h3>Conversazioni</h3><span class="cnt"><b>${visti.length}</b><span>di ${tutti.length}</span></span><span class="rb sm ghost">${ic('i-search')}</span><span class="rb sm ghost">${ic('i-sliders')}</span>
+        <div class="shead"><h3>Conversazioni</h3><span class="cnt"><b>${visti.length}</b><span>di ${tutti.length}</span></span>${cercaSez(opz, 'chat.fili', tutti.length, 'conversazioni')}
           <div class="filters">${pill('tutti', 'Tutte')}${pill('nuovi', 'Da leggere')}${pill('lavoro', 'Al lavoro')}${pill('attesa', 'Da approvare')}${pill('errore', 'Errori')}</div></div>
         <div class="chatp">
           <div class="fili">${visti.length ? visti.map(x => rigaFilo(m, x, x.e.id === e.id)).join('') : `<div class="vuoto" style="margin:0">Nessuna conversazione</div>`}</div>
@@ -1587,13 +1684,13 @@ window.DIREZIONE_A = (function () {
   }
 
   function render(m, opz) {
-    opz = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, confronto: null, motivo: false, periodo: {}, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '' }, opz || {});
+    opz = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, confronto: null, motivo: false, periodo: {}, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '', cerca: {}, sez: {}, forma: '' }, opz || {});
     return opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : opz.pagina === 'dipendente' ? dipendente(m, opz) : opz.pagina === 'esecuzione' ? esecuzione(m, opz) : opz.pagina === 'costi' ? paginaCosti(m, opz) : opz.pagina === 'agenda' ? agenda(m, opz) : opz.pagina === 'chat' ? chat(m, opz) : home(m, opz);
   }
 
   /* Disegna e collega i clic: tendina, cambio pagina, filtri, decisioni. Ritorna lo stato. */
   function monta(radice, m, opz) {
-    const st = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, editor: null, confronto: null, motivo: false, log: 'tutto', periodo: { dipartimenti: 'mese', dipendenti: 'mese', clienti: 'mese', modelli: 'mese' }, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '' }, opz || {});
+    const st = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, editor: null, confronto: null, motivo: false, log: 'tutto', periodo: { dipartimenti: 'mese', dipendenti: 'mese', clienti: 'mese', modelli: 'mese' }, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '', cerca: {}, sez: {}, forma: '' }, opz || {});
     const n = () => m.richiesteDi('attesa').length;
     /* parametri di avvio della pagina del dipendente: ?tendina=dossier (la revisione in sospeso del dipendente, estesa) e ?confronto=a,b (due versioni del prompt) */
     const idxRevisione = id => inAttesa(m).findIndex(r => r.tipo === 'revisione' && r.chi === id);
@@ -1612,6 +1709,7 @@ window.DIREZIONE_A = (function () {
       const inp = radice.querySelector('.a-tend.dip input[data-campo="ruolo"]'); if (inp && !e) inp.focus();
     };
     const chiudiEditor = () => { st.modifica = null; st.tendina = st.tendinaPrima || 'chiusa'; };
+    const chiudiCerca = sez => { const c = Object.assign({}, st.cerca); delete c[sez]; st.cerca = c; tutto(); };
     const aggiornaAnteprima = () => {
       const a = radice.querySelector('#a-anteprima'), sc = radice.querySelector('#a-scelte'), tn = radice.querySelector('#a-tinte');
       if (a) { a.innerHTML = anteprimaDipendente(m, st.modifica); } if (sc) sc.innerHTML = scelteAvatar(m, st.modifica); if (tn) tn.innerHTML = scelteTinta(m, st.modifica);
@@ -1656,6 +1754,10 @@ window.DIREZIONE_A = (function () {
     tutto();
     if (st.editor) apriEditor(st.editor === 'nuovo' ? 0 : +st.editor);
     radice.addEventListener('input', ev => {
+      /* la ricerca di una sezione (versione 17): filtra a ogni tasto; `tutto()` ridisegna, quindi il fuoco e il cursore vanno rimessi */
+      const cer = ev.target.closest('input[data-cerca]');
+      if (cer) { const sez = cer.dataset.cerca, pos = cer.selectionStart; st.cerca = Object.assign({}, st.cerca, { [sez]: cer.value }); tutto();
+        const j = radice.querySelector(`input[data-cerca="${sez}"]`); if (j) { j.focus({ preventScroll: true }); j.setSelectionRange(pos, pos); } return; }
       const inp = ev.target.closest('input[data-campo]'); if (!inp || !st.modifica || inp.dataset.campo === 'motivo') return;
       const k = inp.dataset.campo, b = st.modifica.bozza;
       if (k === 'ruolo' && b.seme && b.seme.indexOf(b.ruolo) === 0) b.seme = null;   // il seme seguiva il ruolo: torna a seguirlo
@@ -1666,6 +1768,7 @@ window.DIREZIONE_A = (function () {
       if (ev.key === 'Enter' && ev.target.closest('input[data-campo="motivo"]')) { ev.preventDefault(); const b = radice.querySelector('[data-az="rifiuta-conferma"]'); if (b) b.click(); return; }
       if (ev.key === 'Enter' && ev.target.closest('input[data-campo="chat"]')) { ev.preventDefault(); const b = radice.querySelector('[data-az="esec-invia"],[data-az="chat-invia"]'); if (b) inviaNota(+b.dataset.id, b.dataset.az === 'chat-invia'); return; }
       if (ev.key === 'Enter' && st.modifica && ev.target.closest('input[data-campo]')) { ev.preventDefault(); salva(); }
+      if (ev.key === 'Escape' && ev.target.closest('input[data-cerca]')) { ev.preventDefault(); chiudiCerca(ev.target.dataset.cerca); return; }
       if (ev.key === 'Escape' && st.modifica) { chiudiEditor(); soloTendina(); }
     });
     radice.addEventListener('click', ev => {
@@ -1687,6 +1790,11 @@ window.DIREZIONE_A = (function () {
       else if (az === 'richiesta') { if (ev.target.closest('[data-az="approva"],[data-az="rifiuta"]')) return; st.richiesta = +el.dataset.idx; st.tendina = 'estesa'; st.pannello = 'richieste'; soloTendina(); }
       else if (az === 'pagina') { ev.stopPropagation(); st.pagina = el.dataset.pagina; if (el.dataset.dip) { st.dip = el.dataset.dip; if (st.pagina === 'richieste') st.filtri = { dip: el.dataset.dip }; } if (el.dataset.id) { if (st.pagina === 'chat') st.filo = +el.dataset.id; else st.id = +el.dataset.id; } if (el.dataset.chi) st.filtri = { chi: el.dataset.chi }; if (el.dataset.cliente) st.filtri = Object.assign(st.pagina === 'richieste' && el.dataset.dip ? { dip: el.dataset.dip } : {}, { cliente: el.dataset.cliente }); if (st.tendina === 'confronto' || st.tendina === 'estesa') st.tendina = 'aperta'; st.motivo = false; tutto(); window.scrollTo(0, 0); }
       else if (az === 'filtro') { const k = el.dataset.k, v = el.dataset.v; st.filtri[k] = (st.filtri[k] === v || v === 'tutti') ? undefined : v; tutto(); }
+      /* ---- i controlli delle intestazioni di sezione (versione 17): la ricerca, le pillole, le due forme dei dipendenti ---- */
+      else if (az === 'cerca') { st.cerca = Object.assign({}, st.cerca, { [el.dataset.sez]: '' }); tutto(); const i = radice.querySelector(`input[data-cerca="${el.dataset.sez}"]`); if (i) i.focus({ preventScroll: true }); }
+      else if (az === 'cerca-chiudi') { chiudiCerca(el.dataset.sez); }
+      else if (az === 'sez') { st.sez = Object.assign({}, st.sez, { [el.dataset.sez]: el.dataset.v }); tutto(); }
+      else if (az === 'forma') { st.forma = el.dataset.v; tutto(); }
       /* ---- pagina dei costi: il periodo di una sezione ---- */
       else if (az === 'periodo') { st.periodo = Object.assign({}, st.periodo, { [el.dataset.sez]: el.dataset.v }); tutto(); }
       else if (az === 'azzera') { st.filtri = {}; tutto(); }

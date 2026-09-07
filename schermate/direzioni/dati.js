@@ -859,6 +859,15 @@ window.DGT_DATI = (function () {
     const orario = t => { const k = /(\d\d):(\d\d)/.exec(t || ''); return k ? (+k[1]) * 60 + (+k[2]) : null; };
     const hhmm = t => String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');
     const minutiDi = s => { const k = /(\d+)\s*min/.exec(s || ''); return k ? +k[1] : 0; };
+    /* I gruppi del giorno per la barra «Oggi in azienda» (versione 16), della Console e — dalla versione 17 — del telefono:
+       un solo conto per tutti e due, dal modello vero e non dalla lista parallela `m.agenda`. Le richieste che aspettano il
+       titolare non ci sono: le dice già la linguetta lime «N da approvare» (correzione 16a). */
+    function gruppiOggi() {
+      const per = s => m.dipendenti.filter(e => e.stato === s);
+      const piani = per('pianificato').slice().sort((a, b) => String(a.att.quando || '').localeCompare(String(b.att.quando || '')));
+      const fatte = m.richieste.filter(r => r.giorno === 0 && r.stato === 'approvata').length;
+      return { corso: per('lavoro'), errore: per('errore'), piani, fatte };
+    }
     function giornata() {
       const adesso = orario(azienda.ora), ev = [];
       m.dipendenti.forEach(e => {
@@ -954,7 +963,7 @@ window.DGT_DATI = (function () {
       costi, spesaDi,
       /* L'agenda dell'azienda (versione 15, 2026-09-06): gli eventi di oggi costruiti dalle attività correnti, i sette giorni
          da oggi (pianificati che si ripetono, prossime consegne, scadenze) e le scadenze degli obiettivi dalla più vicina. */
-      giornata, settimana, scadenze, oraDi: orario,
+      giornata, settimana, scadenze, oraDi: orario, gruppiOggi,
       /* I fili della chat (versione 15): un filo per dipendente, una sola copia (i messaggi restano), condivisa fra Console e
          telefono; `scrivi` è la nota del titolare, dalla chat o dalla barra di scrittura dell'Esecuzione. */
       filoDi, ultimoDi: ultimo, nonLetti,

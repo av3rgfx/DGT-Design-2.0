@@ -20,6 +20,7 @@ prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decision
   scrittura; dal quarto cerchio del rail, dai cerchi «commenta» delle card, da «Commenta» nelle due tendine e dalla pillola
   «Scrivi a …» dell'Esecuzione),
   `?tendina=chiusa|aperta|estesa`, `?pannello=richieste|riepilogo`, `?pagina=home|richieste`, `?richiesta=0`,
+  `?barra=0` (la barra «Oggi in azienda» di prima dello studio, versione 16),
   `?editor=nuovo|<id dipendente>`, `?avatar=orbe|kit`, `?pelle=perla|grigio|chiaro|alone|disco` (la pelle dell'orbe
   senza disco; predefinita perla). Artefatto:
   https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34
@@ -29,9 +30,15 @@ prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decision
   performance con le due versioni a confronto e le quattro decisioni), «Riepilogo di oggi» (linea del tempo; a coda finita è lo
   stato vuoto della prima schermata), «Chat» (l'elenco dei fili, i non letti prima), «Conversazione» (il filo aperto in fondo,
   con la barra di scrittura) e «Agenda» (il giorno dell'azienda sulla linea del tempo del Riepilogo, poi la settimana), con il
-  rifiuto con motivo; sei telefoni affiancati, cliccabili, che condividono il modello, la richiesta corrente e i fili con la
-  Console (`m.decidi` e `m.scrivi` in `dati.js`). Parametri: `?schermata=1|2|3|4|5|6` (uno o più telefoni, es.
-  `?schermata=2`), `?richiesta=0` (a 11: 2 e 3 sono le due revisioni), `?filo=<id dipendente>`, `?n=40`, più quelli dell'avatar.
+  rifiuto con motivo; dalla **versione 17** (2026-09-07) anche «Dipartimenti» (l'elenco dei quattro, dal secondo cerchio della
+  navigazione, che era l'ultimo inerte) e «Dipartimento» (la pagina Dipartimento della Console ridotta: oggi, da approvare
+  decidibili sul posto, dipendenti, obiettivi, spesa del mese), e in cima alla prima schermata il **quadro del giorno**, la
+  barra «Oggi in azienda» della Console ridotta alla colonna di 254 px; otto telefoni affiancati, cliccabili, che condividono
+  il modello, la richiesta corrente, i fili e il dipartimento scelto con la
+  Console (`m.decidi` e `m.scrivi` in `dati.js`). Parametri: `?schermata=1|…|8` (uno o più telefoni, es.
+  `?schermata=2`), `?richiesta=0` (a 11: 2 e 3 sono le due revisioni), `?filo=<id dipendente>`, `?dip=svi|mkt|ven|amm`,
+  `?quadro=0|1|2|3` (0 toglie il quadro, 3 è la forma scelta, 1 e 2 le due scartate dello studio), `?n=40`, più quelli
+  dell'avatar.
   Artefatto: https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9
 - Avatar dei dipendenti AI in `avatar/`: `avatar-dgt.js` (involucro della Console, sceglie la famiglia con
   `usa('orbe'|'kit')` e la pelle con `pelle('chiaro'|…)`), `avatar-orbe.js` (la famiglia «orbe», predefinita, senza

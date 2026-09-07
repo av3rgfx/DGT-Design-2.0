@@ -196,6 +196,56 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(caselle.length === 4 && caselle[1].includes(c.lavoro + 'al lavoro') && caselle[3].startsWith(c.piani + 'dopo'), 'a quaranta la barra ha le stesse quattro caselle, con i numeri di quaranta');
   check(await page.evaluate(() => { const t = document.querySelector('.a-sched .tl'); return t.scrollWidth - t.clientWidth; }) === 0, 'a quaranta la barra non sfora');
 
+  console.log('\n8. i controlli delle intestazioni di sezione (versione 17)');
+  /* la regola: un controllo si vede solo se fa quello che promette. Nessuna intestazione, su nessuna pagina e a nessuna
+     delle due taglie, deve avere un cerchio o una pillola senza azione. */
+  const PAGINE = ['', 'pagina=richieste', 'pagina=dipartimento&dip=svi', 'pagina=dipendente&id=4', 'pagina=esecuzione&id=4', 'pagina=esecuzione&id=3', 'pagina=costi', 'pagina=agenda', 'pagina=chat'];
+  let sezioni = 0, inerti = 0; const conCerca = new Set();
+  for (const n of ['11', '40']) for (const q of PAGINE) {
+    await vai(q + '&n=' + n + '&tendina=chiusa');
+    const r = await page.evaluate(() => ({
+      sez: document.querySelectorAll('.shead').length,
+      inerti: document.querySelectorAll('.shead .rb:not([data-az]), .shead .pill:not([data-az])').length,
+      cerca: [...document.querySelectorAll('.shead [data-az="cerca"]')].map(e => e.dataset.sez),
+    }));
+    sezioni += r.sez; inerti += r.inerti; r.cerca.forEach(k => conCerca.add(k));
+  }
+  check(inerti === 0, 'nessun controllo inerte nelle ' + sezioni + ' intestazioni delle nove pagine, a undici e a quaranta');
+  check(conCerca.size === 7, 'il cerchio «cerca» resta in sette sezioni su ventidue (le liste che passano le dodici righe): ' + [...conCerca].sort().join(' '));
+
+  console.log('\n9. la ricerca di una sezione filtra davvero');
+  await vai('n=40&tendina=chiusa');
+  check(await conta('.cards.dipendenti .ncard.dip, .elenco .erow:not(.add)') === 40, 'a quaranta la sezione Dipendenti mostra tutti i quaranta');
+  await clic('[data-az="cerca"][data-sez="home.dipendenti"]');
+  check(await conta('input[data-cerca="home.dipendenti"]') === 1, 'il cerchio apre il campo al suo posto');
+  await page.fill('input[data-cerca="home.dipendenti"]', 'seo'); await page.waitForTimeout(350);
+  const visti = await conta('.cards.dipendenti .ncard.dip, .elenco .erow:not(.add)');
+  const attesi = await page.evaluate(() => modello.dipendenti.filter(e => (modello.etichetta(e) + ' ' + modello.sotto(e, true) + ' ' + e.ruolo).toLowerCase().includes('seo')).length);
+  check(visti === attesi && visti > 0 && visti < 40, 'la ricerca filtra la sezione: ' + visti + ' di 40');
+  check((await txt('.a-main section:nth-of-type(3) .cnt')).startsWith(visti + ' di 40'), 'il contatore della sezione dice «' + visti + ' di 40»');
+  check(!(await txt('.a-main section:nth-of-type(3) .shead')).includes(visti + ' di 40' + ' ' + visti + ' di 40'), 'il conto non è scritto due volte nella stessa intestazione');
+  check(await page.evaluate(() => document.activeElement && document.activeElement.dataset.cerca === 'home.dipendenti'), 'il fuoco resta nel campo mentre si scrive');
+  await page.keyboard.press('Escape'); await page.waitForTimeout(300);
+  check(await conta('input[data-cerca="home.dipendenti"]') === 0 && await conta('.cards.dipendenti .ncard.dip, .elenco .erow:not(.add)') === 40, 'Esc chiude la ricerca e la sezione torna intera');
+
+  console.log('\n10. le pillole di una sezione filtrano davvero, e le due forme della card');
+  await vai('tendina=chiusa');
+  await clic('[data-az="sez"][data-sez="home.dipendenti"][data-v="mkt"]');
+  const nMkt = await page.evaluate(() => modello.perDip.mkt.length);
+  check(await conta('.cards.dipendenti .ncard.dip') === nMkt, 'la pillola «Marketing» lascia i ' + nMkt + ' del dipartimento');
+  await clic('[data-az="forma"][data-v="righe"]');
+  check(await conta('.elenco .erow:not(.add)') === nMkt && await conta('.cards.dipendenti') === 0, 'il cerchio «righe» passa alla forma compatta');
+  await clic('[data-az="forma"][data-v="card"]');
+  check(await conta('.cards.dipendenti .ncard.dip') === nMkt, 'il cerchio «griglia» torna alle card');
+  await vai('pagina=dipartimento&dip=svi&tendina=chiusa');
+  const totMese = await txt('.a-main section:nth-of-type(5) .cnt b');
+  await clic('[data-az="periodo"][data-sez="dip.spesa"][data-v="oggi"]');
+  check((await txt('.a-main section:nth-of-type(5) h3')) === 'Spesa di oggi' && (await txt('.a-main section:nth-of-type(5) .cnt b')) !== totMese, 'le tre pillole della «Spesa del mese» cambiano davvero il periodo: ' + totMese + ' → ' + await txt('.a-main section:nth-of-type(5) .cnt b'));
+  await clic('[data-az="sez"][data-sez="dip.obiettivi"][data-v="ritardo"]');
+  const nRit = await page.evaluate(() => modello.obiettiviDi('svi').filter(o => o.stato === 'ritardo').length);
+  check(await conta('.a-main section:nth-of-type(3) .ncard.obj') === nRit, 'la pillola «In ritardo» degli obiettivi lascia i ' + nRit + ' in ritardo');
+  check(await largo(), 'la pagina non scorre di lato dopo i filtri');
+
   check(errors.length === 0, 'nessun errore in console: ' + JSON.stringify(errors));
   console.log(`\n${ok} ok, ${ko} ko`);
   await browser.close(); process.exit(ko ? 1 : 0);
