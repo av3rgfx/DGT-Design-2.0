@@ -339,26 +339,42 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(await conta(sezCn + ' .ncard[data-az="consegna"]') === 7, 'e «Tutte» le rimette');
   /* niente ricerca: la soglia del prodotto è dodici righe e le consegne arrivano a dieci */
   check(await conta(sezCn + ' [data-az="cerca"]') === 0, 'e la sezione non ha il cerchio «cerca»: dieci righe al massimo stanno in una schermata');
-  /* la tendina: che cosa vuol dire aprire una consegna */
-  await clic(sezCn + ' .ncard[data-az="consegna"]', 400);
-  check(await conta('.a-tend.estesa') === 1, 'un clic sulla card apre la tendina larga, la stessa della richiesta');
-  const tc = await txt('.a-tend.estesa');
-  check(tc.includes('Pagina del carrello'), 'la tendina porta il nome della consegna');
-  check(tc.includes("Chi l'ha fatta") && tc.includes('Sviluppatore full-stack'), 'dice chi l\'ha fatta');
-  check(tc.includes("Il passo che l'ha prodotta") && tc.includes('Passo 2') && tc.includes('31 min') && tc.includes('14 €'), 'dice il passo, la durata e il costo, che la card non poteva reggere');
+  /* la pagina: che cosa vuol dire aprire una consegna (scelta dell'utente: una pagina dedicata, non la tendina) */
+  await clic(sezCn + ' .ncard[data-az="consegna"]', 450);
+  check(await titolo() === 'PAGINA DEL CARRELLO', 'un clic sulla card apre la pagina della consegna, con il suo titolo: ' + await titolo());
+  check(await conta('.a-tend.estesa') === 0, 'e NON la tendina: la tendina resta l\'anteprima delle approvazioni');
+  const titCn = await sezTit();
+  /* quattro `section`: la testata (che non ha un h3, come nell'Esecuzione) piu' le tre con il titolo */
+  check(await conta('.a-main section') === 4 && titCn.length === 3 && titCn[0] === 'Il contenuto', 'la pagina ha la testata più tre sezioni, e la prima è «Il contenuto»: ' + titCn.join(' · '));
+  const tc = await txt('.a-main');
+  check(tc.includes('Sviluppatore full-stack'), 'dice chi l\'ha fatta');
+  check(tc.includes('Carrello con quantità'), 'e mostra il contenuto: l\'esito del passo che l\'ha prodotta');
+  check(tc.includes('Passo 2') && tc.includes('31 min') && tc.includes('14 €'), 'la sezione del passo dice numero, durata e costo');
   check(tc.includes('Repository') && tc.includes('Ambiente di test'), 'e gli strumenti di quel passo');
-  check(await conta('.a-tend .voci .v') === 3, 'e le tre voci di log di quel passo, che finora leggeva solo la pagina Esecuzione');
-  check(await conta('.a-tend [data-az="pagina"][data-pagina="esecuzione"]') === 1, 'porta all\'esecuzione che l\'ha prodotta');
-  await clic('.a-tend [data-az="riduci"]', 350);
-  check(await conta('.a-tend.aperta') === 1 && await conta('.a-tend.estesa') === 0, '«Riduci» torna alla coda del titolare, come dalla richiesta');
-  /* la consegna già uscita porta alla sua richiesta */
-  await vai('pagina=dipartimento&dip=mkt&consegna=c4-2');
-  const tc2 = await txt('.a-tend.estesa');
-  check(await conta('.a-tend.estesa') === 1 && tc2.includes('Post LinkedIn 4 di 12'), 'una consegna già uscita si apre con il suo nome');
+  check(await conta('.a-main .hgroup') >= 1 && tc.includes('Mentre la faceva'), 'e le voci di log di quel passo, che finora leggeva solo la pagina Esecuzione');
+  check(await conta('.a-main [data-az="pagina"][data-pagina="esecuzione"]') >= 1, 'porta all\'esecuzione che l\'ha prodotta');
+  check(await conta('.a-main section:last-of-type .ncard[data-az="consegna"]') === 2, 'e in fondo le altre due consegne della stessa esecuzione');
+  /* si torna al dipartimento, che e' da dove ci si arriva */
+  await clic('.a-back', 400);
+  check(await titolo() === 'SVILUPPO', 'la freccia della cornice torna al dipartimento: ' + await titolo());
+  /* la consegna gia' uscita porta alla sua richiesta, e mostra il documento vero */
+  await vai('pagina=consegna&consegna=c4-2&tendina=chiusa');
+  const tc2 = await txt('.a-main');
+  check(await titolo() === 'POST LINKEDIN 4 DI 12', 'una consegna già uscita ha la sua pagina: ' + await titolo());
   check(tc2.includes('Il carrello abbandonato'), 'e mostra il documento vero della richiesta, non una descrizione');
-  check(await conta('.a-tend [data-az="richiesta"]') === 1, 'e ha il pulsante che apre la richiesta in coda');
-  await clic('.a-tend [data-az="richiesta"]', 350);
-  check((await txt('.a-tend.estesa .th')).includes('Post LinkedIn 4 di 12'), 'che apre davvero la richiesta');
+  check(tc2.includes('mock-up del carrello'), 'con il suo allegato');
+  const titCn2 = await sezTit();
+  check(await conta('.a-main [data-az="richiesta"]') === 3, 'e tre strade per decidere: la pillola in testata, quella della sezione e la riga della richiesta');
+  check(titCn2.length === 3 && titCn2[1] === 'La richiesta al titolare', 'la seconda sezione è la richiesta, perché questa consegna non nasce da un passo dichiarato: ' + titCn2.join(' · '));
+  check((await sezTit()).includes('La richiesta al titolare'), 'e una sezione che riporta la richiesta con la nota del dipendente');
+  await clic('.a-main [data-az="richiesta"]', 400);
+  check(await conta('.a-tend.estesa') === 1, 'da lì si apre la tendina per decidere, che è il suo mestiere');
+  /* il titolo lungo si stringe: la Consegna ha i titoli piu' lunghi del prodotto */
+  await vai('n=40&pagina=consegna&consegna=c21-0&tendina=chiusa');
+  check(await conta('.a-title.lunghissimo') === 1, 'il titolo più lungo del prodotto (32 caratteri) si stringe invece di sforare');
+  check(await page.evaluate(() => { const st = document.querySelector('.a-stats'), a = document.querySelector('.a-app'); return st.getBoundingClientRect().right <= a.getBoundingClientRect().right; }), 'e i numeri della testata restano dentro la cornice');
+  check(await conta('.a-stats .stat') === 2, 'due numeri e non tre: con tre la testata sforava di 77 px');
+
   /* la scala: a quaranta la sezione regge dieci card in tre righe, e le pagine non scorrono di lato */
   await vai('pagina=dipartimento&dip=ven&n=40&tendina=chiusa');
   const sezCn40 = await sez('^Consegne di oggi');

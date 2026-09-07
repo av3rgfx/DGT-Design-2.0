@@ -231,6 +231,10 @@ window.DGT_MOBILE = (function () {
 .m-scr.rev .m-fade{height:190px;background:linear-gradient(180deg,transparent,var(--black) 38%)}
 .m-scr.motivo .m-fade{height:230px;background:linear-gradient(180deg,transparent,var(--black) 32%)}
 /* la barra delle azioni: una colonna a larghezza vincolata (niente sfori orizzontali: lo schermo non deve poter scorrere di lato) */
+/* le azioni in fondo alla schermata della consegna (versione 19): in linea con lo scorrimento, non la barra fissa
+   della decisione — qui non si decide sempre, si decide solo quando la consegna aspetta il titolare */
+.m-azioni{display:flex;gap:8px;margin-top:4px}
+.m-azioni .pill{height:48px;flex:1;justify-content:center;cursor:pointer;min-width:0;padding:0 16px}
 .m-bar{position:absolute;left:14px;right:14px;bottom:14px;z-index:3;display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
 .m-bar>*{min-width:0}
 .m-bar .row{display:flex;gap:8px;align-items:center;min-width:0}
@@ -408,15 +412,13 @@ window.DGT_MOBILE = (function () {
   const rigaRichiesta = (m, r) => { const i = coda(m).indexOf(r); return `<div class="qrow${r.stato === 'attesa' ? ' on' : ''}"${i >= 0 ? ` data-az="apri" data-idx="${i}"` : ''}><span class="av xs" style="background:var(--ink);color:var(--white)">${ic(iconaTipo[r.tipo])}</span><div class="tx"><b>${esc(r.cosa)}</b><span>${nomeTipo[r.tipo]} · ${r.costo} €</span></div>${r.stato === 'attesa' ? `<span class="rb xs black" data-az="approva" data-id="${r.id}" title="${r.tipo === 'revisione' ? 'Applica' : 'Approva'}">${ic('i-check')}</span><span class="rb xs red" data-az="rifiuta" data-idx="${i}" title="Rifiuta con un motivo">${ic('i-x')}</span>` : chipEsito(r)}</div>`; };
   /* La riga di una consegna (versione 19, 2026-09-07): la cosa creata da un'esecuzione, sul telefono in riga e non in
      card — la colonna e' larga 254 px e le card della Console non ci stanno. Porta l'avatar di chi l'ha fatta (regola
-     19: il disco nella sua tinta), il nome, chi e per chi, e il chip dello stato. Tocco: apre la richiesta se la
-     consegna aspetta il titolare, che sul telefono e' l'unica cosa che lui puo' fare; se non aspetta nessuno resta da
-     leggere, e allora niente tocco e niente freccia (regola 26). */
+     19: il disco nella sua tinta), il nome, chi e per chi, e il chip dello stato. Il tocco apre la **schermata della
+     consegna** (la 9), come nella Console apre la sua pagina: la freccia c'e' su tutte perche' la destinazione c'e'
+     per tutte (regola 26). */
   const rigaConsegna = (m, c) => {
     const e = m.byId[c.chi];
-    const r = c.richiesta ? m.richieste.find(x => x.id === c.richiesta) : null;
-    const i = r ? coda(m).indexOf(r) : -1;
     const chip = { attesa: `<span class="chip lime">${ic('i-bell')}Da approvare</span>`, approvata: `<span class="chip lime">${ic('i-check')}Approvata</span>`, fatto: `<span class="chip lime">${ic('i-check')}Fatta</span>`, bozza: `<span class="chip light">${ic('i-play')}In corso</span>`, errore: `<span class="chip rosa">${ic('i-warn')}Non fatta</span>` }[c.stato] || `<span class="chip light">${ic('i-clock')}Da fare</span>`;
-    return `<div class="qrow${c.stato === 'attesa' ? ' on' : ''}"${i >= 0 ? ` data-az="apri" data-idx="${i}"` : ''}>${av(m, e, 'xs')}<div class="tx"><b>${esc(c.nome)}</b><span>${esc(m.etichetta(e))}${c.cliente ? ' · ' + esc(c.cliente) : ''}</span></div>${chip}${i >= 0 ? `<span class="rb xs">${ic('i-chevr')}</span>` : ''}</div>`;
+    return `<div class="qrow${c.stato === 'attesa' ? ' on' : ''}" data-az="consegna" data-id="${esc(c.id)}">${av(m, e, 'xs')}<div class="tx"><b>${esc(c.nome)}</b><span>${esc(m.etichetta(e))}${c.cliente ? ' · ' + esc(c.cliente) : ''}</span></div>${chip}<span class="rb xs">${ic('i-chevr')}</span></div>`;
   };
   const vuoto = () => `<div class="m-vuoto"><span class="rb black">${ic('i-check')}</span><b>Niente da approvare</b><span>Hai deciso tutto. Le prossime consegne arriveranno qui.</span></div>`;
 
@@ -779,12 +781,44 @@ window.DGT_MOBILE = (function () {
     </div>`;
   }
 
-  const NOMI = { 1: 'Da approvare', 2: 'Richiesta', 3: 'Riepilogo di oggi', 4: 'Chat', 5: 'Conversazione', 6: 'Agenda', 7: 'Dipartimenti', 8: 'Dipartimento' };
+  /* ---------- schermata 9: la consegna aperta (versione 19, 2026-09-07) ----------
+     La pagina Consegna della Console ridotta al telefono. «Aprire una consegna» vuol dire una schermata sua anche qui:
+     sul telefono non c'e' una tendina larga da usare, e la riga della sezione portava alla richiesta solo quando la
+     consegna aspettava il titolare — le altre non portavano da nessuna parte.
+     Il contenuto sulla superficie chiara (e' un documento), poi il passo con i suoi strumenti e le voci di log, e le
+     azioni: decidere se aspetta il titolare, scrivere a chi l'ha fatta. Si torna al dipartimento. */
+  function consegna(m, tel, st) {
+    const c = m.consegnaDi(st.consegna) || m.consegneDi(st.dip)[0];
+    if (!c) return dipartimento(m, tel, st);
+    const e = m.byId[c.chi];
+    const r = c.richiesta ? m.richieste.find(x => x.id === c.richiesta) : null;
+    const i = r ? coda(m).indexOf(r) : -1;
+    const stato = { fatto: 'Fatta', approvata: 'Approvata', attesa: 'Da approvare', bozza: 'In corso', errore: 'Non fatta' }[c.stato] || 'Da fare';
+    const chip = c.stato === 'errore' ? `<span class="chip rosa">${ic('i-warn')}${stato}</span>` : c.stato === 'da fare' ? `<span class="chip light">${ic('i-clock')}${stato}</span>` : `<span class="chip lime">${ic(c.stato === 'attesa' ? 'i-bell' : c.stato === 'bozza' ? 'i-play' : 'i-check')}${stato}</span>`;
+    const corpo = r ? r.testo : (c.passo && c.passo.esito ? c.passo.esito : (c.desc || 'Non ancora prodotta.'));
+    const eti = r ? r.allegato : (c.desc && c.desc !== corpo ? c.desc : (c.cliente || m.etichetta(e)));
+    const sez = (titolo, n, dentro) => n ? `<div class="m-sh"><h4>${esc(titolo)}</h4><span class="chip light">${n}</span></div>${dentro}` : '';
+    return `<div class="m-scr chiara rie" data-schermata="9">
+      ${barraStato(m)}
+      <div class="m-scroll">
+        <div class="m-nav"><span class="rb olight" data-az="indietro" data-s="8" title="${esc(m.dipDi(e).nome)}">${ic('i-left')}</span><span class="chip light">${ic(iconaTipo[c.tipo] || 'i-doc')}${esc(c.tipo)}</span></div>
+        <h3 class="m-h1${c.nome.length > 12 ? ' stretta' : ''}">${esc(c.nome.toUpperCase())}</h3>
+        <div class="m-coda"><div class="qrow" data-az="filo" data-id="${e.id}">${av(m, e, 'xs')}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}${c.cliente ? ' · ' + esc(c.cliente) : ''}</span></div>${chip}<span class="rb xs">${ic('i-chevr')}</span></div></div>
+        <div class="m-doc"><div class="lb">${esc(eti)}</div><div class="tx">${esc(corpo)}</div></div>
+        ${sez('Il passo che l\'ha prodotta', c.passo ? 1 : 0, c.passo ? `<div class="m-coda"><div class="qrow"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-rows')}</span><div class="tx"><b>${c.passo ? c.passo.n + '. ' + esc(c.passo.nome) : ''}</b><span>${c.passo ? esc(c.passo.durata || '—') + ' · ' + eur(c.passo.costo) : ''}</span></div></div>${(c.passo && c.passo.strumenti || []).map(x => `<div class="qrow"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-gear')}</span><div class="tx"><b>${esc(x)}</b><span>strumento</span></div></div>`).join('')}</div>` : '')}
+        ${sez('Mentre la faceva', (c.voci || []).length, `<div class="m-coda">${(c.voci || []).map(v => `<div class="qrow"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic(v.tipo === 'strumento' ? 'i-gear' : v.tipo === 'nota' ? 'i-pen' : v.tipo === 'errore' ? 'i-warn' : 'i-rows')}</span><div class="tx"><b>${esc(v.testo)}</b><span>${esc(v.ora)}${v.costo ? ' · ' + eur(v.costo) : ''}</span></div></div>`).join('')}</div>`)}
+        ${i >= 0 ? `<div class="m-azioni"><span class="pill lime" data-az="apri" data-idx="${i}">${ic('i-bell')}Decidi</span></div>` : ''}
+      </div>
+      ${navigazione(m, coda(m).length, 7)}
+    </div>`;
+  }
+
+  const NOMI = { 1: 'Da approvare', 2: 'Richiesta', 3: 'Riepilogo di oggi', 4: 'Chat', 5: 'Conversazione', 6: 'Agenda', 7: 'Dipartimenti', 8: 'Dipartimento', 9: 'Consegna' };
   /* Un telefono: tel = { n, schermata, motivo }; st = { richiesta } condiviso fra i telefoni. */
   function render(m, tel, st) {
     const scr = tel.schermata === 2 ? richiesta(m, tel, st) : tel.schermata === 3 ? riepilogo(m, tel, st)
       : tel.schermata === 4 ? chatElenco(m, tel, st) : tel.schermata === 5 ? filo(m, tel, st) : tel.schermata === 6 ? agenda(m, tel, st)
-      : tel.schermata === 7 ? dipartimenti(m, tel, st) : tel.schermata === 8 ? dipartimento(m, tel, st)
+      : tel.schermata === 7 ? dipartimenti(m, tel, st) : tel.schermata === 8 ? dipartimento(m, tel, st) : tel.schermata === 9 ? consegna(m, tel, st)
       : daApprovare(m, tel, st);
     return `<div class="m-tel" data-n="${tel.n}" role="figure" aria-label="Telefono ${tel.n} — ${NOMI[tel.schermata] || NOMI[1]} (contenuto sintetico)">${scr}</div>`;
   }
@@ -793,8 +827,8 @@ window.DGT_MOBILE = (function () {
      quello che si decide su uno si vede subito sugli altri (e nella Console, che legge lo stesso modello). */
   function monta(radice, m, opz) {
     opz = opz || {};
-    const st = { richiesta: opz.richiesta || 0, filo: opz.filo || ((m.fili()[0] || {}).e || m.dipendenti[0]).id, quadro: opz.quadro === undefined ? QUADRO : opz.quadro, conta: opz.conta === undefined ? CONTA : opz.conta, dip: opz.dip || m.dipartimenti[0].id, cerca: undefined };
-    const tels = (opz.schermate && opz.schermate.length ? opz.schermate : [1, 2, 3, 4, 5, 6, 7, 8]).map((s, i) => ({ n: i + 1, schermata: s >= 2 && s <= 8 ? s : 1, motivo: false }));
+    const st = { richiesta: opz.richiesta || 0, filo: opz.filo || ((m.fili()[0] || {}).e || m.dipendenti[0]).id, quadro: opz.quadro === undefined ? QUADRO : opz.quadro, conta: opz.conta === undefined ? CONTA : opz.conta, dip: opz.dip || m.dipartimenti[0].id, consegna: opz.consegna || '', cerca: undefined };
+    const tels = (opz.schermate && opz.schermate.length ? opz.schermate : [1, 2, 3, 4, 5, 6, 7, 8]).map((s, i) => ({ n: i + 1, schermata: s >= 2 && s <= 9 ? s : 1, motivo: false }));
     const n = () => coda(m).length;
     radice.innerHTML = `<div class="m-page">
       <div class="m-hd"><h1>Il telefono del titolare</h1><p><b>Da approvare</b>, <b>Richiesta</b> e <b>Riepilogo di oggi</b>: post, documenti, liste, proposte e le revisioni di performance (le due versioni a confronto e le quattro decisioni), il rifiuto con motivo, il riepilogo che a coda finita prende il posto della coda. Poi le due tab della navigazione in basso: <b>Chat</b> (l'elenco dei fili e la conversazione con un dipendente, con la barra di scrittura) e <b>Agenda</b> (la giornata sulla linea del tempo, i prossimi giorni, le scadenze). I telefoni condividono il modello della Console: la richiesta scelta su uno si apre sull'altro, e quello che si decide o si scrive qui vale anche lì.</p></div>
@@ -840,6 +874,8 @@ window.DGT_MOBILE = (function () {
       const az = el.dataset.az, tel = telDi(el);
       if (az === 'apri') { ev.stopPropagation(); if (el.dataset.idx !== undefined) st.richiesta = +el.dataset.idx; tel.schermata = 2; tel.motivo = false; tutto(); }
       else if (az === 'indietro') { tel.schermata = +(el.dataset.s || 1); tel.motivo = false; tutto(); }
+      /* la consegna apre la sua schermata, come nella Console apre la sua pagina (versione 19) */
+      else if (az === 'consegna') { ev.stopPropagation(); st.consegna = el.dataset.id; tel.schermata = 9; tel.motivo = false; tutto(); }
       /* la chat (versione 15): la riga apre il filo, la barra di scrittura ci scrive dentro (`m.scrivi`, lo stesso filo della Console) */
       else if (az === 'filo') { ev.stopPropagation(); st.filo = +el.dataset.id; tel.schermata = 5; tel.motivo = false; tutto(); }
       else if (az === 'mchat-invia') {
@@ -848,7 +884,7 @@ window.DGT_MOBILE = (function () {
         m.scrivi(+el.dataset.id, v); tutto();
         const sc = cont.querySelector(`.m-tel[data-n="${tel.n}"] .m-scroll`); if (sc) sc.scrollTop = sc.scrollHeight;
       }
-      else if (az === 'schermata') { ev.stopPropagation(); const s = +el.dataset.s; if (s >= 1 && s <= 8) { tel.schermata = s; tel.motivo = false; tutto(); } }
+      else if (az === 'schermata') { ev.stopPropagation(); const s = +el.dataset.s; if (s >= 1 && s <= 9) { tel.schermata = s; tel.motivo = false; tutto(); } }
       /* la tab Dipartimenti (versione 17): la riga dell'elenco apre il dipartimento, che è condiviso fra i telefoni come la richiesta */
       else if (az === 'dip') { ev.stopPropagation(); st.dip = el.dataset.dip; tel.schermata = 8; tel.motivo = false; tutto(); }
       /* la ricerca fra le conversazioni (versione 17) */

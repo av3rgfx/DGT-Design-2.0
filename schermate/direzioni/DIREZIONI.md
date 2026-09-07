@@ -1697,19 +1697,44 @@ Card di **316×294 px**, quattro per riga, la stessa griglia di «Da approvare»
    «Summit Marketing · parte alle 17:00» sforava di **29 px**. Il verbo che il chip di stato dice già
    («consegnato», «approvata», «concluso», «parte», «fermo al») si toglie e resta l'ora.
 
-#### 5. Che cosa vuol dire «aprire una consegna»
+#### 5. Che cosa vuol dire «aprire una consegna»: una pagina, non la tendina
 
-La domanda che l'analisi aveva lasciato aperta. La risposta: **la stessa tendina larga con cui il titolare apre già una
-richiesta** — non una pagina nuova, non un pannello nuovo. Un clic sulla card la apre; «Riduci» torna alla coda, come
-dalla richiesta.
+La domanda che l'analisi aveva lasciato aperta, e su cui l'utente ha corretto la prima risposta. **La prima proposta
+era la tendina larga** (quella con cui il titolare apre una richiesta). Il suo giudizio, testuale: *«la tendina per me
+è in anteprima presente nel popup a notifica delle approvazioni. Voglio che si apra una pagina dedicata quando si apre
+una consegna.»*
 
-Dentro ci sono **cinque fatti che la card non poteva reggere**: chi l'ha fatta, il passo che l'ha prodotta con la sua
-durata e il suo costo, gli strumenti di quel passo, le voci di log di mentre la faceva, e — se la consegna è **già
-uscita al titolare** — il **documento vero della richiesta**, con il suo testo e il suo allegato, più il pulsante che
-apre la richiesta in coda. È il collegamento che l'analisi aveva contato come mancante: prima l'unico legame fra una
-consegna e la richiesta che ne era nata stava in un campo che nessuna pagina leggeva.
+**Ha ragione, e la ragione è un confine fra due mestieri.** La tendina serve a **decidere in fretta senza perdere la
+coda**: è ancorata al pannello delle approvazioni, ha il pager «1 di 4» e le quattro decisioni, e quando la chiudi sei
+ancora nella coda. Una consegna invece **si legge**, e nel prodotto tutto quello che si legge ha una pagina: il
+Dipartimento, il Dipendente, l'Esecuzione, i Costi. Mettere una cosa da leggere dentro l'attrezzo per decidere le
+confonde tutte e due.
 
-Si apre anche dall'indirizzo, per le catture e le prove: `?consegna=c1-0`.
+Quindi: **`?pagina=consegna&consegna=c1-0`**, nella stessa cornice delle altre — barra in cima, titolo con i numeri,
+rail, sezioni — e la freccia della cornice torna al dipartimento, che è da dove ci si arriva. Sul telefono la stessa
+cosa è la **schermata 9** (le altre otto restano quelle che erano).
+
+**Le sezioni, e perché sono quelle:**
+
+| Sezione | Che cosa porta | Quando c'è |
+|---|---|---|
+| Testata | chi l'ha fatta, i chip (stato, tipo, cliente, esecuzione), la frase che dice dov'è arrivata, e le azioni | sempre |
+| **Il contenuto** | il documento vero della richiesta se la consegna è già uscita (testo e allegato), altrimenti l'esito del passo che l'ha prodotta | sempre |
+| **Il passo che l'ha prodotta** | numero, nome, durata, costo, gli strumenti, e le **voci di log** di mentre la faceva | quando la consegna nasce da un passo dichiarato: **9 su 18** a undici |
+| **La richiesta al titolare** | la riga della richiesta con il suo esito, e la nota del dipendente | quando la consegna è già uscita: **3 su 18** a undici, 0 a quaranta |
+| **Le altre consegne** | dell'esecuzione se ce ne sono, se no quattro del dipartimento | sempre |
+
+**Due misure hanno deciso la testata:**
+- **Due numeri e non tre.** La Consegna ha i titoli più lunghi del prodotto (32 caratteri, «200 lead e-commerce in
+  Lombardia») e con tre la testata **sforava di 77 px**. La durata è il terzo che si toglie: sta già nella sezione del
+  passo, con il suo contesto. Provata su tutte e **58 le pagine** (18 a undici, 40 a quaranta): il peggior caso ha
+  **118 px di margine**, nessuna scorre di lato, **zero controlli inerti**.
+- **Solo i numeri che hanno un valore.** Nove consegne su diciotto nascono da un passo dichiarato e nove no; scrivere
+  «—» due volte in cima a una pagina è rumore. Lo stato c'è sempre, il costo viene dal passo o dalla richiesta.
+
+**E una sull'ultima sezione**: a quaranta dipendenti **27 consegne su 40** nascono da un'esecuzione con un solo output,
+quindi «le altre consegne dell'esecuzione» sarebbe vuota e la pagina finirebbe dopo il contenuto, mezza nera. Lì la
+sezione diventa «le altre consegne di ‹dipartimento›», quattro, una riga, con la pillola che porta alla lista intera.
 
 #### 6. Una ripetizione, misurata
 
@@ -1720,13 +1745,25 @@ attesa la aspetta davvero. **Si toglie in una riga** (`TONO_CONSEGNA.attesa`) se
 
 #### 7. Verifica
 
-- **Le quattro prove cliccate passano**: `console.js` **129** (erano 107: ventidue verifiche nuove sulle consegne),
-  `mobile.js` (tre verifiche nuove sulla sezione del telefono), `costi.js` e `agenda-chat.js` invariate.
+- **Le quattro prove cliccate passano: 141 + 82 + 48 + 54 = 325 verifiche, 0 ko** (erano 284). `console.js` da 107 a
+  **141** (la sezione, i filtri, la pagina della consegna, il ritorno al dipartimento, il titolo lungo, i due numeri
+  della testata), `mobile.js` da 75 a **82** (la sezione e la schermata 9), `costi.js` e `agenda-chat.js` invariate.
+- **La pagina della consegna provata su tutte e 58**, a undici e a quaranta: nessuna sfora (peggior margine 118 px),
+  nessuna scorre di lato, **zero controlli inerti**, nessun errore in console.
 - **Le prove non si legano più agli indici delle sezioni.** Aggiungere la sesta sezione ha spostato
   `section:nth-of-type(5)` e ne ha rotte tre: adesso un aiutante (`sez('^Spesa')`) cerca la sezione **dal titolo**.
   Stessa correzione in `scatta.js`, dove `a-sez-spesa-oggi` puntava alla quinta sezione.
 - Catture nuove nel gruppo `consegne` di `scatta.js`: `a-sez-consegne`, `a-sez-consegne-fatte`, `a-consegna`,
-  `a-consegna-richiesta`, `a-dipartimento-40`, `m-consegne`.
+  `a-consegna-richiesta`, `a-consegna-sola`, `a-dipartimento-40`, `m-consegne`, `m-consegna`, `m-consegna-post`.
+  **50 su 57 restano identiche byte per byte.** Due delle sette che cambiano sono di sola resa: `a-sez-spesa-oggi`
+  (348 pixel su 923 000, la sezione sta 714 px più in basso) e **`a-costi.png`, che cambia in 6 pixel nel riquadro
+  `x 1136–1415, y 173–175`** — esattamente quello che la sessione precedente aveva segnalato come instabile per
+  `a-11.png`. Dentro una sessione le catture sono stabili (due giri dello stesso codice danno file identici); fra
+  sessioni quel riquadro no. La pagina dei Costi non è stata toccata e i suoi numeri non si muovono.
+- **Due trappole del repository, tutte e due già scritte nelle note e tutte e due ricadute**: un **backtick dentro un
+  commento CSS** (`.doc` fra apici inversi) ha chiuso il template literal e la pagina non caricava; e un nome nuovo che
+  esisteva già (`consegneDi`) ha fatto morire il primo tentativo in `SyntaxError`. La nota dice «ci si cade a ogni
+  sessione» ed è vero.
 
 #### 8. Che cosa resta da decidere
 
@@ -1761,7 +1798,7 @@ attesa la aspetta davvero. **Si toglie in una riga** (`TONO_CONSEGNA.attesa`) se
 | `costruisci-scelta.js` | costruisce `scelta-barra.html` dal sorgente, incorporando i PNG di `screenshot/` come data URI, più le otto catture del commutatore undici / quaranta (`node costruisci-scelta.js [out.html]`). Il risultato non entra nel repository (megabyte di base64): si rifà in un comando |
 | `scatta.js` | rigenera le catture di `screenshot/` dalla lista di parametri dichiarata nel file (`node scatta.js`, `console` / `barra` / `quadro` / `dip` / `controlli` per un gruppo, `--in <cartella>` per il confronto prima/dopo); le catture che restano fuori sono elencate in `FUORI`, dalla versione 19 c'è il gruppo `consegne` (`a-sez-consegne`, `a-sez-consegne-fatte`, `a-consegna`, `a-consegna-richiesta`, `a-dipartimento-40`, `m-consegne`) e dalla versione 18 ci sono anche i prima/dopo `a-frecce-*.png` e `m-conta-titolo.png`, che vogliono l'albero della versione precedente e si compongono con `design-system/tools/affianca.js` |
 | `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`); le cornici del telefono (`mobile-*.png`: le versioni 11 e 12, le quattro della revisione rifatte nella versione 14 e le tre schermate nuove `mobile-4-chat`, `mobile-5-filo`, `mobile-6-agenda` della versione 15) e le sezioni delle pagine Costi (`a-costi-*.png`, versione 13), Agenda e Chat (`a-agenda-*.png`, `a-chat-*.png`, versione 15) con `screenshot-elementi.js`; le catture dello studio della barra (`a-barra-*.png`, versione 16) e quelle della versione 17: la forma scelta del quadro del giorno e le due scartate, le due schermate dei Dipartimenti (`m-*.png`), i controlli delle sezioni (`a-sez-*.png`); della versione 18 i prima/dopo delle frecce di riga (`a-frecce-*.png`) e il confronto del conto nel titolo del telefono (`m-conta-titolo.png`), composti con `affianca.js`. Si rigenerano con `scatta.js`, tranne quelli elencati in `FUORI` |
-| `prove/` | le prove cliccate con Playwright, con il `README.md` che dice il comando: `console.js` (132 verifiche: tendine, Richieste, editor, esecuzione, 40, la barra «Oggi in azienda» e la barra dei passi, dalla versione 17 i controlli delle intestazioni di sezione, dalla 18 le frecce di riga e dalla 19 le consegne del dipartimento; le sezioni si cercano **dal titolo** e non più dall'indice), `mobile.js` (78: le schermate delle approvazioni, revisione, rifiuto con motivo, prova, stato vuoto, 40, dalla versione 17 il quadro del giorno e la tab Dipartimenti, dalla 18 il conto delle frecce e dalla 19 le consegne del dipartimento), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le pagine Agenda e Chat della Console e le due tab del telefono, versione 15); leggono `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH` |
+| `prove/` | le prove cliccate con Playwright, con il `README.md` che dice il comando: `console.js` (141 verifiche: tendine, Richieste, editor, esecuzione, 40, la barra «Oggi in azienda» e la barra dei passi, dalla versione 17 i controlli delle intestazioni di sezione, dalla 18 le frecce di riga e dalla 19 le consegne del dipartimento; le sezioni si cercano **dal titolo** e non più dall'indice), `mobile.js` (82: le schermate delle approvazioni, revisione, rifiuto con motivo, prova, stato vuoto, 40, dalla versione 17 il quadro del giorno e la tab Dipartimenti, dalla 18 il conto delle frecce e dalla 19 le consegne del dipartimento), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le pagine Agenda e Chat della Console e le due tab del telefono, versione 15); leggono `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH` |
 
 Per gli screenshot: `design-system/tools/screenshot-page.js` (vedi `design-system/tools/README.md`).
 

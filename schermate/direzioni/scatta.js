@@ -83,8 +83,11 @@ const CATTURE = [
   /* --- versione 19: le consegne del dipartimento --- */
   { g: 'consegne', nome: 'a-sez-consegne', q: 'pagina=dipartimento&dip=svi&tendina=chiusa', sel: '.a-main section:nth-of-type(2)', h: 1400 },
   { g: 'consegne', nome: 'a-sez-consegne-fatte', q: 'pagina=dipartimento&dip=svi&tendina=chiusa', sel: '.a-main section:nth-of-type(2)', h: 1400, clic: '.a-main section:nth-of-type(2) .pill[data-v="fatte"]' },
-  { g: 'consegne', nome: 'a-consegna', q: 'pagina=dipartimento&dip=svi&consegna=c1-0', sel: '.a-tend.estesa', h: 1100 },
-  { g: 'consegne', nome: 'a-consegna-richiesta', q: 'pagina=dipartimento&dip=mkt&consegna=c4-2', sel: '.a-tend.estesa', h: 1100 },
+  { g: 'consegne', nome: 'a-consegna', q: 'pagina=consegna&consegna=c1-0&tendina=chiusa' },
+  { g: 'consegne', nome: 'a-consegna-richiesta', q: 'pagina=consegna&consegna=c4-2&tendina=chiusa' },
+  { g: 'consegne', nome: 'a-consegna-sola', q: 'n=40&pagina=consegna&consegna=c7-0&tendina=chiusa' },
+  { g: 'consegne', nome: 'm-consegna', file: 'mobile.html', q: 'schermata=9&dip=svi&consegna=c1-0', sel: '.m-tel', h: 1100 },
+  { g: 'consegne', nome: 'm-consegna-post', file: 'mobile.html', q: 'schermata=9&dip=mkt&consegna=c4-2', sel: '.m-tel', h: 1100 },
   { g: 'consegne', nome: 'a-dipartimento-40', q: 'pagina=dipartimento&dip=svi&n=40&tendina=chiusa' },
   { g: 'consegne', nome: 'm-consegne', file: 'mobile.html', q: 'schermata=8&dip=svi', sel: '.m-tel', h: 1100, eval: "document.querySelector('.m-scroll').scrollTop=350" },
   { g: 'dip', nome: 'm-chat-cerca', file: 'mobile.html', q: 'schermata=4', sel: '.m-tel', h: 1100, clic: '[data-az="mcerca"]', eval: "(()=>{const i=document.querySelector('input[data-mcerca]');i.value='mar';i.dispatchEvent(new Event('input',{bubbles:true}))})()" },

@@ -33,12 +33,20 @@ Una **sezione nuova sulla pagina Dipartimento**, seconda su sei, in Console e su
    consegne arrivano a 10 — **è stata la prova esistente a cogliermi in fallo**); nella riga di stato **il solo chip**
    (al testo restano 30–52 px, «Passo 3 · 23,6 €» ne chiede 89); sotto il titolo il «quando» **senza il verbo** che il
    chip dice già («Summit Marketing · parte alle 17:00» sforava di 29 px).
-5. **Che cosa vuol dire «aprire una consegna»** — la domanda che l'utente non aveva capito, e la sua idea
-   dell'espansione. **La stessa tendina larga con cui il titolare apre già una richiesta**: un clic sulla card la apre,
-   «Riduci» torna alla coda. Dentro ci sono i **cinque fatti che la card non regge** (chi l'ha fatta, il passo con
-   durata e costo, gli strumenti, le voci di log, e — se la consegna è già uscita — il **documento vero della
-   richiesta** con il pulsante che la apre). La sua idea era giusta e il meccanismo esisteva già: quello che si espande
-   non è la sezione (dieci righe stanno in una schermata) ma **la singola consegna**. Indirizzo: `?consegna=c1-0`.
+5. **Che cosa vuol dire «aprire una consegna»: una pagina dedicata** — e qui l'utente ha corretto la prima proposta.
+   Avevo messo la **tendina** larga; parole sue: *«la tendina per me è in anteprima presente nel popup a notifica delle
+   approvazioni. Voglio che si apra una pagina dedicata quando si apre una consegna.»* Ha ragione, ed è un confine fra
+   due mestieri: **la tendina serve a decidere in fretta senza perdere la coda** (è ancorata al pannello delle
+   approvazioni, ha il pager «1 di 4» e le quattro decisioni), **una consegna si legge**, e nel prodotto tutto quello
+   che si legge ha una pagina. Quindi `?pagina=consegna&consegna=c1-0` nella cornice delle altre, e sul telefono la
+   **schermata 9**. La freccia della cornice torna al dipartimento.
+   Le sezioni: testata, **Il contenuto** (sempre), **Il passo che l'ha prodotta** (9 consegne su 18 a undici),
+   **La richiesta al titolare** (3 su 18), **Le altre consegne**. Due misure hanno deciso la testata: **due numeri e
+   non tre** (con tre sforava di 77 px, il titolo più lungo del prodotto ha 32 caratteri) e **solo quelli che hanno un
+   valore** (nove consegne su diciotto non nascono da un passo, e «—» due volte è rumore). Provata su tutte e **58 le
+   pagine**: peggior margine 118 px, nessuna scorre di lato, **zero controlli inerti**.
+   La sua idea dell'espansione resta giusta sul suo asse: quello che si espande non è la sezione (dieci righe stanno in
+   una schermata, e la soglia del prodotto è dodici) ma **la singola consegna** — solo che si espande in una pagina.
 
 **Una ripetizione, misurata e lasciata**: una consegna in attesa compare due volte sulla pagina (in «Consegne di oggi»
 e in «Da approvare»), **1 o 2 card per pagina, a 1 988–2 302 px di distanza** — due schermate piene, non si vedono mai
@@ -53,16 +61,19 @@ Tutto committato e pushato sul branch indicato sotto, con la PR aperta verso `ma
   `main`: se all'avvio della prossima sessione risulta già unita, ripartire da `main` con un branch nuovo; se è ancora
   aperta, continuare sullo stesso branch e la PR si aggiorna da sola.
 - **Codice toccato** (versione 19): `dati.js` (`consegneDi`, `consegnaDi`, rinominato `contaConsegne`),
-  `direzione-a.js` (la sezione, `cardConsegna`, `tendinaConsegna`, l'azione `consegna`, il CSS delle voci),
-  `direzione-a.html` (`?consegna=`), `mobile.js` (la sezione del telefono, `rigaConsegna`, rinominato
-  `rigaRichiesta`), `prove/console.js` e `prove/mobile.js`, `scatta.js`. **Non toccati**: `componenti.js`,
-  `comune.js`, `avatar/`, `costi.js`, `agenda-chat.js`.
-- **Le quattro prove cliccate passano: 132 + 78 + 48 + 54 = 312 verifiche, 0 ko** (erano 284).
-- **Le catture**: **46 su 51 identiche byte per byte**; ne cambiano **5** (tutte della pagina Dipartimento:
-  `a-dipartimento`, `a-sez-spesa-oggi` e le tre del telefono) e ne nascono **6** (gruppo `consegne` in `scatta.js`).
-  `a-sez-spesa-oggi` cambia in **348 pixel su 923 000, delta massimo 56**, con il contenuto identico: è antialiasing,
-  la sezione sta 714 px più in basso. Controllato che le catture siano stabili (due giri dello stesso codice danno
-  file identici), quindi la differenza è vera e non rumore.
+  `direzione-a.js` (la sezione, `cardConsegna`, la **pagina** `paginaConsegna` con la sua testata, l'azione `consegna`,
+  il CSS `.cdoc`), `direzione-a.html` (`?pagina=consegna&consegna=`), `mobile.js` (la sezione e la **schermata 9**,
+  `rigaConsegna`, rinominato `rigaRichiesta`), `mobile.html` (`?schermata=9&consegna=`), `prove/console.js` e
+  `prove/mobile.js`, `scatta.js`. **Non toccati**: `componenti.js`, `comune.js`, `avatar/`, `costi.js`,
+  `agenda-chat.js`.
+- **Le quattro prove cliccate passano: 141 + 82 + 48 + 54 = 325 verifiche, 0 ko** (erano 284).
+- **Le catture**: **50 su 57 identiche byte per byte**, 7 cambiano e 9 nascono (gruppo `consegne` in `scatta.js`).
+  Due cambiamenti sono di sola resa e vanno detti: `a-sez-spesa-oggi` cambia in **348 pixel su 923 000** perché la
+  sezione sta 714 px più in basso (contenuto identico, antialiasing); e **`a-costi.png` cambia in 6 pixel** nel
+  riquadro **`x 1136–1415, y 173–175`** — che è **esattamente** quello segnalato dalla sessione precedente come
+  instabile per `a-11.png`. Controllato: due giri dello stesso codice danno file identici, quindi dentro una sessione è
+  stabile; fra sessioni no. La pagina dei Costi non è stata toccata e i suoi numeri non si muovono (318 consegne per
+  cliente a undici, 1 179 a quaranta, prima e dopo).
 - **Artefatti: da ripubblicare.** La Console e il telefono cambiano (la pagina Dipartimento), quindi i due artefatti
   `e6699f3a-879b-4bce-a9d8-6fc21ed84e34` e `34192ba0-51da-4f02-9e64-3a6d698a44e9` **non sono più aggiornati**: vanno
   rifatti con `build-unico.js` e ripubblicati allo stesso indirizzo. **Non è stato fatto in questa sessione.** Il
@@ -713,10 +724,10 @@ non un controllo) e le quattro liste miste, in cui la colonna resta e qualche ce
 
 - **Le prove cliccate** (`schermate/direzioni/prove/`, con il README che dice il comando):
   `export PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css` e poi
-  `node schermate/direzioni/prove/console.js` (**132**: tendine, Richieste, editor del dipendente, esecuzione, 40, la barra
+  `node schermate/direzioni/prove/console.js` (**141**: tendine, Richieste, editor del dipendente, esecuzione, 40, la barra
   «Oggi in azienda» e la barra dei passi, i controlli delle intestazioni di sezione e, dalla versione 18, **le frecce di
   riga**: zero inerti su tredici pagine, le 65 liste allineate, il confronto che si apre dalla revisione passata),
-  `mobile.js` (**78**: gli otto telefoni, la revisione, le frecce, il rifiuto con motivo, la prova, lo stato vuoto, 40, il
+  `mobile.js` (**82**: gli otto telefoni, la revisione, le frecce, il rifiuto con motivo, la prova, lo stato vuoto, 40, il
   quadro del giorno e la tab Dipartimenti; a ogni passo nessuno schermo che scorre di lato e console pulita), `costi.js`
   (48) e `agenda-chat.js` (54); da qualunque cartella, leggono anche `CHROME_PATH`, girano con `reducedMotion: 'reduce'`,
   escono con 1 se una verifica fallisce. Attenzione: Playwright scorre da solo per cliccare un elemento fuori dallo

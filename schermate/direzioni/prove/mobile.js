@@ -195,7 +195,21 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   });
   check(cnTel.righe > 0 && cnTel.righe === cnTel.dalModello, 'il telefono mostra le ' + cnTel.righe + ' consegne del modello, le stesse della Console');
   check(cnTel.conAvatar === cnTel.righe && cnTel.conChip === cnTel.righe, 'ogni riga porta l\'avatar di chi l\'ha fatta e il chip dello stato');
-  check(cnTel.frecceInerti === 0, 'e nessuna freccia inerte: la riga si tocca solo dove la consegna aspetta il titolare (' + cnTel.apribili + ' su ' + cnTel.righe + ')');
+  check(cnTel.frecceInerti === 0, 'e nessuna freccia inerte: ogni riga apre la schermata della consegna');
+  /* la schermata 9: aprire una consegna vuol dire una schermata sua, come nella Console una pagina sua */
+  await clic('.m-tel[data-n="7"] .m-coda .qrow[data-az="consegna"]', 400);
+  const c9 = await page.evaluate(() => {
+    const t = document.querySelector('.m-tel[data-n="7"] .m-scr');
+    return { schermata: t.dataset.schermata, titolo: (t.querySelector('.m-h1') || {}).textContent,
+      doc: !!t.querySelector('.m-doc'), testo: (t.querySelector('.m-doc .tx') || {}).textContent || '',
+      sezioni: [...t.querySelectorAll('.m-sh h4')].map(h => h.textContent),
+      indietro: (t.querySelector('[data-az="indietro"]') || {}).dataset };
+  });
+  check(c9.schermata === '9', 'la riga apre la schermata 9, la consegna');
+  check((c9.titolo || '').length > 0 && c9.doc && c9.testo.length > 10, 'con il titolo e il contenuto su superficie chiara: «' + c9.testo.slice(0, 44) + '…»');
+  check(c9.indietro && c9.indietro.s === '8', 'e la freccia torna al dipartimento, da dove ci si arriva');
+  await clic('.m-tel[data-n="7"] [data-az="indietro"]', 350);
+  check(await page.evaluate(() => document.querySelector('.m-tel[data-n="7"] .m-scr').dataset.schermata) === '8', 'e ci torna davvero');
   /* le righe da approvare del dipartimento decidono davvero: la stessa m.decidi di tutte le altre pagine */
   const primaAtt = await page.evaluate(() => { const d = modello.dipartimenti[1]; const ids = modello.perDip[d.id].map(e => e.id); return (DGT_MOBILE.coda(modello).filter(r => ids.includes(r.chi))[0] || {}).id; });
   const nPrima = (await coda()).length;

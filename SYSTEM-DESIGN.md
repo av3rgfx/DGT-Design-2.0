@@ -202,7 +202,7 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
 9. Pagina Dipartimento nella stessa cornice, **sei sezioni** (dalla versione 19): Oggi in ‹dipartimento› (esecuzioni:
    al lavoro, errore, pianificate) · **Consegne di oggi** (le cose create dalle sue esecuzioni, che si aprono nella
    tendina larga; regola 27) · Dipendenti (+ card «Aggiungi») · Obiettivi (card con barra di avanzamento a pillola;
-   lime = in ritardo) · Da approvare dal dipartimento · Spesa del mese per cliente. Ogni pagina interna ripete la cornice: barra in alto,
+   lime = in ritardo) · Da approvare dal dipartimento · Spesa del mese per cliente. Una consegna si apre nella **sua pagina** (regola 27), non in una tendina. Ogni pagina interna ripete la cornice: barra in alto,
    titolo con numeri, rail, sezioni con intestazione e pillole, tendine del titolare.
 10. Il dipendente AI non ha un nome di base: l'etichetta principale è il ruolo (nella card a 22 px su due righe) e
     sotto sta il dipartimento; il nome è facoltativo (creazione o modifica) e quando c'è torna la forma piena (nome
@@ -372,14 +372,22 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     18 a undici dipendenti (7 di Sviluppo, 5 di Marketing, 4 di Vendite, 2 di Amministrazione) e 40 a quaranta, in
     card di 316×294 px, quattro per riga, con cinque pillole di filtro. Nessuna pagina nuova, il rail resta a sei voci,
     e sul telefono la stessa sezione in righe. Tre conseguenze che valgono oltre questo caso:
-    - **aprire una cosa vuol dire la tendina larga che il titolare ha già**, non una pagina nuova. Dentro ci sta quello
-      che la card non regge — chi l'ha fatta, il passo che l'ha prodotta con durata, costo e strumenti, le voci di log
-      di mentre la faceva — e, se la consegna è già uscita, il **documento vero della richiesta** con il pulsante che
-      la apre in coda. La card serve a trovare, la tendina a sapere.
+    - **quello che si legge ha una pagina; la tendina serve a decidere.** Aprire una consegna apre la **sua pagina**
+      (`?pagina=consegna&consegna=c1-0`, sul telefono la schermata 9), non la tendina: la tendina è ancorata al
+      pannello delle approvazioni, ha il pager «1 di 4» e le quattro decisioni, e serve a decidere in fretta **senza
+      perdere la coda**. Sono due mestieri e vanno tenuti separati (scelta dell'utente, che la prima versione aveva
+      sbagliato). La pagina porta quello che la card non regge — chi l'ha fatta, il passo con durata, costo e
+      strumenti, le voci di log di mentre la faceva — e, se la consegna è già uscita, il **documento vero della
+      richiesta**, con tre strade per andare a decidere. **La card serve a trovare, la pagina a sapere, la tendina a
+      decidere.**
     - **una card larga 316 px regge tre fatti, non cinque, e i tre si scelgono misurando.** La riga di stato lascia al
       testo **30–52 px** («Passo 3 · 23,6 €» ne chiede 89), quindi lì ci sta il solo chip; sotto il titolo `.meta` non
       va a capo e sfora di 29 px, quindi il verbo che il chip dice già si toglie e resta l'ora. Quello che avanza
       scende nella tendina.
+    - **in una testata ci stanno solo i numeri che hanno un valore, e non sempre tre.** La Consegna ha i titoli più
+      lunghi del prodotto (32 caratteri) e con tre numeri la testata sfora di 77 px; e nove consegne su diciotto non
+      nascono da un passo dichiarato, quindi due dei tre numeri sarebbero «—». Due numeri, e solo quelli che ci sono:
+      provato su tutte e 58 le pagine, il caso peggiore ha 118 px di margine.
     - **una sezione nuova sposta gli indici di tutte quelle dopo.** Aggiungendo la sesta si sono rotte tre prove e una
       cattura che puntavano a `section:nth-of-type(5)`: da qui in avanti prove e catture cercano la sezione **dal
       titolo**, non dalla posizione.
