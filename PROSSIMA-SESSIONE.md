@@ -244,7 +244,8 @@ intervenire, in ordine:
 - **il tempo che manca**: se vuole rivedere *quando*, la strada 2 («la giornata a misura») è disegnata e catturata, e si può
   rimettere in due modi — al posto delle caselle, o come seconda riga sotto di esse (la barra passerebbe da 64 a 96 px e
   scenderebbe tutta la cornice, che è fissa: `.a-head` a 112, `.a-rail` a 260, `.a-main` a 232);
-- **le caselle sono cinque**: se ne vuole meno, la prima a cadere è «approvate» (è la sola che guarda al passato).
+- **le caselle sono quattro** (erano cinque: vedi la correzione 16a): se ne vuole meno, la prima a cadere è «approvate», la
+  sola che guarda al passato.
 
 **Il metodo di sempre**, prima e dopo: rifare i font locali (`fetch-fonts.py`), lanciare le **quattro** prove di `prove/` e
 catturare le pagine prima di toccare qualcosa (base di confronto, ora con `scatta.js --in <cartella>`); leggere `CLAUDE.md`,
@@ -275,7 +276,7 @@ dei passi il «+N da fare» e il «+N fatti» non sono cliccabili (la lista dei 
 
 - **Le prove cliccate** (`schermate/direzioni/prove/`, con il README che dice il comando):
   `export PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css` e poi
-  `node schermate/direzioni/prove/console.js` (80: tendine, Richieste, editor del dipendente, esecuzione, 40, e dalla versione 16 la barra «Oggi in azienda» e la barra dei passi), `mobile.js` (39: i
+  `node schermate/direzioni/prove/console.js` (82: tendine, Richieste, editor del dipendente, esecuzione, 40, e dalla versione 16 la barra «Oggi in azienda» e la barra dei passi), `mobile.js` (39: i
   sei telefoni, la revisione, le frecce, il rifiuto con motivo, la prova, lo stato vuoto, 40; a ogni passo nessuno schermo che
   scorre di lato e console pulita), `costi.js` (48) e `agenda-chat.js` (54: le due pagine nuove, da dove ci si arriva, i filtri, la
   scrittura nel filo, le due tab del telefono); da qualunque cartella, leggono anche `CHROME_PATH`, girano con
@@ -338,7 +339,8 @@ dei passi il «+N da fare» e il «+N fatti» non sono cliccabili (la lista dei 
   del Dipartimento; le richieste sono un campione, non il registro (a 11 sommano 233 € in 30 giorni contro i 613 € dei dossier).
 - L'artefatto si ripubblica allo stesso indirizzo passando `url` allo strumento, dopo averlo letto con `action: read`: lo strumento
   salva il file e chiede che sia letto **per intero** (a blocchi di 250–450 righe, ognuno sotto i 25 000 token; il `grep` non
-  basta). Il file unico della Console pesa circa 447 KB (5 475 righe), quello del telefono 330 KB. Mai forzare. La sottoscrizione
+  basta). Il file unico della Console pesa circa 444 KB (5 552 righe), quello del telefono 322 KB (4 440); la versione
+  pubblicata da leggere ne ha qualcuna in più, perché l'artefatto avvolge la pagina in un suo scheletro. Mai forzare. La sottoscrizione
   agli aggiornamenti dell'artefatto non si registra da questa sessione (403): non dire che si sta «guardando».
 - **Una griglia senza colonne dichiarate non vincola i figli**: `display:grid` con `grid-template-columns:none` mette gli
   elementi in una colonna implicita `auto`, che cresce a `max-content` anche oltre il contenitore. Con `overflow:hidden` sopra

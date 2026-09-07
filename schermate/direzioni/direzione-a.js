@@ -97,10 +97,11 @@ window.DIREZIONE_A = (function () {
 .tl .now b{position:absolute;left:0;top:0;transform:translate(-50%,-50%);height:22px;padding:0 10px;border-radius:var(--r-pill);background:var(--ink);color:var(--white);font-size:11px;font-weight:400;display:flex;align-items:center;white-space:nowrap}
 .tl .now i{position:absolute;left:0;bottom:0;width:8px;height:8px;border-radius:50%;background:var(--white);transform:translateX(-50%)}
 .a-sched .go{border-color:rgb(0 0 0/.14);background:transparent;color:var(--ink);width:52px;height:52px}
-/* ---- studio della barra «Oggi in azienda» (versione 16, 2026-09-06): tre strade dietro ?barra=1|2|3, la barra di oggi è ?barra=0.
-   Le strade condividono la cornice del riferimento (pillola bianca 64, titolo, chip della data, pista 52, cerchio finale 52) e
-   cambiano solo che cosa c'è dentro la pista. ---- */
-/* la barra nuova (versione 16): quattro o cinque caselle contate e nominate, nessun asse del tempo */
+/* ---- la barra «Oggi in azienda» (versione 16, 2026-09-06): la barra scelta e, dietro ?barra=0, quella di prima. Le due
+   strade scartate («i tre momenti», «la giornata a misura») restano nelle catture e in DIREZIONI.md, non nel codice.
+   Le due barre condividono la cornice del riferimento (pillola bianca 64, titolo, chip della data, pista 52, cerchio finale 52)
+   e cambiano solo che cosa c'è dentro la pista. ---- */
+/* la barra nuova (versione 16, con la correzione 16a): quattro caselle contate e nominate, nessun asse del tempo */
 .tl.quadro{gap:6px}
 .tl .qua{height:40px;border-radius:var(--r-pill);background:rgb(255 255 255/.5);box-shadow:inset 0 0 0 1px rgb(0 0 0/.1);display:flex;align-items:center;gap:8px;padding:0 14px 0 6px;font-size:12px;color:var(--t2-light);white-space:nowrap;flex:none;min-width:0}
 .tl .qua b{font-weight:400;font-size:20px;line-height:1;color:var(--ink)}

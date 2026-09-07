@@ -1255,7 +1255,7 @@ caselle contate, quella dei passi è una successione con il marcatore nero dell'
 - Le quattro prove cliccate passano: `console.js` **82** (erano 64: diciotto verifiche nuove sulla barra — le caselle, i
   numeri contro il modello, dove portano, che non ripetano la linguetta, la barra dei passi dentro la pagina su quattro
   esecuzioni, i quaranta), `mobile.js` 39,
-  `costi.js` 48, `agenda-chat.js` 54. In tutto 221.
+  `costi.js` 48, `agenda-chat.js` 54. In tutto 221 — **223 dopo la correzione 16a** (due verifiche in più, sezione 6a).
 - **Le 25 catture della Console cambiano solo nella barra**: confronto a pixel di ogni pagina prima e dopo, il riquadro delle
   differenze è sempre `x 426–1203, y 34–85` (esattamente la pista) e le differenze sono ~29 500 pixel su ognuna; le uniche due
   eccezioni sono `a-esecuzione.png` e `a-esecuzione-attesa.png`, che cambiano anche nella barra dei passi (il difetto corretto
