@@ -373,11 +373,26 @@ revisione del telefono, corretta e da confermare) 15 (le pagine Agenda e Chat de
 barra «Oggi in azienda» come quadro del giorno), 17 (il quadro del giorno anche sul telefono, la tab Dipartimenti, i
 controlli inerti) e 18 (le frecce di riga: la regola 25 portata dalle intestazioni alle righe) in `DIREZIONI.md`, sezione 4.
 
+
+### Che cosa il prodotto ancora non ha (2026-09-07)
+
+Tre zone segnalate dall'utente a fine sessione, da analizzare prima di disegnarle (dettaglio e fatti in
+`PROSSIMA-SESSIONE.md`, candidati 6, 7 e 8):
+
+- **Le cose create non si guardano insieme.** Gli output di un'esecuzione si vedono solo dentro la pagina Esecuzione —
+  è l'unico punto del prodotto che li legge — e non si aprono. Manca la vista «che cosa ha prodotto questo dipartimento».
+- **L'editor di workflow è solo una figura.** Sta nello specimen (sezione 07, dal secondo riferimento) e non esiste nella
+  direzione A: niente modello, niente clic. Le sue tre porte — Modello, Memoria, Strumento — corrispondono però a cose
+  che il prodotto ha già, e i passi di un'esecuzione sono già la sequenza che un workflow dichiarerebbe.
+- **I connettori stanno sul dipendente.** Strumenti e connessioni vivono nel dossier di ogni dipendente, e lo stesso
+  strumento si ripete su molti (l'«Archivio del cliente» quindici volte). Se il livello giusto sia il dipendente,
+  il dipartimento o l'azienda è un dubbio progettuale, e passa dal consiglio.
+
 ## 11. Collegamenti
 
 - Confronto delle tre direzioni (artefatto): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
-- Direzione A cliccabile, tendine, pagine Richieste, Dipartimento, Dipendente (revisione di performance), Esecuzione, Costi, Agenda e Chat, avatar ed editor (artefatto, ripubblicato il 2026-09-07 con la versione 17): https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34
-- Il telefono del titolare, schermate «Da approvare», «Richiesta» (anche la revisione di performance), «Riepilogo di oggi», «Chat», «Conversazione», «Agenda», «Dipartimenti» e «Dipartimento», cliccabili, con il quadro del giorno in cima e lo stato vuoto (artefatto, ripubblicato il 2026-09-07 con la versione 17): https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9
+- Direzione A cliccabile, tendine, pagine Richieste, Dipartimento, Dipendente (revisione di performance), Esecuzione, Costi, Agenda e Chat, avatar ed editor (artefatto, ripubblicato il 2026-09-07 con la versione 18): https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34
+- Il telefono del titolare, schermate «Da approvare», «Richiesta» (anche la revisione di performance), «Riepilogo di oggi», «Chat», «Conversazione», «Agenda», «Dipartimenti» e «Dipartimento», cliccabili, con il quadro del giorno in cima e lo stato vuoto (artefatto, ripubblicato il 2026-09-07 con la versione 18 e il conto nel titolo a 36): https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9
 - Le quattro scelte per la barra «Oggi in azienda» con il voto condiviso, da leggere insieme a chi decide (artefatto, versione 16 e correzione 16a): https://claude.ai/code/artifact/3a3fcb9e-c894-4a83-9cdb-54820f65756f
 - Avatar dei dipendenti, le due famiglie a confronto (artefatto): https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526
 - Le pelli dell'orbe senza disco, quattro soluzioni a confronto (artefatto): https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569

@@ -13,6 +13,10 @@ pagine e tutte e due le taglie dell'azienda (**86** sull'insieme di riferimento,
 undici più tendina, Riepilogo ed editor). **Ne restano 2**, ed è l'anteprima dell'editor, dichiarata. Le frecce vive
 salgono da 492 a **496**: una famiglia su diciotto una destinazione ce l'aveva davvero e non era collegata.
 
+A fine sessione l'utente ha aggiunto **tre proposte nuove** (il lavoro del dipartimento che si tiene d'occhio, l'editor
+di workflow, i connettori) e ha chiesto che la prossima sessione le **analizzi**, non le costruisca: sono i candidati 6,
+7 e 8 in «Il lavoro della prossima sessione», con i fatti già controllati nel codice.
+
 Tutto committato e pushato sul branch indicato sotto, con la PR aperta verso `main`.
 
 ## Stato
@@ -321,16 +325,114 @@ prima/dopo va riconosciuta e la cattura riportata com'era, se no sporca il diff.
       dipartimento). Niente Coordinatore come dipendente nuovo: il conto dei dipendenti non cambia. **Questa è una
       decisione di progetto, non codice scritto**: il candidato 5 resta da costruire.
 
+43. **2026-09-07, fine della sessione: tre proposte nuove dell'utente, e il lavoro della prossima sessione è
+    ANALIZZARLE, non costruirle.** Parole sue: «nella prossima sessione voglio venga fatta una analisi delle proposte che
+    ho fatto adesso». Le tre stanno per esteso nella sezione «Il lavoro della prossima sessione» (candidati 6, 7 e 8):
+    - **il lavoro del dipartimento che si tiene d'occhio**: «non c'è una schermata dove si veda chiaramente il lavoro che
+      ogni dipartimento sta svolgendo e tenerlo d'occhio vedendo cosa è stato fatto, cosa è stato creato, con possibilità
+      di aprire file, artefatti e compiti svolti, anche in tempo reale»;
+    - **l'editor di workflow**: esiste come bozza (la sezione 07 dello specimen) e «va solo implementata in modo
+      intelligente (seguendo le regole UX corrette) e aggiornata»;
+    - **i connettori** (Gmail, Drive, YouTube, Instagram, Slack, Figma, Hostinger…): «il come tecnico non ci interessa
+      ora, ci interessa solo la UI e UX». Con un dubbio dichiarato da lui: **ai dipendenti o ai dipartimenti?** «Secondo
+      me è meglio i dipartimenti.»
+    Quest'ultimo è un dubbio progettuale nel senso della regola fondamentale (decisione 41): **va passato dal consiglio**
+    prima di scrivere codice, con il suo parere già dentro il contesto come ipotesi da pressare, non da confermare.
+
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti sintetici di DGT; documenti in italiano.
 
 ## Il lavoro della prossima sessione
 
-**L'ordine è quello scelto dall'utente il 2026-09-07 (decisione 39): i candidati in fila.** Il candidato 1 è fatto,
-quindi si scende. Il **5** è suo e va approfondito con lui prima di scriverlo — e le due domande da portargli sono qui
-sotto, già pronte.
+**La prossima sessione è di ANALISI, non di costruzione** (decisione 43): l'utente ha fatto tre proposte nuove e vuole
+che vengano analizzate. Sono i candidati **6, 7 e 8** qui sotto, e stanno prima di tutto il resto. Il candidato 5 (la
+chat di dipartimento) è già deciso e pronto da costruire, ma viene dopo l'analisi.
 
-### 1 · La chat di dipartimento (candidato 5, proposta dell'utente)
+**Che cosa vuol dire analizzare, in questo repository**: aprire le pagine e contare (non ragionare a memoria: due volte
+su due i conti fatti a `grep` erano sbagliati per difetto), dire che cosa c'è già nel modello e che cosa manca davvero,
+mettere le strade con il loro prezzo **in numeri**, e per i dubbi progettuali passare dal consiglio prima di proporre.
+Niente codice di prodotto finché l'utente non ha scelto.
+
+### 6 · Il lavoro del dipartimento che si tiene d'occhio (proposta dell'utente, 2026-09-07)
+
+**Parole sue**: «non c'è una schermata dove si veda chiaramente il lavoro che ogni dipartimento sta svolgendo e tenerlo
+d'occhio vedendo cosa è stato fatto, cosa è stato creato, con possibilità di aprire file, artefatti e compiti svolti,
+anche in tempo reale».
+
+**Che cosa c'è già, controllato nel codice** (perché l'analisi non parta da zero):
+- La **pagina Dipartimento** esiste, in Console e sul telefono (schermate 7 e 8), con cinque sezioni: «Al lavoro
+  adesso» / «Oggi in ‹dipartimento›», «Da approvare», «Dipendenti», «Obiettivi», «Spesa del mese». Dice **chi** sta
+  lavorando e **quanto costa**.
+- La pagina **Esecuzione** ha già la sezione **«Output»**: le cose prodotte da quella esecuzione (nome, tipo, stato,
+  quando, descrizione), con i filtri di sezione della versione 17.
+- **Il buco è vero, ed è preciso**: `x.output` è letto **in un solo punto di tutto il prodotto**, la sezione «Output»
+  della pagina Esecuzione (`direzione-a.js`, righe 1349 e 1381). **Nessuno aggrega gli output per dipartimento, per
+  cliente o nel tempo**, e nessun output si apre: è una riga di testo, non un file né un artefatto. Quindi «cosa è
+  stato creato» oggi si può leggere solo un'esecuzione alla volta, entrando nella pagina di un dipendente al lavoro.
+- Il modello ha già **`giornata()`** (gli eventi di oggi ricostruiti dalle attività correnti) e **`m.costi(periodo,
+  dip)`**: il «tempo reale» del prototipo esiste già come aggregatore, non è da inventare.
+
+**Le domande che l'analisi deve sciogliere** (non risolverle qui): è una **sesta sezione della pagina Dipartimento** o è
+una **pagina nuova** (un archivio delle consegne, filtrabile per dipartimento e per cliente)? Che cosa vuol dire
+«aprire» un output in un prototipo di design — un pannello a tendina con l'anteprima, come già fa la richiesta? Il
+«tempo reale» è una promessa che il modello sintetico non può mantenere (non c'è un orologio): va detto che cosa
+significa qui, o va tolto dalla proposta. E: `output`, `consegna`, `artefatto`, `file` sono quattro parole per la stessa
+cosa — **il consiglio ha già insegnato che la parola va scelta prima della forma**.
+
+### 7 · L'editor di workflow (proposta dell'utente, 2026-09-07)
+
+**Parole sue**: «una l'abbiamo già creata (ma è una bozza e non rispecchia a pieno il design system), ovvero l'editor di
+workflow: va solo implementata in modo intelligente (seguendo le regole UX corrette) e aggiornata».
+
+**Dov'è la bozza, controllato**: è la **sezione 07 dello specimen** (`design-system/specimen.html`, «Interfaccia agente —
+editor a nodi»), la resa del **secondo riferimento**: rail di icone, titolo con percorso e tag, tab *Editor · Esecuzioni ·
+Test*, canvas a griglia puntinata, nodi collegati da connettori luminosi con il bagliore, nodo selezionato verde, porte
+sotto il nodo dell'agente e barra chat in basso. **È una figura statica**: non legge il modello, non è cliccabile, e non
+esiste dentro la direzione A. È esattamente «la bozza» che dice lui.
+
+**Due cose che l'analisi non deve perdere**, trovate guardando la bozza accanto al modello:
+- le **tre porte** del nodo dell'agente nello specimen si chiamano **Modello, Memoria, Strumento** — e tutte e tre
+  esistono già nel prodotto (il modello assegnato del dossier, gli strumenti, e la «memoria» che oggi è l'«Archivio del
+  cliente»). Il workflow non parte da zero: parte da cose che il dipendente ha già;
+- i **`passi` di un'esecuzione sono già una sequenza**. Il workflow è la forma *dichiarata* di cui i passi sono
+  l'*esecuzione*: le tab dello specimen (*Editor · Esecuzioni · Test*) dicono già questa relazione, e «Test» è il
+  **colloquio**, che nel prodotto esiste con i suoi casi.
+
+**Le domande dell'analisi**: chi lo usa, il titolare o il dipendente? Un workflow è di un dipendente, di un dipartimento
+o dell'azienda? Il canvas a nodi è la forma giusta per un titolare non tecnico, o è il riferimento che ci sta
+trascinando? (È il dubbio più grosso, e ha più di una risposta difendibile: **consiglio**.) E il costo di scala: il
+riferimento disegna quattro nodi, un'esecuzione vera ne ha sette.
+
+### 8 · I connettori (proposta dell'utente, 2026-09-07)
+
+**Parole sue**: poter «connettere estensioni (connettori, per esempio MCP) come Gmail, Drive, YouTube, Instagram, Slack,
+Figma, Hostinger, etc… così da dare agli agenti/dipendenti gli strumenti per lavorare. Il come tecnico non ci interessa
+ora, ci interessa solo la UI e UX». E il suo dubbio: **«se dare i connettori ai dipendenti o ai dipartimenti — secondo me
+è meglio i dipartimenti»**.
+
+**Che cosa c'è già, controllato**: `strumenti` e `connessioni` esistono **nel dossier del dipendente** e sono citati **48
+volte** in `dati.js`. Ogni dipendente ha una lista di strumenti (attivi o spenti, con l'ora dell'ultimo uso) e una di
+connessioni (con stato *attiva* o *scaduta*). La pagina Dipendente ha la sezione **«Strumenti e connessioni»**; il
+permesso «Strumenti e connessioni: solo quelli attivi» è già una riga dei permessi. Quindi **la domanda dell'utente non
+apre un campo nuovo: propone di spostare dati che ci sono già**, ed è per questo che va misurata e non decisa a occhio.
+
+**Un fatto che pesa sulla domanda**: lo strumento «Archivio del cliente» compare **15 volte** nel modello — lo stesso
+strumento ripetuto su quindici dipendenti. È il primo argomento a favore del livello dipartimento (o cliente), ed è già
+scritto nel candidato 5, punto (c).
+
+**È un dubbio progettuale: passa dal consiglio** (regola fondamentale, decisione 41), con il parere dell'utente dentro il
+contesto **come ipotesi da pressare, non da confermare**. Il contesto deve portare i numeri qui sopra, e almeno una
+terza strada (per esempio: il connettore si collega all'azienda una volta sola, e chi lo usa lo decidono i permessi —
+così non è né del dipendente né del dipartimento, è dell'azienda con un elenco di chi può). Vanno chieste anche le
+conseguenze su quello che esiste: la sezione «Strumenti e connessioni» del Dipendente, il permesso, la riga «Per
+strumento» della pagina Costi (che oggi somma per nome dalle esecuzioni), e l'errore «chiavi di accesso scadute» di Kim,
+che è un guasto *di una connessione* ed è già nel prodotto.
+
+**Vincolo del progetto, da non dimenticare nel disegno**: niente logo, marchi o icone di terzi (`CLAUDE.md`). Gmail,
+Slack e Figma non possono comparire con il loro marchio: servono i nomi in testo e le icone dello sprite di DGT, o una
+regola nuova che dica come si disegna un connettore.
+
+### 5 · La chat di dipartimento (decisa, da costruire)
 
 È il candidato che l'utente ha proposto lui e il più interessante dei cinque, ma **non si scrive di slancio**: le due
 domande qui sotto sono decisioni sue, non di design, e vanno fatte prima del codice.
@@ -410,25 +512,25 @@ andrebbe indicizzato per soggetto (`dip:mkt`); l'interfaccia della chat esiste g
 **Kim (id 3) ci lavora** — la sua esecuzione dichiara `obiettivo: 'o2'` — e non è nell'elenco. Squadra dichiarata e
 squadra reale già non coincidono; un filo di dipartimento renderebbe questo scarto visibile.
 
-### 2 · I giudizi in sospeso
+### 9 · I giudizi in sospeso
 
 L'utente non ha mai giudicato: la pagina del Dipendente (versione 6), quella dell'Esecuzione (versione 8), le schermate del
 telefono (11 e 12), la revisione sul telefono (14), le pagine Agenda e Chat (15), gli avatar ricentrati (15a), la
 versione 17 (Dipartimenti e controlli) e adesso la 18. Non blocca, ma è una lista che si allunga: vale la pena
 chiederglielo.
 
-### 3 · Le scelte di dettaglio della barra, mai sollevate
+### 10 · Le scelte di dettaglio della barra, mai sollevate
 
 Le parole delle caselle («approvate» contro «consegnate», «ferma» contro «in errore»), l'ultima ripetizione «al lavoro» nella
 sola home, quante caselle. La strada è confermata (decisione 34); queste no. Se non le solleva lui, vanno lasciate come sono.
 
-### 4 · I punti aperti del modello
+### 11 · I punti aperti del modello
 
 Le mutazioni che il modello non ha e che si vedono nell'interfaccia: «Sposta» dell'agenda non sposta davvero, i giorni della
 settimana non si aprono, il dipendente non risponde da solo nella chat, il «non letto» non sopravvive al ricaricamento, lo
 stato vuoto del dipendente appena creato. Sono lavori di modello, non di design.
 
-### 5 · La tendina del passo dell'esecuzione
+### 12 · La tendina del passo dell'esecuzione
 
 È l'unica destinazione che il censimento delle frecce ha trovato **mancante e sensata**: i quattro passi dell'esecuzione
 hanno adesso righe senza freccia perché la tendina del passo non è mai stata costruita. Se un giorno si costruisce, le
@@ -441,10 +543,15 @@ stato toccato, con la verifica byte per byte alle spalle (vedi «Stato»). Quind
 cominciare. Quando si ripubblica: `build-unico.js`, poi lo strumento con `url`, dopo aver letto la versione pubblicata
 per intero (vedi «Note tecniche»).
 
-**Prima cosa: il candidato 5, la chat di dipartimento.** Le due domande che lo bloccavano hanno risposta (decisioni 41
-e 42): parla **DGT che indossa il dipartimento**, e la distribuzione ha la pillola **`Fai pure` / `Chiedimi prima`**.
-Non manca più una decisione, manca il codice — ma **prima di scriverlo va fatta vedere la forma** che prende sulla
-pagina Dipartimento della Console e sul telefono, come sempre.
+**Prima cosa: l'analisi delle tre proposte nuove** (candidati 6, 7 e 8; decisione 43). È quello che l'utente ha chiesto
+per la prossima sessione, ed è analisi, **non costruzione**: i fatti da cui partire sono già scritti sotto ognuna
+(dove sta la bozza dell'editor, quante volte sono citati gli strumenti, l'unico punto del prodotto che legge gli
+output). Il connettore ai dipendenti o ai dipartimenti **passa dal consiglio**.
+
+**Poi, quando toccherà: il candidato 5, la chat di dipartimento.** Le due domande che lo bloccavano hanno risposta
+(decisioni 41 e 42): parla **DGT che indossa il dipartimento**, e la distribuzione ha la pillola **`Fai pure` /
+`Chiedimi prima`**. Non manca più una decisione, manca il codice — ma **prima di scriverlo va fatta vedere la forma**
+che prende sulla pagina Dipartimento della Console e sul telefono, come sempre.
 
 **Resta da sentire il giudizio sulla versione 17 e sulla 18.** Le frecce toccano ogni riga e ogni card, ed è il primo
 lavoro in cui il prodotto *perde* qualcosa da tutte le parti: le catture del prima/dopo (`a-frecce-*.png`) sono fatte
@@ -463,7 +570,7 @@ controllare branch e PR (vedi «Stato»). Alla fine: prove aggiornate, screensho
 stesso indirizzo, `DIREZIONI.md`, `SYSTEM-DESIGN.md`, i README, questo file, commit, push e PR.
 
 Punti aperti ereditati (non chiesti dall'utente, da non toccare senza richiesta): la tendina del passo dell'Esecuzione
-(è anche l'ultima voce della lista qui sopra); «Ripeti»; lo stato vuoto del dipendente appena creato; il badge rosa
+(è anche il candidato 12 della lista qui sopra); «Ripeti»; lo stato vuoto del dipendente appena creato; il badge rosa
 «campanella 2» accanto al numero «da approvare» copia quello della riga WORKSPACE della Console (`min(2, n)`) e non ha
 ancora un significato nel modello; il badge «↓12%» del numero «spesi oggi» nella home è decorativo;
 `design-system/tokens.css` porta solo tre token di moto e un easing diverso da quello dello specimen
@@ -592,43 +699,49 @@ non un controllo) e le quattro liste miste, in cui la colonna resta e qualche ce
 1. **Il giudizio dell'utente sulla versione 18**: le frecce toccano ogni riga e ogni card, e le catture del prima/dopo
    sono pronte. In particolare va risollevata la scelta della decisione 40 sulle **liste miste** (la colonna che resta
    con la cella vuota): è l'unica che si vede e si può ribaltare.
-2. **La chat di dipartimento (candidato 5): tutte e due le domande hanno risposta** (decisioni 41 e 42), quindi non
-   manca più una decisione, manca il **codice**. È il lavoro della prossima sessione, e prima di scriverlo va fatta
-   vedere la forma che prende sulla pagina Dipartimento della Console e sul telefono.
-3. **Il giudizio sulla versione 17** (i Dipartimenti, i controlli) e su tutta la 18: mai dato. La misura del conto nel
+2. **L'analisi delle tre proposte nuove** (candidati 6, 7 e 8): è il lavoro chiesto per la prossima sessione. La terza
+   (connettori ai dipendenti o ai dipartimenti) **passa dal consiglio** prima di qualunque proposta.
+3. **La chat di dipartimento (candidato 5): tutte e due le domande hanno risposta** (decisioni 41 e 42), quindi non
+   manca più una decisione, manca il **codice**. Viene dopo l'analisi, e prima di scriverlo va fatta vedere la forma
+   che prende sulla pagina Dipartimento della Console e sul telefono.
+4. **Il giudizio sulla versione 17** (i Dipartimenti, i controlli) e su tutta la 18: mai dato. La misura del conto nel
    titolo invece è decisa (la 36, decisione 42).
-4. I giudizi in sospeso delle versioni 6, 8, 11, 12, 14, 15 e 15a; le scelte di dettaglio della barra (decisioni 33 e 34).
-5. I punti aperti elencati in «Come riprendere».
+5. I giudizi in sospeso delle versioni 6, 8, 11, 12, 14, 15 e 15a; le scelte di dettaglio della barra (decisioni 33 e 34).
+6. I punti aperti elencati in «Come riprendere».
 
 ### Prompt di avvio suggerito per la prossima sessione
 
 ```
 Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md (in particolare «Stato», «Il lavoro della prossima sessione» e «Come
-riprendere»). Controlla la PR #15: se è unita riparti da main con un branch nuovo, altrimenti continua sullo stesso branch.
+riprendere»). Controlla la PR #15: se è unita riparti da main con un branch nuovo, altrimenti continua sullo stesso
+branch.
 
 Lavoriamo nella direzione A · Console (schermate/componenti.js, schermate/direzioni/direzione-a.js, dati.js, comune.js,
 avatar/, mobile.js): niente emoji, solo le icone dello sprite; gli avatar sono quelli della versione 10; i colori
-restano quelli del sistema. Sono decise e non si rimettono in discussione: la direzione A, la barra «Oggi in azienda»
-della versione 16 con la correzione 16a, la versione 17 (quadro «due per due», Dipartimenti, regola 25) e la regola 26
-delle frecce di riga della versione 18, e il conto nel titolo della schermata 1 nella misura da 36.
+restano quelli del sistema; niente logo o marchi di terzi. Sono decise e non si rimettono in discussione: la direzione
+A, la barra «Oggi in azienda» della versione 16 con la correzione 16a, la versione 17, la regola 26 delle frecce, il
+conto nel titolo a 36, e le due risposte del candidato 5 (chi parla nel filo del dipartimento e la pillola «Fai pure /
+Chiedimi prima»).
 
-Vale la regola fondamentale nuova: ogni dubbio progettuale passa dal consiglio (llm-council) prima del codice, con il
-contesto scritto per esteso a ogni consigliere. Quello che si può misurare o contare non è un dubbio progettuale: lì
-misuri.
+Questa sessione NON si costruisce niente: voglio l'ANALISI delle tre proposte che ti ho fatto (candidati 6, 7 e 8 nel
+passaggio di consegne). In ordine:
 
-Questa sessione costruiamo il candidato 5, la chat di dipartimento. Le due domande sono già decise e non si riaprono:
-nel filo parla DGT che indossa il dipartimento (disco con l'icona del dipartimento, nome «Coordinamento ‹dipartimento›»,
-prompt di coordinamento come proprietà del dipartimento e versionato, costo sulla riga «coordinamento» del
-dipartimento, nessun Coordinatore come dipendente nuovo); e la distribuzione ha la pillola nella barra di scrittura con
-«Fai pure» e «Chiedimi prima», predefinito «Chiedimi prima», ricordata per dipartimento, valida sulla distribuzione dei
-compiti e mai sulle consegne.
+1. Il lavoro del dipartimento che si tiene d'occhio: non c'è una schermata dove si veda chiaramente che cosa ogni
+   dipartimento sta facendo e che cosa ha creato, con la possibilità di aprire file, artefatti e compiti svolti, anche
+   in tempo reale.
+2. L'editor di workflow: la bozza c'è già (sezione 07 dello specimen) ma non rispecchia il design system e non è nel
+   prodotto. Va ripensata bene, con le regole UX corrette.
+3. I connettori: Gmail, Drive, YouTube, Instagram, Slack, Figma, Hostinger e simili, per dare ai dipendenti gli
+   strumenti per lavorare. Il come tecnico non mi interessa: mi interessa la UI e la UX. Il mio dubbio è se i
+   connettori vanno dati ai dipendenti o ai dipartimenti — secondo me ai dipartimenti, ma pressa l'ipotesi invece di
+   confermarmela.
 
-Poi costruisci nell'ordine che consigli tu: prima il filo di dipartimento (scrivere al dipartimento, i messaggi che
-arrivano ai fili dei singoli citando l'origine), poi la distribuzione. Prima di scrivere fammi vedere che forma prende
-sulla pagina Dipartimento della Console e sul telefono.
+Per ognuna voglio: che cosa esiste già nel prodotto e che cosa manca davvero (aprendo le pagine e contando, non a
+memoria), le due o tre strade con il prezzo in numeri, la parola con cui si chiama la cosa nuova, e le conseguenze su
+quello che è già costruito. Dove c'è un dubbio progettuale passa dal consiglio (llm-council), con il contesto scritto
+per esteso: vale di sicuro per la terza domanda e, secondo me, anche per la forma dell'editor.
 
-Il metodo di sempre: prima lancia le quattro prove di prove/ e cattura le pagine con scatta.js (base di confronto). Alla
-fine prove aggiornate, screenshot, gli artefatti ripubblicati allo stesso indirizzo (solo quelli che cambiano
-davvero), DIREZIONI.md (versione 19), SYSTEM-DESIGN.md, i README e PROSSIMA-SESSIONE.md, commit, push e PR. Alla fine
-mostrami cosa è cambiato e fermati.
+Alla fine dell'analisi dimmi quale delle tre faresti per prima e perché, e aspetta che scelga io. Poi aggiorna
+DIREZIONI.md, SYSTEM-DESIGN.md se serve, i README e PROSSIMA-SESSIONE.md, commit, push e PR. Se avanza tempo dopo che
+ho scelto, si comincia da quella; se no, ci si ferma all'analisi.
 ```
