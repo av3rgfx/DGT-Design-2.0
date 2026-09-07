@@ -205,6 +205,16 @@ window.DIREZIONE_A = (function () {
 .rx .doc .tx.mono{font-size:14px;line-height:22px}
 .rx .doc .img{height:150px;border-radius:14px;background:#E4E4E4;display:grid;place-items:center;color:#8A8A8A;font-size:12px;gap:6px}
 .rx .doc .img svg{width:22px;height:22px;color:#8A8A8A}
+/* Il contenuto della consegna sulla sua pagina (versione 19): l'unica superficie chiara della Console, perche' e' un
+   documento e nel sistema i documenti stanno su bianco (e' la stessa .doc della tendina della richiesta — senza apici inversi: dentro il CSS chiudono la stringa — portata su
+   una pagina scura). Colori scritti: qui una primitiva scura resterebbe bianca su bianco. */
+.cdoc{background:var(--white);border-radius:var(--r-inner);padding:24px 26px 26px;display:grid;gap:14px;align-content:start;margin-top:24px;max-width:900px}
+.cdoc .lb{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t2-light);flex-wrap:wrap}
+.cdoc .lb .chip{height:24px;font-size:11px}
+.cdoc .tx{font-size:17px;line-height:26px;color:#1E1E1E;white-space:pre-line}
+.cdoc .tx.mono{font-size:15px;line-height:23px}
+.cdoc .img{height:170px;border-radius:14px;background:#E4E4E4;display:grid;place-items:center;color:#8A8A8A;font-size:12px;gap:6px}
+.cdoc .img svg{width:22px;height:22px;color:#8A8A8A}
 .rx .det{display:grid;gap:10px;align-content:start}
 .rx .det .dcard{padding:14px 16px}
 .rx .det .dcard h5{font-size:15px;line-height:20px;padding-right:0;color:var(--t2-light)}
@@ -799,8 +809,13 @@ window.DIREZIONE_A = (function () {
   function cornice(m, opz, titolo, stats, railAttivo, corpo, nuovo) {
     /* dal dipendente si torna al suo dipartimento, dall'esecuzione al dipendente; dalle altre pagine alla home */
     const e = (opz.pagina === 'dipendente' || opz.pagina === 'esecuzione') ? m.byId[opz.id] : null;
-    const indietro = e && opz.pagina === 'esecuzione' ? `data-az="pagina" data-pagina="dipendente" data-id="${e.id}"` : e ? `data-az="pagina" data-pagina="dipartimento" data-dip="${e.dip}"` : opz.pagina !== 'home' ? 'data-az="pagina" data-pagina="home"' : '';
-    const lungo = e ? (titolo.length > 20 ? ' lunghissimo' : titolo.length > 12 ? ' lungo' : '') : '';
+    /* dalla consegna si torna al dipartimento di chi l'ha fatta: e' da li' che ci si arriva (versione 19) */
+    const cn = opz.pagina === 'consegna' ? m.consegnaDi(opz.consegna) : null;
+    const indietro = cn && m.byId[cn.chi] ? `data-az="pagina" data-pagina="dipartimento" data-dip="${m.byId[cn.chi].dip}"`
+      : e && opz.pagina === 'esecuzione' ? `data-az="pagina" data-pagina="dipendente" data-id="${e.id}"` : e ? `data-az="pagina" data-pagina="dipartimento" data-dip="${e.dip}"` : opz.pagina !== 'home' ? 'data-az="pagina" data-pagina="home"' : '';
+    /* il titolo si stringe quando e' lungo: vale per il Dipendente, l'Esecuzione e — dalla versione 19 — la Consegna,
+       che ha i titoli piu' lunghi del prodotto (32 caratteri: «200 lead e-commerce in Lombardia») */
+    const lungo = (e || cn) ? (titolo.length > 20 ? ' lunghissimo' : titolo.length > 12 ? ' lungo' : '') : '';
     return `<div class="a-app" role="figure" aria-label="Direzione A — ${esc(titolo)} (contenuto sintetico)">
       <span class="a-logo">DGT</span>
       ${barraAgenda(m, opz)}
@@ -876,6 +891,44 @@ window.DIREZIONE_A = (function () {
       <div class="st"><span class="k">Decidi</span><div class="row"><span class="sel"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic(iconaTipo[r.tipo])}</span><span>${r.costo} € · ${r.passi.length} passi · ${esc(r.ora)}</span>${ic('i-chev')}</span><span class="rb black" data-az="approva" data-id="${r.id}" title="Approva">${ic('i-check')}</span><span class="rb red" data-az="rifiuta" data-id="${r.id}" title="Rifiuta">${ic('i-x')}</span></div></div>
     </div>`;
   }
+  /* ---------- la consegna (versione 19, 2026-09-07) ----------
+     «Consegna» e' la parola scelta dall'utente per la cosa creata da un'esecuzione: prima ne servivano quattro
+     (`output` nel codice e nel titolo di sezione, «Consegne» nel contatore della stessa intestazione, `allegato` nella
+     richiesta, `consegne` negli obiettivi e nei costi) e nessuna delle quattro si apriva.
+     La card ha la forma delle altre del dipartimento — striscia con chi l'ha fatta, corpo con il tipo e il titolo, riga
+     di stato — ed e' cliccabile tutta, come la card della richiesta: apre la tendina con la consegna per intero.
+     Regola 18: l'avatar sta solo nella striscia. Regola 4: il lime e' per quello che aspetta il titolare, e una
+     consegna in attesa aspetta lui. Regola 26: la freccia c'e' perche' la destinazione esiste (la tendina). */
+  const TONO_CONSEGNA = { attesa: 'lime', errore: 'gray', bozza: 'gray', 'da fare': 'gray' };
+  /* Le due righe corte della card, misurate e non indovinate. `.meta` e `.sel span` sono primitive condivise che non
+     vanno a capo e tagliano con i puntini (`componenti.js`), e la card e' larga 316 px: con il testo lungo la riga di
+     stato diceva «Passo …» e basta, e «Summit Marketing · parte alle 17:00» sforava di 29 px.
+     Quindi: sotto il titolo il **quando**, senza il verbo che il chip di stato dice gia'; nella riga di stato il
+     **passo** e quanto e' costato, che sono i due fatti che la card non ha ancora detto. */
+  const quandoBreve = q => String(q || '')
+    .replace(/^pass[oi]\s+\d+(\s+e\s+\d+)?\s*·\s*/i, '')
+    .replace(/^(consegnat[oa]|approvat[oa]|conclus[oa]|part[eo]|fermo al)\s+/i, '')
+    .replace(/^alle\s+/i, '')
+    .trim() || String(q || '');
+  /* Nella riga di stato ci sta il solo chip. Misurato: `.sel` e' `flex:1` accanto a due pulsanti, e quello che resta al
+     testo va da **30 a 52 px** secondo quanto e' largo il chip — «Passo 3 · 23,6 €» ne chiede 89. Qualunque testo li'
+     finisce nei puntini (succede gia' alle card che c'erano: «Passo 3 di 7», «Chiavi di accesso scadute»), e un testo
+     che non si legge mai e' una promessa non mantenuta. Il passo, il costo e gli strumenti stanno nella tendina, che e'
+     larga il doppio: e' quello che vuol dire aprire una consegna. */
+  function cardConsegna(m, c, i) {
+    const e = m.byId[c.chi];
+    const tono = TONO_CONSEGNA[c.stato] || (i % 2 ? 'dark' : 'gray');
+    return `<div class="ncard task ${tono}" data-az="consegna" data-id="${esc(c.id)}" title="Apri la consegna">
+      <div class="who">${av(m, e)}<div><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div></div>
+      <div class="nt"><span class="rb ghost">${ic('i-bell')}${c.stato === 'attesa' ? '<i class="dot"></i>' : ''}</span><span class="rb ghost">${ic('i-ne')}</span></div>
+      <div class="body"><span class="ico">${ic(ICONA_OUT[c.tipo] || 'i-doc')}</span><div><div class="tt">${esc(c.nome)}</div><div class="meta"><b>${esc(c.cliente || '—')}</b><span>·</span><b>${esc(quandoBreve(c.quando))}</b></div></div></div>
+      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${chipOut(c)}${ic('i-chev')}</span><span class="rb ghost" data-az="pagina" data-pagina="chat" data-id="${e.id}" title="Scrivi a ${esc(m.etichetta(e))}">${ic('i-chat')}</span><span class="rb black" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="L'esecuzione che l'ha prodotta">${ic('i-eye')}</span></div></div>
+    </div>`;
+  }
+  /* Le pillole della sezione: le stesse quattro che la pagina Esecuzione ha gia' per gli output, cosi' la stessa cosa
+     si filtra con le stesse parole nei due posti. */
+  const PILLE_CONSEGNE = [['tutte', 'Tutte', null], ['attesa', 'Da approvare', c => c.stato === 'attesa', ic('i-fire')], ['corso', 'In corso', c => c.stato === 'bozza'], ['fatte', 'Fatte', c => c.stato === 'fatto' || c.stato === 'approvata'], ['dafare', 'Da fare', c => c.stato === 'da fare' || c.stato === 'errore']];
+
   /* La riga dello storico. Regola 25: la freccia sta solo dove la riga ha una destinazione — qui il pannello della
      richiesta, che si apre solo per le richieste ancora in attesa. Una richiesta già decisa non ha una pagina dove
      andare, quindi la freccia cade. `sola` (nessuna riga della lista ha una destinazione) fa cadere anche la colonna. */
@@ -962,6 +1015,16 @@ window.DIREZIONE_A = (function () {
       <div class="stat"><b>${att.length}</b><span>da approvare</span>${att.length ? `<span class="badge down">${ic('i-bell')}${att.length}</span>` : ''}</div>
       <div class="stat" data-az="pagina" data-pagina="costi" title="I costi dell'azienda"><b>${costoOggi} €</b><span>spesi oggi</span></div>`;
     const esecF = filtraSez(opz, 'dip.oggi', esec, PILLE_ESEC);
+    /* Le consegne del dipartimento (versione 19): le cose create dalle sue esecuzioni. Sta subito sotto «Oggi in ‹dip›»
+       perche' e' il suo risultato — la pagina si legge adesso -> uscito -> chi -> obiettivi -> da approvare -> spesa —
+       e perche' regola 2 dice che il «adesso» apre la pagina. Nessuna pillola «tutte le consegne» in fondo: non esiste
+       una pagina dove andare, e regola 25 dice che un controllo si vede solo se fa quello che promette. */
+    const cn = m.consegneDi(d.id);
+    /* niente cerchio «cerca»: la soglia del prodotto e' dodici righe (`SOGLIA_CERCA`) e le consegne di un dipartimento
+       arrivano a **dieci** a quaranta dipendenti (sette a undici) — una lista che sta in una schermata si legge, non si
+       cerca. Ce l'avevo messo lo stesso ed e' stata la prova delle intestazioni a cogliermi in fallo. */
+    const cnF = filtraSez(opz, 'dip.consegne', cn, PILLE_CONSEGNE);
+    const cnFatte = cn.filter(c => c.stato === 'fatto' || c.stato === 'approvata').length;
     const lstF = filtraSez(opz, 'dip.dipendenti', lst, PILLE_STATO_DIP);
     const obF = filtraSez(opz, 'dip.obiettivi', ob, PILLE_OBIETTIVI);
     /* spesa per cliente: l'aggregatore dei costi (m.costi in dati.js, versione 13), lo stesso della pagina Costi, che
@@ -973,6 +1036,11 @@ window.DIREZIONE_A = (function () {
         <div class="shead"><h3>Oggi in ${esc(d.nome)}</h3>${contoSez(esecF.length, esec.length, 'Esecuzioni')}
           ${pilleSez(opz, 'dip.oggi', PILLE_ESEC)}</div>
         ${esecF.length ? `<div class="cards riga">${esecF.map((e, i) => cardEsecuzione(m, e, i)).join('')}</div>` : `<div class="vuoto">Nessuna esecuzione oggi in ${esc(d.nome)} con questo filtro</div>`}
+      </section>
+      <section>
+        <div class="shead"><h3>Consegne di oggi</h3>${contoSez(cnF.length, cn.length, 'Consegne · ' + cnFatte + (cnFatte === 1 ? ' fatta' : ' fatte'))}
+          ${pilleSez(opz, 'dip.consegne', PILLE_CONSEGNE)}</div>
+        ${cnF.length ? `<div class="cards">${cnF.map((c, i) => cardConsegna(m, c, i)).join('')}</div>` : `<div class="vuoto">Nessuna consegna di ${esc(d.nome)} con questo filtro</div>`}
       </section>
       <section>
         <div class="shead"><h3>Dipendenti</h3>${contoSez(lstF.length, lst.length, 'Dipendenti')}
@@ -997,6 +1065,105 @@ window.DIREZIONE_A = (function () {
       </section>`;
     return cornice(m, opz, d.nome.toUpperCase(), stats, 'org', corpo, 'Nuovo obiettivo');
   }
+
+  /* ---------- pagina Consegna (versione 19, 2026-09-07) ----------
+     «Aprire una consegna» vuol dire **una pagina dedicata**, non la tendina: la tendina e' l'anteprima che sta nel
+     pannello delle approvazioni, e serve a decidere in fretta senza perdere la coda. Una consegna invece si legge, e
+     una cosa che si legge ha una pagina — come il Dipendente, l'Esecuzione e la Richiesta.
+     Nella stessa cornice delle altre: barra in cima, titolo con tre numeri, rail, sezioni. Si torna al dipartimento.
+     Le quattro sezioni: il **contenuto** (l'unica superficie chiara della Console, perche' e' un documento e i
+     documenti nel sistema stanno su bianco), il **passo** che l'ha prodotta con le sue voci di log, le **altre
+     consegne della stessa esecuzione**, e la **richiesta** quando la consegna e' gia' uscita al titolare. */
+  function testataConsegna(m, c, e) {
+    const r = c.richiesta ? m.richieste.find(x => x.id === c.richiesta) : null;
+    const idx = r && r.stato === 'attesa' ? inAttesa(m).indexOf(r) : -1;
+    const frase = c.stato === 'attesa' ? `<b>Consegnata${c.passo ? ' al passo ' + c.passo.n : ''}</b> e aspetta l'approvazione del titolare. Finche' non la approvi non esce verso ${esc(c.cliente || 'il cliente')}.`
+      : c.stato === 'approvata' ? `<b>Approvata dal titolare</b>: e' uscita verso ${esc(c.cliente || 'il cliente')}.`
+      : c.stato === 'errore' ? `<b>Non fatta</b>: il passo${c.passo ? ' ' + c.passo.n : ''} si e' fermato e la consegna non e' stata prodotta. Serve un intervento.`
+      : c.stato === 'bozza' ? `<b>In corso</b>${c.passo ? ' al passo ' + c.passo.n : ''}: ${esc(c.desc || 'la sta scrivendo')}.`
+      : c.stato === 'da fare' ? `<b>Non ancora iniziata</b>: la produrra' ${c.quando ? esc(c.quando) : 'un passo che deve ancora partire'}.`
+      : `<b>Fatta</b>${c.passo ? ' al passo ' + c.passo.n : ''}${c.passo && c.passo.durata ? ' in ' + esc(c.passo.durata) : ''}${c.passo && c.passo.costo ? ', ' + eur(c.passo.costo) : ''}.`;
+    const azioni = `${idx >= 0 ? `<span class="pill sm lime" data-az="richiesta" data-idx="${idx}">${ic('i-bell')}Apri la richiesta</span>` : ''}<span class="pill sm" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}">${ic('i-eye')}L'esecuzione che l'ha prodotta</span><span class="pill sm" data-az="pagina" data-pagina="chat" data-id="${e.id}">${ic('i-chat')}Scrivi a ${esc(m.etichetta(e))}</span><span class="pill sm" data-az="pagina" data-pagina="dipendente" data-id="${e.id}">${ic('i-ne')}La pagina di ${esc(m.etichetta(e))}</span>`;
+    return `<section class="etesta">
+      <div class="ident">${av(m, e, 'lg', null, 'data-anima="1"')}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div>
+        <div class="chips">${chipOut(c)}<span class="chip">${ic(ICONA_OUT[c.tipo] || 'i-doc')}${esc(c.tipo)}</span><span class="chip">${ic('i-hand')}${esc(c.cliente || 'Nova Studio')}</span><span class="chip" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Apri l'esecuzione">${ic('i-rows')}${esc(c.esecuzione || '—')}</span></div>
+      </div>
+      <p class="adesso">${frase}</p>
+      <div class="azioni">${azioni}</div>
+    </section>`;
+  }
+  function paginaConsegna(m, opz) {
+    const c = m.consegnaDi(opz.consegna) || m.consegneDi(null)[0];
+    if (!c) return home(m, opz);
+    const e = m.byId[c.chi];
+    const r = c.richiesta ? m.richieste.find(x => x.id === c.richiesta) : null;
+    const idx = r && r.stato === 'attesa' ? inAttesa(m).indexOf(r) : -1;
+    /* il contenuto: la richiesta vera se la consegna e' gia' uscita, altrimenti l'esito del passo che l'ha prodotta */
+    const contenuto = r
+      ? (r.tipo === 'post'
+        ? `<div class="lb"><span class="chip light">${ic('i-mega')}LinkedIn · bozza</span>${esc(r.cliente)}</div><div class="tx">${esc(r.testo)}</div><div class="img">${ic('i-doc')}${esc(r.allegato)}</div>`
+        : `<div class="lb"><span class="chip light">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]}</span>${esc(r.cliente)} · ${esc(r.allegato)}</div><div class="tx mono">${esc(r.testo)}</div>`)
+      : (() => {
+        const corpo2 = c.passo && c.passo.esito ? c.passo.esito : (c.desc || 'Non ancora prodotta.');
+        /* l'etichetta non ripete il corpo: nelle esecuzioni generate `desc` e l'esito del passo sono la stessa frase */
+        const eti = c.desc && c.desc !== corpo2 ? esc(c.desc) : esc(c.cliente || m.etichetta(e));
+        return `<div class="lb"><span class="chip light">${ic(ICONA_OUT[c.tipo] || 'i-doc')}${esc(c.tipo)}</span>${eti}${c.passo ? ' · passo ' + c.passo.n : ''}</div><div class="tx mono">${esc(corpo2)}</div>`;
+      })();
+    /* Le altre consegne intorno a questa: prima quelle della stessa esecuzione (il contesto in cui e' nata), e se
+       l'esecuzione ne ha una sola quelle del dipartimento — capitate a quattro, una riga, con la pillola che porta
+       alla lista intera. A quaranta dipendenti 27 consegne su 40 nascono da un'esecuzione con un solo output: senza
+       questo la pagina finirebbe dopo il contenuto. */
+    const delDip = m.consegneDi(e.dip);
+    const stessaEsec = delDip.filter(x => x.chi === c.chi && x.id !== c.id);
+    const sorelle = stessaEsec.length ? stessaEsec : delDip.filter(x => x.id !== c.id).slice(0, 4);
+    const sorelleTit = stessaEsec.length ? "Le altre consegne dell'esecuzione" : 'Le altre consegne di ' + m.dipDi(e).nome;
+    const sezPasso = c.passo ? `
+      <section>
+        <div class="shead"><h3>Il passo che l'ha prodotta</h3><span class="cnt"><b>${esc(c.passo.durata || '—')}</b><span>Passo ${c.passo.n} · ${eur(c.passo.costo)}</span></span>
+          <div class="destra"><span class="pill" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}">Tutti i passi dell'esecuzione ${ic('i-ne')}</span></div></div>
+        <div class="hlist" style="margin-top:24px">
+          <div class="crow nofr"><span class="ico">${ic('i-rows')}</span><div class="tx"><b>${c.passo.n}. ${esc(c.passo.nome)}</b><span>${esc(c.passo.esito || '—')}</span></div><span class="v">${chipPassoStato(c.passo)}</span><span class="v">${esc(c.passo.durata || '—')}<small>durata</small></span><span class="eur">${eur(c.passo.costo)}</span></div>
+          ${(c.passo.strumenti || []).map(x => `<div class="crow nofr"><span class="ico">${ic('i-gear')}</span><div class="tx"><b>${esc(x)}</b><span>Strumento usato dal passo ${c.passo.n}</span></div><span class="v"></span><span class="v"></span><span class="eur"></span></div>`).join('')}
+        </div>
+        ${(c.voci || []).length ? `<div class="hgroup"><b>Mentre la faceva</b>${c.voci.length} · dal log dell'esecuzione</div>
+        <div class="hlist">${c.voci.map(v => `<div class="crow nofr"><span class="ico">${ic(v.tipo === 'strumento' ? 'i-gear' : v.tipo === 'nota' ? 'i-pen' : v.tipo === 'errore' ? 'i-warn' : v.tipo === 'modello' ? 'i-bot' : 'i-rows')}</span><div class="tx"><b>${esc(v.testo)}</b><span>${esc(v.tipo)}</span></div><span class="v">${esc(v.ora)}</span><span class="v"></span><span class="eur">${v.costo ? eur(v.costo) : ''}</span></div>`).join('')}</div>` : ''}
+      </section>` : '';
+    const sezRichiesta = r ? `
+      <section>
+        <div class="shead"><h3>La richiesta al titolare</h3><span class="cnt"><b>${esc(r.ora)}</b><span>${nomeTipo[r.tipo]} · ${eur(r.costo)}</span></span>
+          <div class="destra"><span class="pill" data-az="pagina" data-pagina="richieste" data-chi="${e.id}">Tutte le richieste di ${esc(m.etichetta(e))} ${ic('i-ne')}</span></div></div>
+        <div class="hlist" style="margin-top:24px">${rigaStorico(m, r, false)}</div>
+        ${r.nota ? `<div class="hgroup"><b>Nota del dipendente</b></div><p class="adesso" style="margin-top:8px">${esc(r.nota)}</p>` : ''}
+      </section>` : '';
+    const corpo = `
+      ${testataConsegna(m, c, e)}
+      <section>
+        <div class="shead"><h3>Il contenuto</h3><span class="cnt"><b>${esc(c.nome)}</b><span>${esc(c.quando)}</span></span>
+          ${idx >= 0 ? `<div class="destra"><span class="pill lime" data-az="richiesta" data-idx="${idx}">${ic('i-bell')}Decidi</span></div>` : ''}</div>
+        <div class="cdoc">${contenuto}</div>
+      </section>
+      ${sezPasso}
+      ${sezRichiesta}
+      ${sorelle.length ? `
+      <section>
+        <div class="shead"><h3>${esc(sorelleTit)}</h3>${contoSez(sorelle.length, stessaEsec.length ? sorelle.length : delDip.length - 1, 'Consegne')}
+          <div class="destra"><span class="pill" data-az="pagina" data-pagina="dipartimento" data-dip="${e.dip}">Tutte le consegne di ${esc(m.dipDi(e).nome)} ${ic('i-ne')}</span></div></div>
+        <div class="cards">${sorelle.map((x, i) => cardConsegna(m, x, i)).join('')}</div>
+      </section>` : ''}`;
+    /* I numeri della testata: **solo quelli che hanno un valore**. Nove consegne su diciotto nascono da un passo
+       dichiarato e nove no; mettere «—» due volte in cima a una pagina e' rumore, non informazione. Lo stato c'e'
+       sempre, il costo viene dal passo o dalla richiesta, la durata solo dal passo. */
+    const costo = c.passo && c.passo.costo ? eur(c.passo.costo) : (r && r.costo ? eur(r.costo) : '');
+    const stats = [
+      `<div class="stat"><b>${esc(({ fatto: 'Fatta', approvata: 'Approvata', attesa: 'Da approvare', bozza: 'In corso', errore: 'Non fatta' })[c.stato] || 'Da fare')}</b><span>stato</span></div>`,
+      costo ? `<div class="stat"><b>${costo}</b><span>${c.passo && c.passo.costo ? 'costo del passo' : 'costo della consegna'}</span></div>` : '',
+    ].join('');
+    /* Due numeri e non tre: la Consegna ha i titoli piu' lunghi del prodotto e con tre la testata sfora di 77 px
+       («REPORT DEI TEST DI REGRESSIONE», 30 caratteri, gia' rimpicciolito a 30 px). La durata e' il terzo che si
+       toglie: sta gia' nella sezione del passo, dove ha anche il suo contesto. */
+    return cornice(m, opz, c.nome.toUpperCase(), stats, 'org', corpo, '');
+  }
+  const chipPassoStato = p => p.stato === 'fatto' ? `<span class="chip lime">${ic('i-check')}Fatto</span>` : p.stato === 'errore' ? `<span class="chip rosa">${ic('i-warn')}Errore</span>` : p.stato === 'corso' ? `<span class="chip lime">${ic('i-play')}In corso</span>` : `<span class="chip">${ic('i-clock')}Da fare</span>`;
 
   /* ---------- pagina Dipendente (versione 6, 2026-09-04) ----------
      Si apre dalla freccia nell'intaglio della card e della riga compatta. Un solo ordine per i due
@@ -1719,8 +1886,8 @@ window.DIREZIONE_A = (function () {
   }
 
   function render(m, opz) {
-    opz = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, confronto: null, motivo: false, periodo: {}, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '', cerca: {}, sez: {}, forma: '' }, opz || {});
-    return opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : opz.pagina === 'dipendente' ? dipendente(m, opz) : opz.pagina === 'esecuzione' ? esecuzione(m, opz) : opz.pagina === 'costi' ? paginaCosti(m, opz) : opz.pagina === 'agenda' ? agenda(m, opz) : opz.pagina === 'chat' ? chat(m, opz) : home(m, opz);
+    opz = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, confronto: null, motivo: false, periodo: {}, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '', cerca: {}, sez: {}, forma: '', consegna: '' }, opz || {});
+    return opz.pagina === 'consegna' ? paginaConsegna(m, opz) : opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : opz.pagina === 'dipendente' ? dipendente(m, opz) : opz.pagina === 'esecuzione' ? esecuzione(m, opz) : opz.pagina === 'costi' ? paginaCosti(m, opz) : opz.pagina === 'agenda' ? agenda(m, opz) : opz.pagina === 'chat' ? chat(m, opz) : home(m, opz);
   }
 
   /* Disegna e collega i clic: tendina, cambio pagina, filtri, decisioni. Ritorna lo stato. */
@@ -1823,6 +1990,10 @@ window.DIREZIONE_A = (function () {
       else if (az === 'succ') { if (n()) st.richiesta = (st.richiesta + 1) % n(); soloTendina(); }
       else if (az === 'vai') { st.richiesta = +el.dataset.idx; soloTendina(); }
       else if (az === 'richiesta') { if (ev.target.closest('[data-az="approva"],[data-az="rifiuta"]')) return; st.richiesta = +el.dataset.idx; st.tendina = 'estesa'; st.pannello = 'richieste'; soloTendina(); }
+      /* «Aprire una consegna» vuol dire la **sua pagina** (versione 19, scelta dell'utente): la tendina e' l'anteprima
+         delle approvazioni, e serve a decidere in fretta senza perdere la coda. Una consegna si legge, e una cosa che
+         si legge ha una pagina. Si torna al dipartimento con la freccia della cornice. */
+      else if (az === 'consegna') { ev.stopPropagation(); st.consegna = el.dataset.id; st.pagina = 'consegna'; if (st.tendina === 'estesa') st.tendina = 'aperta'; st.motivo = false; tutto(); window.scrollTo(0, 0); }
       else if (az === 'pagina') { ev.stopPropagation(); st.pagina = el.dataset.pagina; if (el.dataset.dip) { st.dip = el.dataset.dip; if (st.pagina === 'richieste') st.filtri = { dip: el.dataset.dip }; } if (el.dataset.id) { if (st.pagina === 'chat') st.filo = +el.dataset.id; else st.id = +el.dataset.id; } if (el.dataset.chi) st.filtri = { chi: el.dataset.chi }; if (el.dataset.cliente) st.filtri = Object.assign(st.pagina === 'richieste' && el.dataset.dip ? { dip: el.dataset.dip } : {}, { cliente: el.dataset.cliente }); if (st.tendina === 'confronto' || st.tendina === 'estesa') st.tendina = 'aperta'; st.motivo = false; tutto(); window.scrollTo(0, 0); }
       else if (az === 'filtro') { const k = el.dataset.k, v = el.dataset.v; st.filtri[k] = (st.filtri[k] === v || v === 'tutti') ? undefined : v; tutto(); }
       /* ---- i controlli delle intestazioni di sezione (versione 17): la ricerca, le pillole, le due forme dei dipendenti ---- */

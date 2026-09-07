@@ -1,4 +1,4 @@
-// Prova cliccata della Console (direzione A): le tendine del titolare, la pagina Richieste, l'editor del dipendente, le azioni dell'esecuzione, quaranta, la barra «Oggi in azienda».
+// Prova cliccata della Console (direzione A): le tendine del titolare, la pagina Richieste, l'editor del dipendente, le azioni dell'esecuzione, quaranta, la barra «Oggi in azienda», le frecce di riga e (versione 19) le consegne del dipartimento.
 // Uso (dalla radice o da qualunque cartella): PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css node schermate/direzioni/prove/console.js
 const path = require('path'), fs = require('fs');
 
@@ -20,6 +20,12 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   const vai = async (q, ms) => { await page.goto(file(q)); await page.waitForTimeout(ms || 400); };
   const clic = async (sel, ms) => { await page.click(sel); await page.waitForTimeout(ms || 250); };
   const largo = () => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth);
+  /* Il selettore di una sezione dal suo titolo. Gli indici `nth-of-type` si spostano appena si aggiunge una sezione
+     (successo con «Consegne di oggi», versione 19: tre prove rosse per niente), quindi non si indovinano: si cercano. */
+  const sez = async re => page.evaluate(re => {
+    const i = [...document.querySelectorAll('.a-main section')].findIndex(s => new RegExp(re).test(((s.querySelector('h3') || {}).textContent || '').trim()));
+    return i < 0 ? null : '.a-main section:nth-of-type(' + (i + 1) + ')';
+  }, re);
   /* il modello della pagina (`modello` in direzione-a.html): le richieste in attesa nell'ordine della tendina (le più vecchie prima) */
   const inAttesa = () => page.evaluate(() => modello.richiesteDi('attesa').slice().sort((a, b) => (b.giorno - a.giorno) || (a.min - b.min)).map(r => ({ id: r.id, tipo: r.tipo, cosa: r.cosa })));
   const richiesta = id => page.evaluate(id => { const r = modello.richieste.find(x => x.id === id); return { stato: r.stato, commento: r.commento || '' }; }, id);
@@ -238,12 +244,13 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   await clic('[data-az="forma"][data-v="card"]');
   check(await conta('.cards.dipendenti .ncard.dip') === nMkt, 'il cerchio «griglia» torna alle card');
   await vai('pagina=dipartimento&dip=svi&tendina=chiusa');
-  const totMese = await txt('.a-main section:nth-of-type(5) .cnt b');
+  const sSpesa = await sez('^Spesa');
+  const totMese = await txt(sSpesa + ' .cnt b');
   await clic('[data-az="periodo"][data-sez="dip.spesa"][data-v="oggi"]');
-  check((await txt('.a-main section:nth-of-type(5) h3')) === 'Spesa di oggi' && (await txt('.a-main section:nth-of-type(5) .cnt b')) !== totMese, 'le tre pillole della «Spesa del mese» cambiano davvero il periodo: ' + totMese + ' → ' + await txt('.a-main section:nth-of-type(5) .cnt b'));
+  check((await txt(sSpesa + ' h3')) === 'Spesa di oggi' && (await txt(sSpesa + ' .cnt b')) !== totMese, 'le tre pillole della «Spesa del mese» cambiano davvero il periodo: ' + totMese + ' → ' + await txt(sSpesa + ' .cnt b'));
   await clic('[data-az="sez"][data-sez="dip.obiettivi"][data-v="ritardo"]');
   const nRit = await page.evaluate(() => modello.obiettiviDi('svi').filter(o => o.stato === 'ritardo').length);
-  check(await conta('.a-main section:nth-of-type(3) .ncard.obj') === nRit, 'la pillola «In ritardo» degli obiettivi lascia i ' + nRit + ' in ritardo');
+  check(await conta((await sez('^Obiettivi')) + ' .ncard.obj') === nRit, 'la pillola «In ritardo» degli obiettivi lascia i ' + nRit + ' in ritardo');
   check(await largo(), 'la pagina non scorre di lato dopo i filtri');
 
   console.log('\n11. le frecce di riga (versione 18, regola 25)');
@@ -309,6 +316,78 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   await vai('pagina=richieste&tendina=chiusa');
   const sto2 = await page.evaluate(() => [...document.querySelectorAll('.hlist .hrow')].map(r => ({ freccia: !!r.querySelector('.rb.xs'), nofr: r.classList.contains('nofr') })));
   check(sto2.length > 8 && sto2.every(r => !r.freccia && r.nofr), 'nello storico (' + sto2.length + ' righe decise) nessuna freccia e nessuna colonna sprecata');
+
+  /* ---- versione 19: le consegne del dipartimento ---- */
+  console.log('\n11. le consegne del dipartimento: la sesta sezione, i filtri, la ricerca, la tendina che apre una consegna');
+  await vai('pagina=dipartimento&dip=svi&tendina=chiusa');
+  const sezTit = () => page.evaluate(() => [...document.querySelectorAll('.a-main section h3')].map(h => h.textContent.trim()));
+  let tit = await sezTit();
+  check(tit.length === 6 && tit[1] === 'Consegne di oggi', 'la pagina Dipartimento ha sei sezioni e la seconda è «Consegne di oggi»: ' + tit.join(' · '));
+  const sezCn = await sez('^Consegne di oggi');
+  check(await conta(sezCn + ' .ncard[data-az="consegna"]') === 7, 'Sviluppo a undici: sette consegne, tutte cliccabili');
+  /* i numeri vengono dal modello, non dalla pagina: la sezione non inventa niente */
+  const dalModello = await page.evaluate(() => modello.consegneDi('svi').length);
+  check(dalModello === 7, 'le sette sono quelle del modello (`consegneDi`), non un conto a parte');
+  check((await txt(sezCn + ' .cnt')).includes('7') && (await txt(sezCn + ' .cnt')).includes('3 fatte'), 'il contatore dice quante sono e quante sono fatte: ' + (await txt(sezCn + ' .cnt')));
+  /* le pillole filtrano davvero */
+  await clic(sezCn + ' .pill[data-v="fatte"]');
+  check(await conta(sezCn + ' .ncard[data-az="consegna"]') === 3, 'la pillola «Fatte» lascia le tre fatte');
+  check((await txt(sezCn + ' .cnt')).includes('3 di 7'), 'e il contatore dice «3 di 7»');
+  await clic(sezCn + ' .pill[data-v="dafare"]');
+  check(await conta(sezCn + ' .ncard[data-az="consegna"]') === 3, 'la pillola «Da fare» lascia le tre non ancora fatte (due da fare più quella in errore)');
+  await clic(sezCn + ' .pill[data-v="tutte"]');
+  check(await conta(sezCn + ' .ncard[data-az="consegna"]') === 7, 'e «Tutte» le rimette');
+  /* niente ricerca: la soglia del prodotto è dodici righe e le consegne arrivano a dieci */
+  check(await conta(sezCn + ' [data-az="cerca"]') === 0, 'e la sezione non ha il cerchio «cerca»: dieci righe al massimo stanno in una schermata');
+  /* la pagina: che cosa vuol dire aprire una consegna (scelta dell'utente: una pagina dedicata, non la tendina) */
+  await clic(sezCn + ' .ncard[data-az="consegna"]', 450);
+  check(await titolo() === 'PAGINA DEL CARRELLO', 'un clic sulla card apre la pagina della consegna, con il suo titolo: ' + await titolo());
+  check(await conta('.a-tend.estesa') === 0, 'e NON la tendina: la tendina resta l\'anteprima delle approvazioni');
+  const titCn = await sezTit();
+  /* quattro `section`: la testata (che non ha un h3, come nell'Esecuzione) piu' le tre con il titolo */
+  check(await conta('.a-main section') === 4 && titCn.length === 3 && titCn[0] === 'Il contenuto', 'la pagina ha la testata più tre sezioni, e la prima è «Il contenuto»: ' + titCn.join(' · '));
+  const tc = await txt('.a-main');
+  check(tc.includes('Sviluppatore full-stack'), 'dice chi l\'ha fatta');
+  check(tc.includes('Carrello con quantità'), 'e mostra il contenuto: l\'esito del passo che l\'ha prodotta');
+  check(tc.includes('Passo 2') && tc.includes('31 min') && tc.includes('14 €'), 'la sezione del passo dice numero, durata e costo');
+  check(tc.includes('Repository') && tc.includes('Ambiente di test'), 'e gli strumenti di quel passo');
+  check(await conta('.a-main .hgroup') >= 1 && tc.includes('Mentre la faceva'), 'e le voci di log di quel passo, che finora leggeva solo la pagina Esecuzione');
+  check(await conta('.a-main [data-az="pagina"][data-pagina="esecuzione"]') >= 1, 'porta all\'esecuzione che l\'ha prodotta');
+  check(await conta('.a-main section:last-of-type .ncard[data-az="consegna"]') === 2, 'e in fondo le altre due consegne della stessa esecuzione');
+  /* si torna al dipartimento, che e' da dove ci si arriva */
+  await clic('.a-back', 400);
+  check(await titolo() === 'SVILUPPO', 'la freccia della cornice torna al dipartimento: ' + await titolo());
+  /* la consegna gia' uscita porta alla sua richiesta, e mostra il documento vero */
+  await vai('pagina=consegna&consegna=c4-2&tendina=chiusa');
+  const tc2 = await txt('.a-main');
+  check(await titolo() === 'POST LINKEDIN 4 DI 12', 'una consegna già uscita ha la sua pagina: ' + await titolo());
+  check(tc2.includes('Il carrello abbandonato'), 'e mostra il documento vero della richiesta, non una descrizione');
+  check(tc2.includes('mock-up del carrello'), 'con il suo allegato');
+  const titCn2 = await sezTit();
+  check(await conta('.a-main [data-az="richiesta"]') === 3, 'e tre strade per decidere: la pillola in testata, quella della sezione e la riga della richiesta');
+  check(titCn2.length === 3 && titCn2[1] === 'La richiesta al titolare', 'la seconda sezione è la richiesta, perché questa consegna non nasce da un passo dichiarato: ' + titCn2.join(' · '));
+  check((await sezTit()).includes('La richiesta al titolare'), 'e una sezione che riporta la richiesta con la nota del dipendente');
+  await clic('.a-main [data-az="richiesta"]', 400);
+  check(await conta('.a-tend.estesa') === 1, 'da lì si apre la tendina per decidere, che è il suo mestiere');
+  /* il titolo lungo si stringe: la Consegna ha i titoli piu' lunghi del prodotto */
+  await vai('n=40&pagina=consegna&consegna=c21-0&tendina=chiusa');
+  check(await conta('.a-title.lunghissimo') === 1, 'il titolo più lungo del prodotto (32 caratteri) si stringe invece di sforare');
+  check(await page.evaluate(() => { const st = document.querySelector('.a-stats'), a = document.querySelector('.a-app'); return st.getBoundingClientRect().right <= a.getBoundingClientRect().right; }), 'e i numeri della testata restano dentro la cornice');
+  check(await conta('.a-stats .stat') === 2, 'due numeri e non tre: con tre la testata sforava di 77 px');
+
+  /* la scala: a quaranta la sezione regge dieci card in tre righe, e le pagine non scorrono di lato */
+  await vai('pagina=dipartimento&dip=ven&n=40&tendina=chiusa');
+  const sezCn40 = await sez('^Consegne di oggi');
+  check(await conta(sezCn40 + ' .ncard[data-az="consegna"]') === 10, 'a quaranta il dipartimento ha dieci consegne');
+  check(await largo(), 'e la pagina non scorre di lato');
+  /* regola 26: nessuna freccia inerte nelle card nuove */
+  const frecceCn = await page.evaluate(sel => [...document.querySelectorAll(sel + ' svg use[href="#i-ne"]')].filter(u => !u.closest('[data-az]')).length, sezCn40);
+  check(frecceCn === 0, 'e nessuna freccia della sezione è inerte (regola 26)');
+  /* il vuoto: un dipartimento senza consegne con quel filtro lo dice */
+  await vai('pagina=dipartimento&dip=amm&tendina=chiusa');
+  const sezCnA = await sez('^Consegne di oggi');
+  await clic(sezCnA + ' .pill[data-v="attesa"]');
+  check((await txt(sezCnA)).includes('Nessuna consegna'), 'e con un filtro che non pesca niente la sezione lo dice invece di restare vuota');
 
   check(errors.length === 0, 'nessun errore in console: ' + JSON.stringify(errors));
   console.log(`\n${ok} ok, ${ko} ko`);

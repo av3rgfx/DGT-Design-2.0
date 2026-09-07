@@ -199,9 +199,10 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
 8. Pagina Richieste nella stessa cornice, con pieno controllo: filtri per stato, tipo, periodo, dipartimento,
    cliente e dipendente; Da approvare con ordinamento e «Approva tutte»; Storico per giorno a righe compatte;
    Regole di approvazione.
-9. Pagina Dipartimento nella stessa cornice: Oggi in ‹dipartimento› (esecuzioni: al lavoro, errore, pianificate) ·
-   Dipendenti (+ card «Aggiungi») · Obiettivi (card con barra di avanzamento a pillola; lime = in ritardo) · Da
-   approvare dal dipartimento · Spesa del mese per cliente. Ogni pagina interna ripete la cornice: barra in alto,
+9. Pagina Dipartimento nella stessa cornice, **sei sezioni** (dalla versione 19): Oggi in ‹dipartimento› (esecuzioni:
+   al lavoro, errore, pianificate) · **Consegne di oggi** (le cose create dalle sue esecuzioni, che si aprono nella
+   tendina larga; regola 27) · Dipendenti (+ card «Aggiungi») · Obiettivi (card con barra di avanzamento a pillola;
+   lime = in ritardo) · Da approvare dal dipartimento · Spesa del mese per cliente. Una consegna si apre nella **sua pagina** (regola 27), non in una tendina. Ogni pagina interna ripete la cornice: barra in alto,
    titolo con numeri, rail, sezioni con intestazione e pillole, tendine del titolare.
 10. Il dipendente AI non ha un nome di base: l'etichetta principale è il ruolo (nella card a 22 px su due righe) e
     sotto sta il dipartimento; il nome è facoltativo (creazione o modifica) e quando c'è torna la forma piena (nome
@@ -362,6 +363,38 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     L'eccezione dichiarata: la card del dipendente **in anteprima** dentro l'editor tiene la matita e la freccia, perché
     non è un controllo ma il disegno di come verrà la card — toglierle farebbe mentire l'anteprima.
 
+27. **La cosa creata da un'esecuzione si chiama «consegna», ed è una sola cosa con un solo nome** (2026-09-07,
+    versione 19). Prima ne servivano quattro — `output` nel codice e nel titolo di sezione, «Consegne» nel contatore
+    della *stessa* intestazione, `allegato` nella richiesta, `consegne` negli obiettivi e nei costi — e il prodotto
+    rispondeva in **quattro modi diversi** alla domanda «quante cose abbiamo creato» (gli obiettivi 31 su 59, gli
+    output 9 su 18, le richieste decise 16 su 20, l'aggregatore dei costi 318). Le consegne vivono in una **sezione
+    della pagina Dipartimento**, seconda su sei, subito sotto «Oggi in ‹dipartimento›» perché ne sono il risultato:
+    18 a undici dipendenti (7 di Sviluppo, 5 di Marketing, 4 di Vendite, 2 di Amministrazione) e 40 a quaranta, in
+    card di 316×294 px, quattro per riga, con cinque pillole di filtro. Nessuna pagina nuova, il rail resta a sei voci,
+    e sul telefono la stessa sezione in righe. Tre conseguenze che valgono oltre questo caso:
+    - **quello che si legge ha una pagina; la tendina serve a decidere.** Aprire una consegna apre la **sua pagina**
+      (`?pagina=consegna&consegna=c1-0`, sul telefono la schermata 9), non la tendina: la tendina è ancorata al
+      pannello delle approvazioni, ha il pager «1 di 4» e le quattro decisioni, e serve a decidere in fretta **senza
+      perdere la coda**. Sono due mestieri e vanno tenuti separati (scelta dell'utente, che la prima versione aveva
+      sbagliato). La pagina porta quello che la card non regge — chi l'ha fatta, il passo con durata, costo e
+      strumenti, le voci di log di mentre la faceva — e, se la consegna è già uscita, il **documento vero della
+      richiesta**, con tre strade per andare a decidere. **La card serve a trovare, la pagina a sapere, la tendina a
+      decidere.**
+    - **una card larga 316 px regge tre fatti, non cinque, e i tre si scelgono misurando.** La riga di stato lascia al
+      testo **30–52 px** («Passo 3 · 23,6 €» ne chiede 89), quindi lì ci sta il solo chip; sotto il titolo `.meta` non
+      va a capo e sfora di 29 px, quindi il verbo che il chip dice già si toglie e resta l'ora. Quello che avanza
+      scende nella tendina.
+    - **in una testata ci stanno solo i numeri che hanno un valore, e non sempre tre.** La Consegna ha i titoli più
+      lunghi del prodotto (32 caratteri) e con tre numeri la testata sfora di 77 px; e nove consegne su diciotto non
+      nascono da un passo dichiarato, quindi due dei tre numeri sarebbero «—». Due numeri, e solo quelli che ci sono:
+      provato su tutte e 58 le pagine, il caso peggiore ha 118 px di margine.
+    - **una sezione nuova sposta gli indici di tutte quelle dopo.** Aggiungendo la sesta si sono rotte tre prove e una
+      cattura che puntavano a `section:nth-of-type(5)`: da qui in avanti prove e catture cercano la sezione **dal
+      titolo**, non dalla posizione.
+    Il perimetro dichiarato: la sezione dice «di oggi» e mostra le consegne delle esecuzioni correnti. Il modello non
+    ha un orologio (`azienda.ora` è fisso), quindi il «tempo reale» che il prodotto può promettere è *lo stato al
+    momento in cui si apre la pagina*, con i quattro stati che `giornata()` distingue — e va detto così, non di più.
+
 Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in
 `schermate/direzioni/DIREZIONI.md`, sezione 1. Sorgenti in `schermate/direzioni/` (`dati.js`, `comune.js`,
@@ -371,22 +404,45 @@ gli occhi del kit), 8 (pagina dell'Esecuzione), 10 (l'identità degli orbi), 11 
 repository, la sezione «moto» in `DESIGN.md`; niente di visibile cambiato, tranne una perdita di stile sulla schermata della
 revisione del telefono, corretta e da confermare) 15 (le pagine Agenda e Chat del rail e le due tab del telefono), 15a (gli avatar di nuovo centrati nella casella), 16 (la
 barra «Oggi in azienda» come quadro del giorno), 17 (il quadro del giorno anche sul telefono, la tab Dipartimenti, i
-controlli inerti) e 18 (le frecce di riga: la regola 25 portata dalle intestazioni alle righe) in `DIREZIONI.md`, sezione 4.
+controlli inerti) 18 (le frecce di riga: la regola 25 portata dalle intestazioni alle righe) e 19 (le consegne del dipartimento) in `DIREZIONI.md`, sezione 4; l'analisi delle tre proposte nella sezione 6.
 
 
-### Che cosa il prodotto ancora non ha (2026-09-07)
+### Che cosa il prodotto ancora non ha (2026-09-07, analizzato e contato)
 
-Tre zone segnalate dall'utente a fine sessione, da analizzare prima di disegnarle (dettaglio e fatti in
-`PROSSIMA-SESSIONE.md`, candidati 6, 7 e 8):
+Tre zone segnalate dall'utente. Il 2026-09-07 sono state **analizzate aprendo le pagine e contando**, e le due con più
+di una risposta difendibile sono passate dal consiglio (`llm-council`). Analisi per esteso in
+`schermate/direzioni/DIREZIONI.md`, **sezione 6**; verdetti e domande aperte in `PROSSIMA-SESSIONE.md`. **Le decisioni
+sono dell'utente e sono ancora da prendere.**
 
-- **Le cose create non si guardano insieme.** Gli output di un'esecuzione si vedono solo dentro la pagina Esecuzione —
-  è l'unico punto del prodotto che li legge — e non si aprono. Manca la vista «che cosa ha prodotto questo dipartimento».
-- **L'editor di workflow è solo una figura.** Sta nello specimen (sezione 07, dal secondo riferimento) e non esiste nella
-  direzione A: niente modello, niente clic. Le sue tre porte — Modello, Memoria, Strumento — corrispondono però a cose
-  che il prodotto ha già, e i passi di un'esecuzione sono già la sequenza che un workflow dichiarerebbe.
-- **I connettori stanno sul dipendente.** Strumenti e connessioni vivono nel dossier di ogni dipendente, e lo stesso
-  strumento si ripete su molti (l'«Archivio del cliente» quindici volte). Se il livello giusto sia il dipendente,
-  il dipartimento o l'azienda è un dubbio progettuale, e passa dal consiglio.
+- ~~**Le cose create non si guardano insieme, e si chiamano in quattro modi.**~~ **Costruito il 2026-09-07**
+  (versione 19, regola 27): la parola è **«consegna»** e le consegne hanno una sezione sulla pagina Dipartimento, in
+  Console e sul telefono, e si aprono nella tendina larga. Restano fuori, dichiarati, «che cosa ha creato l'azienda» e
+  «che cosa abbiamo fatto per un cliente»: sono il prezzo della strada scelta. Il conto di partenza, per memoria: La parola «Output» compare in **4 viste su
+  20** e sono sempre la stessa pagina, l'Esecuzione; «artefatto» **zero volte** in tutto il prodotto. Gli output sono
+  **18** a undici dipendenti e **40** a quaranta; di questi **9** e **19** sono già creati, e **3** e **0** si aprono.
+  Per vederli tutti servono **11 pagine** a undici e **40** a quaranta. E il prodotto risponde in **quattro modi
+  diversi** alla domanda «quante cose abbiamo creato» — gli obiettivi dicono 31 consegne su 59, gli output 9 su 18, le
+  richieste decise 16 su 20, l'aggregatore dei costi 318 — perché «consegna» copre quattro oggetti su quattro periodi e
+  nessuna pagina dice quale sta contando. Nella stessa intestazione di sezione convivono già due parole: `<h3>Output</h3>`
+  con il contatore «Consegne».
+- **L'editor di workflow è solo una figura** (specimen, sezione 07, dal secondo riferimento): non legge il modello, non
+  è cliccabile, e la parola «workflow» compare **zero volte** nel prodotto. Si scosta dal sistema in modo misurabile:
+  **14 icone su 20 non sono nello sprite** (12 da disegnare), **16 colori su 19 fuori palette** fra cui **sei verdi che
+  non sono il lime** (deroga alla regola 4), un **secondo rail** accanto a quello di 6 voci, e un pan/zoom dentro una
+  pagina che si scala già con `zoom` (regola 17). I **18 token `--dgt-ed-*`** di `tokens.css` **non li usa nessuno**:
+  lo specimen non importa `tokens.css` e ridichiara variabili sue. Le sue tre porte (Modello, Memoria, Strumento) e due
+  delle tre tab (Esecuzioni, Test) corrispondono a cose che il prodotto ha già, e i **43 passi** a undici (**156** a
+  quaranta, da 3 a 10 per esecuzione) sono già la sequenza che un workflow dichiarerebbe.
+- **I connettori stanno sul dipendente, e il modello ha già una faglia che nessuno aveva visto.** Strumenti e
+  connessioni vivono nel dossier di ogni dipendente: **46 istanze per 17 nomi** a undici, **160 per 14** a quaranta, e
+  **40 copie di una sola connessione** («Drive di Nova Studio»). Ma **quattro nomi su quattordici sono spenti su ogni
+  dipendente e non sono mai stati usati** — Deploy in produzione, Pubblicazione diretta, Invio e-mail, Banca — e sono
+  gli unici quattro la cui descrizione parla di **permesso** («Solo con approvazione», «Sola lettura») invece che di
+  contenuto: la divisione fra **accesso** e **capacità** è già scritta, sono i 4 spenti contro i 10 accesi. Tre
+  difetti aperti: il chip **«Rinnova»** della connessione scaduta è **inerte**; l'errore di Kim «Chiavi di accesso
+  scadute» **non è attaccato a nessuna connessione**; il permesso «Strumenti e connessioni» ce l'hanno **2 dipendenti
+  su 11**. E lo sprite **non ha** busta, chiave, nuvola né immagine, mentre la scorciatoia delle iniziali in un disco
+  colorato è vietata dalla regola 19: serve una regola nuova per disegnare un servizio senza il suo marchio.
 
 ## 11. Collegamenti
 
@@ -406,7 +462,8 @@ Tre zone segnalate dall'utente a fine sessione, da analizzare prima di disegnarl
 - Branch delle pagine Agenda e Chat (versione 15): `claude/direzione-a-agenda-chat-l1z8tr`, PR #12: https://github.com/av3rgfx/DGT-Design-2.0/pull/12 (unita)
 - Branch della barra «Oggi in azienda» (versione 16): `claude/console-oggi-azienda-bar-kzetlz`, PR #13 (unita): https://github.com/av3rgfx/DGT-Design-2.0/pull/13
 - Branch del quadro del giorno sul telefono, della tab Dipartimenti e dei controlli inerti (versione 17): `claude/console-direzione-a-mobile-vdb1tb`, PR #14 (unita): https://github.com/av3rgfx/DGT-Design-2.0/pull/14
-- Branch delle frecce di riga (versione 18): `claude/candidato-1-frecce-riga-nmd2pt`
+- Branch delle frecce di riga (versione 18): `claude/candidato-1-frecce-riga-nmd2pt`, PR #15 (unita)
+- Branch dell'analisi delle tre proposte (candidati 6, 7 e 8) e della **versione 19** (le consegne del dipartimento: candidato 6, strada A, parola «consegna»): `claude/analisi-proposte-direzione-a-vxpham`, PR #16: https://github.com/av3rgfx/DGT-Design-2.0/pull/16
 
 - Artefatto pubblicato: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b
 - Branch di lavoro: `claude/dgt-design-system-fz5r1g`, PR #1 verso `main`: https://github.com/av3rgfx/DGT-Design-2.0/pull/1

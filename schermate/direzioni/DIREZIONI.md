@@ -1629,15 +1629,171 @@ niente da spendere: se un domani il quadro o la card crescono di un pixel, la ri
 prova a dirlo prima delle catture.
 
 
+### Versione 19: le consegne del dipartimento (2026-09-07, sessione successiva)
+
+**La scelta dell'utente**, dopo l'analisi della sezione 6: si comincia dal **candidato 6**, **strada A** (una sezione in
+più sulla pagina Dipartimento, nessuna pagina nuova nel rail), e la parola è **«consegna»**.
+
+#### 1. La parola prima della forma
+
+L'analisi aveva contato che il prodotto usava **quattro parole per la stessa cosa**: `output` (nel codice e nel titolo
+di sezione), «Consegne» (nel contatore della stessa intestazione), `allegato` (nella richiesta), `consegne` (negli
+obiettivi e nei costi). Adesso ce n'è una, ed è **consegna**: *la cosa creata da un'esecuzione*.
+
+Sceglierla ha costretto a due rinomine, tutte e due dentro il codice e invisibili sulla pagina:
+
+| Prima | Adesso | Perché |
+|---|---|---|
+| `consegneDi(e, periodo, approvate)` in `dati.js` — **conta** le consegne di un dipendente per l'aggregatore dei costi | **`contaConsegne`** | ritorna un numero, non un elenco; e il nome buono serviva all'elenco |
+| `rigaConsegna(m, r)` in `mobile.js` — la riga di una **richiesta** in coda | **`rigaRichiesta`** | prende una richiesta, non una consegna |
+
+`consegneDi(dip)` è adesso l'elenco delle consegne di un dipartimento. **Il primo tentativo è finito in
+`SyntaxError: Identifier 'consegneDi' has already been declared`**: è la nota tecnica già scritta («i nomi si
+scontrano: prima di sceglierne uno, cercarlo») che vale per le funzioni e non solo per le classi.
+
+#### 2. Che cosa mostra, e da dove viene
+
+`consegneDi(dip)` non porta **nessun numero nuovo**: raccoglie gli `output` delle esecuzioni dei dipendenti del
+dipartimento, quelli che la pagina Esecuzione disegna già nella sua sezione. In più collega due cose che il modello
+aveva e nessuno leggeva insieme:
+
+- **il passo che l'ha prodotta**, letto da `quando` («passo 2 · 10:18»), con il suo esito, i suoi strumenti, la sua
+  durata e il suo costo;
+- **le voci di log di quel passo** (`x.log`, campo `passo`), che finora leggeva solo la sezione «Log».
+
+| | Sviluppo | Marketing | Vendite | Amministr. | In tutto |
+|---|---|---|---|---|---|
+| Consegne a undici | **7** | 5 | 4 | 2 | **18** |
+| Consegne a quaranta | 10 | 10 | 10 | 10 | **40** |
+
+#### 3. Che cosa costa, in pixel
+
+La sezione sta **seconda su sei**, subito sotto «Oggi in ‹dipartimento›», perché ne è il risultato: la pagina si legge
+*adesso → uscito → chi → obiettivi → da approvare → spesa*, e la regola 2 dice che il «adesso» apre la pagina.
+
+| | Prima | Dopo | Costo |
+|---|---|---|---|
+| Sezioni della pagina Dipartimento (Console e telefono) | 5 | **6** | — |
+| Pagina Sviluppo, a undici | 1 880 px | **2 594 px** | +714 |
+| Pagina Marketing, a undici | 2 258 px | **2 960 px** | +702 |
+| Pagina Sviluppo, a quaranta | 2 882 px | **3 894 px** | +1 012 |
+| La sezione da sola | — | **674 px** (7 card in 2 righe), **972 px** (10 card in 3 righe) | — |
+
+Card di **316×294 px**, quattro per riga, la stessa griglia di «Da approvare». **Zero pagine nuove, zero voci nel rail**
+(resta a sei), **zero schermate nuove sul telefono**.
+
+#### 4. Le tre cose che la misura ha deciso al posto di un'opinione
+
+1. **Niente cerchio «cerca» nell'intestazione.** Ce l'avevo messo, e **la prova delle intestazioni mi ha colto in
+   fallo**: la soglia del prodotto è **dodici righe** (`SOGLIA_CERCA`) e le consegne di un dipartimento arrivano a
+   **dieci** a quaranta dipendenti. Una lista che sta in una schermata si legge, non si cerca. Le cinque pillole
+   (Tutte · Da approvare · In corso · Fatte · Da fare) bastano, e sono le stesse quattro parole della pagina
+   Esecuzione più una.
+2. **Nella riga di stato ci sta il solo chip.** Misurato: `.sel` è `flex:1` accanto a due pulsanti, e quello che resta
+   al testo va da **30 a 52 px** — «Passo 3 · 23,6 €» ne chiede 89. Qualunque testo lì finisce nei puntini (succede
+   già alle card che c'erano: «Passo 3 di 7», «Chiavi di accesso scadute»), e un testo che non si legge mai è una
+   promessa non mantenuta. Il passo, il costo e gli strumenti stanno nella tendina, che è larga il doppio.
+3. **Sotto il titolo, il «quando» senza il verbo.** `.meta` non va a capo (primitiva condivisa) e a 316 px
+   «Summit Marketing · parte alle 17:00» sforava di **29 px**. Il verbo che il chip di stato dice già
+   («consegnato», «approvata», «concluso», «parte», «fermo al») si toglie e resta l'ora.
+
+#### 5. Che cosa vuol dire «aprire una consegna»: una pagina, non la tendina
+
+La domanda che l'analisi aveva lasciato aperta, e su cui l'utente ha corretto la prima risposta. **La prima proposta
+era la tendina larga** (quella con cui il titolare apre una richiesta). Il suo giudizio, testuale: *«la tendina per me
+è in anteprima presente nel popup a notifica delle approvazioni. Voglio che si apra una pagina dedicata quando si apre
+una consegna.»*
+
+**Ha ragione, e la ragione è un confine fra due mestieri.** La tendina serve a **decidere in fretta senza perdere la
+coda**: è ancorata al pannello delle approvazioni, ha il pager «1 di 4» e le quattro decisioni, e quando la chiudi sei
+ancora nella coda. Una consegna invece **si legge**, e nel prodotto tutto quello che si legge ha una pagina: il
+Dipartimento, il Dipendente, l'Esecuzione, i Costi. Mettere una cosa da leggere dentro l'attrezzo per decidere le
+confonde tutte e due.
+
+Quindi: **`?pagina=consegna&consegna=c1-0`**, nella stessa cornice delle altre — barra in cima, titolo con i numeri,
+rail, sezioni — e la freccia della cornice torna al dipartimento, che è da dove ci si arriva. Sul telefono la stessa
+cosa è la **schermata 9** (le altre otto restano quelle che erano).
+
+**Le sezioni, e perché sono quelle:**
+
+| Sezione | Che cosa porta | Quando c'è |
+|---|---|---|
+| Testata | chi l'ha fatta, i chip (stato, tipo, cliente, esecuzione), la frase che dice dov'è arrivata, e le azioni | sempre |
+| **Il contenuto** | il documento vero della richiesta se la consegna è già uscita (testo e allegato), altrimenti l'esito del passo che l'ha prodotta | sempre |
+| **Il passo che l'ha prodotta** | numero, nome, durata, costo, gli strumenti, e le **voci di log** di mentre la faceva | quando la consegna nasce da un passo dichiarato: **9 su 18** a undici |
+| **La richiesta al titolare** | la riga della richiesta con il suo esito, e la nota del dipendente | quando la consegna è già uscita: **3 su 18** a undici, 0 a quaranta |
+| **Le altre consegne** | dell'esecuzione se ce ne sono, se no quattro del dipartimento | sempre |
+
+**Due misure hanno deciso la testata:**
+- **Due numeri e non tre.** La Consegna ha i titoli più lunghi del prodotto (32 caratteri, «200 lead e-commerce in
+  Lombardia») e con tre la testata **sforava di 77 px**. La durata è il terzo che si toglie: sta già nella sezione del
+  passo, con il suo contesto. Provata su tutte e **58 le pagine** (18 a undici, 40 a quaranta): il peggior caso ha
+  **118 px di margine**, nessuna scorre di lato, **zero controlli inerti**.
+- **Solo i numeri che hanno un valore.** Nove consegne su diciotto nascono da un passo dichiarato e nove no; scrivere
+  «—» due volte in cima a una pagina è rumore. Lo stato c'è sempre, il costo viene dal passo o dalla richiesta.
+
+**E una sull'ultima sezione**: a quaranta dipendenti **27 consegne su 40** nascono da un'esecuzione con un solo output,
+quindi «le altre consegne dell'esecuzione» sarebbe vuota e la pagina finirebbe dopo il contenuto, mezza nera. Lì la
+sezione diventa «le altre consegne di ‹dipartimento›», quattro, una riga, con la pillola che porta alla lista intera.
+
+#### 6. Una ripetizione, misurata
+
+Una consegna che aspetta il titolare compare due volte sulla stessa pagina: in «Consegne di oggi» e in «Da approvare».
+Contate: **1 o 2 card per pagina**, e stanno a **1 988–2 302 px di distanza**, cioè due schermate piene — non si vedono
+mai insieme. Restano lime tutte e due perché la regola 4 dice che il lime è l'attenzione del titolare e una consegna in
+attesa la aspetta davvero. **Si toglie in una riga** (`TONO_CONSEGNA.attesa`) se l'utente preferisce.
+
+#### 7. Verifica
+
+- **Le quattro prove cliccate passano: 141 + 82 + 48 + 54 = 325 verifiche, 0 ko** (erano 284). `console.js` da 107 a
+  **141** (la sezione, i filtri, la pagina della consegna, il ritorno al dipartimento, il titolo lungo, i due numeri
+  della testata), `mobile.js` da 75 a **82** (la sezione e la schermata 9), `costi.js` e `agenda-chat.js` invariate.
+- **La pagina della consegna provata su tutte e 58**, a undici e a quaranta: nessuna sfora (peggior margine 118 px),
+  nessuna scorre di lato, **zero controlli inerti**, nessun errore in console.
+- **Le prove non si legano più agli indici delle sezioni.** Aggiungere la sesta sezione ha spostato
+  `section:nth-of-type(5)` e ne ha rotte tre: adesso un aiutante (`sez('^Spesa')`) cerca la sezione **dal titolo**.
+  Stessa correzione in `scatta.js`, dove `a-sez-spesa-oggi` puntava alla quinta sezione.
+- Catture nuove nel gruppo `consegne` di `scatta.js`: `a-sez-consegne`, `a-sez-consegne-fatte`, `a-consegna`,
+  `a-consegna-richiesta`, `a-consegna-sola`, `a-dipartimento-40`, `m-consegne`, `m-consegna`, `m-consegna-post`.
+  **50 su 57 restano identiche byte per byte.** Due delle sette che cambiano sono di sola resa: `a-sez-spesa-oggi`
+  (348 pixel su 923 000, la sezione sta 714 px più in basso) e **`a-costi.png`, che cambia in 6 pixel nel riquadro
+  `x 1136–1415, y 173–175`** — esattamente quello che la sessione precedente aveva segnalato come instabile per
+  `a-11.png`. Dentro una sessione le catture sono stabili (due giri dello stesso codice danno file identici); fra
+  sessioni quel riquadro no. La pagina dei Costi non è stata toccata e i suoi numeri non si muovono.
+- **Due trappole del repository, tutte e due già scritte nelle note e tutte e due ricadute**: un **backtick dentro un
+  commento CSS** (`.doc` fra apici inversi) ha chiuso il template literal e la pagina non caricava; e un nome nuovo che
+  esisteva già (`consegneDi`) ha fatto morire il primo tentativo in `SyntaxError`. La nota dice «ci si cade a ogni
+  sessione» ed è vero.
+
+#### 8. Che cosa resta da decidere
+
+- **Il perimetro**: la sezione dice «di oggi» e mostra le consegne delle esecuzioni correnti. Il mese non c'è.
+- **Il «tempo reale»**: il modello non ha un orologio (`azienda.ora` è `'10:42'` fisso), quindi la promessa che la
+  sezione mantiene è «lo stato al momento in cui apri la pagina», con i quattro stati che `giornata()` distingue.
+- **La ripetizione** del punto 6.
+- Restano fuori, come diceva l'analisi, «che cosa ha creato l'azienda» e «che cosa abbiamo fatto per Rossi Srl»: sono
+  il prezzo dichiarato della strada A, e chiederebbero la strada B (una pagina nel rail).
+
+#### 9. Gli artefatti
+
+Console e telefono sono stati ricostruiti con `build-unico.js` (492 292 byte / 5 926 righe la Console, 365 413 / 4 793
+il telefono), provati headless — zero errori in console, le sei sezioni del Dipartimento, il clic sulla consegna che
+apre la pagina con le sue tre sezioni, il telefono con nove schermate — e **ripubblicati allo stesso indirizzo**:
+[Console](https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34) e
+[telefono](https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9). Il terzo (la scelta della barra) non
+è stato toccato: incorpora otto catture, tutte fra le 50 rimaste identiche. La rilettura obbligatoria della versione
+pubblicata è costata **13 letture e circa 200 000 token**: con il CSS e le funzioni della Console i blocchi non
+possono superare le 400–450 righe.
+
 ## 5. File
 
 | File | Ruolo |
 |---|---|
-| `dati.js` | modello sintetico (11 e 40) condiviso; dalla versione 17 anche i gruppi del giorno (`gruppiOggi`), letti dalla barra della Console e dal quadro del telefono; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`), le richieste di tipo `revisione` e l'esecuzione (`esecuzioneDi`: sei scritte a mano, le altre generate); dal 2026-09-05 la decisione del titolare (`decidi`), condivisa fra Console e telefono; `azienda.scadenzaMese` per la linea del tempo del mobile; dal 2026-09-06 l'aggregatore dei costi (`costi(periodo, dip)`, `spesaDi`) per la pagina Costi e la sezione «Spesa del mese», e (versione 15) l'agenda (`giornata`, `settimana`, `scadenze`) e i fili della chat (`filoDi`, `scrivi`, `fili`, `nonLetti`) per la Console e per il telefono |
+| `dati.js` | modello sintetico (11 e 40) condiviso; dalla versione 17 anche i gruppi del giorno (`gruppiOggi`), letti dalla barra della Console e dal quadro del telefono; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`), le richieste di tipo `revisione` e l'esecuzione (`esecuzioneDi`: sei scritte a mano, le altre generate); dal 2026-09-05 la decisione del titolare (`decidi`), condivisa fra Console e telefono; `azienda.scadenzaMese` per la linea del tempo del mobile; dalla versione 19 le **consegne del dipartimento** (`consegneDi(dip)`, `consegnaDi(id)`: gli `output` delle esecuzioni con il passo che li ha prodotti e le sue voci di log; l'aiutante che le *conta* per i costi si chiama adesso `contaConsegne`); dal 2026-09-06 l'aggregatore dei costi (`costi(periodo, dip)`, `spesaDi`) per la pagina Costi e la sezione «Spesa del mese», e (versione 15) l'agenda (`giornata`, `settimana`, `scadenze`) e i fili della chat (`filoDi`, `scrivi`, `fili`, `nonLetti`) per la Console e per il telefono |
 | `comune.js` | sprite di icone di DGT, prefisso CSS, utilità |
 | `../componenti.js` (`schermate/componenti.js`) | dal 2026-09-06 (versione 14) i componenti della Console condivisi con il telefono e con le pagine degli avatar: il CSS delle primitive (`.rb`, `.av`, `.pair`, `.pill`, `.chip`, `.dots`, `.badge`, `.ncard`/`.nt`, `.lead`, `.task`, `.crow`, `.hrow`, `.erow`, `.qrow`, `.dcard`, `.ripart`/`.leg`, e dalla versione 15 le bolle della chat `.msg`/`.bub`), `variabili`, e `av`, `pair`, `dots`, `chipStato`, `chipEsito`, `messaggio`, `iconaTipo`, `nomeTipo`, `eur`, `delta`, `differenze`; `window.DGT_COMPONENTI`, va caricato dopo `comune.js` e il suo CSS messo in pagina prima di quello della Console |
-| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo), pagina Costi (per dipartimento, dipendente, cliente, modello, strumento, con le pillole del periodo per sezione; `?pagina=costi`), pagina Agenda (barra del giorno, eventi, scadenze, settimana; `?pagina=agenda`) e pagina Chat (fili, filo aperto, barra di scrittura; `?pagina=chat&filo=4`, versione 15); dalla versione 16 la barra «Oggi in azienda» è il quadro del giorno in caselle contate (`barraStato`, che legge `m.gruppiOggi()`; `?barra=0` rimette quella di prima) e la barra dei passi si stringe da sola; dalla versione 17 i controlli delle intestazioni di sezione seguono la regola «un controllo si vede solo se fa quello che promette» (`cercaSez`, `filtraCerca`, `pilleSez`, `filtraSez`, `contoSez`, stato in `st.cerca` e `st.sez`) e dalla versione 18 la stessa regola vale per le **frecce di riga** (regola 26: la freccia sta solo dove la riga ha una destinazione; `soloDecise`, `logSolo` e `versoConfronto` dicono per lista se la colonna da 32 px cade, classe `nofr`); cliccabile; dalla versione 14 prende le primitive da `../componenti.js` e tiene la cornice, le pagine, le tendine e `monta` |
-| `mobile.js` / `.html` | il telefono del titolare: le approvazioni (versioni 11 e 12, schermate «Da approvare», «Richiesta» — anche la revisione di performance con le due versioni a confronto e le quattro decisioni — e «Riepilogo di oggi», con il rifiuto con motivo e lo stato vuoto a coda finita) e, dalla versione 15, le due tab «Chat» (elenco dei fili e conversazione con la barra di scrittura) e «Agenda» (la giornata sulla linea del tempo, i prossimi giorni, le scadenze); dalla versione 17 il **quadro del giorno** in cima alla schermata 1 (`quadroGiorno`, tre forme dietro `?quadro=0|1|2|3`, la 2 è quella scelta) e la tab **Dipartimenti** (schermate 7 e 8: l'elenco e il dipartimento aperto); otto telefoni affiancati che condividono il modello, la richiesta corrente, il filo aperto e il dipartimento scelto; `DGT_MOBILE.monta`, `coda`; `?schermata=1…8&richiesta=0&filo=4&dip=mkt&quadro=`, `?n=40`; dalla versione 14 carica `../componenti.js` e non più `direzione-a.js` |
+| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo), pagina Costi (per dipartimento, dipendente, cliente, modello, strumento, con le pillole del periodo per sezione; `?pagina=costi`), pagina Agenda (barra del giorno, eventi, scadenze, settimana; `?pagina=agenda`) e pagina Chat (fili, filo aperto, barra di scrittura; `?pagina=chat&filo=4`, versione 15); dalla versione 16 la barra «Oggi in azienda» è il quadro del giorno in caselle contate (`barraStato`, che legge `m.gruppiOggi()`; `?barra=0` rimette quella di prima) e la barra dei passi si stringe da sola; dalla versione 17 i controlli delle intestazioni di sezione seguono la regola «un controllo si vede solo se fa quello che promette» (`cercaSez`, `filtraCerca`, `pilleSez`, `filtraSez`, `contoSez`, stato in `st.cerca` e `st.sez`) e dalla versione 18 la stessa regola vale per le **frecce di riga** (regola 26: la freccia sta solo dove la riga ha una destinazione; `soloDecise`, `logSolo` e `versoConfronto` dicono per lista se la colonna da 32 px cade, classe `nofr`); dalla versione 19 la sezione **«Consegne di oggi»** della pagina Dipartimento (`cardConsegna`, `PILLE_CONSEGNE`) e la **pagina della consegna** (`paginaConsegna`, `testataConsegna`, `chipPassoStato`, azione `consegna`, `?pagina=consegna&consegna=c1-0`: la tendina resta l'anteprima delle approvazioni, la pagina è dove si legge); cliccabile; dalla versione 14 prende le primitive da `../componenti.js` e tiene la cornice, le pagine, le tendine e `monta` |
+| `mobile.js` / `.html` | il telefono del titolare: le approvazioni (versioni 11 e 12, schermate «Da approvare», «Richiesta» — anche la revisione di performance con le due versioni a confronto e le quattro decisioni — e «Riepilogo di oggi», con il rifiuto con motivo e lo stato vuoto a coda finita) e, dalla versione 15, le due tab «Chat» (elenco dei fili e conversazione con la barra di scrittura) e «Agenda» (la giornata sulla linea del tempo, i prossimi giorni, le scadenze); dalla versione 17 il **quadro del giorno** in cima alla schermata 1 (`quadroGiorno`, tre forme dietro `?quadro=0|1|2|3`, la 2 è quella scelta) e la tab **Dipartimenti** (schermate 7 e 8: l'elenco e il dipartimento aperto); dalla versione 19 la sezione **«Consegne di oggi»** anche nella schermata 8, in righe (`rigaConsegna`; la riga della richiesta in coda si chiama adesso `rigaRichiesta`), e la **schermata 9**, la pagina della consegna (`consegna(m, tel, st)`, `?schermata=9&consegna=c1-0`); nove telefoni affiancati che condividono il modello, la richiesta corrente, il filo aperto e il dipartimento scelto; `DGT_MOBILE.monta`, `coda`; `?schermata=1…8&richiesta=0&filo=4&dip=mkt&quadro=`, `?n=40`; dalla versione 14 carica `../componenti.js` e non più `direzione-a.js` |
 | `avatar/avatar-dgt.js` | involucro degli avatar nel linguaggio della Console (colori, stati, simboli statici, animazione); `usa('orbe'|'kit')` sceglie la famiglia |
 | `avatar/avatar-orbe.js` | la famiglia «orbe» (versioni 5b, 5c, 7, 7b, 7c): cerchi dal seme con le pupille e lo sguardo del kit, un solo motore `requestAnimationFrame` con funzioni continue del tempo, sguardo che segue il puntatore; senza disco, con le pelli (`pelle('perla'|'grigio'|'chiaro'|'alone'|'disco')`, solo variabili CSS; perla predefinita); `fermo(t)`, `riprendi()`, `fotogramma(svg, t)` per gli screenshot |
 | `confronto-avatar.html` | le due famiglie a confronto nelle viste della Console |
@@ -1651,8 +1807,342 @@ prova a dirlo prima delle catture.
 | `build-unico.js` | genera il file unico per l'artefatto (`node build-unico.js direzione-a.html out.html`) |
 | `scelta-barra.src.html` | la pagina delle quattro scelte per la barra «Oggi in azienda», con il voto condiviso: quella che il titolare ha mandato al collega. Sorgente, non pagina: le catture sono segnaposto `IMG:<nome>`, quindi non si apre da sola |
 | `costruisci-scelta.js` | costruisce `scelta-barra.html` dal sorgente, incorporando i PNG di `screenshot/` come data URI, più le otto catture del commutatore undici / quaranta (`node costruisci-scelta.js [out.html]`). Il risultato non entra nel repository (megabyte di base64): si rifà in un comando |
-| `scatta.js` | rigenera le catture di `screenshot/` dalla lista di parametri dichiarata nel file (`node scatta.js`, `console` / `barra` / `quadro` / `dip` / `controlli` per un gruppo, `--in <cartella>` per il confronto prima/dopo); le catture che restano fuori sono elencate in `FUORI`, e dalla versione 18 ci sono anche i prima/dopo `a-frecce-*.png` e `m-conta-titolo.png`, che vogliono l'albero della versione precedente e si compongono con `design-system/tools/affianca.js` |
+| `scatta.js` | rigenera le catture di `screenshot/` dalla lista di parametri dichiarata nel file (`node scatta.js`, `console` / `barra` / `quadro` / `dip` / `controlli` per un gruppo, `--in <cartella>` per il confronto prima/dopo); le catture che restano fuori sono elencate in `FUORI`, dalla versione 19 c'è il gruppo `consegne` (`a-sez-consegne`, `a-sez-consegne-fatte`, `a-consegna`, `a-consegna-richiesta`, `a-dipartimento-40`, `m-consegne`) e dalla versione 18 ci sono anche i prima/dopo `a-frecce-*.png` e `m-conta-titolo.png`, che vogliono l'albero della versione precedente e si compongono con `design-system/tools/affianca.js` |
 | `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`); le cornici del telefono (`mobile-*.png`: le versioni 11 e 12, le quattro della revisione rifatte nella versione 14 e le tre schermate nuove `mobile-4-chat`, `mobile-5-filo`, `mobile-6-agenda` della versione 15) e le sezioni delle pagine Costi (`a-costi-*.png`, versione 13), Agenda e Chat (`a-agenda-*.png`, `a-chat-*.png`, versione 15) con `screenshot-elementi.js`; le catture dello studio della barra (`a-barra-*.png`, versione 16) e quelle della versione 17: la forma scelta del quadro del giorno e le due scartate, le due schermate dei Dipartimenti (`m-*.png`), i controlli delle sezioni (`a-sez-*.png`); della versione 18 i prima/dopo delle frecce di riga (`a-frecce-*.png`) e il confronto del conto nel titolo del telefono (`m-conta-titolo.png`), composti con `affianca.js`. Si rigenerano con `scatta.js`, tranne quelli elencati in `FUORI` |
-| `prove/` | le prove cliccate con Playwright, con il `README.md` che dice il comando: `console.js` (107 verifiche: tendine, Richieste, editor, esecuzione, 40, la barra «Oggi in azienda» e la barra dei passi, dalla versione 17 i controlli delle intestazioni di sezione e dalla 18 le frecce di riga), `mobile.js` (70: le schermate delle approvazioni, revisione, rifiuto con motivo, prova, stato vuoto, 40, dalla versione 17 il quadro del giorno e la tab Dipartimenti e dalla 18 il conto delle frecce), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le pagine Agenda e Chat della Console e le due tab del telefono, versione 15); leggono `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH` |
+| `prove/` | le prove cliccate con Playwright, con il `README.md` che dice il comando: `console.js` (141 verifiche: tendine, Richieste, editor, esecuzione, 40, la barra «Oggi in azienda» e la barra dei passi, dalla versione 17 i controlli delle intestazioni di sezione, dalla 18 le frecce di riga e dalla 19 le consegne del dipartimento; le sezioni si cercano **dal titolo** e non più dall'indice), `mobile.js` (82: le schermate delle approvazioni, revisione, rifiuto con motivo, prova, stato vuoto, 40, dalla versione 17 il quadro del giorno e la tab Dipartimenti, dalla 18 il conto delle frecce e dalla 19 le consegne del dipartimento), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le pagine Agenda e Chat della Console e le due tab del telefono, versione 15); leggono `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH` |
 
 Per gli screenshot: `design-system/tools/screenshot-page.js` (vedi `design-system/tools/README.md`).
+
+
+## 6. Analisi delle tre proposte nuove (2026-09-07, sessione successiva)
+
+Sessione di **analisi, non di costruzione** (decisione 43): l'utente ha fatto tre proposte e ha chiesto che venissero
+analizzate prima di scrivere codice. Per ognuna: che cosa esiste già **contato aprendo le pagine**, che cosa manca
+davvero, le strade con il prezzo in numeri, la parola, le conseguenze su quello che è costruito. Le due domande con più
+di una risposta difendibile sono passate dal **consiglio** (`llm-council`, regola fondamentale in `CLAUDE.md`): cinque
+pareri indipendenti, revisione incrociata anonima, sintesi del presidente. **I verdetti sono da confermare: la
+decisione la prende l'utente.**
+
+**Come sono stati presi i numeri.** Un attrezzo di censimento che apre venti viste della Console e due del telefono con
+Playwright e conta nel DOM (sezioni, card, righe, frecce, parole), più tre letture del modello dentro la pagina
+(`DGT_DATI.modello(11)` e `(40)`). Non un `grep`: la lezione della versione 18 è che a `grep` i conti vengono
+**sbagliati per difetto**, due volte su due.
+
+### 6.1 · Il lavoro del dipartimento che si tiene d'occhio (candidato 6)
+
+**Parole dell'utente**: «non c'è una schermata dove si veda chiaramente il lavoro che ogni dipartimento sta svolgendo e
+tenerlo d'occhio vedendo cosa è stato fatto, cosa è stato creato, con possibilità di aprire file, artefatti e compiti
+svolti, anche in tempo reale».
+
+#### Che cosa esiste già, contato
+
+| | Contato |
+|---|---|
+| Sezioni della pagina **Dipartimento** (Console) | **5**: Oggi in ‹dip›, Dipendenti, Obiettivi, Da approvare, Spesa del mese |
+| Sezioni della stessa pagina sul **telefono** (schermata 8) | **5**, con «Da approvare» spostata in seconda posizione |
+| Viste in cui compare la parola **«Output»** | **4 su 20** aperte, e sono sempre la stessa pagina: l'**Esecuzione**. Zero in home, Richieste, Dipartimento, Costi, Agenda, Chat, Riepilogo, tendine, editor. **Zero sul telefono** |
+| Occorrenze di **«artefatto»** in tutto il prodotto | **0** (Console e telefono) |
+| Output nel modello | **18** a undici, **40** a quaranta |
+| Di questi, **già creati** (fatto, approvata, attesa) | **9** a undici, **19** a quaranta |
+| Di questi, **apribili** (portano da qualche parte) | **3** a undici, **0** a quaranta |
+| Aggregatori che esistono già | `giornata()` → **8 eventi** a undici, **26** a quaranta, con quattro stati (in corso, errore, attesa, pianificato); `m.costi(periodo, dip)` per la spesa |
+| Vocabolario già scritto (dentro l'Esecuzione) | `ICONA_OUT`: **6 tipi** (post, documento, lista, immagine, codice, proposta) · `chipOut`: **6 stati** · `PILLE_OUTPUT`: **4 filtri** |
+
+#### Che cosa manca davvero: due fatti, non un'impressione
+
+**1. Per vedere quello che l'azienda ha creato bisogna aprire una pagina per dipendente.** Gli output vivono in un
+punto solo, la sezione «Output» della pagina Esecuzione, e ci si arriva un'esecuzione alla volta.
+
+| | Sviluppo | Marketing | Vendite | Amministr. | Azienda |
+|---|---|---|---|---|---|
+| Output, a undici | 7 | 5 | 4 | 2 | **18** |
+| Pagine Esecuzione da aprire | 3 | 3 | 3 | 2 | **11** |
+| Output, a quaranta | 10 | 10 | 10 | 10 | **40** |
+| Pagine Esecuzione da aprire | 10 | 10 | 10 | 10 | **40** |
+
+**2. Il prodotto risponde in quattro modi diversi alla domanda «quante cose abbiamo creato», e nessuno dei quattro
+elenchi si apre.** Non è un errore di calcolo: è che la parola «consegna» copre quattro oggetti su quattro periodi
+diversi, e nessuna pagina dice quale sta contando.
+
+| Dove | Che cosa conta | A undici | A quaranta |
+|---|---|---|---|
+| Card **Obiettivo** («3 di 7 consegne») | consegne dell'obiettivo | **31 su 59** | **34 su 73** |
+| Sezione **Output** dell'Esecuzione | output già creati | **9 su 18** | **19 su 40** |
+| Pagina **Richieste** | richieste decise | **16 su 20** | **28 su 35** |
+| `m.costi('mese').perCliente` | consegne dei 30 giorni | **318** su 8 clienti | **1 179** su 10 clienti |
+
+E il difetto più piccolo è il più eloquente: **la stessa intestazione di sezione usa due parole per la stessa cosa** —
+`<h3>Output</h3>` con accanto il contatore `contoSez(…, 'Consegne')`. Titolo in inglese, contatore in italiano, stessa
+riga.
+
+**3. I file sono già nominati e nessuno si apre.** Tutte le richieste hanno un `allegato` dichiarato — **20 su 20** a
+undici, **35 su 35** a quaranta: «Documento: 4 pagine», «Immagine 1200×1200», «Foglio: 120 righe». È una riga di testo
+accanto a un'icona, mai un oggetto. E la card Obiettivo che dice «3 di 7 consegne» porta a «Le richieste di ‹cliente›»,
+che è un **elenco diverso**.
+
+#### «In tempo reale»: che cosa può voler dire qui
+
+Il modello **non ha un orologio**: `azienda.ora` è `'10:42'` fisso e la giornata è giovedì 4 settembre 2026 (nota
+tecnica già scritta: «le date del modello non si ricavano da `new Date`»). L'unica promessa onesta in un prototipo è:
+*la sezione mostra lo stato al momento in cui si apre la pagina*, con i quattro stati che `giornata()` già distingue.
+O si dice così, o si toglie dalla proposta.
+
+#### Le tre strade, con il prezzo
+
+| | Che cos'è | Prezzo in numeri | Che cosa non risolve |
+|---|---|---|---|
+| **A · sesta sezione del Dipartimento** | «Fatto oggi in Sviluppo» sotto le cinque che ci sono | La pagina passa da 5 a **6 sezioni** e da 1 880 a circa 2 200 px (Marketing è già a 2 258; a quaranta Sviluppo è a 2 882). **Zero pagine nuove, zero voci nel rail, zero schermate nuove sul telefono** | Resta per dipartimento: «che cosa ha creato l'azienda» e «che cosa abbiamo fatto per Rossi Srl» restano senza risposta |
+| **B · una pagina nuova nel rail** | Un archivio filtrabile per dipartimento, cliente, tipo e periodo | **+1 voce nel rail** (oggi 6), **+1 vista** sulle 28, **+1 schermata** sulle 8 del telefono. La forma esiste già ed è la pagina **Costi**: 6 sezioni, 30 righe, pillole di periodo per sezione | Rischia di ripetere Richieste, che è già un elenco filtrabile di cose consegnate |
+| **C · un oggetto, non una vista** | La «cosa creata» diventa di prima classe e si apre da tutti i punti dove è **già nominata** | Tocca **4 punti già costruiti** (la card output, la voce del log, l'allegato della richiesta, la consegna dell'obiettivo) invece di aggiungerne uno. Obbliga a dire che cosa vuol dire «aprire» in un prototipo: la tendina con l'anteprima esiste già (`.a-tend`, la richiesta) | È la più lunga, e da sola non fa nascere nessuna schermata: l'utente ha chiesto una schermata |
+
+#### La parola
+
+Il prodotto ne usa già **quattro** per lo stesso oggetto: `output` (nel codice e nel titolo di sezione), **«Consegne»**
+(nel contatore della stessa intestazione), `allegato` (nella richiesta), `consegne` (negli obiettivi e nei costi). Non è
+un dubbio progettuale con più risposte difendibili: è un difetto contato, e la parola che sopravvive va scelta **prima**
+della forma. **«Consegna» è la candidata forte**: è già italiana, è già quella del contatore, ed è la sola che dice il
+gesto (una cosa consegnata *a qualcuno*, che è la spina dorsale del prodotto). «Output» va tolto dal titolo di sezione.
+
+**Questo candidato non è passato dal consiglio**, ed è la ragione per cui: tutto quello che decide è misurabile (quante
+pagine si aprono, quante volte compare una parola, quali conti non tornano) e le regole già scritte fanno il resto. La
+regola del progetto dice che quello che si misura si misura, non si vota.
+
+### 6.2 · L'editor di workflow (candidato 7) — **passato dal consiglio**
+
+**Parole dell'utente**: «una l'abbiamo già creata (ma è una bozza e non rispecchia a pieno il design system), ovvero
+l'editor di workflow: va solo implementata in modo intelligente (seguendo le regole UX corrette) e aggiornata».
+
+#### Dov'è la bozza e quanto si scosta, contato
+
+La bozza è la **sezione 07 dello specimen** («Interfaccia agente — editor a nodi»), resa fedele del secondo
+riferimento. Contata aprendo il file: **5 nodi**, **5 porte** (tre con etichetta: Modello, Memoria, Strumento),
+**7 archi**, una minimappa, 4 strumenti di zoom, 3 pillole, una barra chat, un rail di 7 tessere più l'avatar, e tre tab
+*Editor · Esecuzioni · Test*.
+
+| Scostamento | Contato |
+|---|---|
+| Icone usate dalla figura | **20**, di cui **14 non sono nello sprite del prodotto** (48 icone). Due sono varianti di icone che ci sono (chat, organizzazione): **12 da disegnare da zero** |
+| Colori nel CSS dell'editor | **19**, di cui **16 fuori dalla palette del sistema** — fra questi **sei verdi** (`#4FCB58, #6BDD72, #3FB847, #2F8F3E, #1C5A22, #0A2A0F`) che **non sono il lime** `#B8FC64`. È lo scostamento più grosso e sta al centro della figura: la **regola 4** dice un solo accento |
+| Rail | La Console ne ha già uno, di **6 voci**. Lo specimen ne disegna un altro, di 7 tessere. Due rail non stanno nella stessa applicazione |
+| Zoom | La **regola 17** scala la Console con `zoom` alla larghezza della finestra. Un canvas con pan e zoom propri dentro una pagina che si scala con `zoom` sono due zoom annidati |
+| La parola «workflow» nel prodotto | **0 occorrenze** in `dati.js`, `direzione-a.js`, `mobile.js`, `componenti.js`. Non c'è nessun oggetto da editare: va inventato l'oggetto prima dell'editor |
+
+**Un fatto controllato durante la revisione incrociata, che cambia una delle domande**: i **18 token `--dgt-ed-*`** di
+`tokens.css` **non sono usati da nessun file**. `specimen.html` non importa `tokens.css` (è un file autonomo) e
+ridichiara variabili sue (`--egreen`, `--eglow`), inchiodando `#4FCB58` cinque volte nel markup. Cancellare quei token
+o tenerli **non cambia un pixel**: è una cosa da contare, non da votare, e i cinque consiglieri ci hanno litigato sopra
+per niente.
+
+#### Che cosa il workflow non deve reinventare
+
+Le **tre porte** del nodo agente esistono già: **Modello** (Rapido/Standard/Esperto con la regola di scelta automatica),
+**Memoria** («Archivio del cliente», lo strumento più usato del prodotto), **Strumento** (gli strumenti del dossier).
+Le tre tab pure: **Esecuzioni** è la pagina Esecuzione (5 sezioni), **Test** è il **colloquio** (8 casi con atteso,
+esito, punteggio, soglia 85, costo 4 €, durata 18 min, storico). Solo **Editor** non esiste.
+
+E i **passi** sono già una sequenza dichiarata, disegnata due volte nella stessa pagina (righe e barra dei passi).
+
+| La scala vera | A undici | A quaranta |
+|---|---|---|
+| Passi in tutto | **43** | **156** |
+| Per esecuzione | da **3** a **7**, media **3,91** | da **3** a **10**, media 3,90 |
+| Esecuzioni con più di 4 passi | **2 su 11** | **9 su 40** |
+
+La figura ne disegna 5. L'esecuzione più grande a undici (Sviluppatore full-stack, «Checkout e-commerce») ha 7 passi,
+9 usi di strumento e 3 modelli: **23 elementi** se ogni passo diventa un nodo con le sue porte.
+
+#### Il consiglio, in breve
+
+**Cinque pareri su cinque**, per strade diverse: lo usa il **titolare** (nel prodotto non esiste una scrivania del
+dipendente: inventarla vuol dire inventare un secondo utente); l'oggetto è del **dipartimento** (del dipendente è già il
+dossier; dell'azienda è troppo largo per essere firmato in blocco; l'unico caso che giustifica l'oggetto — copywriter
+scrive, titolare approva, social pubblica — attraversa due caselle); la forma è la **sequenza dichiarata**, non il
+canvas come strumento di composizione. **Quattro su cinque**, indipendentemente: non si parte dal foglio bianco, la cosa
+nasce da un'esecuzione riuscita, e così costo e durata nascono **misurati**. **Quattro su cinque** sulla parola:
+**procedura**.
+
+**Quello che la revisione incrociata ha colto e i pareri no** (è la parte che ha cambiato la risposta, come già la
+prima volta):
+
+1. **Il consenso 5-0 contro il canvas è in parte un artefatto del contesto.** La sezione delle strade dava al canvas due
+   voci di costo in numeri e un solo guadagno scritto come gusto. Va detto, e va detto il migliore argomento **a
+   favore** del canvas, che nessun consigliere ha fatto: *il canvas non serve a comporre, serve a mostrare che ci sono
+   due lavoratori diversi e che fra loro c'è un'attesa*. Una lista dice «poi, poi, poi»; una superficie a nodi dice «qui
+   aspetta te» — cioè rende visibile il punto in cui il titolare è il collo di bottiglia della sua stessa azienda. E
+   nessuno ha distinto un **canvas modificabile** da un **diagramma in sola lettura**: tutti i costi contati (pan e
+   zoom annidati, minimappa, nodi trascinabili, 12 icone) sono costi dell'**editing**, non del **disegno**.
+2. **I rami non servono, e si vede dai numeri.** Media 3,91 passi, 2 esecuzioni su 11 sopra i 4: una sequenza di quattro
+   passi non ha topologia. L'unico ramo vero è l'**errore**, che è già uno stato del passo e che la barra agenda già
+   disegna in rosa; «se il brief manca, chiedi» non è un ramo, è la spina dorsale. Conseguenza: **cade anche l'ultimo
+   argomento funzionale del canvas**, e resta solo quello di leggibilità del punto 1.
+3. **La delega.** Tutti hanno detto «il titolare approva la procedura», nessuno che cosa la procedura gli **toglie**.
+
+**Verdetto del presidente (da confermare)**: la procedura come **sequenza di righe dichiarate dentro la pagina
+Dipartimento**, nata da un'esecuzione riuscita («rifallo sempre così»), con costo e durata misurati. Ogni riga dichiara
+chi, modello, strumenti, costo previsto e **la condizione di uscita in italiano** (riuscito → passo seguente; errore o
+materiale mancante → si ferma e diventa una Richiesta). Il passaggio di mano si risolve **dentro la riga**: il passo del
+titolare è una fascia lime che spezza la colonna e dice «qui si ferma finché non firmi tu». Il **diagramma in sola
+lettura resta una domanda aperta e legittima, ma è la seconda cosa**: è una resa della procedura, si aggiunge dopo senza
+rifare niente.
+
+**Che cosa il titolare smette di approvare (obbligatorio, e qui è la decisione più grossa)**: approvare una procedura è
+**approvare in anticipo le uscite che la rispettano**. Firmata una volta, un'esecuzione che non se ne scosta — stessi
+passi, stesso modello, strumenti dichiarati, entro la soglia di costo dichiarata — esce senza passare dalla coda e
+compare nel Riepilogo come «a norma»; la coda resta per le eccezioni (passo saltato o aggiunto, costo oltre soglia,
+strumento non previsto, errore). **Il prezzo, in chiaro**: la spina dorsale oggi dice «il titolare approva ogni uscita
+verso i clienti» e diventerebbe «nulla esce senza una firma del titolare — sull'uscita, o sulla procedura che la
+produce». È una riscrittura della spina dorsale, non un dettaglio, e chiede tre freni che nessun parere aveva nominato:
+una **soglia di costo** dichiarata, un **perimetro** (quali clienti, quali canali) e una **scadenza** (la procedura
+torna in coda dopo N esecuzioni, o quando cambia il soul prompt o il modello di un suo passo).
+
+**La parola: procedura.** Non per il 4 a 1, ma perché dopo la risposta qui sopra l'oggetto *è* una delega firmata, e
+«procedura» è l'unica delle candidate che porta con sé l'approvazione. «Flusso» convive male con «flusso di cassa» in
+un'applicazione che ha una pagina Costi, e nomina insieme il dichiarato, l'accaduto e il carico del dipartimento.
+«Piano» è già preso (la distribuzione dei compiti, decisione 41).
+
+**Che cosa succede alla sezione 07 dello specimen — decisione dell'utente, non del consiglio.** I 18 token sono già
+morti e la loro sorte non cambia un pixel. La domanda vera è che `SYSTEM-DESIGN.md` concede all'editor **una palette
+propria**: è una deroga scritta alla regola 4. Se il prodotto non applica mai la 07, il sistema conserva un'eccezione
+che nessuna pagina giustifica e lo specimen smette di essere uno specimen. Esiste una quarta uscita, la migliore sul
+piano tecnico: **ripuntare la 07** — stessa notte, stesse tessere, stesso bagliore, sei verdi morti, lime unico accento
+— a rendere la procedura in righe. Ma declassare o ripuntare la 07 significa **emendare `CLAUDE.md`**, che dice che il
+design dei due riferimenti «va copiato così com'è», e la 07 è l'unico posto dove il secondo riferimento vive. **Il
+consiglio può dire che cosa costa; non può revocare metà del mandato di design.**
+
+### 6.3 · I connettori (candidato 8) — **passato dal consiglio**
+
+**Parole dell'utente**: poter «connettere estensioni (connettori, per esempio MCP) come Gmail, Drive, YouTube,
+Instagram, Slack, Figma, Hostinger, etc… così da dare agli agenti/dipendenti gli strumenti per lavorare. Il come tecnico
+non ci interessa ora, ci interessa solo la UI e UX». E: «se dare i connettori ai dipendenti o ai dipartimenti — secondo
+me è meglio i dipartimenti». Con la richiesta esplicita di **pressare l'ipotesi invece di confermarla**.
+
+#### Che cosa esiste già, contato
+
+| | A undici | A quaranta |
+|---|---|---|
+| **Strumenti**: istanze / nomi distinti | **46** (35 accesi) / **17** | **160** (120 accesi) / **14** — *11,4 copie per nome* |
+| **Connessioni**: istanze / nomi distinti | **14** (13 attive, 1 scaduta) / **4** | **40** (tutte attive) / **1** — *40 copie di una cosa sola* |
+
+A quaranta dipendenti il prodotto tiene **quaranta copie della stessa connessione** («Drive di Nova Studio», una per
+dipendente): se scade il token, ci sono **40 posti** dove rinnovarlo.
+
+**Una correzione al passaggio di consegne, ed è di nuovo la stessa lezione.** Il passaggio di consegne diceva che
+«l'Archivio del cliente compare **15 volte** nel modello — lo stesso strumento ripetuto su quindici dipendenti», e lo
+dava come «il primo argomento a favore del livello dipartimento». Il 15 è un conto a `grep` sul testo di `dati.js`
+(dove il nome ricorre anche dentro i passi e in `strumentiUso`), e a undici dipendenti **quindici dipendenti non
+esistono**. Il numero vero, letto dai dossier aprendo la pagina, è **6 istanze a undici** e **20 a quaranta**.
+L'argomento regge lo stesso — anzi a quaranta è più forte — ma è la terza volta che un conto a `grep` entra in un
+documento sbagliato.
+
+**Dove compaiono nell'interfaccia**: la pagina **Dipendente** (sezione «Strumenti e connessioni»: 5 card cliccabili
+accendi/spegni più 3 righe connessione — è l'**unico posto del prodotto dove un connettore si guarda o si spegne**); la
+pagina **Esecuzione** (righe di costo «Per strumento» e voci del log, in sola lettura); la pagina **Costi** (sezione
+«Per strumento»). La pagina **Dipartimento**: **zero**. Il telefono: la parola compare **una volta sola**, dentro un
+messaggio di chat.
+
+**Tre difetti già presenti**: il chip **«Rinnova»** della connessione scaduta di Nora è **inerte** (controllato: nessuna
+azione né su di sé né su un antenato); l'errore più visibile del prodotto, le **«Chiavi di accesso scadute»** di Kim,
+è un guasto di credenziali che **non è attaccato a nessuna connessione** (è testo dentro un passo più una bandiera
+d'errore su uno strumento); il permesso «Strumenti e connessioni: solo quelli attivi» ce l'hanno **2 dipendenti su 11**.
+
+#### Il fatto che nessuno aveva nominato: il terzo asse è il cliente
+
+Le tre connessioni **scritte a mano** si chiamano **LinkedIn · Rossi Srl**, **Analytics · Rossi Srl** (scaduta il 30
+ago) e **Instagram · Madira Ink**. La quarta è **Drive di Nova Studio**, cioè dell'azienda. **Tre su quattro portano nel
+nome il cliente**; il dipartimento non compare in nessuna. Il cliente è già un'entità di prima classe: sezione «Per
+cliente» nei Costi, «Spesa del mese» nel Dipartimento.
+
+#### La misura che chiude la domanda: il modello ha già la faglia
+
+Il presidente del consiglio ha chiesto una misura, non un voto: dividere i nomi di strumento fra quelli che **toccano
+il mondo fuori** e quelli che sono **capacità del dipendente**. Il modello lo ha già fatto, e nessuno se n'era accorto.
+
+**Quattro nomi su quattordici sono spenti su ogni dipendente, in tutte e due le taglie, e non sono mai stati usati**
+(`ultimo: 'mai'`). Sono **tutte** le istanze spente del prodotto: 11 su 46 a undici, **40 su 160** a quaranta.
+
+| Nome | Dipartimento | Istanze (11 / 40) | Accesi | Descrizione, scritta nel modello |
+|---|---|---|---|---|
+| **Deploy in produzione** | Sviluppo | 3 / 10 | **0** | «Solo con approvazione» |
+| **Pubblicazione diretta** | Marketing | 3 / 10 | **0** | «Pubblica senza passare dal titolare» |
+| **Invio e-mail** | Vendite | 3 / 10 | **0** | «Solo con approvazione» |
+| **Banca** | Amministrazione | 2 / 10 | **0** | «Sola lettura» |
+
+Gli altri dieci sono accesi al 100 % e usati, e le loro descrizioni parlano di **contenuto** («Codice dei clienti»,
+«Brief e strutture approvate», «Prezzi approvati», «Date e serie in corso»). I quattro spenti sono **gli unici quattro
+la cui descrizione parla di permesso**, e stanno tutti e quattro in **quarta posizione** nel proprio dipartimento, uno
+per dipartimento. La divisione fra **accesso** e **capacità** è già scritta: sono i **4 spenti** contro i **10 accesi**.
+
+#### Il consiglio, in breve
+
+**Cinque pareri su cinque tolgono la credenziale dal dipendente**, e nessuno difende lo stato attuale. **Quattro su
+cinque arrivano al cliente da soli**, leggendo gli stessi quattro nomi: era un fatto nel contesto, non una
+raccomandazione, e ci sono inciampati sopra. Cinque su cinque tengono le 5 card strumento cliccabili e trasformano le
+3 righe connessione in lettura (la pagina più lunga del prodotto **si accorcia** invece di allungarsi); cinque su cinque
+non toccano «Per strumento» nei Costi; cinque su cinque non aggiungono schermate al telefono; cinque su cinque dicono
+che l'errore di Kim va agganciato a un oggetto vero, perché è **una rottura dell'attribuzione**. Le cinque revisioni
+indicano all'unanimità lo stesso parere più forte e lo stesso punto cieco.
+
+**Quello che la revisione incrociata ha colto e i pareri no:**
+
+1. **Sono due oggetti, non uno**, e da lì venivano le quattro parole diverse: la **credenziale** («Drive di Nova
+   Studio», una sola, che scade, che si rinnova in un posto) e il **permesso d'uso** (che Nora possa toccarla). **Su
+   questo secondo oggetto l'ipotesi dell'utente è giusta — e nessuno l'aveva votata perché nessuno l'aveva separata.**
+2. **Il difetto contato è sugli strumenti, non sulle connessioni**: 160 righe per 14 nomi contro 40 copie di una cosa. E
+   tutti e cinque archiviano il problema più grosso con la stessa formula («le card restano, sono capacità») — mentre
+   «Deploy in produzione», «Banca» e «Pubblicazione diretta» non sono capacità. **È esattamente la faglia che la misura
+   qui sopra ha poi trovato scritta nel modello.**
+3. **Il rifiuto unanime del dipartimento è in parte un artefatto**: il contesto aveva messo il colpo mortale dentro la
+   descrizione di quella strada e aveva regalato all'altra l'unico fatto nuovo. **L'argomento a favore del dipartimento
+   che nessun consigliere ha fatto**: *il dipartimento è l'unico livello che ha un capo*. Cliente e azienda non hanno un
+   responsabile; un accesso attaccato a Rossi Srl non dice **chi** lo rinnova, e la coda finisce sul titolare, cioè sul
+   collo di bottiglia che il prodotto cerca di alleggerire. I clienti crescono, i dipartimenti restano quattro.
+4. **Nessuno ha disegnato il gesto di collegare**, che è quello che l'utente ha chiesto: manca il «+ Collega», manca il
+   catalogo, e manca l'unico schermo dove il marchio di terzi sarebbe inevitabile.
+5. **Lo sprite non ha le icone**: contate, non ci sono busta, chiave, nuvola né immagine. E la scorciatoia ovvia —
+   iniziali dentro un disco colorato — **è vietata dalla regola 19**: il disco in tinta è una persona. Serve una regola
+   nuova: **l'accesso si disegna quadrato e monocromo, mai tondo**; l'icona dice la **funzione**, non il marchio; il
+   nome in testo porta il marchio. E il colore dello «scaduto» non è deciso: lime è l'attenzione del titolare, rosa
+   l'errore, e un accesso scaduto è tutti e due.
+
+**Verdetto del presidente (da confermare)**: nessuna delle tre strade, e **l'utente ha ragione a metà — sulla metà che
+il consiglio non ha mai votato**. La **credenziale è dell'azienda, nominata per cliente**; il **permesso d'uso è del
+dipartimento** (l'ipotesi dell'utente), con il dipendente che eredita e l'eccezione che passa da una richiesta — che è
+letteralmente «dare ai dipendenti gli strumenti per lavorare». La **superficie è il guasto, non l'inventario**: un
+accesso scaduto entra in Richieste con il danno in euro e le esecuzioni bloccate, in una corsia sua, e nessuna voce
+nuova nel rail per ora.
+
+**Che cosa il titolare smette di vedere**: la stessa credenziale 40 volte e 40 posti dove rinnovarla (uno); un chip
+«Rinnova» che non fa niente (sparisce invece di fingere); 40 assensi per dipendente diventano 4 per dipartimento; i **12
+interruttori decorativi** delle capacità escono dalle sue mani. In cambio **acquista** un'approvazione che oggi non ha:
+i **3 accessi irreversibili** (Banca, Deploy in produzione, Pubblicazione diretta) escono dall'interruttore del
+dipendente. È uno scambio, non un'aggiunta.
+
+**La parola: accesso.** È l'unica che copre tutti e due gli oggetti — l'accesso *a* un servizio e l'accesso *di* un
+dipartimento — e l'unica che porta il verbo con sé: si dà, si revoca, **scade**. Sopravvive **«strumento»**, ma
+rimpicciolito a capacità del dipendente. Muoiono **«connettore»** ed **«estensione»**. Muore **«connessione»**, ed è la
+sola morte che costa: 4 etichette in interfaccia (la sezione «Strumenti e connessioni», che si spacca in due; la riga di
+permesso omonima; le 3 righe di stato) più 14 righe del modello a undici (40 a quaranta), tutte generate da una funzione
+sola.
+
+**Restano scelte dell'utente**: se il Dipartimento spende la sua sesta sezione per la lettura «che cosa può toccare»; se
+Richieste ospita i guasti o ha una corsia separata; e la parola.
+
+### 6.4 · Quale prima, e perché
+
+**Il candidato 6.** Tre ragioni, in ordine di peso:
+
+1. **È l'unico dei tre che non aspetta una decisione.** Il 7 chiede all'utente di emendare `CLAUDE.md` (la sezione 07 e
+   il mandato «copiare così com'è») e di riscrivere la spina dorsale delle approvazioni. L'8 chiede di spaccare in due
+   una parola del prodotto e di inventare una regola di disegno che non esiste. Il 6 chiede una scelta fra tre forme, e
+   tutte e tre stanno dentro regole già scritte.
+2. **Gli altri due ci si appoggiano.** La procedura ha bisogno di un posto dove mostrare che cosa ha prodotto; l'accesso
+   rotto ha bisogno di un posto dove mostrare che cosa ha fermato. Oggi quel posto non c'è: la «cosa creata» è nominata
+   in quattro modi e si apre in nessuno. Farlo per primo rende gli altri due più corti; farlo per ultimo li fa nascere
+   con un buco al centro.
+3. **Il materiale c'è già tutto**: 18 output a undici e 40 a quaranta, sei tipi con la loro icona, sei stati con il loro
+   chip, quattro filtri, e due aggregatori (`giornata()`, `m.costi`) che nessuno ha ancora puntato sulle cose create.
+
+**Poi il 7, e per ultimo l'8.** Il 7 prima dell'8 perché la procedura dichiara **quali strumenti** un passo usa: chi
+decide la forma della procedura ha già in mano metà della domanda sugli accessi. E perché l'8, per come è uscito dal
+consiglio, non è più «dove metto i connettori» ma «spacco `strumenti` in due e invento come si disegna un servizio senza
+il suo marchio»: è il lavoro più lungo dei tre, ed è quello che cambia più righe di quelle già scritte.
