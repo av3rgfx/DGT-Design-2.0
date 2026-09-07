@@ -1188,8 +1188,9 @@ serve una legenda che mangia 215 px di pista; non dice che cosa aspetta il titol
 giorno della pagina Agenda, che ha quattro corsie e i titoli. *Costa*: medio (un calcolo per minuto e una legenda).
 
 **Strada 3 · «La riga di stato»** (`a-barra-stato.png`) — la barra smette di fingersi una linea del tempo e diventa il **quadro
-del giorno**: cinque caselle contate e nominate — `2 approvate`, `3 al lavoro` (con la pila di chi), `1 ferma · Kim` (rosa),
-`4 aspettano te`, `3 dopo · dalle 15:00` — ognuna cliccabile verso il posto giusto (le richieste, l'agenda, l'esecuzione ferma).
+del giorno**: quattro caselle contate e nominate — `2 approvate`, `3 al lavoro` (con la pila di chi), `1 ferma · Kim` (rosa),
+`3 dopo · dalle 15:00` — ognuna cliccabile verso il posto giusto (le richieste, l'agenda, l'esecuzione ferma). Quello che
+aspetta il titolare **non** ci sta: lo dice già la linguetta lime (vedi la correzione 16a).
 Con l'azienda grande i dettagli cedono il posto ai numeri (il nome di chi è fermo e l'ora del prossimo spariscono sopra i sedici
 dipendenti). *Risolve*: risponde alle quattro domande del colpo d'occhio; scala a 40 senza tagliare niente; porta l'errore in
 cima, dove oggi manca del tutto; niente marcatore dell'ora, quindi sulla pagina Esecuzione non ci sono più due «10:42» a 250 px
@@ -1249,8 +1250,9 @@ caselle contate, quella dei passi è una successione con il marcatore nero dell'
 
 #### 6 · Verifica
 
-- Le quattro prove cliccate passano: `console.js` **80** (erano 64: sedici verifiche nuove sulla barra — le cinque caselle, i
-  numeri contro il modello, dove portano, la barra dei passi dentro la pagina su quattro esecuzioni, i quaranta), `mobile.js` 39,
+- Le quattro prove cliccate passano: `console.js` **82** (erano 64: diciotto verifiche nuove sulla barra — le caselle, i
+  numeri contro il modello, dove portano, che non ripetano la linguetta, la barra dei passi dentro la pagina su quattro
+  esecuzioni, i quaranta), `mobile.js` 39,
   `costi.js` 48, `agenda-chat.js` 54. In tutto 221.
 - **Le 25 catture della Console cambiano solo nella barra**: confronto a pixel di ogni pagina prima e dopo, il riquadro delle
   differenze è sempre `x 426–1203, y 34–85` (esattamente la pista) e le differenze sono ~29 500 pixel su ognuna; le uniche due
@@ -1263,13 +1265,26 @@ caselle contate, quella dei passi è una successione con il marcatore nero dell'
   prima/dopo). Le catture che restano fuori sono dichiarate nel file (direzioni B e C, pellicola del moto, cornici del telefono,
   sezioni per elemento, le due strade scartate).
 
+#### 6a · Correzione 16a: la barra non ripete quello che dice già la linguetta (2026-09-06, stessa sessione)
+
+Alla conferma della strada l'utente ha lasciato a me la scelta sulla ripetizione dei numeri («se ritieni giusto eliminare la
+ripetizione correggi»). **Tolta la casella «aspettano te».** Il motivo, guardando le pagine invece che ragionando a memoria: la
+linguetta lime `.a-mini` («N da approvare», `position:fixed` sul bordo destro) è su **tutte e sette le pagine**, e quando la
+tendina è aperta al suo posto c'è la testata «Da approvare N». Quindi il numero delle richieste in attesa era già scritto
+ovunque, e la barra ne faceva un secondo — **un terzo** nella home e nel Dipartimento, dove c'è anche il numero grande della
+pagina: sulla schermata del Dipartimento «4 aspettano te» e «4 da approvare» distavano 430 px.
+
+Restano quattro caselle. La divisione che ne esce, e che vale come regola: **la barra dice che cosa fa l'azienda** (approvate,
+al lavoro, ferme, dopo), **la linguetta lime dice che cosa devi fare tu** — ed è anche quella che apre la coda, cosa che la
+barra non faceva. La casella «al lavoro» resta anche se il numero grande della home la ripete: porta la **pila di chi** sta
+lavorando, che il numero non ha, ed è l'unico posto globale nelle altre sei pagine.
+
 #### 7 · Scelte di dettaglio, ancora da confermare
 
 (La strada è confermata, vedi la sezione 4; queste no, perché l'utente non le ha sollevate.)
 
-- Le cinque caselle e le loro parole: «approvate» (le richieste approvate oggi, la stessa parola del Riepilogo), «al lavoro»,
-  «ferma/e», «aspettano te», «dopo». «Aspettano te» dice in voce di titolare quello che il numero grande chiama «da approvare»:
-  è l'unico punto in cui il prodotto usa due parole per la stessa cosa.
+- Le quattro caselle e le loro parole: «approvate» (le richieste approvate oggi, la stessa parola del Riepilogo), «al lavoro»,
+  «ferma/e», «dopo».
 - La casella «al lavoro» è l'unica bianca piena: adesso pesa più del passato e del futuro.
 - La pila di avatar resta solo su «al lavoro» (chi sta lavorando); le altre caselle hanno l'icona dello sprite.
 - Sopra i sedici dipendenti spariscono il nome di chi è fermo e l'ora del primo pianificato (restano i numeri).
@@ -1300,6 +1315,6 @@ caselle contate, quella dei passi è una successione con il marcatore nero dell'
 | `build-unico.js` | genera il file unico per l'artefatto (`node build-unico.js direzione-a.html out.html`) |
 | `scatta.js` | rigenera le catture di `screenshot/` dalla lista di parametri dichiarata nel file (`node scatta.js`, `console` / `barra` per un gruppo, `--in <cartella>` per il confronto prima/dopo); le catture che restano fuori sono elencate in `FUORI` |
 | `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`); le cornici del telefono (`mobile-*.png`: le versioni 11 e 12, le quattro della revisione rifatte nella versione 14 e le tre schermate nuove `mobile-4-chat`, `mobile-5-filo`, `mobile-6-agenda` della versione 15) e le sezioni delle pagine Costi (`a-costi-*.png`, versione 13), Agenda e Chat (`a-agenda-*.png`, `a-chat-*.png`, versione 15) con `screenshot-elementi.js`; le catture dello studio della barra (`a-barra-*.png`, versione 16). Si rigenerano con `scatta.js` |
-| `prove/` | le prove cliccate con Playwright, con il `README.md` che dice il comando: `console.js` (80 verifiche: tendine, Richieste, editor, esecuzione, 40, e dalla versione 16 la barra «Oggi in azienda» e la barra dei passi), `mobile.js` (39: le schermate delle approvazioni, revisione, rifiuto con motivo, prova, stato vuoto, 40), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le pagine Agenda e Chat della Console e le due tab del telefono, versione 15); leggono `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH` |
+| `prove/` | le prove cliccate con Playwright, con il `README.md` che dice il comando: `console.js` (82 verifiche: tendine, Richieste, editor, esecuzione, 40, e dalla versione 16 la barra «Oggi in azienda» e la barra dei passi), `mobile.js` (39: le schermate delle approvazioni, revisione, rifiuto con motivo, prova, stato vuoto, 40), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le pagine Agenda e Chat della Console e le due tab del telefono, versione 15); leggono `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH` |
 
 Per gli screenshot: `design-system/tools/screenshot-page.js` (vedi `design-system/tools/README.md`).

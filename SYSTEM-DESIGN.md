@@ -98,7 +98,7 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 |---|---|
 | Pulsante rotondo | 48 (40, 32); scuro `#1E1E1E`; bianco se attivo; vuoto con bordo `.14`; nero pieno per il video; rosso `#F15E60` per chiudere la chiamata; vetro `rgb(255 255 255/.22)` nella videochiamata |
 | Pillola filtro | 44 di altezza, bordo `.14`, trasparente; "Tutti" bianca con testo nero; l'icona fiamma `i-fire` (16) davanti al testo delle pillole «caldo / urgenti / da approvare / in ritardo»: **niente emoji** (regola 16) |
-| Barra agenda | **Nel riferimento**: pillola bianca 64 → titolo 18, pillola calendario con cerchio grigio, timeline lime 52 con eventi bianchi 40 (coppia di avatar, durata, freccia), separatori, orari 14, segmento in corso `#A8E65D` con icona video, marcatore nero "14:15" con linea e punto bianco, freccia finale 52. Lì è l'agenda personale di una persona: eventi tutti dello stesso tipo, gli avatar sono chi partecipa, «adesso» è la chiamata in corso. **Nel prodotto, dal 2026-09-06 (versione 16, regola 24)**: la stessa cornice, ma dentro la pista ci sono le **caselle contate del giorno** (approvate · al lavoro con la pila · ferme in rosa · aspettano te · dopo), non più i blocchi con l'asse del tempo. La forma del riferimento resta (pillola 64, titolo, chip della data, pista lime 52, pillole con gli avatar, cerchio 52); cadono gli orari fra i blocchi, i separatori e il marcatore nero dell'ora, che in DGT non stavano in scala. La versione precedente resta dietro `?barra=0` |
+| Barra agenda | **Nel riferimento**: pillola bianca 64 → titolo 18, pillola calendario con cerchio grigio, timeline lime 52 con eventi bianchi 40 (coppia di avatar, durata, freccia), separatori, orari 14, segmento in corso `#A8E65D` con icona video, marcatore nero "14:15" con linea e punto bianco, freccia finale 52. Lì è l'agenda personale di una persona: eventi tutti dello stesso tipo, gli avatar sono chi partecipa, «adesso» è la chiamata in corso. **Nel prodotto, dal 2026-09-06 (versione 16, regola 24)**: la stessa cornice, ma dentro la pista ci sono le **caselle contate del giorno** (approvate · al lavoro con la pila · ferme in rosa · dopo), non più i blocchi con l'asse del tempo. La forma del riferimento resta (pillola 64, titolo, chip della data, pista lime 52, pillole con gli avatar, cerchio 52); cadono gli orari fra i blocchi, i separatori e il marcatore nero dell'ora, che in DGT non stavano in scala. La versione precedente resta dietro `?barra=0` |
 | Riga WORKSPACE | cerchio indietro 48, titolo 46 con la O sostituita dal marchio lime, "Nuova attività" bianca 52 con cerchio grigio "+", tre numeri 48/300 con etichetta 19 grigia e badge ↑ lime / ↓ rosa |
 | Rail | 4 cerchi 48 a sinistra: elenco (attivo, bianco), organizzazione, chat, calendario. Nel prodotto (direzione A) i cerchi sono sei e portano tutti a una pagina: elenco (home), organizzazione (Dipartimento), campanella (Richieste), chat (Chat, dal 2026-09-06), calendario (Agenda, dal 2026-09-06) ed euro (Costi) |
 | Intestazione di sezione | titolo 28, conteggio sottolineato (numero 20 + parola 13), cerchi cerca e filtri 46, pillole filtro |
@@ -152,7 +152,7 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 - Confronto visivo sezione per sezione con le immagini originali a 1920 px.
 - Differenza voluta: le card delle sfide sono su una griglia regolare invece che sparse attorno al
   titolo, per restare leggibili su mobile.
-- Le schermate del prodotto hanno quattro prove cliccate con Playwright in `schermate/direzioni/prove/` (Console 80,
+- Le schermate del prodotto hanno quattro prove cliccate con Playwright in `schermate/direzioni/prove/` (Console 82,
   mobile 39, Costi 48, Agenda e Chat 54; 221 verifiche in tutto) e gli screenshot in `schermate/direzioni/screenshot/`. La manutenzione del
   2026-09-06 (versione 14) è stata verificata con trentuno catture identiche byte per byte prima e dopo e con le impronte
   degli stili calcolati di ogni elemento (`DIREZIONI.md`, «Versione 14»); le pagine Agenda e Chat (versione 15) con
@@ -297,7 +297,7 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     stati erano codificati in riempimenti che distano 1,1–1,2 : 1 di contrasto, e la lista che leggeva non conosceva né gli
     errori né le consegne da approvare: **delle 8 esecuzioni della giornata ne mostrava 4, e tacevano proprio le due su cui il
     titolare deve agire**. Ora dentro la pista ci sono cinque **caselle contate e nominate**, lette dal modello vero:
-    *N approvate*, *N al lavoro* (bianca piena, con la pila di chi lavora), *N ferma · nome* (rosa `#F9A3A3`), *N aspettano te*,
+    *N approvate*, *N al lavoro* (bianca piena, con la pila di chi lavora), *N ferma · nome* (rosa `#F9A3A3`),
     *N dopo · dalle HH:MM*; ognuna porta dove si agisce (le richieste, l'esecuzione ferma, l'Agenda) e sopra i sedici dipendenti
     i dettagli cedono il posto ai numeri. Le caselle traslucide hanno il filetto `inset 0 0 0 1px rgb(0 0 0/.1)` del chip della
     data, perché un oggetto si deve staccare dal suo fondo anche quando il significato sta nelle parole. Il *quando* lo dice la
@@ -307,7 +307,10 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     la barra di prima. Stessa sessione, sullo **stesso componente**: la barra dei passi dell'Esecuzione con sette passi cresceva
     a 2180 px dentro un contenitore da 1312 e `.a-app` la tagliava in silenzio (una griglia senza colonne dichiarate porta la
     colonna implicita a `max-content`: si vincola con `grid-template-columns:minmax(0,1fr)`), e adesso si stringe da sola invece
-    di uscire.
+    di uscire. **Un elemento fisso non ripete quello che un altro elemento fisso dice già** (correzione 16a, stessa sessione):
+    la casella «aspettano te» è stata tolta perché la linguetta lime «N da approvare» (`.a-mini`, `position:fixed`) è su tutte
+    e sette le pagine e per giunta apre la coda — nella home e nel Dipartimento lo stesso numero compariva tre volte sulla
+    stessa schermata. La divisione: **la barra dice che cosa fa l'azienda, la linguetta che cosa deve fare il titolare.**
 
 Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in

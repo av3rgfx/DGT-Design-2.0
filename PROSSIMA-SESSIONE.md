@@ -2,7 +2,7 @@
 
 Stato al 2026-09-06, fine della sessione della **barra «Oggi in azienda»** (versione 16 della direzione A · Console): lo studio UX
 chiesto dall'utente, tre strade disegnate nella Console vera e la terza applicata — la barra non finge più una linea del tempo e
-dice il giorno in cinque caselle contate e nominate. Nella stessa sessione, sullo stesso componente, sono stati corretti due
+dice il giorno in quattro caselle contate e nominate. Nella stessa sessione, sullo stesso componente, sono stati corretti due
 difetti della **barra dei passi** dell'Esecuzione (usciva dalla pagina e veniva tagliata in silenzio). Tutto è committato e
 pushato sul branch indicato sotto, con la PR aperta verso `main`. **L'utente ha visto la barra nuova e ha confermato la
 strada 3** («confermo la Strada 3», 2026-09-06): il codice era già quello, quindi non è cambiato niente dopo la conferma.
@@ -13,9 +13,11 @@ strada 3** («confermo la Strada 3», 2026-09-06): il codice era già quello, qu
   ripartiti da `main`, come chiedeva il prompt). A fine sessione è aperta la **PR #13** verso `main`
   (https://github.com/av3rgfx/DGT-Design-2.0/pull/13): se all'avvio della prossima sessione risulta già unita, ripartire da `main`
   con un branch nuovo; se è ancora aperta, continuare sullo stesso branch e la PR si aggiorna da sola.
-- **La barra «Oggi in azienda»** (`barraStato` e `gruppiOggi` in `direzione-a.js`): dentro la pista lime, cinque caselle contate e
-  nominate — *2 approvate*, *3 al lavoro* (bianca piena, con la pila di chi lavora), *1 ferma · Kim* (rosa), *4 aspettano te*,
-  *3 dopo · dalle 15:00* — ognuna cliccabile verso il posto giusto (Richieste, Esecuzione ferma, Agenda). Legge il modello vero
+- **La barra «Oggi in azienda»** (`barraStato` e `gruppiOggi` in `direzione-a.js`): dentro la pista lime, quattro caselle contate
+  e nominate — *2 approvate*, *3 al lavoro* (bianca piena, con la pila di chi lavora), *1 ferma · Kim* (rosa),
+  *3 dopo · dalle 15:00* — ognuna cliccabile verso il posto giusto (Richieste, Esecuzione ferma, Agenda). **Quello che aspetta
+  il titolare non sta nella barra**: lo dice la linguetta lime «N da approvare» (`.a-mini`), fissa su tutte e sette le pagine e
+  l'unica che apre la coda (correzione 16a, vedi la decisione 35). Legge il modello vero
   (stati dei dipendenti e richieste in attesa), non più la lista parallela `m.agenda`, che non conosceva gli errori. Sopra i
   sedici dipendenti i dettagli (il nome di chi è fermo, l'ora del prossimo) cedono il posto ai numeri. `?barra=0` rimette la
   barra di prima, e con quel parametro la pagina è **identica byte per byte** a prima della sessione.
@@ -38,8 +40,9 @@ strada 3** («confermo la Strada 3», 2026-09-06): il codice era già quello, qu
   conclusi restano gli ultimi due e gli altri si contano («+3 fatti»), i passi da fare oltre i due successivi si contano
   («+2 da fare»); il passo in corso e quello in errore restano sempre per esteso. Verificato su **tutte e 51 le esecuzioni** del
   modello (11 e 40): nessuna sfora.
-- **Le quattro prove cliccate** passano: `prove/console.js` **80** (erano 64: sedici verifiche nuove sulla barra e sulla barra dei
-  passi), `mobile.js` 39, `costi.js` 48, `agenda-chat.js` 54. In tutto **221**.
+- **Le quattro prove cliccate** passano: `prove/console.js` **82** (erano 64: diciotto verifiche nuove sulla barra e sulla barra
+  dei passi, comprese le due che impediscono alla barra di tornare a ripetere la linguetta), `mobile.js` 39, `costi.js` 48,
+  `agenda-chat.js` 54. In tutto **223**.
 - **Niente altro è cambiato**: confronto a pixel delle venticinque catture della Console prima e dopo — il riquadro delle
   differenze è sempre quello della barra (`x 426–1203, y 34–85`, circa 29 500 pixel), tranne `a-esecuzione.png` e
   `a-esecuzione-attesa.png`, che cambiano anche nella barra dei passi (il difetto corretto qui sopra). `a-1920.png` cambia nello
@@ -178,15 +181,23 @@ strada 3** («confermo la Strada 3», 2026-09-06): il codice era già quello, qu
     numeri, disegnate tre strade nella Console vera e catturate a 11 e a 40, scelta e applicata la terza («la riga di stato»)
     perché l'utente non ha risposto, come chiedeva il prompt.
     Scelte fatte in costruzione (dettaglio in `DIREZIONI.md`, «Versione 16», sezione 7):
-    - le cinque caselle e le loro parole: «approvate» (le richieste approvate oggi, la stessa parola del Riepilogo), «al lavoro»,
-      «ferma/e», «aspettano te», «dopo». **«Aspettano te»** dice in voce di titolare quello che il numero grande della home
-      chiama «da approvare»: è l'unico punto in cui il prodotto usa due parole per la stessa cosa;
+    - le caselle e le loro parole: «approvate» (le richieste approvate oggi, la stessa parola del Riepilogo), «al lavoro»,
+      «ferma/e», «dopo» (la quinta, «aspettano te», è stata tolta con la correzione 16a: decisione 35);
     - la casella «al lavoro» è l'unica bianca piena (adesso pesa più del passato e del futuro) ed è la sola con la pila di
       avatar; le altre hanno l'icona dello sprite;
-    - la duplicazione con i due numeri grandi si vede **solo nella home**: nelle altre sei pagine i numeri grandi sono quelli
-      della pagina, e la barra è l'unico posto dove lo stato dell'azienda resta scritto;
+    - resta una sola ripetizione, «al lavoro», e **solo nella home**: la casella porta la pila di chi lavora, che il numero
+      grande non ha, ed è l'unica globale nelle altre sei pagine;
     - sopra i sedici dipendenti spariscono il nome di chi è fermo e l'ora del primo pianificato;
     - nella barra dei passi: quattro pillole è la soglia oltre cui i conclusi perdono il nome, due i passi da fare per esteso.
+
+35. **2026-09-06: tolta la casella «aspettano te» (correzione 16a).** Sulla ripetizione dei numeri l'utente ha lasciato la
+    scelta a me («se ritieni giusto eliminare la ripetizione correggi, altrimenti lascia com'è»). Guardando le pagine invece
+    che ragionando a memoria è venuto fuori che la linguetta lime `.a-mini` («N da approvare», fissa sul bordo destro) è su
+    **tutte e sette** le pagine: il numero era già scritto ovunque, e nella home e nel Dipartimento compariva **tre volte**
+    sulla stessa schermata (nel Dipartimento a 430 px di distanza). Tolta la casella; restano quattro. La regola che ne esce:
+    **la barra dice che cosa fa l'azienda, la linguetta che cosa deve fare il titolare** — ed è la linguetta che apre la coda.
+    Due verifiche nuove in `prove/console.js` impediscono alla barra di tornare a ripeterla. Dettaglio in `DIREZIONI.md`,
+    «Correzione 16a», e nella regola 24 di `SYSTEM-DESIGN.md`.
 
 34. **2026-09-06, fine della sessione: l'utente conferma la strada 3.** Ha chiesto un artefatto con le sole quattro scelte da
     condividere con un collega (pubblicato, con il voto condiviso:
@@ -212,10 +223,9 @@ oggi non ha nessun quadro del giorno in cima (ha la linea del tempo del Riepilog
 
 Se l'utente chiede **correzioni di dettaglio sulla barra** (la strada resta la 3), i punti su cui è più probabile che voglia
 intervenire, in ordine:
-- **le parole**: «aspettano te» contro «da approvare» (le uniche due parole per la stessa cosa nel prodotto), «approvate»
-  contro «consegnate», «ferma» contro «in errore»;
-- **la duplicazione nella home** con i due numeri grandi: se dà fastidio, si toglie la casella «al lavoro» (resterebbe la pila
-  degli avatar, che i numeri non hanno) oppure si cambiano i due numeri grandi, che però vengono anch'essi dal riferimento;
+- **le parole**: «approvate» contro «consegnate», «ferma» contro «in errore»;
+- **l'ultima ripetizione**, «al lavoro» nella sola home: se dà fastidio si toglie anche quella casella, ma si perde la pila di
+  chi lavora, che il numero grande non ha; l'alternativa è cambiare i numeri grandi, che però vengono dal riferimento;
 - **il tempo che manca**: se vuole rivedere *quando*, la strada 2 («la giornata a misura») è disegnata e catturata, e si può
   rimettere in due modi — al posto delle caselle, o come seconda riga sotto di esse (la barra passerebbe da 64 a 96 px e
   scenderebbe tutta la cornice, che è fissa: `.a-head` a 112, `.a-rail` a 260, `.a-main` a 232);
@@ -336,8 +346,8 @@ dei passi il «+N da fare» e il «+N fatti» non sono cliccabili (la lista dei 
 1. **Ripubblicare i due artefatti** (Console e telefono): negato dal classificatore in questa sessione, gli indirizzi mostrano
    ancora la versione 15. Prima cosa della prossima sessione.
 2. **Le scelte di dettaglio della barra**, mai sollevate dall'utente e quindi ancora da confermare (decisioni 33 e 34): le
-   parole delle caselle («aspettano te» contro «da approvare»), la duplicazione nella home, quante caselle. La strada, invece,
-   è confermata.
+   parole delle caselle, l'ultima ripetizione («al lavoro», nella sola home), quante caselle. La strada, invece, è confermata,
+   e la ripetizione più grossa è già stata tolta con la correzione 16a (decisione 35).
 3. **Il giudizio dell'utente** sulle pagine Agenda e Chat (versione 15, decisione 30), sugli avatar ricentrati (15a, decisione
    31), sulla revisione sul telefono (decisione 28), sulle schermate del mobile (versioni 11 e 12, decisione 23), sulla pagina
    del Dipendente (versione 6) e su quella dell'Esecuzione (versione 8): in sospeso, non blocca. La pagina dei Costi ha avuto un

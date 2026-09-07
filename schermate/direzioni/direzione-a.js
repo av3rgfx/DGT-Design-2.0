@@ -580,17 +580,21 @@ window.DIREZIONE_A = (function () {
      attesa), lo stesso dato della pagina Agenda: così l'errore e le approvazioni esistono. Lo studio ha disegnato tre strade
      nella Console vera (i tre momenti, la giornata a misura, la riga di stato) e ha scelto la terza: le altre due restano nelle
      catture e in `DIREZIONI.md`, «Versione 16», con i pro e i contro. `?barra=0` rimette la barra di prima, per il confronto. */
-  /* I gruppi del giorno per la barra: dal modello, non dalla lista parallela `m.agenda`. */
+  /* I gruppi del giorno per la barra: dal modello, non dalla lista parallela `m.agenda`. Le richieste che aspettano il
+     titolare non ci sono: le dice già la linguetta lime «N da approvare», fissa su tutte le pagine (vedi il commento sopra). */
   function gruppiOggi(m) {
     const per = s => m.dipendenti.filter(e => e.stato === s);
     const piani = per('pianificato').slice().sort((a, b) => String(a.att.quando || '').localeCompare(String(b.att.quando || '')));
-    const att = m.richiesteDi('attesa').slice().sort((a, b) => (b.giorno - a.giorno) || (a.min - b.min));
     const fatte = m.richieste.filter(r => r.giorno === 0 && r.stato === 'approvata').length;
-    return { corso: per('lavoro'), errore: per('errore'), piani, attesa: att, ultima: att[0] || null, fatte };
+    return { corso: per('lavoro'), errore: per('errore'), piani, fatte };
   }
-  /* La barra «Oggi in azienda» (versione 16, scelta dello studio): niente asse del tempo, le caselle del giorno contate e
-     nominate — approvate, al lavoro, ferme, aspettano te, dopo — ognuna con la sua icona e la strada per agire. Con l'azienda
-     grande i dettagli (il nome di chi è fermo, l'ora del prossimo) cedono il posto ai numeri. */
+  /* La barra «Oggi in azienda» (versione 16, scelta dello studio e confermata dall'utente): niente asse del tempo, le caselle
+     del giorno contate e nominate — approvate, al lavoro, ferme, dopo — ognuna con la sua icona e la strada per agire. Con
+     l'azienda grande i dettagli (il nome di chi è fermo, l'ora del prossimo) cedono il posto ai numeri.
+     Quello che aspetta il titolare NON sta qui: lo dice la linguetta lime «N da approvare» (`.a-mini`, `position:fixed`), che
+     è su tutte e sette le pagine e per giunta apre la coda. Metterlo anche nella barra faceva due numeri uguali sulla stessa
+     schermata, tre nella home e nel Dipartimento (correzione chiesta dall'utente, 2026-09-06). La barra dice che cosa fa
+     l'azienda, la linguetta che cosa devi fare tu. */
   function barraStato(m) {
     const g = gruppiOggi(m), q = [], largo = m.n <= 16;
     if (g.fatte) q.push(`<span class="qua" data-az="pagina" data-pagina="richieste" title="Le richieste al titolare"><span class="ico">${ic('i-check')}</span><b>${g.fatte}</b><span>approvate</span></span>`);
@@ -599,7 +603,6 @@ window.DIREZIONE_A = (function () {
       const e = g.errore[0];
       q.push(`<span class="qua err" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Apri l'esecuzione ferma"><span class="ico">${ic('i-warn')}</span><b>${g.errore.length}</b><span>ferm${g.errore.length === 1 ? 'a' : 'e'}</span>${largo ? `<span class="nm">· ${esc(m.etichetta(e))}</span>` : ''}</span>`);
     }
-    q.push(`<span class="qua" data-az="pagina" data-pagina="richieste" title="Le richieste al titolare"><span class="ico">${ic('i-bell')}</span><b>${g.attesa.length}</b><span>aspettano te</span></span>`);
     if (g.piani.length) q.push(`<span class="qua poi" data-az="pagina" data-pagina="agenda" title="L'agenda dell'azienda"><span class="ico">${ic('i-clock')}</span><b>${g.piani.length}</b><span>dopo${largo ? ' · dalle ' + esc(g.piani[0].att.quando) : ''}</span></span>`);
     return q.join('');
   }

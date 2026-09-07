@@ -154,7 +154,7 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(await titolo() === 'RICHIESTE' && await conta('.task[data-az="richiesta"]') === n40, 'pagina Richieste a 40: ' + n40 + ' card da approvare');
   check(await largo(), 'nessuno sforo orizzontale nella pagina Richieste a 40');
 
-  console.log('6. la barra «Oggi in azienda» (versione 16): le caselle contate, dove portano, la barra dei passi');
+  console.log('6. la barra «Oggi in azienda» (versione 16): le caselle contate, che non ripetono la linguetta, dove portano, la barra dei passi');
   await vai('');
   const barra = () => page.evaluate(() => [...document.querySelectorAll('.a-sched .tl .qua')].map(e => e.textContent.replace(/\s+/g, ' ').trim()));
   const conteggi = () => page.evaluate(() => ({
@@ -165,9 +165,11 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
     approvate: modello.richieste.filter(r => r.giorno === 0 && r.stato === 'approvata').length }));
   let c = await conteggi(), caselle = await barra();
   console.log('    caselle:', caselle.join(' | '));
-  check(caselle.length === 5, 'cinque caselle: approvate, al lavoro, ferme, aspettano te, dopo');
+  check(caselle.length === 4, 'quattro caselle: approvate, al lavoro, ferme, dopo');
+  check(!caselle.some(t => /aspettano te/.test(t)), 'la barra non ripete «da approvare»: lo dice la linguetta lime');
+  check(await conta('.a-mini[data-pannello="richieste"], .a-tend.aperta') >= 1, 'la linguetta lime (o la tendina aperta) c\'è sempre');
   check(caselle[0] === c.approvate + 'approvate' && caselle[1].includes(c.lavoro + 'al lavoro'), 'i primi due numeri sono quelli del modello (' + c.approvate + ', ' + c.lavoro + ')');
-  check(caselle[2].startsWith(c.errore + 'ferm') && caselle[3] === c.attesa + 'aspettano te' && caselle[4].startsWith(c.piani + 'dopo'), 'ferme, aspettano te e dopo sono quelli del modello (' + c.errore + ', ' + c.attesa + ', ' + c.piani + ')');
+  check(caselle[2].startsWith(c.errore + 'ferm') && caselle[3].startsWith(c.piani + 'dopo'), 'ferme e dopo sono quelli del modello (' + c.errore + ', ' + c.piani + ')');
   check(await conta('.a-sched .tl .qua.err') === 1, 'la casella di chi è fermo è rosa: la barra di prima non lo diceva');
   check(await conta('.a-sched .tl .now') === 0 && await conta('.a-sched .tl .ev') === 0, 'niente marcatore dell\'ora né blocchi: la barra non finge più una linea del tempo');
   await clic('.a-sched .tl .qua.err');
@@ -176,8 +178,8 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   await clic('.a-sched .tl .qua.poi');
   check(await titolo() === 'AGENDA', 'la casella «dopo» apre l\'agenda');
   await vai('');
-  await clic('.a-sched .tl .qua:nth-child(4)');
-  check(await titolo() === 'RICHIESTE', 'la casella «aspettano te» apre le richieste');
+  await clic('.a-sched .tl .qua:nth-child(1)');
+  check(await titolo() === 'RICHIESTE', 'la casella «approvate» apre le richieste');
   /* la barra dei passi dell'Esecuzione: sta dentro la pagina e non taglia niente (prima cresceva a 2180 px su 1440) */
   const pista = () => page.evaluate(() => { const t = document.querySelector('.etesta .a-sched .tl'); return { sforo: t.scrollWidth - t.clientWidth, barra: Math.round(document.querySelector('.etesta .a-sched').getBoundingClientRect().width) }; });
   for (const id of [1, 3, 5, 7]) {
@@ -191,7 +193,7 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   await vai('n=40');
   c = await conteggi(); caselle = await barra();
   console.log('    caselle a 40:', caselle.join(' | '));
-  check(caselle.length === 5 && caselle[1].includes(c.lavoro + 'al lavoro') && caselle[3] === c.attesa + 'aspettano te', 'a quaranta la barra ha le stesse cinque caselle, con i numeri di quaranta');
+  check(caselle.length === 4 && caselle[1].includes(c.lavoro + 'al lavoro') && caselle[3].startsWith(c.piani + 'dopo'), 'a quaranta la barra ha le stesse quattro caselle, con i numeri di quaranta');
   check(await page.evaluate(() => { const t = document.querySelector('.a-sched .tl'); return t.scrollWidth - t.clientWidth; }) === 0, 'a quaranta la barra non sfora');
 
   check(errors.length === 0, 'nessun errore in console: ' + JSON.stringify(errors));
