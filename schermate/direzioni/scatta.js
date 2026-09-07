@@ -18,6 +18,10 @@ const FUORI = [
   'a-costi-*.png', 'a-agenda-*.png', 'a-chat-filo.png', // le sezioni per elemento (non portano la barra)
   'a-barra-momenti*.png', 'a-barra-misura*.png',        // le due strade scartate dello studio della barra (versione 16)
   'a-barra-console-momenti.png', 'a-barra-console-misura.png', 'a-barra-passi-prima.png',
+  /* versione 18: i prima/dopo delle frecce di riga. Il «prima» è l'albero della versione 17 (`git archive HEAD` in una
+     cartella a parte), quindi non si rifanno da soli: si compongono con `design-system/tools/affianca.js` dalle catture
+     di sezione delle due copie. `m-conta-titolo.png` affianca tre catture del gruppo `quadro`, già qui sotto. */
+  'a-frecce-*.png', 'm-conta-titolo.png',
 ];
 
 /* Una cattura: nome, pagina, query, e il modo.

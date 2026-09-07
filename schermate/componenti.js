@@ -193,6 +193,11 @@ window.DGT_COMPONENTI = (function () {
 .hrow .eur{font-size:13px;text-align:right;white-space:nowrap}
 .hrow .rb.xs{background:transparent;border-color:rgb(255 255 255/.16)}
 .hrow.attesa{background:var(--lime);color:var(--ink)}.hrow.attesa .ora,.hrow.attesa .tx span,.hrow.attesa .chi{color:rgb(0 0 0/.6)}.hrow.attesa .chi b{color:var(--ink)}.hrow.attesa .rb.xs{border-color:rgb(0 0 0/.16);color:var(--ink)}
+/* regola 25, versione 18: dove nessuna riga della lista ha una destinazione cade anche la colonna da 32 px della
+   freccia, e il contenuto se la riprende. In una lista mista la colonna resta e la cella è vuota, così le righe
+   con e senza freccia restano allineate. Ogni variante di griglia ha il suo nofr accanto alla sua dichiarazione. */
+.hrow.nofr{grid-template-columns:76px 40px minmax(0,1fr) 110px 132px 190px 64px;padding-right:18px}
+.crow.nofr{grid-template-columns:40px minmax(0,1fr) 150px 150px 120px;padding-right:18px}
 /* riga della coda nella tendina del titolare e sul telefono */
 .qrow{height:48px;border-radius:var(--r-pill);background:var(--white);display:flex;align-items:center;gap:10px;padding:0 6px 0 8px;min-width:0;font-size:13px}
 .qrow .av{width:32px;height:32px;font-size:11px}

@@ -51,9 +51,10 @@ prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decision
   il CSS delle primitive, le variabili e le funzioni che le stampano (`av`, `pair`, `chipStato`, `iconaTipo`, `eur`,
   `differenze`…). Ogni pagina lo carica subito dopo `comune.js` e mette in pagina `DGT_COMPONENTI.css` prima del CSS della
   Console (`direzione-a.js`, che tiene la cornice, le pagine, le tendine e `monta`).
-- Prove cliccate in `prove/` (con il `README.md` che dice il comando): `console.js` (82 verifiche: tendine, Richieste, editor del
-  dipendente, esecuzione, 40, la barra «Oggi in azienda» e la barra dei passi), `mobile.js` (69: le otto schermate, la revisione, il rifiuto con motivo, la prova, lo stato vuoto,
-  40, il quadro del giorno e i Dipartimenti), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le due pagine nuove, da dove ci si arriva, i filtri, la
+- Prove cliccate in `prove/` (con il `README.md` che dice il comando): `console.js` (107 verifiche: tendine, Richieste, editor del
+  dipendente, esecuzione, 40, la barra «Oggi in azienda», la barra dei passi, i controlli delle intestazioni e le frecce di
+  riga), `mobile.js` (70: le otto schermate, la revisione, il rifiuto con motivo, la prova, lo stato vuoto,
+  40, il quadro del giorno, i Dipartimenti e il conto delle frecce), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le due pagine nuove, da dove ci si arriva, i filtri, la
   scrittura nel filo e le due tab del telefono):
   `PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css node schermate/direzioni/prove/console.js`
   (e così `mobile.js`, `costi.js`, `agenda-chat.js`).

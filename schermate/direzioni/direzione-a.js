@@ -280,6 +280,7 @@ window.DIREZIONE_A = (function () {
 .hgroup .link{margin-left:auto;font-size:13px;color:var(--white);display:inline-flex;align-items:center;gap:8px;cursor:pointer}
 .hgroup .link svg{width:13px;height:13px}
 .crow.rend{grid-template-columns:40px minmax(0,1fr) 170px 150px 110px 32px}
+.crow.rend.nofr{grid-template-columns:40px minmax(0,1fr) 170px 150px 110px}
 .crow .v .chip,.crow .eur .chip{height:24px;font-size:11px;font-weight:400}
 .prompt{display:grid;grid-template-columns:minmax(0,1fr) 490px;gap:16px;margin-top:24px;align-items:start}
 .pdoc{position:relative;background:var(--summary);color:var(--ink);border-radius:var(--r-card);padding:22px 24px 18px;--behind:var(--black)}
@@ -310,9 +311,13 @@ window.DIREZIONE_A = (function () {
 .task.regola .rtx{font-size:17px;line-height:25px;margin:0}
 .task.regola .rtx b{font-weight:500}
 .bp,.coll{display:grid;grid-template-columns:316px minmax(0,1fr);gap:16px;margin-top:24px;align-items:start}
+/* la card dell'esito del colloquio ha perso l'intaglio con la freccia (regola 25, versione 18): i 120 px che il
+   titolo teneva liberi per i pulsanti tornano al sottotitolo, che prima finiva tagliato a «18 min…» */
+.task.esito .who{padding-right:20px}
 .task.budget .prog,.task.esito .prog{margin-top:14px}
 .task.budget .meta,.task.esito .meta{margin-top:10px}
 .hrow.caso{grid-template-columns:40px minmax(0,1fr) 110px 64px 32px}
+.hrow.caso.nofr{grid-template-columns:40px minmax(0,1fr) 110px 64px}
 .hrow.caso .ora{text-align:center}
 /* tendina estesa delle versioni: dossier della revisione o confronto fra due versioni */
 .a-tend.vers{max-height:980px}
@@ -383,6 +388,7 @@ window.DIREZIONE_A = (function () {
 .etesta .tl .fine .rb{width:28px;height:28px;background:var(--ink);color:var(--white);border-color:transparent}.etesta .tl .fine .rb svg{width:12px;height:12px}
 /* i passi come righe */
 .hrow.passo{grid-template-columns:40px minmax(0,1fr) 120px 170px 110px 64px 32px}
+.hrow.passo.nofr{grid-template-columns:40px minmax(0,1fr) 120px 170px 110px 64px}
 .hrow.passo .n{width:40px;height:40px;border-radius:50%;border:1px solid rgb(255 255 255/.16);display:grid;place-items:center;font-size:14px}
 .hrow.passo .n svg{width:16px;height:16px}
 .hrow.passo.corso{background:var(--lime);color:var(--ink)}.hrow.passo.corso .tx span,.hrow.passo.corso .chi{color:rgb(0 0 0/.6)}.hrow.passo.corso .n{border-color:rgb(0 0 0/.2)}.hrow.passo.corso .rb.xs{border-color:rgb(0 0 0/.16);color:var(--ink)}
@@ -393,6 +399,7 @@ window.DIREZIONE_A = (function () {
 .hrow.passo.corso .chi small{color:rgb(0 0 0/.6)}
 /* il log: righe più basse, il testo può stare su due righe; la barra di scrittura in fondo (barra chat del riferimento) */
 .lrow{min-height:48px;border-radius:24px;background:linear-gradient(180deg,var(--card-top),var(--card));display:grid;grid-template-columns:64px 118px minmax(0,1fr) 64px 32px;align-items:center;gap:10px;padding:6px 8px 6px 18px}
+.lrow.nofr{grid-template-columns:64px 118px minmax(0,1fr) 64px;padding-right:18px}
 .lrow>*{min-width:0}
 .lrow .ora{font-size:13px;color:var(--t2);white-space:nowrap}
 .lrow .chip{height:24px;font-size:11px}
@@ -548,7 +555,7 @@ window.DIREZIONE_A = (function () {
     const st = { corso: 'In corso', ritardo: 'In ritardo', concluso: 'Concluso', nuovo: 'Da iniziare' }[o.stato];
     return `<div class="ncard task ${tono} obj">
       <div class="who"><span class="ico">${ic('i-target')}</span><div><b>${esc(o.cliente)}</b><span>scadenza ${esc(o.scadenza)} · ${o.chi.length} dipendent${o.chi.length === 1 ? 'e' : 'i'}</span></div></div>
-      <div class="nt"><span class="rb ghost">${ic('i-bell')}${o.stato === 'ritardo' ? '<i class="dot"></i>' : ''}</span><span class="rb ghost">${ic('i-ne')}</span></div>
+      <div class="nt"><span class="rb ghost">${ic('i-bell')}${o.stato === 'ritardo' ? '<i class="dot"></i>' : ''}</span></div>
       <div class="body"><div><div class="tt">${esc(o.titolo)}</div><div class="meta"><b>${o.avanz}%</b><span>·</span><b>${o.consegne[0]} di ${o.consegne[1]}</b><span>consegne</span></div><div class="prog"><i style="width:${o.avanz}%"></i></div><div class="next">Prossima: ${esc(o.prossima)}</div></div></div>
       <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${pair(m, o.chi, 'xs', 2)}<span>${st}</span>${ic('i-chev')}</span><span class="rb ghost" data-az="pagina" data-pagina="chat" data-id="${o.chi[0]}" title="Scrivi a ${esc(m.etichetta(m.byId[o.chi[0]]))}">${ic('i-chat')}</span><span class="rb black" data-az="pagina" data-pagina="richieste" data-cliente="${esc(o.cliente)}" title="Le richieste di ${esc(o.cliente)}">${ic('i-eye')}</span></div></div>
     </div>`;
@@ -676,7 +683,7 @@ window.DIREZIONE_A = (function () {
         <div class="kv"><span>Spesa di oggi</span><b>${m.costoOggi} €</b></div>
       </div>
       <div class="dcard"><div class="nt"><span class="rb sm">${ic('i-pen')}</span></div><h5>Obiettivo del mese:</h5><p class="goal">${m.azienda.obiettivoMese}</p></div>
-      <div class="dcard"><div class="nt"><span class="rb sm">${ic('i-ne')}</span></div><h5>Ultime voci del diario:</h5><div style="margin-top:10px">${ultime.map(x => `<div class="drow"><span>${esc(x.ora)}</span><div><b>${esc(m.etichetta(m.byId[x.chi]))}</b> ${esc(x.testo)}</div></div>`).join('')}</div></div>`;
+      <div class="dcard"><h5>Ultime voci del diario:</h5><div style="margin-top:10px">${ultime.map(x => `<div class="drow"><span>${esc(x.ora)}</span><div><b>${esc(m.etichetta(m.byId[x.chi]))}</b> ${esc(x.testo)}</div></div>`).join('')}</div></div>`;
   }
   const pager = (m, idx, n) => `<span class="pager"><span class="rb olight" data-az="prec">${ic('i-left')}</span>${idx + 1} di ${n}<span class="rb olight" data-az="succ">${ic('i-right')}</span></span>`;
   function tendinaChiusa(m, opz) {
@@ -869,11 +876,15 @@ window.DIREZIONE_A = (function () {
       <div class="st"><span class="k">Decidi</span><div class="row"><span class="sel"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic(iconaTipo[r.tipo])}</span><span>${r.costo} € · ${r.passi.length} passi · ${esc(r.ora)}</span>${ic('i-chev')}</span><span class="rb black" data-az="approva" data-id="${r.id}" title="Approva">${ic('i-check')}</span><span class="rb red" data-az="rifiuta" data-id="${r.id}" title="Rifiuta">${ic('i-x')}</span></div></div>
     </div>`;
   }
-  function rigaStorico(m, r) {
+  /* La riga dello storico. Regola 25: la freccia sta solo dove la riga ha una destinazione — qui il pannello della
+     richiesta, che si apre solo per le richieste ancora in attesa. Una richiesta già decisa non ha una pagina dove
+     andare, quindi la freccia cade. `sola` (nessuna riga della lista ha una destinazione) fa cadere anche la colonna. */
+  const soloDecise = lst => !lst.some(r => r.stato === 'attesa');
+  function rigaStorico(m, r, sola) {
     const chi = m.byId[r.chi];
     const decisa = r.stato === 'attesa' ? `in attesa da ${esc(r.ora)}` : r.regola ? `regola · <b>${esc(r.regola)}</b>` : `<b>${esc(m.azienda.titolare.iniziali)}</b> · ${esc(r.decisa)}${r.commento ? ' · «' + esc(r.commento) + '»' : ''}`;
     const idx = r.stato === 'attesa' ? inAttesa(m).indexOf(r) : -1;
-    return `<div class="hrow ${r.stato}" ${idx >= 0 ? `data-az="richiesta" data-idx="${idx}"` : ''}><span class="ora">${esc(r.ora)}</span>${av(m, chi)}<div class="tx"><b>${esc(r.cosa)}</b><span>${esc(m.etichetta(chi))} · ${esc(r.cliente)}</span></div><span class="chip light">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]}</span>${chipEsito(r)}<span class="chi">${decisa}</span><span class="eur">${r.costo} €</span><span class="rb xs">${ic('i-ne')}</span></div>`;
+    return `<div class="hrow ${r.stato}${sola ? ' nofr' : ''}" ${idx >= 0 ? `data-az="richiesta" data-idx="${idx}"` : ''}><span class="ora">${esc(r.ora)}</span>${av(m, chi)}<div class="tx"><b>${esc(r.cosa)}</b><span>${esc(m.etichetta(chi))} · ${esc(r.cliente)}</span></div><span class="chip light">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]}</span>${chipEsito(r)}<span class="chi">${decisa}</span><span class="eur">${r.costo} €</span>${idx >= 0 ? `<span class="rb xs">${ic('i-ne')}</span>` : ''}</div>`;
   }
   function barraFiltri(m, f, tot, filtrate) {
     const p = (k, v, testo, extra) => `<span class="pill sm${(f[k] || 'tutti') === String(v) ? ' on' : ''}" data-az="filtro" data-k="${k}" data-v="${esc(String(v))}">${extra || ''}${testo}</span>`;
@@ -920,12 +931,12 @@ window.DIREZIONE_A = (function () {
       <section>
         <div class="shead"><h3>Storico</h3>${contoSez(sto.length, storico.length, 'Decise')}${cercaSez(opz, 'richieste.storico', storico.length, 'richieste decise')}
           ${pilleSez(opz, 'richieste.storico', PILLE_STORICO)}</div>
-        ${gruppi.length ? gruppi.map(g => `<div class="hgroup"><b>${esc(g.nome)}</b>${g.lst.length} richieste · ${g.lst.reduce((t, r) => t + r.costo, 0)} €</div><div class="hlist">${g.lst.map(r => rigaStorico(m, r)).join('')}</div>`).join('') : `<div class="vuoto">Nessuna richiesta decisa con questa ricerca o questi filtri</div>`}
+        ${gruppi.length ? gruppi.map(g => `<div class="hgroup"><b>${esc(g.nome)}</b>${g.lst.length} richieste · ${g.lst.reduce((t, r) => t + r.costo, 0)} €</div><div class="hlist">${g.lst.map(r => rigaStorico(m, r, soloDecise(g.lst))).join('')}</div>`).join('') : `<div class="vuoto">Nessuna richiesta decisa con questa ricerca o questi filtri</div>`}
       </section>
       <section class="regole">
         <div class="shead"><h3>Regole di approvazione</h3>${contoSez(reg.length, m.regole.length, 'Regole')}
           ${pilleSez(opz, 'richieste.regole', PILLE_REGOLE)}</div>
-        <div class="cards">${reg.map(g => `<div class="ncard lead${g.attiva ? '' : ' spenta'}"><span class="ico">${ic(g.icona)}</span><div class="nt"><span class="rb ghost">${ic('i-ne')}</span></div><div class="name md">${esc(g.nome)}</div><div class="role">${esc(g.desc)}</div><div class="ft"><div><span class="k">Modo</span><span class="sel">${esc(g.modo)}${ic('i-chev')}</span></div><div><span class="k">Stato</span>${g.attiva ? `<span class="chip lime">${ic('i-check')}Attiva</span>` : `<span class="chip">Spenta</span>`}</div></div></div>`).join('')}</div>
+        <div class="cards">${reg.map(g => `<div class="ncard lead${g.attiva ? '' : ' spenta'}"><span class="ico">${ic(g.icona)}</span><div class="name md">${esc(g.nome)}</div><div class="role">${esc(g.desc)}</div><div class="ft"><div><span class="k">Modo</span><span class="sel">${esc(g.modo)}${ic('i-chev')}</span></div><div><span class="k">Stato</span>${g.attiva ? `<span class="chip lime">${ic('i-check')}Attiva</span>` : `<span class="chip">Spenta</span>`}</div></div></div>`).join('')}</div>
       </section>`;
     return cornice(m, opz, 'RICHIESTE', stats, 'richieste', corpo, 'Nuova regola');
   }
@@ -1033,12 +1044,23 @@ window.DIREZIONE_A = (function () {
       </div>
     </div>`;
   }
-  function rigaRevisione(m, rv) {
+  /* Una revisione passata **ha** una destinazione quando è una revisione del soul prompt e il dossier tiene ancora
+     tutte e due le versioni: la tendina del confronto, quella che esiste già (`confronta`). Regola 25: lì la freccia
+     resta e diventa vera. Non ce l'hanno le revisioni del modello (il confronto è solo fra versioni del prompt) né
+     quelle che puntano a una versione mai entrata nel dossier (la «prima proposta» rifiutata): lì la freccia cade.
+     La lista è mista, quindi la colonna da 32 px resta e le righe restano allineate. */
+  function versoConfronto(d, rv) {
+    if (rv.tipo !== 'prompt') return null;
+    const c = v => d.prompt.versioni.some(x => x.v === v);
+    return typeof rv.da === 'number' && typeof rv.a === 'number' && c(rv.da) && c(rv.a) ? { a: rv.da, b: rv.a } : null;
+  }
+  function rigaRevisione(m, e, d, rv) {
     const nomeMod = x => (m.MODELLI[x] || {}).nome || x;
     const tipo = rv.tipo === 'prompt' ? `<span class="chip light">${ic('i-doc')}Prompt v${rv.da} → v${rv.a}</span>` : `<span class="chip light">${ic('i-bot')}Modello ${nomeMod(rv.da)} → ${nomeMod(rv.a)}</span>`;
     const esito = { applicata: `<span class="chip lime">${ic('i-check')}Applicata</span>`, prova: `<span class="chip ink">${ic('i-play')}In prova</span>`, modifiche: `<span class="chip">${ic('i-pen')}Modifiche</span>`, rifiutata: `<span class="chip rosa">${ic('i-x')}Rifiutata</span>` }[rv.stato] || '';
     const verso = rv.verso === 'su' ? `<span class="badge up">${ic('i-up')}</span> ` : rv.verso === 'giu' ? `<span class="badge down">${ic('i-dn')}</span> ` : '';
-    return `<div class="hrow rev"><span class="ora">${esc(rv.quando)}</span>${tipo}<div class="tx"><b>${esc(rv.titolo)}</b><span>${verso}${esc(rv.effetto || '')}</span></div>${esito}<span class="chi">${esc(rv.decisa || '')}</span><span class="rb xs">${ic('i-ne')}</span></div>`;
+    const cf = versoConfronto(d, rv);
+    return `<div class="hrow rev"${cf ? ` data-az="confronta" data-id="${e.id}" data-a="${cf.a}" data-b="${cf.b}" title="Confronta v${cf.a} e v${cf.b}"` : ''}><span class="ora">${esc(rv.quando)}</span>${tipo}<div class="tx"><b>${esc(rv.titolo)}</b><span>${verso}${esc(rv.effetto || '')}</span></div>${esito}<span class="chi">${esc(rv.decisa || '')}</span>${cf ? `<span class="rb xs">${ic('i-ne')}</span>` : ''}</div>`;
   }
   /* L'ultima esecuzione di chi non sta lavorando adesso: consegnata (da approvare) o conclusa (libero). */
   function cardUltima(m, e) {
@@ -1062,13 +1084,15 @@ window.DIREZIONE_A = (function () {
     return `<section>
       <div class="shead"><h3>Oggi</h3><span class="cnt"><b>${oggi.length}</b><span>Richieste</span></span>
         <div class="destra"><span class="pill" data-az="pagina" data-pagina="richieste" data-chi="${e.id}">Tutte le richieste di ${esc(m.etichetta(e))} ${ic('i-ne')}</span></div></div>
-      <div class="oggi"><div class="cards riga" style="margin:0">${card}</div><div class="hlist" style="margin-top:0">${oggi.length ? oggi.map(r => rigaStorico(m, r)).join('') : `<div class="vuoto" style="margin:0;height:56px">Nessuna richiesta oggi</div>`}</div></div>
+      <div class="oggi"><div class="cards riga" style="margin:0">${card}</div><div class="hlist" style="margin-top:0">${oggi.length ? oggi.map(r => rigaStorico(m, r, soloDecise(oggi))).join('') : `<div class="vuoto" style="margin:0;height:56px">Nessuna richiesta oggi</div>`}</div></div>
     </section>`;
   }
   function sezioneRendimento(m, e, d) {
     const o = d.metriche.ora, p = d.metriche.prima;
     const q = (n, t) => `${Math.round(100 * n / Math.max(1, t))}%`;
-    const riga = (icona, nome, sub, v1, v2, badge) => `<div class="crow rend"><span class="ico">${ic(icona)}</span><div class="tx"><b>${nome}</b><span>${sub}</span></div><span class="v">${v1}</span><span class="v">${v2}</span><span class="eur">${badge}</span><span class="rb xs">${ic('i-ne')}</span></div>`;
+    /* Le righe del rendimento sono misure, non oggetti: non c'è una pagina della metrica «Approvate al primo colpo».
+       La strada verso le richieste che le producono sta già nell'intestazione della sezione. Regola 25: niente freccia. */
+    const riga = (icona, nome, sub, v1, v2, badge) => `<div class="crow rend nofr"><span class="ico">${ic(icona)}</span><div class="tx"><b>${nome}</b><span>${sub}</span></div><span class="v">${v1}</span><span class="v">${v2}</span><span class="eur">${badge}</span></div>`;
     const decise = m.richieste.filter(r => r.chi === e.id && r.stato !== 'attesa').sort((a, b) => (a.giorno - b.giorno) || (b.min - a.min)).slice(0, 6);
     return `<section>
       <div class="shead"><h3>Rendimento</h3><span class="cnt"><b>${o.task}</b><span>Task in 30 giorni</span></span>
@@ -1081,7 +1105,7 @@ window.DIREZIONE_A = (function () {
         ${riga('i-clock', 'Tempo medio per task', 'dall\'avvio alla consegna', `${o.tempo} min`, `${p.tempo} min<small>nei 30 precedenti</small>`, delta(o.tempo, p.tempo, false, v => v + ' min'))}
       </div>
       <div class="hgroup"><b>Le ultime richieste</b>decise dal titolare · la fonte dei numeri qui sopra<span class="link" data-az="pagina" data-pagina="richieste" data-chi="${e.id}">Tutte le richieste di ${esc(m.etichetta(e))} ${ic('i-ne')}</span></div>
-      <div class="hlist">${decise.length ? decise.map(r => rigaStorico(m, r)).join('') : `<div class="vuoto" style="margin:0;height:56px">Nessuna richiesta decisa</div>`}</div>
+      <div class="hlist">${decise.length ? decise.map(r => rigaStorico(m, r, soloDecise(decise))).join('') : `<div class="vuoto" style="margin:0;height:56px">Nessuna richiesta decisa</div>`}</div>
     </section>`;
   }
   function rigaVersione(m, e, d, v) {
@@ -1130,7 +1154,7 @@ window.DIREZIONE_A = (function () {
         ${pilleSez(opz, 'dipendente.strumenti', PILLE_STRUMENTI)}</div>
       <div class="cards regole">${str.map(s => `<div class="ncard lead${s.attivo ? '' : ' spenta'}" data-az="strumento" data-id="${e.id}" data-v="${s.id}" title="${s.attivo ? 'Spegni' : 'Accendi'}"><span class="ico">${ic(s.icona)}</span><div class="nt"><span class="rb ghost">${ic('i-ne')}</span></div><div class="name md">${esc(s.nome)}</div><div class="role">${esc(s.desc)}</div><div class="ft"><div><span class="k">Ultimo uso</span><span class="sel">${esc(s.ultimo)}${ic('i-chev')}</span></div><div><span class="k">Stato</span>${s.attivo ? `<span class="chip lime">${ic('i-check')}Attivo</span>` : `<span class="chip">Spento</span>`}</div></div></div>`).join('')}</div>
       <div class="hgroup"><b>Connessioni</b>${d.connessioni.length} · con l'ultimo uso</div>
-      <div class="hlist">${d.connessioni.map(c => `<div class="crow"><span class="ico">${ic('i-org')}</span><div class="tx"><b>${esc(c.nome)}</b><span>${esc(c.desc)}</span></div><span class="v">${c.stato === 'attiva' ? `<span class="chip lime">${ic('i-check')}Attiva</span>` : `<span class="chip rosa">${ic('i-warn')}Scaduta il ${esc(c.ultimo)}</span>`}</span><span class="v">${esc(c.ultimo)}<small>ultimo uso</small></span><span class="eur">${c.stato === 'attiva' ? '' : `<span class="chip ink">${ic('i-bolt')}Rinnova</span>`}</span><span class="rb xs">${ic('i-ne')}</span></div>`).join('')}</div>
+      <div class="hlist">${d.connessioni.map(c => `<div class="crow nofr"><span class="ico">${ic('i-org')}</span><div class="tx"><b>${esc(c.nome)}</b><span>${esc(c.desc)}</span></div><span class="v">${c.stato === 'attiva' ? `<span class="chip lime">${ic('i-check')}Attiva</span>` : `<span class="chip rosa">${ic('i-warn')}Scaduta il ${esc(c.ultimo)}</span>`}</span><span class="v">${esc(c.ultimo)}<small>ultimo uso</small></span><span class="eur">${c.stato === 'attiva' ? '' : `<span class="chip ink">${ic('i-bolt')}Rinnova</span>`}</span></div>`).join('')}</div>
     </section>`;
   }
   function sezioneBudget(m, e, d) {
@@ -1144,7 +1168,7 @@ window.DIREZIONE_A = (function () {
           <div class="body"><div><div class="tt">${b.speso} € <small>di ${b.mese} €</small></div><div class="prog"><i style="width:${q}%"></i></div><div class="meta"><b>${q}%</b><span>speso</span><b>${Math.max(0, b.mese - b.speso)} €</b><span>per 26 giorni</span></div></div></div>
           <div class="st"><span class="k">Oggi</span><div class="row"><span class="sel"><span>${b.oggi} € su ${b.giorno} €</span>${oltre ? `<span class="chip rosa">${ic('i-warn')}oltre il limite</span>` : `<span class="chip">${ic('i-check')}nel limite</span>`}${ic('i-chev')}</span><span class="rb ${oltre ? 'black' : 'ghost'}">${ic('i-bell')}${oltre ? '<i class="dot"></i>' : ''}</span></div></div>
         </div>
-        <div class="hlist" style="margin-top:0">${d.permessi.map(p => `<div class="crow${p.attiva ? '' : ' spenta'}"><span class="ico">${ic(p.eccezione ? 'i-star' : 'i-bell')}</span><div class="tx"><b>${esc(p.nome)}</b><span>${esc(p.origine)}</span></div><span class="v">${esc(p.modo)}</span><span class="v">${p.eccezione ? `<span class="chip lime">${ic('i-star')}Eccezione</span>` : `<span class="chip">Regola generale</span>`}</span><span class="eur">${p.attiva ? `<span class="chip lime">${ic('i-check')}Attiva</span>` : `<span class="chip">Spenta</span>`}</span><span class="rb xs">${ic('i-ne')}</span></div>`).join('')}<div class="crow add" data-az="pagina" data-pagina="richieste"><span class="rb xs">${ic('i-plus')}</span>Aggiungi un'eccezione · le regole generali stanno in Richieste</div></div>
+        <div class="hlist" style="margin-top:0">${d.permessi.map(p => `<div class="crow nofr${p.attiva ? '' : ' spenta'}"><span class="ico">${ic(p.eccezione ? 'i-star' : 'i-bell')}</span><div class="tx"><b>${esc(p.nome)}</b><span>${esc(p.origine)}</span></div><span class="v">${esc(p.modo)}</span><span class="v">${p.eccezione ? `<span class="chip lime">${ic('i-star')}Eccezione</span>` : `<span class="chip">Regola generale</span>`}</span><span class="eur">${p.attiva ? `<span class="chip lime">${ic('i-check')}Attiva</span>` : `<span class="chip">Spenta</span>`}</span></div>`).join('')}<div class="crow add" data-az="pagina" data-pagina="richieste"><span class="rb xs">${ic('i-plus')}</span>Aggiungi un'eccezione · le regole generali stanno in Richieste</div></div>
       </div>
     </section>`;
   }
@@ -1160,14 +1184,13 @@ window.DIREZIONE_A = (function () {
       <div class="coll">
         <div class="ncard task ${sup ? 'gray' : 'lime'} esito">
           <div class="who"><span class="ico">${ic('i-target')}</span><div><b>${sup ? 'Superato' : 'Non superato'} il ${esc(c.data)}</b><span>v${c.versione} · ${esc(m.MODELLI[c.modello].nome)} · ${esc(c.durata)} · ${c.costo} €</span></div></div>
-          <div class="nt"><span class="rb ghost">${ic('i-ne')}</span></div>
           <div class="body"><div><div class="tt">${c.punteggio} <small>su 100</small></div><div class="prog"><i style="width:${c.punteggio}%"></i></div><div class="meta"><b>${ok} di ${c.casi.length}</b><span>casi superati</span><b>soglia ${c.soglia}</b></div></div></div>
           <div class="st"><span class="k">Vale per</span><div class="row"><span class="sel"><span class="chip ink">${ic('i-doc')}v${c.versione}</span><span>${c.versione === d.prompt.corrente ? 'la versione corrente' : 'una versione precedente: da ripetere'}</span>${ic('i-chev')}</span><span class="rb black" data-az="colloquio" data-id="${e.id}" title="Ripeti il colloquio">${ic('i-play')}</span></div></div>
         </div>
-        <div class="hlist" style="margin-top:0">${casi.length ? casi.map((x, i) => `<div class="hrow caso"><span class="ora">${i + 1}</span><div class="tx"><b>${esc(x.nome)}</b><span>atteso: ${esc(x.atteso)}</span></div>${chipEs(x)}<span class="eur">${x.punteggio}</span><span class="rb xs">${ic('i-ne')}</span></div>`).join('') : `<div class="vuoto" style="margin:0;height:56px">Nessun caso con questa ricerca o questo filtro</div>`}</div>
+        <div class="hlist" style="margin-top:0">${casi.length ? casi.map((x, i) => `<div class="hrow caso nofr"><span class="ora">${i + 1}</span><div class="tx"><b>${esc(x.nome)}</b><span>atteso: ${esc(x.atteso)}</span></div>${chipEs(x)}<span class="eur">${x.punteggio}</span></div>`).join('') : `<div class="vuoto" style="margin:0;height:56px">Nessun caso con questa ricerca o questo filtro</div>`}</div>
       </div>
       <div class="hgroup"><b>Colloqui precedenti</b>${c.storico.length} · uno per versione o modello</div>
-      <div class="hlist">${c.storico.map(s => `<div class="crow"><span class="ico">${ic('i-target')}</span><div class="tx"><b>${esc(s.data)} · prompt v${s.versione}</b><span>${esc(m.MODELLI[s.modello].nome)}</span></div><span class="v">${s.punteggio}<small>su 100</small></span><span class="v">${s.esito === 'superato' ? `<span class="chip lime">${ic('i-check')}Superato</span>` : `<span class="chip rosa">${ic('i-x')}Non superato</span>`}</span><span class="eur"></span><span class="rb xs">${ic('i-ne')}</span></div>`).join('')}</div>
+      <div class="hlist">${c.storico.map(s => `<div class="crow nofr"><span class="ico">${ic('i-target')}</span><div class="tx"><b>${esc(s.data)} · prompt v${s.versione}</b><span>${esc(m.MODELLI[s.modello].nome)}</span></div><span class="v">${s.punteggio}<small>su 100</small></span><span class="v">${s.esito === 'superato' ? `<span class="chip lime">${ic('i-check')}Superato</span>` : `<span class="chip rosa">${ic('i-x')}Non superato</span>`}</span><span class="eur"></span></div>`).join('')}</div>
     </section>`;
   }
   function dipendente(m, opz) {
@@ -1187,7 +1210,7 @@ window.DIREZIONE_A = (function () {
         <div class="shead"><h3>Revisione di performance</h3><span class="cnt"><b>${revF ? 1 : 0}</b><span>In sospeso</span></span>
           ${pilleSez(opz, 'dipendente.revisione', PILLE_REVISIONE)}</div>
         ${revF ? `<div class="cards" style="display:block">${cardRevisione(m, e, d, revF)}</div>` : `<div class="vuoto">${rev ? 'La revisione in sospeso non è di questo tipo' : 'Nessuna revisione in sospeso: il sistema ne propone una quando i numeri dei 30 giorni peggiorano rispetto ai 30 precedenti'}</div>`}
-        ${passate.length ? `<div class="hgroup"><b>Revisioni passate</b>${passate.length} · chi ha deciso, quando, con quale effetto misurato</div><div class="hlist">${passate.map(r => rigaRevisione(m, r)).join('')}</div>` : ''}
+        ${passate.length ? `<div class="hgroup"><b>Revisioni passate</b>${passate.length} · chi ha deciso, quando, con quale effetto misurato</div><div class="hlist">${passate.map(r => rigaRevisione(m, e, d, r)).join('')}</div>` : ''}
       </section>
       ${sezioneOggi(m, e)}
       ${sezioneRendimento(m, e, d)}
@@ -1288,14 +1311,19 @@ window.DIREZIONE_A = (function () {
     const tempo = p.stato === 'fatto' || p.stato === 'errore' ? `${esc(p.inizio)} → ${esc(p.fine)}<small>${esc(p.durata || '')}</small>` : p.stato === 'corso' ? `da ${esc(p.inizio)}<small>${durataFra(p.inizio, m.azienda.ora)}</small>` : (p.stima ? `≈ ${esc(p.stima)}` : '—');
     const cls = p.stato === 'corso' ? ' corso' : p.stato === 'errore' ? ' errore' : p.stato === 'da fare' ? ' dafare' : '';
     const num = p.stato === 'fatto' ? ic('i-check') : p.stato === 'corso' ? ic('i-play') : p.stato === 'errore' ? ic('i-warn') : p.n;
-    return `<div class="hrow passo${cls}"><span class="n">${num}</span><div class="tx"><b>${p.n}. ${esc(p.nome)}</b><span>${esc(p.esito || (p.strumenti.length ? 'Strumenti: ' + p.strumenti.join(', ') : 'Nessuno strumento'))}</span></div>${chipPasso(p)}<span class="chi">${tempo}</span><span class="chip light">${ic(m.MODELLI[p.modello].icona)}${esc(m.MODELLI[p.modello].nome)}</span><span class="eur">${p.stato === 'da fare' ? '≈ ' : ''}${eur(p.costo)}</span><span class="rb xs">${ic('i-ne')}</span></div>`;
+    /* Il passo non ha una pagina: la tendina del passo è un punto aperto mai costruito. Regola 25: niente freccia. */
+    return `<div class="hrow passo nofr${cls}"><span class="n">${num}</span><div class="tx"><b>${p.n}. ${esc(p.nome)}</b><span>${esc(p.esito || (p.strumenti.length ? 'Strumenti: ' + p.strumenti.join(', ') : 'Nessuno strumento'))}</span></div>${chipPasso(p)}<span class="chi">${tempo}</span><span class="chip light">${ic(m.MODELLI[p.modello].icona)}${esc(m.MODELLI[p.modello].nome)}</span><span class="eur">${p.stato === 'da fare' ? '≈ ' : ''}${eur(p.costo)}</span></div>`;
   }
-  function rigaLog(m, e, v) {
+  /* La voce del log porta da qualche parte solo quando parla di una richiesta ancora in attesa: lì apre la richiesta
+     e mostra il gallone (i-chevr). Le altre — un passo, uno strumento, una nota — non hanno dove andare: la freccia
+     cade. Se nessuna voce della lista ha una destinazione cade anche la colonna (`logSolo`). */
+  const logSolo = (m, voci) => !voci.some(v => { const r = v.richiesta ? m.richieste.find(q => q.id === v.richiesta) : null; return r && r.stato === 'attesa'; });
+  function rigaLog(m, e, v, sola) {
     const [icona, nome] = TIPO_LOG[v.tipo] || TIPO_LOG.nota;
     const r = v.richiesta ? m.richieste.find(q => q.id === v.richiesta) : null;
     const idx = r && r.stato === 'attesa' ? inAttesa(m).indexOf(r) : -1;
     const chip = v.tipo === 'errore' ? `<span class="chip rosa">${ic(icona)}${nome}</span>` : v.tipo === 'richiesta' ? `<span class="chip lime">${ic(icona)}${nome}</span>` : v.tipo === 'titolare' ? `<span class="chip ink">${ic(icona)}${nome}</span>` : `<span class="chip${v.tipo === 'passo' ? ' light' : ''}">${ic(icona)}${nome}</span>`;
-    return `<div class="lrow ${v.tipo}" ${idx >= 0 ? `data-az="richiesta" data-idx="${idx}"` : ''}><span class="ora">${esc(v.ora)}</span>${chip}<div class="tx">${esc(v.testo)}${v.passo ? `<small>passo ${v.passo}</small>` : ''}</div><span class="eur">${v.costo ? eur(v.costo) : ''}</span><span class="rb xs">${ic(idx >= 0 ? 'i-chevr' : 'i-ne')}</span></div>`;
+    return `<div class="lrow ${v.tipo}${sola ? ' nofr' : ''}" ${idx >= 0 ? `data-az="richiesta" data-idx="${idx}"` : ''}><span class="ora">${esc(v.ora)}</span>${chip}<div class="tx">${esc(v.testo)}${v.passo ? `<small>passo ${v.passo}</small>` : ''}</div><span class="eur">${v.costo ? eur(v.costo) : ''}</span>${idx >= 0 ? `<span class="rb xs">${ic('i-chevr')}</span>` : ''}</div>`;
   }
   function cardOutput(m, e, o) {
     const r = o.richiesta ? m.richieste.find(q => q.id === o.richiesta) : null;
@@ -1303,7 +1331,7 @@ window.DIREZIONE_A = (function () {
     const tono = o.stato === 'attesa' ? ' lime' : (o.stato === 'bozza' || o.stato === 'errore') ? ' gray' : o.stato === 'da fare' ? ' spenta' : '';
     return `<div class="ncard lead out${tono}" ${idx >= 0 ? `data-az="richiesta" data-idx="${idx}"` : ''}>
       <span class="ico">${ic(ICONA_OUT[o.tipo] || 'i-doc')}</span>
-      <div class="nt">${o.stato === 'attesa' ? `<span class="rb ghost">${ic('i-bell')}<i class="dot"></i></span>` : ''}<span class="rb ghost">${ic(idx >= 0 ? 'i-eye' : 'i-ne')}</span></div>
+      ${o.stato === 'attesa' || idx >= 0 ? `<div class="nt">${o.stato === 'attesa' ? `<span class="rb ghost">${ic('i-bell')}<i class="dot"></i></span>` : ''}${idx >= 0 ? `<span class="rb ghost">${ic('i-eye')}</span>` : ''}</div>` : ''}
       <div class="name md">${esc(o.nome)}</div>
       <div class="role">${esc(o.desc)}</div>
       <div class="ft"><div><span class="k">Stato</span>${chipOut(o)}</div><div><span class="k">Quando</span><span class="v">${esc(o.quando)}</span></div></div>
@@ -1326,7 +1354,9 @@ window.DIREZIONE_A = (function () {
     const perModello = {}; x.passi.forEach(p => { if (p.stato !== 'da fare') perModello[p.modello] = Math.round(10 * ((perModello[p.modello] || 0) + p.costo)) / 10; });
     /* la lista della sezione «Costo»: le tre pillole scelgono su che cosa si spende — per modello, per passo, per strumento.
        Sono tre viste degli stessi numeri dell'esecuzione, nessuno nuovo. */
-    const rigaCosto = (icona, nome, sotto, v1, v2, importo, spenta) => `<div class="crow${spenta ? ' spenta' : ''}"><span class="ico">${ic(icona)}</span><div class="tx"><b>${esc(nome)}</b><span>${sotto}</span></div><span class="v">${v1}</span><span class="v">${v2}</span><span class="eur">${eur(importo)}</span><span class="rb xs">${ic('i-ne')}</span></div>`;
+    /* Le righe del costo dell'esecuzione sono la stessa cosa vista per passo, per strumento o per modello: nessuna
+       delle tre ha una pagina propria. Regola 25: niente freccia, e la colonna cade con lei. */
+    const rigaCosto = (icona, nome, sotto, v1, v2, importo, spenta) => `<div class="crow nofr${spenta ? ' spenta' : ''}"><span class="ico">${ic(icona)}</span><div class="tx"><b>${esc(nome)}</b><span>${sotto}</span></div><span class="v">${v1}</span><span class="v">${v2}</span><span class="eur">${eur(importo)}</span></div>`;
     const perCosto = valSez(opz, 'esec.costo', PILLE_COSTO);
     const righeCosto = perCosto === 'passo'
       ? x.passi.map(p => rigaCosto('i-rows', 'Passo ' + p.n + ' · ' + p.nome, esc(p.strumenti.join(', ') || 'nessuno strumento'), `<span class="chip${p.stato === 'errore' ? ' rosa' : p.stato === 'fatto' ? ' lime' : ''}">${p.stato === 'errore' ? ic('i-warn') : p.stato === 'fatto' ? ic('i-check') : ic('i-clock')}${p.stato === 'fatto' ? 'Fatto' : p.stato === 'errore' ? 'Errore' : p.stato === 'corso' ? 'In corso' : 'Da fare'}</span>`, esc(p.durata || (p.stima ? p.stima + ' stimati' : '—')), p.costo || 0, !p.costo)).join('')
@@ -1344,14 +1374,14 @@ window.DIREZIONE_A = (function () {
       <section>
         <div class="shead"><h3>Log</h3>${contoSez(voci.length, x.log.length, 'Voci')}${cercaSez(opz, 'esec.log', x.log.length, 'voci del log')}
           <div class="filters">${pillLog('tutto', 'Tutto')}${pillLog('passo', `Passi · ${conta('passo')}`)}${pillLog('strumento', `Strumenti · ${conta('strumento')}`)}${pillLog('richiesta', `Richieste · ${conta('richiesta')}`)}${pillLog('errore', `Errori · ${conta('errore')}`)}${pillLog('nota', `Note · ${conta('nota') + conta('titolare')}`)}</div></div>
-        <div class="hlist" style="margin-top:24px">${voci.length ? voci.map(v => rigaLog(m, e, v)).join('') : `<div class="vuoto" style="margin:0;height:56px">Nessuna voce con questa ricerca o questo tipo</div>`}</div>
+        <div class="hlist" style="margin-top:24px">${voci.length ? voci.map(v => rigaLog(m, e, v, logSolo(m, voci))).join('') : `<div class="vuoto" style="margin:0;height:56px">Nessuna voce con questa ricerca o questo tipo</div>`}</div>
         <div class="chat">${av(m, e, 's')}<input type="text" data-campo="chat" placeholder="Scrivi a ${esc(m.etichetta(e))}: una nota per ${r.cur ? 'il passo in corso' : 'la prossima esecuzione'}…" maxlength="160"><span class="rb sm" data-az="esec-invia" data-id="${e.id}" title="Invia">${ic('i-send')}</span></div>
       </section>
       <section>
         <div class="shead"><h3>Output</h3>${contoSez(outF.length, x.output.length, 'Consegne')}
           ${pilleSez(opz, 'esec.output', PILLE_OUTPUT)}</div>
         ${outF.length ? `<div class="cards">${outF.map(o => cardOutput(m, e, o)).join('')}</div>` : `<div class="vuoto">Nessuna consegna con questo filtro</div>`}
-        ${serie.length ? `<div class="hgroup"><b>Consegne precedenti della serie</b>${serie.length} · con l'esito del titolare<span class="link" data-az="pagina" data-pagina="richieste" data-chi="${e.id}">Tutte le richieste di ${esc(m.etichetta(e))} ${ic('i-ne')}</span></div><div class="hlist">${serie.map(q => rigaStorico(m, q)).join('')}</div>` : ''}
+        ${serie.length ? `<div class="hgroup"><b>Consegne precedenti della serie</b>${serie.length} · con l'esito del titolare<span class="link" data-az="pagina" data-pagina="richieste" data-chi="${e.id}">Tutte le richieste di ${esc(m.etichetta(e))} ${ic('i-ne')}</span></div><div class="hlist">${serie.map(q => rigaStorico(m, q, soloDecise(serie))).join('')}</div>` : ''}
       </section>
       <section>
         <div class="shead"><h3>Costo</h3><span class="cnt"><b>${eur(r.costo)}</b><span>Finora · stima a fine ${eur(r.stima)}</span></span>
@@ -1430,11 +1460,16 @@ window.DIREZIONE_A = (function () {
   function rigaCliente(m, c, periodo, tot, ambito, dip) {
     const pct = Math.round(100 * c.spesa / Math.max(1, tot));
     const v1 = periodo === 'oggi' ? `${c.chi.length}<small>dipendent${plurale(c.chi.length, 'e', 'i')}</small>` : `${c.oggi} €<small>oggi</small>`;
-    return `<div class="crow"><span class="ico">${ic('i-euro')}</span><div class="tx"><b>${esc(c.cliente)}</b><span>${consegneTx(c.consegne)}</span></div><span class="v">${v1}</span><span class="v">${pct}%<small>${ambito}</small></span><span class="eur">${eur(c.spesa)}</span><span class="rb xs"${m.clienti.includes(c.cliente) ? ` data-az="pagina" data-pagina="richieste" data-cliente="${esc(c.cliente)}"${dip ? ` data-dip="${dip}"` : ''} title="Le richieste di ${esc(c.cliente)}"` : ''}>${ic('i-ne')}</span></div>`;
+    /* Il cliente ha una destinazione — le sue richieste — solo se è un cliente del modello: le voci di spesa che non
+       lo sono («altri», i clienti chiusi) non aprono niente e perdono la freccia. La lista è mista: la colonna resta. */
+    const suo = m.clienti.includes(c.cliente);
+    return `<div class="crow"><span class="ico">${ic('i-euro')}</span><div class="tx"><b>${esc(c.cliente)}</b><span>${consegneTx(c.consegne)}</span></div><span class="v">${v1}</span><span class="v">${pct}%<small>${ambito}</small></span><span class="eur">${eur(c.spesa)}</span>${suo ? `<span class="rb xs" data-az="pagina" data-pagina="richieste" data-cliente="${esc(c.cliente)}"${dip ? ` data-dip="${dip}"` : ''} title="Le richieste di ${esc(c.cliente)}">${ic('i-ne')}</span>` : ''}</div>`;
   }
   function rigaModello(m, md, periodo, totN) {
     const medio = md.n ? md.costo / md.n : 0, unita = periodo === 'oggi' ? 'passi' : 'esecuzioni';
-    return `<div class="crow${md.n ? '' : ' spenta'}"><span class="ico">${ic(md.icona)}</span><div class="tx"><b>${esc(md.nome)}</b><span>listino ${esc(md.listino)}</span></div><span class="v">${md.n}<small>${unita} · ${Math.round(100 * md.n / Math.max(1, totN))}%</small></span><span class="v">${eur(medio)}<small>${periodo === 'oggi' ? 'per passo' : 'per esecuzione'}</small></span><span class="eur">${eur(md.costo)}</span><span class="rb xs">${ic('i-ne')}</span></div>`;
+    /* Un modello non è una pagina del prodotto: i livelli (Rapido, Standard, Esperto) si scelgono nel dossier del
+       dipendente, non si aprono. Regola 25: niente freccia, e la colonna cade con lei. */
+    return `<div class="crow nofr${md.n ? '' : ' spenta'}"><span class="ico">${ic(md.icona)}</span><div class="tx"><b>${esc(md.nome)}</b><span>listino ${esc(md.listino)}</span></div><span class="v">${md.n}<small>${unita} · ${Math.round(100 * md.n / Math.max(1, totN))}%</small></span><span class="v">${eur(medio)}<small>${periodo === 'oggi' ? 'per passo' : 'per esecuzione'}</small></span><span class="eur">${eur(md.costo)}</span></div>`;
   }
   function rigaStrumento(m, s) {
     return `<div class="crow"><span class="ico">${ic(s.icona)}</span><div class="tx"><b>${esc(s.nome)}</b><span>${s.chiamate} chiamat${plurale(s.chiamate, 'a', 'e')} in ${s.chi.length} esecuzion${plurale(s.chi.length, 'e', 'i')}</span></div><span class="v">${s.errore ? `<span class="chip rosa">${ic('i-warn')}Errore</span>` : `<span class="chip lime">${ic('i-check')}Usato</span>`}</span><span class="v">${pair(m, s.chi, 'xs', 3)}</span><span class="eur">${eur(s.costo)}</span><span class="rb xs" data-az="pagina" data-pagina="esecuzione" data-id="${s.chi[0]}" title="Apri l'esecuzione di ${esc(m.etichetta(m.byId[s.chi[0]]))}">${ic('i-ne')}</span></div>`;

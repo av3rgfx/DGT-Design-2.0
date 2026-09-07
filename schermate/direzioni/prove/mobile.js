@@ -173,6 +173,25 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   await clic(tel(1) + `.m-coda .qrow[data-idx="${iLungo}"]`);
   check(await txt(tel(2) + '.m-tit h2') === c[iLungo].cosa, 'il titolo più lungo: ' + c[iLungo].cosa);
   await passo('quaranta');
+
+  console.log('\nle frecce di riga sul telefono (versione 18, regola 25)');
+  /* Sul telefono la freccia è una sola, nell'intaglio della card della richiesta corrente, e apre la richiesta.
+     La verifica tiene il conto a zero inerti su tutte e otto le schermate, a undici e a quaranta. */
+  let inertiM = 0, viveM = 0;
+  for (const n of ['11', '40']) for (let s = 1; s <= 8; s++) {
+    await page.goto(file('schermata=' + s + '&n=' + n)); await page.waitForTimeout(300);
+    const r = await page.evaluate(() => {
+      let i = 0, v = 0;
+      document.querySelectorAll('svg use').forEach(u => {
+        if ((u.getAttribute('href') || '') !== '#i-ne') return;
+        u.closest('svg').parentElement.closest('[data-az]') ? v++ : i++;
+      });
+      return { i, v };
+    });
+    inertiM += r.i; viveM += r.v;
+  }
+  check(inertiM === 0, 'nessuna freccia inerte sulle otto schermate, a undici e a quaranta (' + viveM + ' vive)');
+
   check(errors.length === 0, 'nessun errore in console: ' + JSON.stringify(errors));
   console.log(`\n${ok} ok, ${ko} ko`);
   await browser.close(); process.exit(ko ? 1 : 0);
