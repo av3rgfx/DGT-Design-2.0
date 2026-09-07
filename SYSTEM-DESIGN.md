@@ -290,7 +290,7 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     elemento che debba sforare: si scala dal centro, non si allarga in percentuale dentro una riga automatica.
 
 24. **La barra «Oggi in azienda» è il quadro del giorno, non una linea del tempo** (2026-09-06, versione 16, dopo lo studio UX
-    chiesto dall'utente: «non capisco a primo impatto il suo utilizzo»). La barra del riferimento *sembra* una linea del tempo
+    chiesto dall'utente: «non capisco a primo impatto il suo utilizzo»; strada confermata dall'utente lo stesso giorno). La barra del riferimento *sembra* una linea del tempo
     e in DGT non lo era: la scala cambiava di otto volte fra un blocco e l'altro (3,4 px/min su una consegna, 13,4 sul segmento
     in corso, 0,004 sulle quattro ore e mezza di vuoto del pomeriggio, rappresentate da 1 px di separatore), il marcatore
     dell'ora stava al bordo del segmento verde e non a un'ora (a 40 dipendenti lo stesso «10:42» si spostava di 12 px), gli

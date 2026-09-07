@@ -1196,7 +1196,11 @@ cima, dove oggi manca del tutto; niente marcatore dell'ora, quindi sulla pagina 
 di distanza. *Perde*: l'asse del tempo (la barra non dice più *quando*, lo dice l'Agenda) e, **sulla sola home**, ripete due
 numeri già grandi lì sotto («al lavoro», «da approvare»). *Costa*: poco.
 
-#### 4 · Raccomandazione, applicata: la strada 3
+#### 4 · Raccomandazione, applicata e poi confermata: la strada 3
+
+**Esito.** L'utente ha confermato la strada 3 a fine sessione («confermo la Strada 3», 2026-09-06), dopo aver visto le quattro
+scelte in un artefatto con il voto condiviso (https://claude.ai/code/artifact/3a3fcb9e-c894-4a83-9cdb-54820f65756f) da
+condividere con un collega. La conferma riguarda la **strada**, non le scelte di dettaglio della sezione 7, che restano aperte.
 
 Le ragioni, in ordine:
 
@@ -1259,7 +1263,9 @@ caselle contate, quella dei passi è una successione con il marcatore nero dell'
   prima/dopo). Le catture che restano fuori sono dichiarate nel file (direzioni B e C, pellicola del moto, cornici del telefono,
   sezioni per elemento, le due strade scartate).
 
-#### 7 · Scelte fatte in costruzione, da confermare
+#### 7 · Scelte di dettaglio, ancora da confermare
+
+(La strada è confermata, vedi la sezione 4; queste no, perché l'utente non le ha sollevate.)
 
 - Le cinque caselle e le loro parole: «approvate» (le richieste approvate oggi, la stessa parola del Riepilogo), «al lavoro»,
   «ferma/e», «aspettano te», «dopo». «Aspettano te» dice in voce di titolare quello che il numero grande chiama «da approvare»:

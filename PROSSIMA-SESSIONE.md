@@ -4,7 +4,8 @@ Stato al 2026-09-06, fine della sessione della **barra «Oggi in azienda»** (ve
 chiesto dall'utente, tre strade disegnate nella Console vera e la terza applicata — la barra non finge più una linea del tempo e
 dice il giorno in cinque caselle contate e nominate. Nella stessa sessione, sullo stesso componente, sono stati corretti due
 difetti della **barra dei passi** dell'Esecuzione (usciva dalla pagina e veniva tagliata in silenzio). Tutto è committato e
-pushato sul branch indicato sotto, con la PR aperta verso `main`. **L'utente non ha ancora visto la barra nuova.**
+pushato sul branch indicato sotto, con la PR aperta verso `main`. **L'utente ha visto la barra nuova e ha confermato la
+strada 3** («confermo la Strada 3», 2026-09-06): il codice era già quello, quindi non è cambiato niente dopo la conferma.
 
 ## Stato
 
@@ -175,8 +176,8 @@ pushato sul branch indicato sotto, con la PR aperta verso `main`. **L'utente non
 
 33. **2026-09-06, questa sessione**: lo **studio UX della barra «Oggi in azienda»** chiesto dall'utente. Fatta l'analisi con i
     numeri, disegnate tre strade nella Console vera e catturate a 11 e a 40, scelta e applicata la terza («la riga di stato»)
-    perché l'utente non ha risposto, come chiedeva il prompt. **L'utente non ha ancora visto né giudicato la barra nuova.**
-    Scelte fatte in costruzione, da confermare (dettaglio in `DIREZIONI.md`, «Versione 16», sezione 7):
+    perché l'utente non ha risposto, come chiedeva il prompt.
+    Scelte fatte in costruzione (dettaglio in `DIREZIONI.md`, «Versione 16», sezione 7):
     - le cinque caselle e le loro parole: «approvate» (le richieste approvate oggi, la stessa parola del Riepilogo), «al lavoro»,
       «ferma/e», «aspettano te», «dopo». **«Aspettano te»** dice in voce di titolare quello che il numero grande della home
       chiama «da approvare»: è l'unico punto in cui il prodotto usa due parole per la stessa cosa;
@@ -187,6 +188,13 @@ pushato sul branch indicato sotto, con la PR aperta verso `main`. **L'utente non
     - sopra i sedici dipendenti spariscono il nome di chi è fermo e l'ora del primo pianificato;
     - nella barra dei passi: quattro pillole è la soglia oltre cui i conclusi perdono il nome, due i passi da fare per esteso.
 
+34. **2026-09-06, fine della sessione: l'utente conferma la strada 3.** Ha chiesto un artefatto con le sole quattro scelte da
+    condividere con un collega (pubblicato, con il voto condiviso:
+    https://claude.ai/code/artifact/3a3fcb9e-c894-4a83-9cdb-54820f65756f) e subito dopo ha scritto «confermo la Strada 3».
+    Il codice era già quello, quindi la conferma non ha cambiato niente: sono cambiati solo i documenti. **Attenzione**: la
+    conferma è della *strada*, non delle scelte di dettaglio elencate nella decisione 33 (le parole delle caselle, quante
+    caselle, la duplicazione nella home): quelle restano da confermare, e se l'utente non le solleva vanno lasciate come sono.
+
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti sintetici di DGT; documenti in italiano.
 
@@ -196,12 +204,14 @@ Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti si
 dei permessi, e gli indirizzi mostrano ancora la versione 15. Si rigenerano con `build-unico.js` e si ripubblicano allo stesso
 indirizzo passando `url` allo strumento, dopo aver letto la versione pubblicata per intero (vedi «Note tecniche»).
 
-**Poi, il giudizio dell'utente sulla barra nuova.** Se dice che va bene, i lavori proposti e non ancora scelti sono: la tab
+**La strada è confermata** (decisione 34), quindi non c'è niente da rifare sulla barra. I lavori proposti e non ancora scelti
+sono: la tab
 «Dipartimenti» del telefono (l'ultima inerte); la tendina del passo nell'Esecuzione; i controlli ancora inerti (cerca, filtri,
 scarica delle intestazioni, le pillole della «Spesa del mese» del Dipartimento); portare la barra nuova anche sul telefono, che
 oggi non ha nessun quadro del giorno in cima (ha la linea del tempo del Riepilogo).
 
-Se invece l'utente chiede **correzioni sulla barra**, i punti su cui è più probabile che voglia intervenire, in ordine:
+Se l'utente chiede **correzioni di dettaglio sulla barra** (la strada resta la 3), i punti su cui è più probabile che voglia
+intervenire, in ordine:
 - **le parole**: «aspettano te» contro «da approvare» (le uniche due parole per la stessa cosa nel prodotto), «approvate»
   contro «consegnate», «ferma» contro «in errore»;
 - **la duplicazione nella home** con i due numeri grandi: se dà fastidio, si toglie la casella «al lavoro» (resterebbe la pila
@@ -232,7 +242,8 @@ Punti aperti della versione 15: nell'agenda «Sposta» porta all'agenda ma non s
 mutazione per farlo) e i giorni della settimana non si aprono; nella chat il dipendente non risponde da solo alla nota del
 titolare e non c'è ricerca dentro il filo; il «non letto» si azzera aprendo il filo e non sopravvive al ricaricamento.
 Punti aperti nuovi della versione 16: la lista `m.agenda` in `dati.js` non la legge più nessuno tranne la barra di prima
-(`?barra=0`) — si può togliere quando la barra nuova è confermata; il telefono non ha il quadro del giorno in cima; nella barra
+(`?barra=0`). Ora che la strada è confermata si potrebbe togliere, ma toglierebbe anche il confronto con la barra vecchia:
+farlo solo se l'utente lo chiede; il telefono non ha il quadro del giorno in cima; nella barra
 dei passi il «+N da fare» e il «+N fatti» non sono cliccabili (la lista dei Passi qui sotto li ha tutti).
 
 ## Strumenti (`design-system/tools/` e `schermate/direzioni/prove/`)
@@ -324,8 +335,9 @@ dei passi il «+N da fare» e il «+N fatti» non sono cliccabili (la lista dei 
 
 1. **Ripubblicare i due artefatti** (Console e telefono): negato dal classificatore in questa sessione, gli indirizzi mostrano
    ancora la versione 15. Prima cosa della prossima sessione.
-2. **Il giudizio dell'utente sulla barra nuova** (versione 16, decisione 33) e sulle scelte fatte in costruzione: le parole delle
-   caselle, la duplicazione nella home, quante caselle.
+2. **Le scelte di dettaglio della barra**, mai sollevate dall'utente e quindi ancora da confermare (decisioni 33 e 34): le
+   parole delle caselle («aspettano te» contro «da approvare»), la duplicazione nella home, quante caselle. La strada, invece,
+   è confermata.
 3. **Il giudizio dell'utente** sulle pagine Agenda e Chat (versione 15, decisione 30), sugli avatar ricentrati (15a, decisione
    31), sulla revisione sul telefono (decisione 28), sulle schermate del mobile (versioni 11 e 12, decisione 23), sulla pagina
    del Dipendente (versione 6) e su quella dell'Esecuzione (versione 8): in sospeso, non blocca. La pagina dei Costi ha avuto un
@@ -341,8 +353,7 @@ dati.js, comune.js, avatar/, mobile.js): niente emoji, solo le icone dello sprit
 colori restano quelli del sistema.
 
 Prima cosa: ripubblica i due artefatti (Console e telefono) allo stesso indirizzo, che nella sessione scorsa non è riuscito.
-Poi mostrami la barra «Oggi in azienda» nuova (la versione 16) e dimmi in due righe che cosa è cambiato rispetto a prima, così
-la giudico.
+La barra «Oggi in azienda» della versione 16 è confermata, non rimetterla in discussione.
 
 Poi lancia le quattro prove di prove/ e cattura le pagine con scatta.js: sono la base di confronto. Alla fine prove, screenshot,
 artefatti, DIREZIONI.md (versione 17), SYSTEM-DESIGN.md, README e PROSSIMA-SESSIONE.md, commit, push e PR.
