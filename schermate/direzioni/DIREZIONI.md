@@ -1629,15 +1629,123 @@ niente da spendere: se un domani il quadro o la card crescono di un pixel, la ri
 prova a dirlo prima delle catture.
 
 
+### Versione 19: le consegne del dipartimento (2026-09-07, sessione successiva)
+
+**La scelta dell'utente**, dopo l'analisi della sezione 6: si comincia dal **candidato 6**, **strada A** (una sezione in
+più sulla pagina Dipartimento, nessuna pagina nuova nel rail), e la parola è **«consegna»**.
+
+#### 1. La parola prima della forma
+
+L'analisi aveva contato che il prodotto usava **quattro parole per la stessa cosa**: `output` (nel codice e nel titolo
+di sezione), «Consegne» (nel contatore della stessa intestazione), `allegato` (nella richiesta), `consegne` (negli
+obiettivi e nei costi). Adesso ce n'è una, ed è **consegna**: *la cosa creata da un'esecuzione*.
+
+Sceglierla ha costretto a due rinomine, tutte e due dentro il codice e invisibili sulla pagina:
+
+| Prima | Adesso | Perché |
+|---|---|---|
+| `consegneDi(e, periodo, approvate)` in `dati.js` — **conta** le consegne di un dipendente per l'aggregatore dei costi | **`contaConsegne`** | ritorna un numero, non un elenco; e il nome buono serviva all'elenco |
+| `rigaConsegna(m, r)` in `mobile.js` — la riga di una **richiesta** in coda | **`rigaRichiesta`** | prende una richiesta, non una consegna |
+
+`consegneDi(dip)` è adesso l'elenco delle consegne di un dipartimento. **Il primo tentativo è finito in
+`SyntaxError: Identifier 'consegneDi' has already been declared`**: è la nota tecnica già scritta («i nomi si
+scontrano: prima di sceglierne uno, cercarlo») che vale per le funzioni e non solo per le classi.
+
+#### 2. Che cosa mostra, e da dove viene
+
+`consegneDi(dip)` non porta **nessun numero nuovo**: raccoglie gli `output` delle esecuzioni dei dipendenti del
+dipartimento, quelli che la pagina Esecuzione disegna già nella sua sezione. In più collega due cose che il modello
+aveva e nessuno leggeva insieme:
+
+- **il passo che l'ha prodotta**, letto da `quando` («passo 2 · 10:18»), con il suo esito, i suoi strumenti, la sua
+  durata e il suo costo;
+- **le voci di log di quel passo** (`x.log`, campo `passo`), che finora leggeva solo la sezione «Log».
+
+| | Sviluppo | Marketing | Vendite | Amministr. | In tutto |
+|---|---|---|---|---|---|
+| Consegne a undici | **7** | 5 | 4 | 2 | **18** |
+| Consegne a quaranta | 10 | 10 | 10 | 10 | **40** |
+
+#### 3. Che cosa costa, in pixel
+
+La sezione sta **seconda su sei**, subito sotto «Oggi in ‹dipartimento›», perché ne è il risultato: la pagina si legge
+*adesso → uscito → chi → obiettivi → da approvare → spesa*, e la regola 2 dice che il «adesso» apre la pagina.
+
+| | Prima | Dopo | Costo |
+|---|---|---|---|
+| Sezioni della pagina Dipartimento (Console e telefono) | 5 | **6** | — |
+| Pagina Sviluppo, a undici | 1 880 px | **2 594 px** | +714 |
+| Pagina Marketing, a undici | 2 258 px | **2 960 px** | +702 |
+| Pagina Sviluppo, a quaranta | 2 882 px | **3 894 px** | +1 012 |
+| La sezione da sola | — | **674 px** (7 card in 2 righe), **972 px** (10 card in 3 righe) | — |
+
+Card di **316×294 px**, quattro per riga, la stessa griglia di «Da approvare». **Zero pagine nuove, zero voci nel rail**
+(resta a sei), **zero schermate nuove sul telefono**.
+
+#### 4. Le tre cose che la misura ha deciso al posto di un'opinione
+
+1. **Niente cerchio «cerca» nell'intestazione.** Ce l'avevo messo, e **la prova delle intestazioni mi ha colto in
+   fallo**: la soglia del prodotto è **dodici righe** (`SOGLIA_CERCA`) e le consegne di un dipartimento arrivano a
+   **dieci** a quaranta dipendenti. Una lista che sta in una schermata si legge, non si cerca. Le cinque pillole
+   (Tutte · Da approvare · In corso · Fatte · Da fare) bastano, e sono le stesse quattro parole della pagina
+   Esecuzione più una.
+2. **Nella riga di stato ci sta il solo chip.** Misurato: `.sel` è `flex:1` accanto a due pulsanti, e quello che resta
+   al testo va da **30 a 52 px** — «Passo 3 · 23,6 €» ne chiede 89. Qualunque testo lì finisce nei puntini (succede
+   già alle card che c'erano: «Passo 3 di 7», «Chiavi di accesso scadute»), e un testo che non si legge mai è una
+   promessa non mantenuta. Il passo, il costo e gli strumenti stanno nella tendina, che è larga il doppio.
+3. **Sotto il titolo, il «quando» senza il verbo.** `.meta` non va a capo (primitiva condivisa) e a 316 px
+   «Summit Marketing · parte alle 17:00» sforava di **29 px**. Il verbo che il chip di stato dice già
+   («consegnato», «approvata», «concluso», «parte», «fermo al») si toglie e resta l'ora.
+
+#### 5. Che cosa vuol dire «aprire una consegna»
+
+La domanda che l'analisi aveva lasciato aperta. La risposta: **la stessa tendina larga con cui il titolare apre già una
+richiesta** — non una pagina nuova, non un pannello nuovo. Un clic sulla card la apre; «Riduci» torna alla coda, come
+dalla richiesta.
+
+Dentro ci sono **cinque fatti che la card non poteva reggere**: chi l'ha fatta, il passo che l'ha prodotta con la sua
+durata e il suo costo, gli strumenti di quel passo, le voci di log di mentre la faceva, e — se la consegna è **già
+uscita al titolare** — il **documento vero della richiesta**, con il suo testo e il suo allegato, più il pulsante che
+apre la richiesta in coda. È il collegamento che l'analisi aveva contato come mancante: prima l'unico legame fra una
+consegna e la richiesta che ne era nata stava in un campo che nessuna pagina leggeva.
+
+Si apre anche dall'indirizzo, per le catture e le prove: `?consegna=c1-0`.
+
+#### 6. Una ripetizione, misurata
+
+Una consegna che aspetta il titolare compare due volte sulla stessa pagina: in «Consegne di oggi» e in «Da approvare».
+Contate: **1 o 2 card per pagina**, e stanno a **1 988–2 302 px di distanza**, cioè due schermate piene — non si vedono
+mai insieme. Restano lime tutte e due perché la regola 4 dice che il lime è l'attenzione del titolare e una consegna in
+attesa la aspetta davvero. **Si toglie in una riga** (`TONO_CONSEGNA.attesa`) se l'utente preferisce.
+
+#### 7. Verifica
+
+- **Le quattro prove cliccate passano**: `console.js` **129** (erano 107: ventidue verifiche nuove sulle consegne),
+  `mobile.js` (tre verifiche nuove sulla sezione del telefono), `costi.js` e `agenda-chat.js` invariate.
+- **Le prove non si legano più agli indici delle sezioni.** Aggiungere la sesta sezione ha spostato
+  `section:nth-of-type(5)` e ne ha rotte tre: adesso un aiutante (`sez('^Spesa')`) cerca la sezione **dal titolo**.
+  Stessa correzione in `scatta.js`, dove `a-sez-spesa-oggi` puntava alla quinta sezione.
+- Catture nuove nel gruppo `consegne` di `scatta.js`: `a-sez-consegne`, `a-sez-consegne-fatte`, `a-consegna`,
+  `a-consegna-richiesta`, `a-dipartimento-40`, `m-consegne`.
+
+#### 8. Che cosa resta da decidere
+
+- **Il perimetro**: la sezione dice «di oggi» e mostra le consegne delle esecuzioni correnti. Il mese non c'è.
+- **Il «tempo reale»**: il modello non ha un orologio (`azienda.ora` è `'10:42'` fisso), quindi la promessa che la
+  sezione mantiene è «lo stato al momento in cui apri la pagina», con i quattro stati che `giornata()` distingue.
+- **La ripetizione** del punto 6.
+- Restano fuori, come diceva l'analisi, «che cosa ha creato l'azienda» e «che cosa abbiamo fatto per Rossi Srl»: sono
+  il prezzo dichiarato della strada A, e chiederebbero la strada B (una pagina nel rail).
+
 ## 5. File
 
 | File | Ruolo |
 |---|---|
-| `dati.js` | modello sintetico (11 e 40) condiviso; dalla versione 17 anche i gruppi del giorno (`gruppiOggi`), letti dalla barra della Console e dal quadro del telefono; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`), le richieste di tipo `revisione` e l'esecuzione (`esecuzioneDi`: sei scritte a mano, le altre generate); dal 2026-09-05 la decisione del titolare (`decidi`), condivisa fra Console e telefono; `azienda.scadenzaMese` per la linea del tempo del mobile; dal 2026-09-06 l'aggregatore dei costi (`costi(periodo, dip)`, `spesaDi`) per la pagina Costi e la sezione «Spesa del mese», e (versione 15) l'agenda (`giornata`, `settimana`, `scadenze`) e i fili della chat (`filoDi`, `scrivi`, `fili`, `nonLetti`) per la Console e per il telefono |
+| `dati.js` | modello sintetico (11 e 40) condiviso; dalla versione 17 anche i gruppi del giorno (`gruppiOggi`), letti dalla barra della Console e dal quadro del telefono; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`), le richieste di tipo `revisione` e l'esecuzione (`esecuzioneDi`: sei scritte a mano, le altre generate); dal 2026-09-05 la decisione del titolare (`decidi`), condivisa fra Console e telefono; `azienda.scadenzaMese` per la linea del tempo del mobile; dalla versione 19 le **consegne del dipartimento** (`consegneDi(dip)`, `consegnaDi(id)`: gli `output` delle esecuzioni con il passo che li ha prodotti e le sue voci di log; l'aiutante che le *conta* per i costi si chiama adesso `contaConsegne`); dal 2026-09-06 l'aggregatore dei costi (`costi(periodo, dip)`, `spesaDi`) per la pagina Costi e la sezione «Spesa del mese», e (versione 15) l'agenda (`giornata`, `settimana`, `scadenze`) e i fili della chat (`filoDi`, `scrivi`, `fili`, `nonLetti`) per la Console e per il telefono |
 | `comune.js` | sprite di icone di DGT, prefisso CSS, utilità |
 | `../componenti.js` (`schermate/componenti.js`) | dal 2026-09-06 (versione 14) i componenti della Console condivisi con il telefono e con le pagine degli avatar: il CSS delle primitive (`.rb`, `.av`, `.pair`, `.pill`, `.chip`, `.dots`, `.badge`, `.ncard`/`.nt`, `.lead`, `.task`, `.crow`, `.hrow`, `.erow`, `.qrow`, `.dcard`, `.ripart`/`.leg`, e dalla versione 15 le bolle della chat `.msg`/`.bub`), `variabili`, e `av`, `pair`, `dots`, `chipStato`, `chipEsito`, `messaggio`, `iconaTipo`, `nomeTipo`, `eur`, `delta`, `differenze`; `window.DGT_COMPONENTI`, va caricato dopo `comune.js` e il suo CSS messo in pagina prima di quello della Console |
-| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo), pagina Costi (per dipartimento, dipendente, cliente, modello, strumento, con le pillole del periodo per sezione; `?pagina=costi`), pagina Agenda (barra del giorno, eventi, scadenze, settimana; `?pagina=agenda`) e pagina Chat (fili, filo aperto, barra di scrittura; `?pagina=chat&filo=4`, versione 15); dalla versione 16 la barra «Oggi in azienda» è il quadro del giorno in caselle contate (`barraStato`, che legge `m.gruppiOggi()`; `?barra=0` rimette quella di prima) e la barra dei passi si stringe da sola; dalla versione 17 i controlli delle intestazioni di sezione seguono la regola «un controllo si vede solo se fa quello che promette» (`cercaSez`, `filtraCerca`, `pilleSez`, `filtraSez`, `contoSez`, stato in `st.cerca` e `st.sez`) e dalla versione 18 la stessa regola vale per le **frecce di riga** (regola 26: la freccia sta solo dove la riga ha una destinazione; `soloDecise`, `logSolo` e `versoConfronto` dicono per lista se la colonna da 32 px cade, classe `nofr`); cliccabile; dalla versione 14 prende le primitive da `../componenti.js` e tiene la cornice, le pagine, le tendine e `monta` |
-| `mobile.js` / `.html` | il telefono del titolare: le approvazioni (versioni 11 e 12, schermate «Da approvare», «Richiesta» — anche la revisione di performance con le due versioni a confronto e le quattro decisioni — e «Riepilogo di oggi», con il rifiuto con motivo e lo stato vuoto a coda finita) e, dalla versione 15, le due tab «Chat» (elenco dei fili e conversazione con la barra di scrittura) e «Agenda» (la giornata sulla linea del tempo, i prossimi giorni, le scadenze); dalla versione 17 il **quadro del giorno** in cima alla schermata 1 (`quadroGiorno`, tre forme dietro `?quadro=0|1|2|3`, la 2 è quella scelta) e la tab **Dipartimenti** (schermate 7 e 8: l'elenco e il dipartimento aperto); otto telefoni affiancati che condividono il modello, la richiesta corrente, il filo aperto e il dipartimento scelto; `DGT_MOBILE.monta`, `coda`; `?schermata=1…8&richiesta=0&filo=4&dip=mkt&quadro=`, `?n=40`; dalla versione 14 carica `../componenti.js` e non più `direzione-a.js` |
+| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo), pagina Costi (per dipartimento, dipendente, cliente, modello, strumento, con le pillole del periodo per sezione; `?pagina=costi`), pagina Agenda (barra del giorno, eventi, scadenze, settimana; `?pagina=agenda`) e pagina Chat (fili, filo aperto, barra di scrittura; `?pagina=chat&filo=4`, versione 15); dalla versione 16 la barra «Oggi in azienda» è il quadro del giorno in caselle contate (`barraStato`, che legge `m.gruppiOggi()`; `?barra=0` rimette quella di prima) e la barra dei passi si stringe da sola; dalla versione 17 i controlli delle intestazioni di sezione seguono la regola «un controllo si vede solo se fa quello che promette» (`cercaSez`, `filtraCerca`, `pilleSez`, `filtraSez`, `contoSez`, stato in `st.cerca` e `st.sez`) e dalla versione 18 la stessa regola vale per le **frecce di riga** (regola 26: la freccia sta solo dove la riga ha una destinazione; `soloDecise`, `logSolo` e `versoConfronto` dicono per lista se la colonna da 32 px cade, classe `nofr`); dalla versione 19 la sezione **«Consegne di oggi»** della pagina Dipartimento (`cardConsegna`, `PILLE_CONSEGNE`) e la **tendina che apre una consegna** (`tendinaConsegna`, azione `consegna`, `?consegna=c1-0`); cliccabile; dalla versione 14 prende le primitive da `../componenti.js` e tiene la cornice, le pagine, le tendine e `monta` |
+| `mobile.js` / `.html` | il telefono del titolare: le approvazioni (versioni 11 e 12, schermate «Da approvare», «Richiesta» — anche la revisione di performance con le due versioni a confronto e le quattro decisioni — e «Riepilogo di oggi», con il rifiuto con motivo e lo stato vuoto a coda finita) e, dalla versione 15, le due tab «Chat» (elenco dei fili e conversazione con la barra di scrittura) e «Agenda» (la giornata sulla linea del tempo, i prossimi giorni, le scadenze); dalla versione 17 il **quadro del giorno** in cima alla schermata 1 (`quadroGiorno`, tre forme dietro `?quadro=0|1|2|3`, la 2 è quella scelta) e la tab **Dipartimenti** (schermate 7 e 8: l'elenco e il dipartimento aperto); dalla versione 19 la sezione **«Consegne di oggi»** anche nella schermata 8, in righe (`rigaConsegna`; la riga della richiesta in coda si chiama adesso `rigaRichiesta`); otto telefoni affiancati che condividono il modello, la richiesta corrente, il filo aperto e il dipartimento scelto; `DGT_MOBILE.monta`, `coda`; `?schermata=1…8&richiesta=0&filo=4&dip=mkt&quadro=`, `?n=40`; dalla versione 14 carica `../componenti.js` e non più `direzione-a.js` |
 | `avatar/avatar-dgt.js` | involucro degli avatar nel linguaggio della Console (colori, stati, simboli statici, animazione); `usa('orbe'|'kit')` sceglie la famiglia |
 | `avatar/avatar-orbe.js` | la famiglia «orbe» (versioni 5b, 5c, 7, 7b, 7c): cerchi dal seme con le pupille e lo sguardo del kit, un solo motore `requestAnimationFrame` con funzioni continue del tempo, sguardo che segue il puntatore; senza disco, con le pelli (`pelle('perla'|'grigio'|'chiaro'|'alone'|'disco')`, solo variabili CSS; perla predefinita); `fermo(t)`, `riprendi()`, `fotogramma(svg, t)` per gli screenshot |
 | `confronto-avatar.html` | le due famiglie a confronto nelle viste della Console |
@@ -1651,9 +1759,9 @@ prova a dirlo prima delle catture.
 | `build-unico.js` | genera il file unico per l'artefatto (`node build-unico.js direzione-a.html out.html`) |
 | `scelta-barra.src.html` | la pagina delle quattro scelte per la barra «Oggi in azienda», con il voto condiviso: quella che il titolare ha mandato al collega. Sorgente, non pagina: le catture sono segnaposto `IMG:<nome>`, quindi non si apre da sola |
 | `costruisci-scelta.js` | costruisce `scelta-barra.html` dal sorgente, incorporando i PNG di `screenshot/` come data URI, più le otto catture del commutatore undici / quaranta (`node costruisci-scelta.js [out.html]`). Il risultato non entra nel repository (megabyte di base64): si rifà in un comando |
-| `scatta.js` | rigenera le catture di `screenshot/` dalla lista di parametri dichiarata nel file (`node scatta.js`, `console` / `barra` / `quadro` / `dip` / `controlli` per un gruppo, `--in <cartella>` per il confronto prima/dopo); le catture che restano fuori sono elencate in `FUORI`, e dalla versione 18 ci sono anche i prima/dopo `a-frecce-*.png` e `m-conta-titolo.png`, che vogliono l'albero della versione precedente e si compongono con `design-system/tools/affianca.js` |
+| `scatta.js` | rigenera le catture di `screenshot/` dalla lista di parametri dichiarata nel file (`node scatta.js`, `console` / `barra` / `quadro` / `dip` / `controlli` per un gruppo, `--in <cartella>` per il confronto prima/dopo); le catture che restano fuori sono elencate in `FUORI`, dalla versione 19 c'è il gruppo `consegne` (`a-sez-consegne`, `a-sez-consegne-fatte`, `a-consegna`, `a-consegna-richiesta`, `a-dipartimento-40`, `m-consegne`) e dalla versione 18 ci sono anche i prima/dopo `a-frecce-*.png` e `m-conta-titolo.png`, che vogliono l'albero della versione precedente e si compongono con `design-system/tools/affianca.js` |
 | `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`); le cornici del telefono (`mobile-*.png`: le versioni 11 e 12, le quattro della revisione rifatte nella versione 14 e le tre schermate nuove `mobile-4-chat`, `mobile-5-filo`, `mobile-6-agenda` della versione 15) e le sezioni delle pagine Costi (`a-costi-*.png`, versione 13), Agenda e Chat (`a-agenda-*.png`, `a-chat-*.png`, versione 15) con `screenshot-elementi.js`; le catture dello studio della barra (`a-barra-*.png`, versione 16) e quelle della versione 17: la forma scelta del quadro del giorno e le due scartate, le due schermate dei Dipartimenti (`m-*.png`), i controlli delle sezioni (`a-sez-*.png`); della versione 18 i prima/dopo delle frecce di riga (`a-frecce-*.png`) e il confronto del conto nel titolo del telefono (`m-conta-titolo.png`), composti con `affianca.js`. Si rigenerano con `scatta.js`, tranne quelli elencati in `FUORI` |
-| `prove/` | le prove cliccate con Playwright, con il `README.md` che dice il comando: `console.js` (107 verifiche: tendine, Richieste, editor, esecuzione, 40, la barra «Oggi in azienda» e la barra dei passi, dalla versione 17 i controlli delle intestazioni di sezione e dalla 18 le frecce di riga), `mobile.js` (70: le schermate delle approvazioni, revisione, rifiuto con motivo, prova, stato vuoto, 40, dalla versione 17 il quadro del giorno e la tab Dipartimenti e dalla 18 il conto delle frecce), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le pagine Agenda e Chat della Console e le due tab del telefono, versione 15); leggono `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH` |
+| `prove/` | le prove cliccate con Playwright, con il `README.md` che dice il comando: `console.js` (132 verifiche: tendine, Richieste, editor, esecuzione, 40, la barra «Oggi in azienda» e la barra dei passi, dalla versione 17 i controlli delle intestazioni di sezione, dalla 18 le frecce di riga e dalla 19 le consegne del dipartimento; le sezioni si cercano **dal titolo** e non più dall'indice), `mobile.js` (78: le schermate delle approvazioni, revisione, rifiuto con motivo, prova, stato vuoto, 40, dalla versione 17 il quadro del giorno e la tab Dipartimenti, dalla 18 il conto delle frecce e dalla 19 le consegne del dipartimento), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le pagine Agenda e Chat della Console e le due tab del telefono, versione 15); leggono `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH` |
 
 Per gli screenshot: `design-system/tools/screenshot-page.js` (vedi `design-system/tools/README.md`).
 

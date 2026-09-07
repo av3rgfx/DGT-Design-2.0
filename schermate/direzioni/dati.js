@@ -800,7 +800,10 @@ window.DGT_DATI = (function () {
     const blocchiDi = e => { const d = out.dossierDi(e); return { ora: d.metriche.ora.spesa, prima: d.metriche.prima.spesa, prima2: versioniVecchie(d).reduce((t, v) => t + (v.numeri ? Math.round(v.numeri.task * v.numeri.costo) : 0), 0) }; };
     const spesaDi = (e, periodo) => { if (periodo === 'oggi') return e.att.costo || 0; const b = blocchiDi(e); return periodo === 'anno' ? b.ora + b.prima + b.prima2 : b.ora; };
     const inPeriodo = (r, periodo) => periodo === 'oggi' ? r.giorno === 0 : periodo === 'mese' ? r.giorno <= 31 : true;
-    const consegneDi = (e, periodo, approvate) => { if (periodo === 'oggi') return approvate.filter(r => r.chi === e.id).length; const d = out.dossierDi(e), o = d.metriche.ora, p = d.metriche.prima; const mese = o.approvate + o.modifiche; return periodo === 'mese' ? mese : mese + p.approvate + p.modifiche + versioniVecchie(d).reduce((t, v) => t + (v.numeri ? Math.round(v.numeri.task * (1 - v.numeri.respinte / 100)) : 0), 0); };
+    /* Quante consegne ha fatto un dipendente nel periodo (un numero, non un elenco): serve solo all'aggregatore dei
+       costi. Si chiamava `consegneDi` e dalla versione 19 si chiama `contaConsegne`, perche' `consegneDi(dip)` adesso
+       e' l'elenco delle consegne del dipartimento e due cose diverse non possono avere lo stesso nome. */
+    const contaConsegne = (e, periodo, approvate) => { if (periodo === 'oggi') return approvate.filter(r => r.chi === e.id).length; const d = out.dossierDi(e), o = d.metriche.ora, p = d.metriche.prima; const mese = o.approvate + o.modifiche; return periodo === 'mese' ? mese : mese + p.approvate + p.modifiche + versioniVecchie(d).reduce((t, v) => t + (v.numeri ? Math.round(v.numeri.task * (1 - v.numeri.respinte / 100)) : 0), 0); };
     const ordDal = s => { const [g, me] = String(s || '').split(' '); return ({ gen: 1, feb: 2, mar: 3, apr: 4, mag: 5, giu: 6, lug: 7, ago: 8, set: 9, ott: 10, nov: 11, dic: 12 }[me] || 0) * 100 + (+g || 0); };
     /* arrotonda il campo `k` a interi che sommano a `tot`: i resti vanno ai decimali più grandi */
     const interi = (lista, k, tot) => { const base = lista.map(x => Math.floor(x[k])); let resto = Math.round(tot) - base.reduce((a, b) => a + b, 0); lista.map((x, i) => [x[k] - base[i], i]).sort((a, b) => b[0] - a[0]).forEach(([, i]) => { if (resto > 0) { base[i]++; resto--; } }); lista.forEach((x, i) => { x[k] = base[i]; }); };
@@ -817,7 +820,7 @@ window.DGT_DATI = (function () {
       const modelliDi = e => { const u = usoVuoto(); if (periodo === 'oggi') { if (oggiConta(e)) out.esecuzioneDi(e).passi.forEach(p => { if (p.stato !== 'da fare' && u[p.modello]) { u[p.modello].n++; u[p.modello].costo += p.costo; } }); } else if (periodo === 'mese') { const uso = out.dossierDi(e).modello.uso; M_ID.forEach(k => { if (uso[k]) { u[k].n += uso[k].esecuzioni; u[k].costo += uso[k].costo; } }); } return u; };
       const somma = (a, b) => { M_ID.forEach(k => { a[k].n += b[k].n; a[k].costo += b[k].costo; }); return a; };
       const sommaDi = (lista, f) => lista.reduce((t, x) => t + f(x), 0);
-      const perDipendente = lst.map(e => { const d = out.dossierDi(e), b = blocchiDi(e); return { e, d, spesa: spesaDi(e, periodo), prima: periodo === 'mese' ? b.prima : null, blocchi: b, esito: d.metriche.ora.costo, budget: d.budget, oggi: e.att.costo || 0, consegne: consegneDi(e, periodo, approvate), modelli: modelliDi(e) }; }).sort((a, b) => (b.spesa - a.spesa) || (a.e.id - b.e.id));
+      const perDipendente = lst.map(e => { const d = out.dossierDi(e), b = blocchiDi(e); return { e, d, spesa: spesaDi(e, periodo), prima: periodo === 'mese' ? b.prima : null, blocchi: b, esito: d.metriche.ora.costo, budget: d.budget, oggi: e.att.costo || 0, consegne: contaConsegne(e, periodo, approvate), modelli: modelliDi(e) }; }).sort((a, b) => (b.spesa - a.spesa) || (a.e.id - b.e.id));
       const tot = sommaDi(perDipendente, x => x.spesa), totConsegne = sommaDi(perDipendente, x => x.consegne);
       const perDipartimento = dipartimenti.filter(d => !dip || d.id === dip).map(d => { const mie = perDipendente.filter(x => x.e.dip === d.id); return { d, n: mie.length, lav: mie.filter(x => x.e.stato === 'lavoro').length, spesa: sommaDi(mie, x => x.spesa), prima: periodo === 'mese' ? sommaDi(mie, x => x.prima) : null, blocchi: { ora: sommaDi(mie, x => x.blocchi.ora), prima: sommaDi(mie, x => x.blocchi.prima), prima2: sommaDi(mie, x => x.blocchi.prima2) }, budgetMese: sommaDi(mie, x => x.budget.mese), budgetSpeso: sommaDi(mie, x => x.budget.speso), budgetGiorno: sommaDi(mie, x => x.budget.giorno), oggi: sommaDi(mie, x => x.oggi), consegne: sommaDi(mie, x => x.consegne), modelli: listaModelli(mie.reduce((u, x) => somma(u, x.modelli), usoVuoto())), dal: mie.map(x => x.d.dal).sort((a, b) => ordDal(a) - ordDal(b))[0] || '' }; });
       /* per cliente: spesa e consegne del dipendente ripartite fra i clienti delle sue richieste del periodo; oggi il cliente dell'esecuzione */
@@ -848,6 +851,43 @@ window.DGT_DATI = (function () {
         dal: perDipartimento.map(x => x.dal).filter(Boolean).sort((a, b) => ordDal(a) - ordDal(b))[0] || '',
         perDipendente, perDipartimento, perCliente, perModello, perStrumento };
     }
+    /* ---- Le consegne del dipartimento (versione 19, 2026-09-07) ----
+       «Consegna» è la parola scelta dall'utente per la cosa creata da un'esecuzione: prima ne servivano quattro
+       (`output` nel codice e nel titolo di sezione, «Consegne» nel contatore della stessa intestazione, `allegato`
+       nella richiesta, `consegne` negli obiettivi e nei costi) e nessuna delle quattro si apriva.
+       `consegneDi(dip)` raccoglie gli `output` delle esecuzioni dei dipendenti del dipartimento: **nessun numero
+       nuovo**, gli stessi che la pagina Esecuzione disegna già nella sua sezione «Output». In più due cose che il
+       modello aveva e non collegava: il **passo** che l'ha prodotta (letto da `quando`, «passo 2 · 10:18») con il suo
+       esito, i suoi strumenti e il suo costo, e la **richiesta** al titolare quando la consegna è già uscita.
+       L'id è stabile (`c<idDipendente>-<indice>`) perché una consegna si deve poter aprire. ---- */
+    function consegneDi(dip) {
+      const lst = dip ? (out.perDip[dip] || []) : m.dipendenti;   /* perDip sta su `out`, lo rifà `ricalcola()` */
+      const out2 = [];
+      lst.forEach(e => {
+        const x = out.esecuzioneDi(e);
+        (x.output || []).forEach((o, i) => {
+          const np = (/passo (\d+)/.exec(o.quando || '') || [])[1];
+          const passo = np ? x.passi.find(p => p.n === +np) : null;
+          out2.push({
+            id: 'c' + e.id + '-' + i,
+            nome: o.nome, tipo: o.tipo, stato: o.stato, quando: o.quando, desc: o.desc,
+            chi: e.id, dip: e.dip, cliente: (e.att || {}).cliente || '',
+            richiesta: o.richiesta || null,
+            passo: passo ? { n: passo.n, nome: passo.nome, stato: passo.stato, esito: passo.esito || '',
+              strumenti: passo.strumenti || [], costo: passo.costo || 0, durata: passo.durata || passo.stima || '' } : null,
+            esecuzione: (e.att || {}).titolo || '',
+            /* le voci di log di quel passo: che cosa e' successo mentre la consegna si faceva. Sono gia' nel modello
+               (`x.log`, campo `passo`) e finora le leggeva solo la sezione «Log» della pagina Esecuzione. */
+            voci: np ? (x.log || []).filter(v => v.passo === +np) : [],
+          });
+        });
+      });
+      /* le fatte prima, poi quelle che aspettano il titolare, poi quelle in corso, poi le da fare; l'errore in fondo */
+      const ord = { fatto: 0, approvata: 0, attesa: 1, bozza: 2, 'da fare': 3, errore: 4 };
+      return out2.sort((a, b) => (ord[a.stato] - ord[b.stato]) || (a.chi - b.chi));
+    }
+    /* Una consegna dal suo id, in tutta l'azienda: la usa la tendina che la apre per intero. */
+    const consegnaDi = id => consegneDi(null).find(c => c.id === id) || null;
     /* ---- L'agenda dell'azienda (versione 15, 2026-09-06): un solo aggregatore per la pagina Agenda della Console e per la
        tab Agenda del telefono. `giornata()` costruisce gli eventi di oggi dall'attività corrente di ogni dipendente: le ore,
        i titoli e i costi sono quelli di `e.att` (nessun numero nuovo), le durate mancanti vengono dai passi dell'esecuzione
@@ -964,6 +1004,10 @@ window.DGT_DATI = (function () {
       /* L'agenda dell'azienda (versione 15, 2026-09-06): gli eventi di oggi costruiti dalle attività correnti, i sette giorni
          da oggi (pianificati che si ripetono, prossime consegne, scadenze) e le scadenze degli obiettivi dalla più vicina. */
       giornata, settimana, scadenze, oraDi: orario, gruppiOggi,
+      /* Le consegne (versione 19, 2026-09-07): le cose create dalle esecuzioni del dipartimento, con il passo che le ha
+         prodotte e la richiesta al titolare quando sono già uscite. Nessun numero nuovo: sono gli `output` che la pagina
+         Esecuzione disegna già. `consegneDi(null)` sono quelle di tutta l'azienda. */
+      consegneDi, consegnaDi,
       /* I fili della chat (versione 15): un filo per dipendente, una sola copia (i messaggi restano), condivisa fra Console e
          telefono; `scrivi` è la nota del titolare, dalla chat o dalla barra di scrittura dell'Esecuzione. */
       filoDi, ultimoDi: ultimo, nonLetti,

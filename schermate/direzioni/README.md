@@ -4,9 +4,17 @@ Tre direzioni sulla stessa schermata (vista principale dell'azienda: 4 dipartime
 prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decisione sono in `DIREZIONI.md`.
 
 **Sezione 6 di `DIREZIONI.md` (2026-09-07): l'analisi delle tre proposte nuove** — il lavoro del dipartimento che si
-tiene d'occhio, l'editor di workflow, i connettori. Nessun codice di prodotto: numeri presi aprendo le pagine, strade
-con il prezzo, la parola, e per le ultime due il verdetto del consiglio (`llm-council`) con i punti ciechi della
-revisione incrociata. **Le decisioni sono dell'utente e sono ancora da prendere.**
+tiene d'occhio, l'editor di workflow, i connettori. Numeri presi aprendo le pagine, strade con il prezzo, la parola, e
+per le ultime due il verdetto del consiglio (`llm-council`) con i punti ciechi della revisione incrociata.
+**L'editor e i connettori aspettano ancora una decisione dell'utente.**
+
+**Versione 19 (2026-09-07): le consegne del dipartimento.** La prima proposta è stata scelta (strada A, parola
+«consegna») e costruita: la pagina Dipartimento ha **sei sezioni** invece di cinque, in Console e sul telefono, e la
+seconda è **«Consegne di oggi»** — le cose create dalle esecuzioni del dipartimento (18 a undici dipendenti, 40 a
+quaranta), con cinque pillole di filtro. Una consegna si apre nella **tendina larga**, la stessa della richiesta
+(`?consegna=c1-0`): dentro ci sono chi l'ha fatta, il passo che l'ha prodotta con durata, costo e strumenti, le voci
+di log di quel passo, e — se è già uscita al titolare — il documento vero della richiesta. Studio e misure in
+`DIREZIONI.md`, «Versione 19»; la regola in `SYSTEM-DESIGN.md`, regola 27.
 
 - Aprire `confronto.html` nel browser (serve rete per Google Fonts) oppure l'artefatto pubblicato:
   https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
@@ -24,6 +32,7 @@ revisione incrociata. **Le decisioni sono dell'utente e sono ancora da prendere.
   `?pagina=chat&filo=<id dipendente>` (le conversazioni con i dipendenti: l'elenco dei fili e il filo aperto con la barra di
   scrittura; dal quarto cerchio del rail, dai cerchi «commenta» delle card, da «Commenta» nelle due tendine e dalla pillola
   «Scrivi a …» dell'Esecuzione),
+  `?consegna=<id, es. c1-0>` (apre una consegna nella tendina larga, versione 19),
   `?tendina=chiusa|aperta|estesa`, `?pannello=richieste|riepilogo`, `?pagina=home|richieste`, `?richiesta=0`,
   `?barra=0` (la barra «Oggi in azienda» di prima dello studio, versione 16),
   `?editor=nuovo|<id dipendente>`, `?avatar=orbe|kit`, `?pelle=perla|grigio|chiaro|alone|disco` (la pelle dell'orbe
@@ -56,9 +65,9 @@ revisione incrociata. **Le decisioni sono dell'utente e sono ancora da prendere.
   il CSS delle primitive, le variabili e le funzioni che le stampano (`av`, `pair`, `chipStato`, `iconaTipo`, `eur`,
   `differenze`…). Ogni pagina lo carica subito dopo `comune.js` e mette in pagina `DGT_COMPONENTI.css` prima del CSS della
   Console (`direzione-a.js`, che tiene la cornice, le pagine, le tendine e `monta`).
-- Prove cliccate in `prove/` (con il `README.md` che dice il comando): `console.js` (107 verifiche: tendine, Richieste, editor del
+- Prove cliccate in `prove/` (con il `README.md` che dice il comando): `console.js` (132 verifiche: tendine, Richieste, editor del
   dipendente, esecuzione, 40, la barra «Oggi in azienda», la barra dei passi, i controlli delle intestazioni e le frecce di
-  riga), `mobile.js` (70: le otto schermate, la revisione, il rifiuto con motivo, la prova, lo stato vuoto,
+  riga), `mobile.js` (78: le otto schermate, la revisione, il rifiuto con motivo, la prova, lo stato vuoto,
   40, il quadro del giorno, i Dipartimenti e il conto delle frecce), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le due pagine nuove, da dove ci si arriva, i filtri, la
   scrittura nel filo e le due tab del telefono):
   `PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css node schermate/direzioni/prove/console.js`

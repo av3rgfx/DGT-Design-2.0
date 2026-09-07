@@ -199,9 +199,10 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
 8. Pagina Richieste nella stessa cornice, con pieno controllo: filtri per stato, tipo, periodo, dipartimento,
    cliente e dipendente; Da approvare con ordinamento e «Approva tutte»; Storico per giorno a righe compatte;
    Regole di approvazione.
-9. Pagina Dipartimento nella stessa cornice: Oggi in ‹dipartimento› (esecuzioni: al lavoro, errore, pianificate) ·
-   Dipendenti (+ card «Aggiungi») · Obiettivi (card con barra di avanzamento a pillola; lime = in ritardo) · Da
-   approvare dal dipartimento · Spesa del mese per cliente. Ogni pagina interna ripete la cornice: barra in alto,
+9. Pagina Dipartimento nella stessa cornice, **sei sezioni** (dalla versione 19): Oggi in ‹dipartimento› (esecuzioni:
+   al lavoro, errore, pianificate) · **Consegne di oggi** (le cose create dalle sue esecuzioni, che si aprono nella
+   tendina larga; regola 27) · Dipendenti (+ card «Aggiungi») · Obiettivi (card con barra di avanzamento a pillola;
+   lime = in ritardo) · Da approvare dal dipartimento · Spesa del mese per cliente. Ogni pagina interna ripete la cornice: barra in alto,
    titolo con numeri, rail, sezioni con intestazione e pillole, tendine del titolare.
 10. Il dipendente AI non ha un nome di base: l'etichetta principale è il ruolo (nella card a 22 px su due righe) e
     sotto sta il dipartimento; il nome è facoltativo (creazione o modifica) e quando c'è torna la forma piena (nome
@@ -362,6 +363,30 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     L'eccezione dichiarata: la card del dipendente **in anteprima** dentro l'editor tiene la matita e la freccia, perché
     non è un controllo ma il disegno di come verrà la card — toglierle farebbe mentire l'anteprima.
 
+27. **La cosa creata da un'esecuzione si chiama «consegna», ed è una sola cosa con un solo nome** (2026-09-07,
+    versione 19). Prima ne servivano quattro — `output` nel codice e nel titolo di sezione, «Consegne» nel contatore
+    della *stessa* intestazione, `allegato` nella richiesta, `consegne` negli obiettivi e nei costi — e il prodotto
+    rispondeva in **quattro modi diversi** alla domanda «quante cose abbiamo creato» (gli obiettivi 31 su 59, gli
+    output 9 su 18, le richieste decise 16 su 20, l'aggregatore dei costi 318). Le consegne vivono in una **sezione
+    della pagina Dipartimento**, seconda su sei, subito sotto «Oggi in ‹dipartimento›» perché ne sono il risultato:
+    18 a undici dipendenti (7 di Sviluppo, 5 di Marketing, 4 di Vendite, 2 di Amministrazione) e 40 a quaranta, in
+    card di 316×294 px, quattro per riga, con cinque pillole di filtro. Nessuna pagina nuova, il rail resta a sei voci,
+    e sul telefono la stessa sezione in righe. Tre conseguenze che valgono oltre questo caso:
+    - **aprire una cosa vuol dire la tendina larga che il titolare ha già**, non una pagina nuova. Dentro ci sta quello
+      che la card non regge — chi l'ha fatta, il passo che l'ha prodotta con durata, costo e strumenti, le voci di log
+      di mentre la faceva — e, se la consegna è già uscita, il **documento vero della richiesta** con il pulsante che
+      la apre in coda. La card serve a trovare, la tendina a sapere.
+    - **una card larga 316 px regge tre fatti, non cinque, e i tre si scelgono misurando.** La riga di stato lascia al
+      testo **30–52 px** («Passo 3 · 23,6 €» ne chiede 89), quindi lì ci sta il solo chip; sotto il titolo `.meta` non
+      va a capo e sfora di 29 px, quindi il verbo che il chip dice già si toglie e resta l'ora. Quello che avanza
+      scende nella tendina.
+    - **una sezione nuova sposta gli indici di tutte quelle dopo.** Aggiungendo la sesta si sono rotte tre prove e una
+      cattura che puntavano a `section:nth-of-type(5)`: da qui in avanti prove e catture cercano la sezione **dal
+      titolo**, non dalla posizione.
+    Il perimetro dichiarato: la sezione dice «di oggi» e mostra le consegne delle esecuzioni correnti. Il modello non
+    ha un orologio (`azienda.ora` è fisso), quindi il «tempo reale» che il prodotto può promettere è *lo stato al
+    momento in cui si apre la pagina*, con i quattro stati che `giornata()` distingue — e va detto così, non di più.
+
 Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in
 `schermate/direzioni/DIREZIONI.md`, sezione 1. Sorgenti in `schermate/direzioni/` (`dati.js`, `comune.js`,
@@ -371,7 +396,7 @@ gli occhi del kit), 8 (pagina dell'Esecuzione), 10 (l'identità degli orbi), 11 
 repository, la sezione «moto» in `DESIGN.md`; niente di visibile cambiato, tranne una perdita di stile sulla schermata della
 revisione del telefono, corretta e da confermare) 15 (le pagine Agenda e Chat del rail e le due tab del telefono), 15a (gli avatar di nuovo centrati nella casella), 16 (la
 barra «Oggi in azienda» come quadro del giorno), 17 (il quadro del giorno anche sul telefono, la tab Dipartimenti, i
-controlli inerti) e 18 (le frecce di riga: la regola 25 portata dalle intestazioni alle righe) in `DIREZIONI.md`, sezione 4.
+controlli inerti) 18 (le frecce di riga: la regola 25 portata dalle intestazioni alle righe) e 19 (le consegne del dipartimento) in `DIREZIONI.md`, sezione 4; l'analisi delle tre proposte nella sezione 6.
 
 
 ### Che cosa il prodotto ancora non ha (2026-09-07, analizzato e contato)
@@ -381,7 +406,10 @@ di una risposta difendibile sono passate dal consiglio (`llm-council`). Analisi 
 `schermate/direzioni/DIREZIONI.md`, **sezione 6**; verdetti e domande aperte in `PROSSIMA-SESSIONE.md`. **Le decisioni
 sono dell'utente e sono ancora da prendere.**
 
-- **Le cose create non si guardano insieme, e si chiamano in quattro modi.** La parola «Output» compare in **4 viste su
+- ~~**Le cose create non si guardano insieme, e si chiamano in quattro modi.**~~ **Costruito il 2026-09-07**
+  (versione 19, regola 27): la parola è **«consegna»** e le consegne hanno una sezione sulla pagina Dipartimento, in
+  Console e sul telefono, e si aprono nella tendina larga. Restano fuori, dichiarati, «che cosa ha creato l'azienda» e
+  «che cosa abbiamo fatto per un cliente»: sono il prezzo della strada scelta. Il conto di partenza, per memoria: La parola «Output» compare in **4 viste su
   20** e sono sempre la stessa pagina, l'Esecuzione; «artefatto» **zero volte** in tutto il prodotto. Gli output sono
   **18** a undici dipendenti e **40** a quaranta; di questi **9** e **19** sono già creati, e **3** e **0** si aprono.
   Per vederli tutti servono **11 pagine** a undici e **40** a quaranta. E il prodotto risponde in **quattro modi
@@ -427,7 +455,7 @@ sono dell'utente e sono ancora da prendere.**
 - Branch della barra «Oggi in azienda» (versione 16): `claude/console-oggi-azienda-bar-kzetlz`, PR #13 (unita): https://github.com/av3rgfx/DGT-Design-2.0/pull/13
 - Branch del quadro del giorno sul telefono, della tab Dipartimenti e dei controlli inerti (versione 17): `claude/console-direzione-a-mobile-vdb1tb`, PR #14 (unita): https://github.com/av3rgfx/DGT-Design-2.0/pull/14
 - Branch delle frecce di riga (versione 18): `claude/candidato-1-frecce-riga-nmd2pt`, PR #15 (unita)
-- Branch dell'analisi delle tre proposte (candidati 6, 7 e 8; nessun codice di prodotto, solo documenti): `claude/analisi-proposte-direzione-a-vxpham`
+- Branch dell'analisi delle tre proposte (candidati 6, 7 e 8) e della **versione 19** (le consegne del dipartimento: candidato 6, strada A, parola «consegna»): `claude/analisi-proposte-direzione-a-vxpham`, PR #16: https://github.com/av3rgfx/DGT-Design-2.0/pull/16
 
 - Artefatto pubblicato: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b
 - Branch di lavoro: `claude/dgt-design-system-fz5r1g`, PR #1 verso `main`: https://github.com/av3rgfx/DGT-Design-2.0/pull/1

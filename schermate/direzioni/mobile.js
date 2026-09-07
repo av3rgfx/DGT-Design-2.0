@@ -403,7 +403,21 @@ window.DGT_MOBILE = (function () {
     </div>`;
   /* i nomi degli stati dell'agenda e la riga di una consegna dentro il filo (gli stessi della Console) */
   const NOME_EV = { corso: 'In corso', attesa: 'Da approvare', errore: 'Errore', pianificato: 'Pianificato', fatto: 'Concluso' };
-  const rigaConsegna = (m, r) => { const i = coda(m).indexOf(r); return `<div class="qrow${r.stato === 'attesa' ? ' on' : ''}"${i >= 0 ? ` data-az="apri" data-idx="${i}"` : ''}><span class="av xs" style="background:var(--ink);color:var(--white)">${ic(iconaTipo[r.tipo])}</span><div class="tx"><b>${esc(r.cosa)}</b><span>${nomeTipo[r.tipo]} · ${r.costo} €</span></div>${r.stato === 'attesa' ? `<span class="rb xs black" data-az="approva" data-id="${r.id}" title="${r.tipo === 'revisione' ? 'Applica' : 'Approva'}">${ic('i-check')}</span><span class="rb xs red" data-az="rifiuta" data-idx="${i}" title="Rifiuta con un motivo">${ic('i-x')}</span>` : chipEsito(r)}</div>`; };
+  /* La riga di una richiesta in coda (approva/rifiuta sul posto). Si chiamava «rigaConsegna» e dalla versione 19 si
+     chiama `rigaRichiesta`: «consegna» adesso e' la cosa creata da un'esecuzione e ha una riga sua qui sotto. */
+  const rigaRichiesta = (m, r) => { const i = coda(m).indexOf(r); return `<div class="qrow${r.stato === 'attesa' ? ' on' : ''}"${i >= 0 ? ` data-az="apri" data-idx="${i}"` : ''}><span class="av xs" style="background:var(--ink);color:var(--white)">${ic(iconaTipo[r.tipo])}</span><div class="tx"><b>${esc(r.cosa)}</b><span>${nomeTipo[r.tipo]} · ${r.costo} €</span></div>${r.stato === 'attesa' ? `<span class="rb xs black" data-az="approva" data-id="${r.id}" title="${r.tipo === 'revisione' ? 'Applica' : 'Approva'}">${ic('i-check')}</span><span class="rb xs red" data-az="rifiuta" data-idx="${i}" title="Rifiuta con un motivo">${ic('i-x')}</span>` : chipEsito(r)}</div>`; };
+  /* La riga di una consegna (versione 19, 2026-09-07): la cosa creata da un'esecuzione, sul telefono in riga e non in
+     card — la colonna e' larga 254 px e le card della Console non ci stanno. Porta l'avatar di chi l'ha fatta (regola
+     19: il disco nella sua tinta), il nome, chi e per chi, e il chip dello stato. Tocco: apre la richiesta se la
+     consegna aspetta il titolare, che sul telefono e' l'unica cosa che lui puo' fare; se non aspetta nessuno resta da
+     leggere, e allora niente tocco e niente freccia (regola 26). */
+  const rigaConsegna = (m, c) => {
+    const e = m.byId[c.chi];
+    const r = c.richiesta ? m.richieste.find(x => x.id === c.richiesta) : null;
+    const i = r ? coda(m).indexOf(r) : -1;
+    const chip = { attesa: `<span class="chip lime">${ic('i-bell')}Da approvare</span>`, approvata: `<span class="chip lime">${ic('i-check')}Approvata</span>`, fatto: `<span class="chip lime">${ic('i-check')}Fatta</span>`, bozza: `<span class="chip light">${ic('i-play')}In corso</span>`, errore: `<span class="chip rosa">${ic('i-warn')}Non fatta</span>` }[c.stato] || `<span class="chip light">${ic('i-clock')}Da fare</span>`;
+    return `<div class="qrow${c.stato === 'attesa' ? ' on' : ''}"${i >= 0 ? ` data-az="apri" data-idx="${i}"` : ''}>${av(m, e, 'xs')}<div class="tx"><b>${esc(c.nome)}</b><span>${esc(m.etichetta(e))}${c.cliente ? ' · ' + esc(c.cliente) : ''}</span></div>${chip}${i >= 0 ? `<span class="rb xs">${ic('i-chevr')}</span>` : ''}</div>`;
+  };
   const vuoto = () => `<div class="m-vuoto"><span class="rb black">${ic('i-check')}</span><b>Niente da approvare</b><span>Hai deciso tutto. Le prossime consegne arriveranno qui.</span></div>`;
 
   /* ---------- il Riepilogo di oggi: intestazione e linea del tempo (schermata 3 e stato vuoto della 1) ---------- */
@@ -644,7 +658,7 @@ window.DGT_MOBILE = (function () {
     const f = m.filoDi(e);
     const righe = f.map(v => {
       const r = v.richiesta ? m.richieste.find(t => t.id === v.richiesta) : null;
-      return C.messaggio(m, e, v) + (r ? rigaConsegna(m, r) : '');
+      return C.messaggio(m, e, v) + (r ? rigaRichiesta(m, r) : '');
     }).join('');
     const stato = e.stato === 'lavoro' ? `Al lavoro: legge le tue note fra un passo e l'altro.`
       : e.stato === 'errore' ? 'Fermo per un errore: risponde quando riparte.'
@@ -738,6 +752,7 @@ window.DGT_MOBILE = (function () {
     const esec = lst.filter(e => e.stato in ordine).sort((a, b) => ordine[a.stato] - ordine[b.stato]);
     const ob = m.obiettiviDi(d.id);
     const cm = m.costi('mese', d.id);
+    const cn = m.consegneDi(d.id);   /* le consegne del dipartimento, lo stesso aggregatore della Console (versione 19) */
     const STATO_EV = { lavoro: 'corso', errore: 'errore', pianificato: 'pianificato' };
     const cardEsec = e => `<div class="m-ev ${STATO_EV[e.stato]}" data-az="filo" data-id="${e.id}" title="Scrivi a ${esc(m.etichetta(e))}">${av(m, e, 's')}<div class="tx"><b>${esc(e.att.titolo)}</b><span>${esc(m.etichetta(e))} · ${esc(e.stato === 'lavoro' ? 'da ' + e.att.da : e.stato === 'errore' ? 'ferma dalle ' + e.att.da : 'alle ' + e.att.quando)}</span></div></div>`;
     const rigaOb = o => `<div class="qrow ob ${esc(o.stato)}"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-target')}</span><div class="tx"><b>${esc(o.titolo)}</b><span>${esc(o.cliente)} · ${o.consegne[0]} di ${o.consegne[1]} consegne</span><span class="barra"><i style="width:${Math.max(2, Math.min(100, o.avanz))}%"></i></span></div><span class="chip${o.stato === 'ritardo' ? ' rosa' : o.stato === 'concluso' ? ' lime' : ' light'}">${o.stato === 'ritardo' ? ic('i-fire') : ''}${esc(o.scadenza)}</span></div>`;
@@ -754,7 +769,8 @@ window.DGT_MOBILE = (function () {
           <div class="m-stat"><span class="num">${oggi} €</span><span>spesi oggi</span></div>
         </div>
         ${sez('Oggi in ' + d.nome, esec.length, `<div class="m-lista">${esec.map(cardEsec).join('')}</div>`, 'Nessuna esecuzione oggi')}
-        ${sez('Da approvare', att.length, `<div class="m-coda">${att.map(r => rigaConsegna(m, r)).join('')}</div>`, 'Niente da approvare da ' + d.nome)}
+        ${sez('Consegne di oggi', cn.length, `<div class="m-coda">${cn.map(c => rigaConsegna(m, c)).join('')}</div>`, 'Nessuna consegna oggi')}
+        ${sez('Da approvare', att.length, `<div class="m-coda">${att.map(r => rigaRichiesta(m, r)).join('')}</div>`, 'Niente da approvare da ' + d.nome)}
         ${sez('Dipendenti', lst.length, `<div class="m-coda">${lst.map(e => `<div class="qrow" data-az="filo" data-id="${e.id}">${av(m, e, 'xs')}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div>${chipStato(m, e)}</div>`).join('')}</div>`, 'Nessun dipendente')}
         ${sez('Obiettivi', ob.length, `<div class="m-coda">${ob.map(rigaOb).join('')}</div>`, 'Nessun obiettivo assegnato')}
         ${sez('Spesa del mese', cm.perCliente.length, `<div class="m-coda">${cm.perCliente.map(rigaCliente).join('')}</div>`, 'Nessuna spesa nel mese')}

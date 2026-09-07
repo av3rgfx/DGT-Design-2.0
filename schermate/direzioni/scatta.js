@@ -80,13 +80,21 @@ const CATTURE = [
   { g: 'dip', nome: 'm-dipartimento', file: 'mobile.html', q: 'schermata=8&dip=mkt', sel: '.m-tel', h: 1100 },
   { g: 'dip', nome: 'm-dipartimento-giu', file: 'mobile.html', q: 'schermata=8&dip=mkt', sel: '.m-tel', h: 1100, eval: "document.querySelector('.m-scroll').scrollTop=560" },
   { g: 'dip', nome: 'm-dipartimento-amm', file: 'mobile.html', q: 'schermata=8&dip=amm', sel: '.m-tel', h: 1100 },
+  /* --- versione 19: le consegne del dipartimento --- */
+  { g: 'consegne', nome: 'a-sez-consegne', q: 'pagina=dipartimento&dip=svi&tendina=chiusa', sel: '.a-main section:nth-of-type(2)', h: 1400 },
+  { g: 'consegne', nome: 'a-sez-consegne-fatte', q: 'pagina=dipartimento&dip=svi&tendina=chiusa', sel: '.a-main section:nth-of-type(2)', h: 1400, clic: '.a-main section:nth-of-type(2) .pill[data-v="fatte"]' },
+  { g: 'consegne', nome: 'a-consegna', q: 'pagina=dipartimento&dip=svi&consegna=c1-0', sel: '.a-tend.estesa', h: 1100 },
+  { g: 'consegne', nome: 'a-consegna-richiesta', q: 'pagina=dipartimento&dip=mkt&consegna=c4-2', sel: '.a-tend.estesa', h: 1100 },
+  { g: 'consegne', nome: 'a-dipartimento-40', q: 'pagina=dipartimento&dip=svi&n=40&tendina=chiusa' },
+  { g: 'consegne', nome: 'm-consegne', file: 'mobile.html', q: 'schermata=8&dip=svi', sel: '.m-tel', h: 1100, eval: "document.querySelector('.m-scroll').scrollTop=350" },
   { g: 'dip', nome: 'm-chat-cerca', file: 'mobile.html', q: 'schermata=4', sel: '.m-tel', h: 1100, clic: '[data-az="mcerca"]', eval: "(()=>{const i=document.querySelector('input[data-mcerca]');i.value='mar';i.dispatchEvent(new Event('input',{bubbles:true}))})()" },
   /* --- versione 17: i controlli delle intestazioni di sezione, la regola applicata --- */
   { g: 'controlli', nome: 'a-sez-dipendenti', q: 'tendina=chiusa', sel: '.a-main section:nth-of-type(3) .shead', h: 1400 },
   { g: 'controlli', nome: 'a-sez-cerca', q: 'tendina=chiusa', sel: '.a-main section:nth-of-type(3)', h: 1400, clic: '[data-az="cerca"][data-sez="home.dipendenti"]', eval: "(()=>{const i=document.querySelector('input[data-cerca]');i.value='ma';i.dispatchEvent(new Event('input',{bubbles:true}))})()" },
   { g: 'controlli', nome: 'a-sez-log', q: 'pagina=esecuzione&id=4&tendina=chiusa', sel: '.a-main section:nth-of-type(3) .shead', h: 1400, clic: '[data-az="cerca"][data-sez="esec.log"]' },
   { g: 'controlli', nome: 'a-sez-costo-passo', q: 'pagina=esecuzione&id=4&tendina=chiusa', sel: '.a-main section:nth-of-type(5)', h: 1400, clic: '[data-az="sez"][data-sez="esec.costo"][data-v="passo"]' },
-  { g: 'controlli', nome: 'a-sez-spesa-oggi', q: 'pagina=dipartimento&dip=svi&tendina=chiusa', sel: '.a-main section:nth-of-type(5)', h: 1400, clic: '[data-az="periodo"][data-sez="dip.spesa"][data-v="oggi"]' },
+  /* dalla versione 19 la pagina Dipartimento ha sei sezioni: «Spesa del mese» e' la sesta, non piu' la quinta */
+  { g: 'controlli', nome: 'a-sez-spesa-oggi', q: 'pagina=dipartimento&dip=svi&tendina=chiusa', sel: '.a-main section:nth-of-type(6)', h: 1400, clic: '[data-az="periodo"][data-sez="dip.spesa"][data-v="oggi"]' },
 ];
 
 (async () => {

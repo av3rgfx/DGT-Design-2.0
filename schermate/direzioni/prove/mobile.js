@@ -178,7 +178,24 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(await schermata(7) === '8' && await txt(tel(7) + '.m-h1') === nomeDip, 'la riga apre il dipartimento: ' + nomeDip);
   check(await conta(tel(8) + '.m-h1') === 1 && await txt(tel(8) + '.m-h1') === nomeDip, 'il dipartimento scelto è condiviso fra i telefoni, come la richiesta');
   const sezioni = await page.locator(tel(7) + '.m-sh h4').allTextContents();
-  check(sezioni.length === 5 && sezioni[1] === 'Da approvare', 'cinque sezioni, «Da approvare» seconda: ' + sezioni.join(' · '));
+  check(sezioni.length === 6 && sezioni[1] === 'Consegne di oggi' && sezioni[2] === 'Da approvare', 'sei sezioni, «Consegne di oggi» seconda e «Da approvare» terza: ' + sezioni.join(' · '));
+  /* versione 19: le consegne anche sul telefono, in riga e non in card (la colonna e' 254 px) */
+  const cnTel = await page.evaluate(() => {
+    const t = document.querySelector('.m-tel[data-n="7"] .m-scr[data-schermata="8"]') || document.querySelector('.m-tel[data-n="7"]');
+    const sh = [...t.querySelectorAll('.m-sh')].find(h => /Consegne di oggi/.test(h.textContent));
+    const lista = sh && sh.nextElementSibling;
+    const righe = lista ? [...lista.querySelectorAll('.qrow')] : [];
+    const d = modello.dipartimenti[1];
+    return { righe: righe.length, dalModello: modello.consegneDi(d.id).length,
+      conAvatar: righe.filter(r => r.querySelector('.av')).length,
+      conChip: righe.filter(r => r.querySelector('.chip')).length,
+      apribili: righe.filter(r => r.dataset.az === 'apri').length,
+      frecceInerti: righe.reduce((t2, r) => t2 + [...r.querySelectorAll('svg use[href="#i-chevr"]')].filter(u => !u.closest('[data-az]')).length, 0),
+      tagli: righe.filter(r => { const b = r.querySelector('.tx b'); return b && b.scrollWidth > b.clientWidth + 1; }).length };
+  });
+  check(cnTel.righe > 0 && cnTel.righe === cnTel.dalModello, 'il telefono mostra le ' + cnTel.righe + ' consegne del modello, le stesse della Console');
+  check(cnTel.conAvatar === cnTel.righe && cnTel.conChip === cnTel.righe, 'ogni riga porta l\'avatar di chi l\'ha fatta e il chip dello stato');
+  check(cnTel.frecceInerti === 0, 'e nessuna freccia inerte: la riga si tocca solo dove la consegna aspetta il titolare (' + cnTel.apribili + ' su ' + cnTel.righe + ')');
   /* le righe da approvare del dipartimento decidono davvero: la stessa m.decidi di tutte le altre pagine */
   const primaAtt = await page.evaluate(() => { const d = modello.dipartimenti[1]; const ids = modello.perDip[d.id].map(e => e.id); return (DGT_MOBILE.coda(modello).filter(r => ids.includes(r.chi))[0] || {}).id; });
   const nPrima = (await coda()).length;
