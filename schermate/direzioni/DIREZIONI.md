@@ -1575,7 +1575,8 @@ sono le pagine che hanno righe o card senza destinazione, e il riquadro delle di
 
 `a-frecce-storico.png` (la famiglia scelta per il punto 2), `a-frecce-log.png` (la lista mista), `a-frecce-colloquio.png`
 (i casi, i colloqui precedenti e la card dell'esito che si riprende il sottotitolo), `a-frecce-revisioni.png` (l'unica
-freccia che resta) e `a-frecce-card.png` (le card che perdono l'intaglio). Si compongono con
+freccia che resta), `a-frecce-esecuzione.png` (i passi e i tre modi di guardare il costo) e `a-frecce-card.png` (le card
+che perdono l'intaglio). Si compongono con
 `design-system/tools/affianca.js` dalle stesse sezioni catturate nelle due copie dell'albero (`git archive HEAD` per il
 «prima»), quindi stanno in `FUORI` dentro `scatta.js`: non si rifanno da sole.
 

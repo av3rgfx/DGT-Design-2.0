@@ -87,7 +87,7 @@ Sull'insieme di riferimento (a quaranta i numeri crescono, le famiglie no). Tabe
   quattordici che cambiano, `a-riepilogo.png` cambia in un riquadro di **62×63 px** (l'intaglio della card del diario) e
   `a-sez-spesa-oggi.png` in una freccia sola. Tabella dei riquadri in `DIREZIONI.md`, «Versione 18», sezione 4.
 - Catture nuove del prima/dopo: `a-frecce-storico.png` (la famiglia del punto 2), `a-frecce-log.png` (la lista mista),
-  `a-frecce-colloquio.png`, `a-frecce-revisioni.png`, `a-frecce-card.png`. Si compongono con
+  `a-frecce-colloquio.png`, `a-frecce-revisioni.png`, `a-frecce-esecuzione.png`, `a-frecce-card.png`. Si compongono con
   **`design-system/tools/affianca.js`** (strumento nuovo) dalle stesse sezioni catturate nelle due copie dell'albero, e
   stanno in `FUORI` dentro `scatta.js`: non si rifanno da sole.
 - **Artefatti ripubblicati allo stesso indirizzo** con la versione 18:
