@@ -1,11 +1,13 @@
 # Prossima sessione — passaggio di consegne
 
-Stato al 2026-09-06, fine della sessione della **barra «Oggi in azienda»** (versione 16 della direzione A · Console): lo studio UX
+Stato al 2026-09-07, fine della sessione della **barra «Oggi in azienda»** (versione 16 della direzione A · Console): lo studio UX
 chiesto dall'utente, tre strade disegnate nella Console vera e la terza applicata — la barra non finge più una linea del tempo e
 dice il giorno in quattro caselle contate e nominate. Nella stessa sessione, sullo stesso componente, sono stati corretti due
 difetti della **barra dei passi** dell'Esecuzione (usciva dalla pagina e veniva tagliata in silenzio). Tutto è committato e
 pushato sul branch indicato sotto, con la PR aperta verso `main`. **L'utente ha visto la barra nuova e ha confermato la
 strada 3** («confermo la Strada 3», 2026-09-06): il codice era già quello, quindi non è cambiato niente dopo la conferma.
+Il 7 settembre, con la scelta a lui, è stata tolta la casella che ripeteva la linguetta lime (correzione 16a) e i **tre
+artefatti** sono stati ripubblicati allo stesso indirizzo: Console, telefono e la pagina della scelta condivisa col collega.
 
 ## Stato
 
@@ -57,12 +59,16 @@ strada 3** («confermo la Strada 3», 2026-09-06): il codice era già quello, qu
 - Screenshot nuovi in `schermate/direzioni/screenshot/`: `a-barra-oggi.png` (la barra di prima), `a-barra-momenti.png`,
   `a-barra-misura.png`, `a-barra-stato.png` (le tre strade), le stesse con `-40`, le quattro nella Console
   (`a-barra-console-*.png`), `a-barra-passi-prima.png` e `a-barra-passi.png`. Rigenerate le 25 catture della Console.
-- **Artefatti: NON ripubblicati.** La chiamata allo strumento è stata **negata dal classificatore dei permessi** della modalità
-  automatica dopo la lettura per intero della versione pubblicata. I due file unici si rigenerano in un comando
-  (`node schermate/direzioni/build-unico.js direzione-a.html /percorso/console.html` e `… mobile.html /percorso/…`) e vanno
-  ripubblicati allo stesso indirizzo: [Console](https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34) (447 KB) e
-  [telefono](https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9) (330 KB). **È la prima cosa da fare nella
-  prossima sessione**: gli artefatti mostrano ancora la versione 15.
+- **Artefatti ripubblicati allo stesso indirizzo, con la versione 16 e la correzione 16a:**
+  [Console](https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34) (444 KB) e
+  [telefono](https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9) (322 KB). I due file unici si rigenerano in
+  un comando (`node schermate/direzioni/build-unico.js direzione-a.html /percorso/console.html` e `… mobile.html /percorso/…`).
+  Al primo tentativo la chiamata era stata **negata dal classificatore dei permessi** della modalità automatica dopo la lettura
+  per intero della versione pubblicata; ripetuta dopo la stessa lettura è passata. Se ricapita: rileggere e riprovare.
+- **Artefatto della scelta ripubblicato** (https://claude.ai/code/artifact/3a3fcb9e-c894-4a83-9cdb-54820f65756f): le immagini
+  della strada 3 sono quelle a quattro caselle, l'occhiello dice «Decisa: la strada 3» e sotto la bilancia c'è il poscritto
+  sulla correzione 16a. Il voto condiviso resta aperto. Sorgente e costruttore nella cartella di lavoro della sessione
+  (`scelta-barra.src.html`, `costruisci-scelta.py`): non stanno nel repository, come le altre pagine di studio degli artefatti.
 - Artefatti precedenti, non ripubblicati (le loro pagine non cambiano): identità degli orbi
   https://claude.ai/code/artifact/1fc2ee53-3c23-4462-922a-cd581a90b6d6 (`avatar-identita.html`), pelli dell'orbe
   https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569 (`avatar-pelli.html`), le due famiglie kit/orbe
@@ -190,6 +196,13 @@ strada 3** («confermo la Strada 3», 2026-09-06): il codice era già quello, qu
     - sopra i sedici dipendenti spariscono il nome di chi è fermo e l'ora del primo pianificato;
     - nella barra dei passi: quattro pillole è la soglia oltre cui i conclusi perdono il nome, due i passi da fare per esteso.
 
+36. **2026-09-07: i tre artefatti allineati.** Console e telefono ripubblicati allo stesso indirizzo con la versione 16 e la
+    correzione 16a (al primo tentativo il classificatore aveva negato la chiamata; rileggendo la versione pubblicata per intero
+    e riprovando è passata). Nell'artefatto della scelta, che il titolare ha condiviso con un collega, le immagini della strada
+    3 mostravano ancora **cinque** caselle: rifatte a quattro, aggiunto l'occhiello «Decisa: la strada 3» e, sotto la bilancia,
+    il poscritto che racconta la correzione 16a. Il voto condiviso resta aperto: la pagina dice che la scelta c'è, non che il
+    parere del collega non serve più.
+
 35. **2026-09-06: tolta la casella «aspettano te» (correzione 16a).** Sulla ripetizione dei numeri l'utente ha lasciato la
     scelta a me («se ritieni giusto eliminare la ripetizione correggi, altrimenti lascia com'è»). Guardando le pagine invece
     che ragionando a memoria è venuto fuori che la linguetta lime `.a-mini` («N da approvare», fissa sul bordo destro) è su
@@ -211,9 +224,9 @@ Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti si
 
 ## Come riprendere
 
-**Prima di tutto: ripubblicare i due artefatti** (vedi «Stato»): in questa sessione la chiamata è stata negata dal classificatore
-dei permessi, e gli indirizzi mostrano ancora la versione 15. Si rigenerano con `build-unico.js` e si ripubblicano allo stesso
-indirizzo passando `url` allo strumento, dopo aver letto la versione pubblicata per intero (vedi «Note tecniche»).
+**I tre artefatti sono in pari** (Console, telefono e pagina della scelta: vedi «Stato»), quindi non c'è niente da recuperare
+prima di cominciare. Quando si ripubblica: `build-unico.js`, poi lo strumento con `url`, dopo aver letto la versione pubblicata
+per intero (vedi «Note tecniche»).
 
 **La strada è confermata** (decisione 34), quindi non c'è niente da rifare sulla barra. I lavori proposti e non ancora scelti
 sono: la tab
@@ -336,23 +349,22 @@ dei passi il «+N da fare» e il «+N fatti» non sono cliccabili (la lista dei 
   parametri di cattura ricostruiti sbagliati, che davano differenze grandi dieci volte tanto.
 - **La lettura per intero dell'artefatto costa**: circa 5 500 righe, un centinaio di migliaia di token, e va fatta a blocchi di
   300–450 righe (oltre, il singolo blocco supera il limite del lettore). Da mettere in conto **prima** di arrivare a fine
-  sessione: se la chiamata di pubblicazione viene poi negata, il tempo è speso per niente.
+  sessione. Se la chiamata di pubblicazione viene negata dal classificatore, il tempo non è perso: rileggere e riprovare ha
+  funzionato (7 settembre, tutti e tre gli artefatti).
 - Lo z-index del telefono, la linea del tempo a segmenti, `m.decidi`, l'orbe della versione 10, gli intagli con `--behind`, le
   tendine, la Console che si scala con `zoom`, le differenze LCS, la card costo su fondo lime, la striscia «chi» e il rail: come
   nelle note delle sessioni precedenti (storia di questo file in git, commit `b50f659`, `d2b625c`, `044e363`, `f3a5d53`, `5d20ff9`).
 
 ## Cosa manca
 
-1. **Ripubblicare i due artefatti** (Console e telefono): negato dal classificatore in questa sessione, gli indirizzi mostrano
-   ancora la versione 15. Prima cosa della prossima sessione.
-2. **Le scelte di dettaglio della barra**, mai sollevate dall'utente e quindi ancora da confermare (decisioni 33 e 34): le
+1. **Le scelte di dettaglio della barra**, mai sollevate dall'utente e quindi ancora da confermare (decisioni 33 e 34): le
    parole delle caselle, l'ultima ripetizione («al lavoro», nella sola home), quante caselle. La strada, invece, è confermata,
    e la ripetizione più grossa è già stata tolta con la correzione 16a (decisione 35).
-3. **Il giudizio dell'utente** sulle pagine Agenda e Chat (versione 15, decisione 30), sugli avatar ricentrati (15a, decisione
+2. **Il giudizio dell'utente** sulle pagine Agenda e Chat (versione 15, decisione 30), sugli avatar ricentrati (15a, decisione
    31), sulla revisione sul telefono (decisione 28), sulle schermate del mobile (versioni 11 e 12, decisione 23), sulla pagina
    del Dipendente (versione 6) e su quella dell'Esecuzione (versione 8): in sospeso, non blocca. La pagina dei Costi ha avuto un
    «bene» (decisione 27).
-4. I punti aperti ereditati e quelli nuovi della versione 16 (vedi «Come riprendere»).
+3. I punti aperti ereditati e quelli nuovi della versione 16 (vedi «Come riprendere»).
 
 ### Prompt di avvio suggerito per la prossima sessione
 
@@ -362,8 +374,7 @@ continua sullo stesso branch. Lavoriamo nella direzione A · Console (schermate/
 dati.js, comune.js, avatar/, mobile.js): niente emoji, solo le icone dello sprite; gli avatar sono quelli della versione 10; i
 colori restano quelli del sistema.
 
-Prima cosa: ripubblica i due artefatti (Console e telefono) allo stesso indirizzo, che nella sessione scorsa non è riuscito.
-La barra «Oggi in azienda» della versione 16 è confermata, non rimetterla in discussione.
+La barra «Oggi in azienda» della versione 16, con la correzione 16a, è confermata: non rimetterla in discussione.
 
 Poi lancia le quattro prove di prove/ e cattura le pagine con scatta.js: sono la base di confronto. Alla fine prove, screenshot,
 artefatti, DIREZIONI.md (versione 17), SYSTEM-DESIGN.md, README e PROSSIMA-SESSIONE.md, commit, push e PR.

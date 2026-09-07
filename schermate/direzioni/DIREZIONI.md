@@ -1213,6 +1213,8 @@ Le ragioni, in ordine:
 4. **La duplicazione costa poco e vale.** I due numeri ripetuti si vedono **solo nella home**: nelle altre sei pagine i numeri
    grandi sono quelli della pagina (passi dell'esecuzione, costi, dipartimento) e la barra è l'unico posto dove lo stato
    dell'azienda resta scritto. Un elemento fisso che ripete il titolo della pagina d'ingresso è ridondanza voluta, non rumore.
+   *(Vale ancora per «al lavoro». Per «aspettano te» no: guardando le pagine invece che ragionando a memoria si è visto che il
+   numero era ripetuto in tutte e sette, non nella sola home — vedi la sezione 6a.)*
 5. **La proporzionalità della 2 è già in casa e sta meglio dov'è**: la pagina Agenda ha la pista vera, con le ore, le corsie e i
    titoli. La barra in cima deve dire *meno* e portare lì.
 
@@ -1278,6 +1280,13 @@ Restano quattro caselle. La divisione che ne esce, e che vale come regola: **la 
 al lavoro, ferme, dopo), **la linguetta lime dice che cosa devi fare tu** — ed è anche quella che apre la coda, cosa che la
 barra non faceva. La casella «al lavoro» resta anche se il numero grande della home la ripete: porta la **pila di chi** sta
 lavorando, che il numero non ha, ed è l'unico posto globale nelle altre sei pagine.
+
+**Artefatti allineati (2026-09-07).** Le trentadue catture di `screenshot/` sono state rigenerate con `scatta.js`, e i tre
+artefatti ripubblicati allo stesso indirizzo: la [Console](https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34),
+il [telefono](https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9) e la
+[pagina della scelta](https://claude.ai/code/artifact/3a3fcb9e-c894-4a83-9cdb-54820f65756f) che il titolare ha condiviso con un
+collega — quest'ultima con le immagini della strada 3 rifatte a quattro caselle, l'occhiello «Decisa: la strada 3» e il
+poscritto che racconta questa correzione. Il voto sulla pagina resta aperto.
 
 #### 7 · Scelte di dettaglio, ancora da confermare
 

@@ -2,7 +2,7 @@
 
 Documento unico del sistema di design di DGT (sistema operativo aziendale per agenti AI).
 Raccoglie tutto ciò che serve per progettare e costruire schermate coerenti: fonti, palette,
-tipografia, forme, componenti, schermate e strumenti di verifica. Aggiornato al 2026-09-06.
+tipografia, forme, componenti, schermate e strumenti di verifica. Aggiornato al 2026-09-07.
 
 ## 1. Che cos'è e da dove viene
 
@@ -325,8 +325,9 @@ revisione del telefono, corretta e da confermare) 15 (le pagine Agenda e Chat de
 ## 11. Collegamenti
 
 - Confronto delle tre direzioni (artefatto): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
-- Direzione A cliccabile, tendine, pagine Richieste, Dipartimento, Dipendente (revisione di performance), Esecuzione, Costi, Agenda e Chat, avatar ed editor (artefatto, ripubblicato il 2026-09-06 con la versione 15): https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34
-- Il telefono del titolare, schermate «Da approvare», «Richiesta» (anche la revisione di performance), «Riepilogo di oggi», «Chat», «Conversazione» e «Agenda», cliccabili, con lo stato vuoto (artefatto, ripubblicato il 2026-09-06 con la versione 15): https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9
+- Direzione A cliccabile, tendine, pagine Richieste, Dipartimento, Dipendente (revisione di performance), Esecuzione, Costi, Agenda e Chat, avatar ed editor (artefatto, ripubblicato il 2026-09-07 con la versione 16 e la correzione 16a): https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34
+- Il telefono del titolare, schermate «Da approvare», «Richiesta» (anche la revisione di performance), «Riepilogo di oggi», «Chat», «Conversazione» e «Agenda», cliccabili, con lo stato vuoto (artefatto, ripubblicato il 2026-09-07 con la versione 16 e la correzione 16a): https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9
+- Le quattro scelte per la barra «Oggi in azienda» con il voto condiviso, da leggere insieme a chi decide (artefatto, versione 16 e correzione 16a): https://claude.ai/code/artifact/3a3fcb9e-c894-4a83-9cdb-54820f65756f
 - Avatar dei dipendenti, le due famiglie a confronto (artefatto): https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526
 - Le pelli dell'orbe senza disco, quattro soluzioni a confronto (artefatto): https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569
 - PR #3 verso `main` con schermate e documenti (unita): https://github.com/av3rgfx/DGT-Design-2.0/pull/3
