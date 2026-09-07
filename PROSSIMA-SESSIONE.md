@@ -67,8 +67,10 @@ artefatti** sono stati ripubblicati allo stesso indirizzo: Console, telefono e l
   per intero della versione pubblicata; ripetuta dopo la stessa lettura è passata. Se ricapita: rileggere e riprovare.
 - **Artefatto della scelta ripubblicato** (https://claude.ai/code/artifact/3a3fcb9e-c894-4a83-9cdb-54820f65756f): le immagini
   della strada 3 sono quelle a quattro caselle, l'occhiello dice «Decisa: la strada 3» e sotto la bilancia c'è il poscritto
-  sulla correzione 16a. Il voto condiviso resta aperto. Sorgente e costruttore nella cartella di lavoro della sessione
-  (`scelta-barra.src.html`, `costruisci-scelta.py`): non stanno nel repository, come le altre pagine di studio degli artefatti.
+  sulla correzione 16a. Il voto condiviso resta aperto. **Sorgente e costruttore stanno nel repository** (richiesta
+  dell'utente): `schermate/direzioni/scelta-barra.src.html` — che non si apre da solo, le catture sono segnaposto `IMG:<nome>` —
+  e `node schermate/direzioni/costruisci-scelta.js`, che ci incorpora i PNG di `screenshot/`. La pagina costruita
+  (`scelta-barra.html`, 1,8 MB di base64) è in `.gitignore` come i file unici degli altri artefatti.
 - Artefatti precedenti, non ripubblicati (le loro pagine non cambiano): identità degli orbi
   https://claude.ai/code/artifact/1fc2ee53-3c23-4462-922a-cd581a90b6d6 (`avatar-identita.html`), pelli dell'orbe
   https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569 (`avatar-pelli.html`), le due famiglie kit/orbe
