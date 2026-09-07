@@ -102,7 +102,8 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 | Riga WORKSPACE | cerchio indietro 48, titolo 46 con la O sostituita dal marchio lime, "Nuova attività" bianca 52 con cerchio grigio "+", tre numeri 48/300 con etichetta 19 grigia e badge ↑ lime / ↓ rosa |
 | Rail | 4 cerchi 48 a sinistra: elenco (attivo, bianco), organizzazione, chat, calendario. Nel prodotto (direzione A) i cerchi sono sei e portano tutti a una pagina: elenco (home), organizzazione (Dipartimento), campanella (Richieste), chat (Chat, dal 2026-09-06), calendario (Agenda, dal 2026-09-06) ed euro (Costi) |
 | Intestazione di sezione | titolo 28, conteggio sottolineato (numero 20 + parola 13), cerchi cerca e filtri 46, pillole filtro. **Nel prodotto, dal 2026-09-07 (versione 17, regola 25)**: i cerchi ci sono solo dove fanno qualcosa. Resta «cerca» nelle sette sezioni che possono passare le dodici righe, e da chiuso è il cerchio 46, da aperto una pillola `rgb(255 255 255/.07)` con filetto `.18` alta 46: lente 16, campo 15 largo 190, cerchio × 32; filtra a ogni tasto e il conto «N di M» va nel contatore della sezione. Il cerchio «filtri» e il cerchio «scarica» non ci sono più; «griglia» e «righe» scelgono la forma della card dipendente. Le pillole restano solo dove filtrano davvero |
-| Card lead | 260×204, r28, `#262626→#1C1C1C`; avatar 48 in alto a sinistra; intaglio con freccia; nome 26; ruolo 13; "Fonte" + pillole `#3A3A3A` 26; etichetta di interesse + contenitore nero con 5 punti 13 |
+| Riga di elenco | tre griglie a pillola alte 56 (`.hrow` storico, `.crow` voci, `.lrow` log, r24 e alta 48): ora / icona / avatar, testo su due livelli, chip, valori, importo, e in fondo una colonna da 32 px con la freccia. **Nel prodotto, dal 2026-09-07 (versione 18, regola 26)**: la freccia c'è solo dove la riga ha una destinazione. Se non ce l'ha nessuna riga della lista, cade anche la colonna (`nofr`) e il contenuto si riprende i 42 px; se qualcuna ce l'ha, la colonna resta e la cella è vuota, perché due righe della stessa lista non possono avere due griglie. Vale anche per il gallone `i-chevr` del log |
+| Card lead | 260×204, r28, `#262626→#1C1C1C`; avatar 48 in alto a sinistra; intaglio con freccia; nome 26; ruolo 13; "Fonte" + pillole `#3A3A3A` 26; etichetta di interesse + contenitore nero con 5 punti 13. **Dal 2026-09-07 (versione 18, regola 26)**: l'intaglio è il taglio che fa posto ai pulsanti, quindi una card che non ne ha nessuno non ce l'ha (le regole di approvazione, le consegne senza destinazione, l'esito del colloquio, il diario del Riepilogo) |
 | Avatar del dipendente AI | misure 48 (40, 36, 32, 28, 26; 68 nella richiesta corrente e nella testata dell'esecuzione; 96 nella pagina del Dipendente). **Dal 2026-09-05 (versione 10, «strada 1»)**: un **disco piatto** nella **tinta del dipendente**, otto tinte della palette vivace (indaco `#6C6AFF`, corallo `#FF6A55`, ambra `#FFB52E`, verdeacqua `#2BD9B5`, prugna `#C66CFF`, petrolio `#3AB8FF`, bordeaux `#FF5BA6`, grigio `#9E9E9E`), assegnata da DGT alla creazione come la meno usata in azienda e cambiabile nell'editor del dipendente (riga «Colore»); il disco riempie la casella, senza volume, luci né orlo; impilati con l'anello del fondo e 9 px di sovrapposizione. **Occhi «lilguy»** (dal riferimento lilguy.net, ridisegnati): due occhi grandi (raggio 0,29–0,34 del corpo) all'altezza del centro, distanti (centri a 0,39–0,43 del raggio), sclera **sempre bianca** con contorno sottile e **pupilla sempre nera**, grande (0,6–0,7 dell'occhio), tonda o ovale; forma della sclera dal seme (cerchio, ovale, a gatto inclinato, a ghianda). Lo stato **non** passa dal colore degli occhi: è un **punto di stato** sul bordo della casella in basso a destra (raggio 15 su 125, bordo nero di 4; lime al lavoro, giallo da approvare, rosa in errore, nulla da fermo e pianificato); nelle **pile** (card dei dipartimenti e degli obiettivi, coppie della barra agenda) niente punto, lo stato è il **gesto** del corpo con squash e stretch (al lavoro un ritmo, da approvare un salto ogni 3,2 s, in errore si sgonfia e si inclina, pianificato un pendolo, da libero il respiro del sonno). Restano le forme: in errore la pupilla è una X, da libero l'occhio è chiuso con una palpebra ad arco e la testa fa un lento cenno, da approvare gli occhi crescono del 15 %, al lavoro lo sguardo scandisce. Moto: un solo `requestAnimationFrame` per pagina, respiro, galleggiamento, sguardo (la coppia scivola di poco, la pupilla si sposta dentro l'occhio), palpebre con easing; solo gli orbi nel viewport si aggiornano; con `prefers-reduced-motion` posa di riposo. La perla nera con le pupille del kit (versioni 7b e 7c) resta dietro `?identita=nessuna&occhi=kit&corpo=perla`; le pelli (`?pelle=`) valgono per il corpo senza tinta; la famiglia **kit** con `?avatar=kit`. Le persone (titolare) tengono le iniziali su disco bianco; aria-hidden |
 | Pagina Dipendente | stessa cornice (titolo = etichetta in maiuscolo, 36 px oltre 12 caratteri; tre numeri di oggi); testata con avatar 96 che segue il puntatore, etichetta 28, «ruolo · dipartimento · in produzione dal», chip (stato, revisione in sospeso, prompt vN, modello, colloquio), pillole Modifica / Metti in pausa / Ripeti il colloquio a 40, mansione 17, quattro numeri 48/300 a 30 giorni con badge del confronto; sezioni con intestazione e pillole: revisione di performance, oggi, rendimento (righe 56 con due valori e badge), soul prompt (documento `#F4F4F4` r28 con intaglio, 17/26; versioni come righe 56: proposta lime, corrente bianca), modello (tre card lead 236 di altezza, l'assegnato bianco; card criterio 517 con ripartizione a pillola 12: grigio `#6B6B6B` / bianco / lime), strumenti (card come le regole), budget (card attività, lime se oltre il limite del giorno) e permessi (righe con chip «Regola generale» / «Eccezione» lime), colloquio (card grigia con punteggio e barra, righe dei casi) |
 | Pagina Esecuzione | stessa cornice (titolo = titolo dell'esecuzione in maiuscolo; tre numeri: passi fatti su totale, spesi con badge «oltre», tempo); testata: avatar 68 animato, etichetta 18 e «ruolo · dipartimento», chip (stato, passo n di N, modello, cliente, obiettivo), la frase «Adesso … Prossimo …» 17/25 con le parti in 500, pillole d'azione 40 (lime la principale: riprova, avvia ora, apri la richiesta), la **barra dei passi** = barra agenda 64 ferma nella testata: passi fatti come eventi bianchi 40 con il numero in cerchio nero 32 e la durata, passo in corso come segmento «adesso» `#A8E65D` con il marcatore dell'ora, passi da fare traslucidi con la stima, passo in errore rosa, pillola finale bianca con la stima di fine. Dal 2026-09-06 la barra **sta sempre dentro la pagina e si stringe da sola** (regola 24): i passi conclusi di un'esecuzione lunga (oltre quattro pillole) lasciano il nome e tengono spunta e durata, oltre tre conclusi restano gli ultimi due e gli altri si contano («+3 fatti»), i passi da fare oltre i due successivi si contano in una pillola («+2 da fare»); il passo in corso e quello in errore restano sempre per esteso; Passi come righe 56 (cerchio 40 con spunta / play / avviso / numero; in corso lime, errore grigia, da fare al 60 %); Log come righe 48 (ora, chip del tipo: Passo chiaro, Strumento, Modello, Nota, Richiesta lime, Errore rosa, Titolare nera; costo) con i filtri contati e in fondo la **barra di scrittura** (pillola bianca 56 con avatar 36, campo 15, pulsante nero 40); Output come card lead 224 (icona del tipo; da approvare lime, bozza ed errore grigie, da fare spenta) e le consegne precedenti della serie come righe dello storico; Costo: card attività 517 scura (lime se oltre il limite) con finora su stimato, ripartizione per modello a pillola e legenda, oggi su limite del giorno; strumenti come righe (chiamate, Usato / Non usato / Errore, passi, costo) |
@@ -144,6 +145,11 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
   `.dirA`, variabili e funzioni che le stampano), condivise dalla Console, dal telefono e dalle pagine degli avatar. Una
   schermata nuova carica `comune.js`, `componenti.js` e poi il proprio file, dichiara `variabili` sulla propria radice e
   mette in pagina il CSS dei componenti prima del proprio.
+- **Prima di scrivere, il dubbio progettuale passa dal consiglio** (regola fondamentale del 2026-09-07, per esteso in
+  `CLAUDE.md`): una scelta che cambia che cosa il prodotto è o come lo si usa, e che ha più di una risposta difendibile,
+  va portata alla skill `llm-council` con il contesto scritto per esteso, e il verdetto va in `PROSSIMA-SESSIONE.md`
+  marcato «da confermare» finché l'utente non risponde. Quello che si può misurare o contare non è un dubbio
+  progettuale: lì si guarda la pagina.
 
 ## 9. Verifiche fatte
 
@@ -152,8 +158,8 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 - Confronto visivo sezione per sezione con le immagini originali a 1920 px.
 - Differenza voluta: le card delle sfide sono su una griglia regolare invece che sparse attorno al
   titolo, per restare leggibili su mobile.
-- Le schermate del prodotto hanno quattro prove cliccate con Playwright in `schermate/direzioni/prove/` (Console 97,
-  mobile 69, Costi 48, Agenda e Chat 54; 268 verifiche in tutto) e gli screenshot in `schermate/direzioni/screenshot/`. La manutenzione del
+- Le schermate del prodotto hanno quattro prove cliccate con Playwright in `schermate/direzioni/prove/` (Console 107,
+  mobile 70, Costi 48, Agenda e Chat 54; 279 verifiche in tutto) e gli screenshot in `schermate/direzioni/screenshot/`. La manutenzione del
   2026-09-06 (versione 14) è stata verificata con trentuno catture identiche byte per byte prima e dopo e con le impronte
   degli stili calcolati di ogni elemento (`DIREZIONI.md`, «Versione 14»); le pagine Agenda e Chat (versione 15) con
   venticinque catture identiche byte per byte e le cornici del telefono confrontate con l'albero precedente. La
@@ -165,7 +171,13 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
   è verificata con un censimento automatico dei controlli senza azione: **zero** nelle settantadue intestazioni di sezione
   delle nove pagine, a undici e a quaranta; la ricerca e le pillole di sezione sono provate cliccando (filtrano davvero, il
   fuoco resta nel campo, Esc chiude); le catture della sola barra `a-barra-*.png` restano identiche byte per byte, prova che
-  la barra della versione 16 non è stata toccata.
+  la barra della versione 16 non è stata toccata. La versione 18 (le frecce di riga, regola 26) è verificata con lo stesso
+  censimento portato sulle righe: **zero** frecce senza azione su tredici pagine, quattro viste e le due taglie dell'azienda
+  (erano 260), le sole due dichiarate stanno nell'anteprima dell'editor; **65 liste** con più di una riga hanno tutte le
+  righe sulla stessa griglia; la revisione passata del prompt apre davvero il confronto v6/v7. E dal confronto a pixel delle
+  quarantotto catture: **trentaquattro identiche byte per byte** — fra queste tutte e dieci quelle del telefono, la home, la
+  Chat, l'Agenda, la barra e l'editor, che non avevano frecce inerti — e quattordici cambiate, ognuna solo dove stanno le
+  righe e le card toccate (`a-riepilogo.png` cambia in un riquadro di 62×63 px: l'intaglio della card del diario).
 
 ## 10. Schermate del prodotto: direzione scelta
 
@@ -327,8 +339,28 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     se chiede un dato che non esiste o se filtrerebbe una lista che quel valore non contiene. Corollario della regola 24: il
     conto «N di M» sta nel **contatore della sezione**, non anche nel campo di ricerca a trecento pixel. Da 22 cerchi «cerca»
     ne restano 7, da 22 «filtri» nessuno, da 6 «scarica» nessuno, da 76 pillole inerti ne diventano vere 57. Restano fuori,
-    dichiarate: le 84 frecce in fondo alle righe che non aprono niente (toglierle cambia ogni riga del prodotto) e i 45
-    indicatori disegnati come cerchi nell'intaglio delle card e nella cornice, che dicono uno stato e vengono dal riferimento.
+    dichiarati, i 45 indicatori disegnati come cerchi nell'intaglio delle card e nella cornice, che dicono uno stato e
+    vengono dal riferimento.
+
+26. **La freccia di riga resta dove la riga ha una destinazione e sparisce dove non ce l'ha; e con lei se ne va la sua
+    colonna, se in quella lista non ce l'ha nessuna riga** (2026-09-07, versione 18: la regola 25 portata dalle
+    intestazioni alle righe). Contate aprendo le pagine, le frecce senza azione erano **260** su tutte le pagine e tutte
+    e due le taglie dell'azienda (86 sull'insieme di riferimento: le nove pagine a undici, più la tendina, il Riepilogo e
+    l'editor); ne restano **2**, dichiarate. Tre conseguenze che valgono oltre questo caso:
+    - **la colonna segue la freccia, ma la decide la lista, non la riga.** Ogni riga del prodotto (`.hrow`, `.crow`,
+      `.lrow`) finisce con una colonna da 32 px per la freccia. Se nessuna riga della lista ha una destinazione la colonna
+      cade (classe `nofr`) e il contenuto si riprende i 42 px; se qualcuna ce l'ha la colonna resta e la cella è vuota,
+      perché due righe della stessa lista non possono avere due griglie. La prova lo controlla su 65 liste.
+    - **l'intaglio è il taglio che fa posto ai pulsanti: senza pulsanti è un buco per niente.** Otto card (le quattro
+      regole di approvazione, l'esito del colloquio, due consegne, il diario del Riepilogo) avevano nell'intaglio solo la
+      freccia inerte: hanno perso la freccia e con lei l'intaglio. Alla card dell'esito i 120 px che il titolo teneva
+      liberi per i pulsanti sono tornati al sottotitolo, che prima finiva tagliato.
+    - **applicare la regola non è solo togliere.** Una famiglia su diciotto una destinazione ce l'aveva e non era
+      collegata: la revisione passata del soul prompt apre il confronto fra le due versioni, che nel prodotto esiste già.
+      Lì la freccia resta e diventa vera. La domanda giusta non è «questa freccia funziona?» ma «questa riga dove
+      porterebbe?»: se una risposta c'è, si collega; se non c'è, sparisce.
+    L'eccezione dichiarata: la card del dipendente **in anteprima** dentro l'editor tiene la matita e la freccia, perché
+    non è un controllo ma il disegno di come verrà la card — toglierle farebbe mentire l'anteprima.
 
 Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in
@@ -338,14 +370,29 @@ Dipendente, revisione di performance), 7, 7b e 7c (orbe senza disco, le pelli; p
 gli occhi del kit), 8 (pagina dell'Esecuzione), 10 (l'identità degli orbi), 11 e 12 (le approvazioni da mobile), 13 (la pagina dei Costi), 14 (la manutenzione: i componenti in `componenti.js`, le prove nel
 repository, la sezione «moto» in `DESIGN.md`; niente di visibile cambiato, tranne una perdita di stile sulla schermata della
 revisione del telefono, corretta e da confermare) 15 (le pagine Agenda e Chat del rail e le due tab del telefono), 15a (gli avatar di nuovo centrati nella casella), 16 (la
-barra «Oggi in azienda» come quadro del giorno) e 17 (il quadro del giorno anche sul telefono, la tab Dipartimenti, i
-controlli inerti) in `DIREZIONI.md`, sezione 4.
+barra «Oggi in azienda» come quadro del giorno), 17 (il quadro del giorno anche sul telefono, la tab Dipartimenti, i
+controlli inerti) e 18 (le frecce di riga: la regola 25 portata dalle intestazioni alle righe) in `DIREZIONI.md`, sezione 4.
+
+
+### Che cosa il prodotto ancora non ha (2026-09-07)
+
+Tre zone segnalate dall'utente a fine sessione, da analizzare prima di disegnarle (dettaglio e fatti in
+`PROSSIMA-SESSIONE.md`, candidati 6, 7 e 8):
+
+- **Le cose create non si guardano insieme.** Gli output di un'esecuzione si vedono solo dentro la pagina Esecuzione —
+  è l'unico punto del prodotto che li legge — e non si aprono. Manca la vista «che cosa ha prodotto questo dipartimento».
+- **L'editor di workflow è solo una figura.** Sta nello specimen (sezione 07, dal secondo riferimento) e non esiste nella
+  direzione A: niente modello, niente clic. Le sue tre porte — Modello, Memoria, Strumento — corrispondono però a cose
+  che il prodotto ha già, e i passi di un'esecuzione sono già la sequenza che un workflow dichiarerebbe.
+- **I connettori stanno sul dipendente.** Strumenti e connessioni vivono nel dossier di ogni dipendente, e lo stesso
+  strumento si ripete su molti (l'«Archivio del cliente» quindici volte). Se il livello giusto sia il dipendente,
+  il dipartimento o l'azienda è un dubbio progettuale, e passa dal consiglio.
 
 ## 11. Collegamenti
 
 - Confronto delle tre direzioni (artefatto): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
-- Direzione A cliccabile, tendine, pagine Richieste, Dipartimento, Dipendente (revisione di performance), Esecuzione, Costi, Agenda e Chat, avatar ed editor (artefatto, ripubblicato il 2026-09-07 con la versione 17): https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34
-- Il telefono del titolare, schermate «Da approvare», «Richiesta» (anche la revisione di performance), «Riepilogo di oggi», «Chat», «Conversazione», «Agenda», «Dipartimenti» e «Dipartimento», cliccabili, con il quadro del giorno in cima e lo stato vuoto (artefatto, ripubblicato il 2026-09-07 con la versione 17): https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9
+- Direzione A cliccabile, tendine, pagine Richieste, Dipartimento, Dipendente (revisione di performance), Esecuzione, Costi, Agenda e Chat, avatar ed editor (artefatto, ripubblicato il 2026-09-07 con la versione 18): https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34
+- Il telefono del titolare, schermate «Da approvare», «Richiesta» (anche la revisione di performance), «Riepilogo di oggi», «Chat», «Conversazione», «Agenda», «Dipartimenti» e «Dipartimento», cliccabili, con il quadro del giorno in cima e lo stato vuoto (artefatto, ripubblicato il 2026-09-07 con la versione 18 e il conto nel titolo a 36): https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9
 - Le quattro scelte per la barra «Oggi in azienda» con il voto condiviso, da leggere insieme a chi decide (artefatto, versione 16 e correzione 16a): https://claude.ai/code/artifact/3a3fcb9e-c894-4a83-9cdb-54820f65756f
 - Avatar dei dipendenti, le due famiglie a confronto (artefatto): https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526
 - Le pelli dell'orbe senza disco, quattro soluzioni a confronto (artefatto): https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569
@@ -358,7 +405,8 @@ controlli inerti) in `DIREZIONI.md`, sezione 4.
 - Branch della manutenzione (versione 14): `claude/console-mobile-maintenance-gwnihs`, PR #11 (unita): https://github.com/av3rgfx/DGT-Design-2.0/pull/11
 - Branch delle pagine Agenda e Chat (versione 15): `claude/direzione-a-agenda-chat-l1z8tr`, PR #12: https://github.com/av3rgfx/DGT-Design-2.0/pull/12 (unita)
 - Branch della barra «Oggi in azienda» (versione 16): `claude/console-oggi-azienda-bar-kzetlz`, PR #13 (unita): https://github.com/av3rgfx/DGT-Design-2.0/pull/13
-- Branch del quadro del giorno sul telefono, della tab Dipartimenti e dei controlli inerti (versione 17): `claude/console-direzione-a-mobile-vdb1tb`
+- Branch del quadro del giorno sul telefono, della tab Dipartimenti e dei controlli inerti (versione 17): `claude/console-direzione-a-mobile-vdb1tb`, PR #14 (unita): https://github.com/av3rgfx/DGT-Design-2.0/pull/14
+- Branch delle frecce di riga (versione 18): `claude/candidato-1-frecce-riga-nmd2pt`
 
 - Artefatto pubblicato: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b
 - Branch di lavoro: `claude/dgt-design-system-fz5r1g`, PR #1 verso `main`: https://github.com/av3rgfx/DGT-Design-2.0/pull/1

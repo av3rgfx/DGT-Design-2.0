@@ -246,6 +246,70 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(await conta('.a-main section:nth-of-type(3) .ncard.obj') === nRit, 'la pillola «In ritardo» degli obiettivi lascia i ' + nRit + ' in ritardo');
   check(await largo(), 'la pagina non scorre di lato dopo i filtri');
 
+  console.log('\n11. le frecce di riga (versione 18, regola 25)');
+  /* La freccia resta dove la riga ha una destinazione e sparisce dove non ce l'ha. Qui si conta che di frecce inerti
+     non ne resti nessuna in tutto il prodotto, che nessuna riga viva l'abbia persa, e che una lista mista resti
+     allineata (le righe con e senza freccia devono avere la stessa griglia). L'unica eccezione dichiarata è la card
+     del dipendente in anteprima dentro l'editor: non è un controllo, è il disegno di come verrà la card. */
+  const PAG_FRECCE = PAGINE.concat(['pagina=dipendente&id=5', 'pagina=esecuzione&id=5', 'pagina=chat&filo=4', 'pagina=dipartimento&dip=mkt', 'pagina=dipartimento&dip=amm']);
+  const VISTE = ['tendina=chiusa', 'tendina=aperta', 'tendina=estesa', 'pannello=riepilogo'];
+  const frecce = () => page.evaluate(() => {
+    const out = { inerti: 0, vive: 0, dentroEditor: 0, liste: 0, disallineate: [] };
+    document.querySelectorAll('svg use').forEach(u => {
+      if ((u.getAttribute('href') || '') !== '#i-ne') return;
+      const host = u.closest('svg').parentElement;
+      if (host.closest('[data-az]')) { out.vive++; return; }
+      if (host.closest('.anteprima')) { out.dentroEditor++; return; }
+      out.inerti++;
+    });
+    /* una lista è allineata quando tutte le sue righe hanno la stessa griglia; la riga «Aggiungi» in fondo non è una
+       griglia ma una fila centrata (display:flex), quindi non conta */
+    document.querySelectorAll('.hlist, .elenco').forEach(l => {
+      const righe = [...l.querySelectorAll('.hrow, .crow, .lrow')].filter(r => getComputedStyle(r).display === 'grid');
+      if (righe.length < 2) return;
+      out.liste++;
+      const g = new Set(righe.map(r => getComputedStyle(r).gridTemplateColumns));
+      if (g.size > 1) out.disallineate.push(l.parentElement.querySelector('h3') ? l.parentElement.querySelector('h3').textContent : '?');
+    });
+    return out;
+  });
+  let inerteF = 0, viveF = 0, listeF = 0, editorF = 0; const disall = [];
+  for (const n of ['11', '40']) for (const q of PAG_FRECCE) {
+    await vai(q + '&n=' + n + '&tendina=chiusa');
+    const r = await frecce(); inerteF += r.inerti; viveF += r.vive; listeF += r.liste; editorF += r.dentroEditor; disall.push(...r.disallineate);
+  }
+  for (const v of VISTE.concat(['editor=nuovo', 'editor=4'])) {
+    await vai(v);
+    const r = await frecce(); inerteF += r.inerti; viveF += r.vive; editorF += r.dentroEditor;
+  }
+  check(inerteF === 0, 'nessuna freccia inerte in tutto il prodotto (' + viveF + ' vive contate sulle pagine e sulle viste)');
+  check(editorF === 2, 'le uniche due frecce senza azione sono nella card in anteprima dell\'editor, dichiarate: ' + editorF);
+  check(disall.length === 0, listeF + ' liste con più di una riga, tutte allineate: ' + (disall.length ? disall.join(', ') : 'nessuna disallineata'));
+
+  /* la famiglia dove la freccia resta perché una destinazione c'è: la revisione passata del soul prompt apre il
+     confronto fra le due versioni; quella del modello e quella che punta a una versione mai entrata nel dossier no. */
+  await vai('pagina=dipendente&id=4&tendina=chiusa');
+  const rev = await page.evaluate(() => [...document.querySelectorAll('.hrow.rev')].map(r => ({
+    testo: r.textContent.replace(/\s+/g, ' ').trim().slice(0, 40), az: r.dataset.az || '', a: r.dataset.a || '', b: r.dataset.b || '',
+    freccia: !!r.querySelector('.rb.xs'),
+  })));
+  console.log('    revisioni passate:', rev.map(r => (r.az ? '→v' + r.a + '/v' + r.b : 'ferma')).join(' | '));
+  check(rev.length === 3 && rev.filter(r => r.az === 'confronta').length === 1, 'delle tre revisioni passate di Nora una sola porta al confronto (prompt v6 → v7)');
+  check(rev.every(r => r.freccia === (r.az === 'confronta')), 'la freccia sta su quella e solo su quella');
+  await clic('.hrow.rev[data-az="confronta"]');
+  check(await conta('.a-tend.vers') === 1 && (await txt('.a-tend.vers .th h4')).includes('v6 e v7'), 'la riga apre davvero il confronto fra la v6 e la v7');
+  check((await txt('.a-tend.vers .cmp')).length > 40 && await conta('.a-tend.vers .cmp .doc') === 2, 'il confronto mostra le due versioni affiancate');
+
+  /* la lista mista: le consegne precedenti della serie tengono la colonna, la riga in attesa tiene la freccia */
+  await vai('pagina=esecuzione&id=4&tendina=chiusa');
+  const serie = await page.evaluate(() => [...document.querySelectorAll('.a-main section:nth-of-type(4) .hlist .hrow')].map(r => ({ attesa: r.classList.contains('attesa'), freccia: !!r.querySelector('.rb.xs'), nofr: r.classList.contains('nofr') })));
+  check(serie.length > 1 && serie.some(r => r.attesa) && serie.some(r => !r.attesa), 'le consegne precedenti sono una lista mista: ' + serie.length + ' righe');
+  check(serie.every(r => r.freccia === r.attesa) && serie.every(r => !r.nofr), 'la freccia solo sulla riga che aspetta il titolare, e la colonna resta per tutte');
+  /* la lista sola: lo storico delle Richieste non ha nessuna destinazione, quindi cade anche la colonna */
+  await vai('pagina=richieste&tendina=chiusa');
+  const sto2 = await page.evaluate(() => [...document.querySelectorAll('.hlist .hrow')].map(r => ({ freccia: !!r.querySelector('.rb.xs'), nofr: r.classList.contains('nofr') })));
+  check(sto2.length > 8 && sto2.every(r => !r.freccia && r.nofr), 'nello storico (' + sto2.length + ' righe decise) nessuna freccia e nessuna colonna sprecata');
+
   check(errors.length === 0, 'nessun errore in console: ' + JSON.stringify(errors));
   console.log(`\n${ok} ok, ${ko} ko`);
   await browser.close(); process.exit(ko ? 1 : 0);

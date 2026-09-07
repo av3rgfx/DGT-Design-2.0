@@ -1472,6 +1472,163 @@ scelta, per sezione); gli attrezzi comuni sono `cercaSez`, `filtraCerca`, `pille
 - «scarica» sparisce da tutte e sei le sezioni invece di scaricare davvero.
 
 
+### Versione 18: le frecce di riga (2026-09-07, sessione successiva)
+
+Il candidato 1 del passaggio di consegne, scelto dall'utente. La regola c'era già (regola 25 della versione 17, portata
+qui dalle intestazioni alle righe e diventata la **regola 26**): *la freccia resta dove la riga ha una destinazione e
+sparisce dove non ce l'ha*. Il lavoro non era decidere la regola ma **far vedere che cosa diventa il prodotto quando la
+si applica**, perché tocca ogni riga e ogni card.
+
+#### 1 · Il censimento: 260, non 84
+
+Il conto di 84 del passaggio di consegne era fatto su un insieme ridotto di pagine. Contando aprendo le pagine e
+prendendo ogni `i-ne` che non ha `data-az` **né su di sé né su un antenato**, le frecce senza azione erano:
+
+| | Frecce inerti |
+|---|---|
+| L'insieme di riferimento (le nove pagine della Console a undici, più tendina, Riepilogo ed editor) | **86** |
+| Tutte le pagine e tutte e due le taglie dell'azienda (28 viste della Console + le 8 del telefono) | **260** |
+| Sul telefono | **0** — il telefono ha una freccia sola, ed è viva |
+
+Le frecce vive erano 492: il prodotto ne aveva **752** in tutto, e una su tre non apriva niente.
+
+#### 2 · Le diciotto famiglie, e per ognuna se la riga una destinazione ce l'ha
+
+Contate sull'insieme di riferimento (a quaranta i numeri crescono, le famiglie no).
+
+| Famiglia | N | La riga ha una destinazione? |
+|---|---|---|
+| Storico delle Richieste (`rigaStorico`, in quattro punti: Richieste, «Oggi» e «Rendimento» del dipendente, «Consegne precedenti» dell'esecuzione) | 22 | **No** per le richieste decise: il pannello della richiesta si apre solo per quelle in attesa, e una richiesta decisa non ha una pagina. Le righe in attesa una destinazione ce l'hanno e la freccia la tengono |
+| Casi del colloquio | 12 | No: un caso è un nome, un atteso, un esito e un punteggio; non esiste una pagina del caso |
+| Log dell'esecuzione | 9 | **No** per passi, strumenti, modello e note; **sì** per la voce che parla di una richiesta in attesa, che la apre già oggi (e mostra il gallone, non la freccia) |
+| Rendimento, le righe delle metriche | 5 | No: sono misure, non oggetti. La strada verso le richieste che le producono sta già nell'intestazione della sezione |
+| Colloqui precedenti | 4 | No |
+| Regole di approvazione (card) | 4 | No: non c'è una pagina della regola |
+| Budget e permessi | 4 | No |
+| Passi dell'esecuzione | 4 | No: la tendina del passo è un punto aperto mai costruito |
+| Revisioni passate | 3 | **Sì, per una su tre**: la revisione del *soul prompt* con due versioni ancora nel dossier apre il confronto fra le due, che nel prodotto esiste già (`confronta`). Non ce l'hanno la revisione del *modello* (il confronto è solo fra versioni del prompt) né quella che punta a una versione mai entrata nel dossier |
+| Strumenti e connessioni | 3 | No |
+| Costo dell'esecuzione (per passo, strumento, modello) | 3 | No: è la stessa cosa vista in tre modi, nessuno dei tre ha una pagina |
+| Costi · per modello | 3 | No: i livelli si scelgono nel dossier del dipendente, non si aprono |
+| Obiettivi del dipartimento (card) | 3 | No, e la freccia ripeteva l'occhio che sta già nella card |
+| Consegne dell'esecuzione (card) | 2 | Come il log: sì solo quando la consegna è una richiesta in attesa |
+| Per cliente (Costi e Spesa del mese) | 2 | Sì per i clienti del modello — e lì la freccia era già viva; no per le voci che clienti non sono |
+| Esito del colloquio (card) | 1 | No |
+| Diario nel Riepilogo (card) | 1 | No: non c'è una pagina del diario |
+| **Card del dipendente in anteprima, dentro l'editor** | 1 | **Eccezione**: non è un controllo, è il disegno di come verrà la card. Toglierle matita e freccia farebbe mentire l'anteprima. Resta, dichiarata |
+
+**Il conto: 86 → 2** sull'insieme di riferimento, **260 → 2** su tutto (le due sono le anteprime dell'editor, contate una
+per ognuna delle due viste). Le frecce vive salgono da 492 a **496**: le quattro sono la revisione passata del prompt,
+che prima era ferma e adesso apre il confronto.
+
+#### 3 · Le tre cose che si sono imparate applicandola
+
+**a. La colonna segue la freccia, ma la decide la lista, non la riga.** Ogni riga del prodotto finisce con una colonna
+da 32 px (più 10 di gap) che tiene la freccia. Togliere la freccia e lasciare la colonna vuol dire lasciare 42 px di
+niente in fondo a ogni riga: in una lista di dodici casi si legge come un errore. Ma toglierla riga per riga
+disallineerebbe le liste in cui qualche riga la freccia ce l'ha ancora. Quindi:
+
+> Se **nessuna** riga della lista ha una destinazione, cade anche la colonna (classe `nofr`) e il contenuto si riprende
+> i 42 px. Se **qualcuna** ce l'ha, la colonna resta per tutte e la cella è vuota dove la destinazione non c'è.
+
+Le liste miste sono quattro (lo storico dentro «Oggi» del dipendente, le consegne precedenti della serie, il log, la
+spesa per cliente) e sono le più interessanti da guardare: nel log **nove righe su dieci perdono la freccia e una la
+tiene**, e per la prima volta si vede a colpo d'occhio qual è l'unica cosa cliccabile di quella sezione. La prova
+controlla che tutte e **65** le liste con più di una riga abbiano le righe sulla stessa griglia.
+
+**b. L'intaglio è il taglio che fa posto ai pulsanti: senza pulsanti è un buco per niente.** Otto card avevano
+nell'intaglio la sola freccia inerte (le quattro regole di approvazione, l'esito del colloquio, due consegne, il diario
+del Riepilogo): hanno perso la freccia e con lei l'intaglio, e sono tornate card intere. È fedele al riferimento, dove
+l'intaglio c'è perché ci sono i pulsanti. Un guadagno inatteso: la card dell'esito del colloquio teneva liberi 120 px
+sotto il titolo per due pulsanti che adesso non ci sono, e il sottotitolo ci finiva tagliato («v7 · Standard · 18 min…»);
+i 120 px sono tornati al sottotitolo, che adesso si legge intero. Le card che nell'intaglio hanno ancora qualcosa
+(la campanella degli obiettivi, la campanella con il punto delle consegne da approvare) l'intaglio se lo tengono.
+
+**c. Applicare la regola non è solo togliere.** Una famiglia su diciotto una destinazione ce l'aveva e non era
+collegata. La domanda giusta non è «questa freccia funziona?» ma «questa riga dove porterebbe?»: se una risposta c'è si
+collega, se non c'è sparisce. Su diciotto famiglie la risposta è stata sì una volta sola — ed è un buon segno, non un
+cattivo segno: vuol dire che il prodotto non aveva pagine nascoste da collegare, aveva promesse da ritirare.
+
+#### 4 · Che cosa cambia sullo schermo, in numeri
+
+Delle quarantotto catture di `scatta.js`, **trentaquattro sono identiche byte per byte**: tutte e dieci quelle del
+telefono, la home a undici e a quaranta, la Chat, l'Agenda, le tendine, la barra e l'editor. Le quattordici che cambiano
+sono le pagine che hanno righe o card senza destinazione, e il riquadro delle differenze sta sempre dove stanno quelle:
+
+| Cattura | Riquadro dei pixel cambiati |
+|---|---|
+| `a-riepilogo.png` | `x 1363–1425, y 567–630` — 62×63 px, l'intaglio della card del diario e basta |
+| `a-sez-spesa-oggi.png` | `x 2544–2607, y 264–327` — una freccia sola, quella della riga «per cliente» che cliente non è |
+| `a-costi.png`, `a-costi-40.png` | solo la fascia destra delle righe (`x 917–1405`) |
+| `a-richieste.png`, `a-dipartimento.png`, `a-dipendente*.png`, `a-esecuzione*.png`, `a-sez-costo-passo.png` | le liste e le card delle famiglie qui sopra |
+
+#### Verifica
+
+- Le quattro prove cliccate passano: `console.js` **107** (erano 97: dieci verifiche nuove sulle frecce),
+  `mobile.js` **70** (era 69), `costi.js` 48, `agenda-chat.js` 54. In tutto **279** (erano 268).
+- Zero frecce senza azione su tredici pagine, quattro viste e le due taglie, controllato dalla prova; le due
+  dell'anteprima dell'editor sono contate a parte e dichiarate.
+- Sessantacinque liste con più di una riga, tutte allineate.
+- La revisione passata del prompt apre davvero il confronto v6/v7, con le due versioni affiancate.
+
+#### Le catture del prima/dopo
+
+`a-frecce-storico.png` (la famiglia scelta per il punto 2), `a-frecce-log.png` (la lista mista), `a-frecce-colloquio.png`
+(i casi, i colloqui precedenti e la card dell'esito che si riprende il sottotitolo), `a-frecce-revisioni.png` (l'unica
+freccia che resta), `a-frecce-esecuzione.png` (i passi e i tre modi di guardare il costo) e `a-frecce-card.png` (le card
+che perdono l'intaglio). Si compongono con
+`design-system/tools/affianca.js` dalle stesse sezioni catturate nelle due copie dell'albero (`git archive HEAD` per il
+«prima»), quindi stanno in `FUORI` dentro `scatta.js`: non si rifanno da sole.
+
+#### Scelte fatte in costruzione, da confermare
+
+- **La famiglia mostrata per prima è lo storico delle Richieste** (punto 2 del prompt, scelta mia perché l'utente non ha
+  risposto): è la più numerosa, sta su una pagina intera di righe, e nella stessa sezione contiene sia righe con una
+  destinazione sia righe senza — quindi mostra la regola tutta in una schermata.
+- La colonna decisa dalla lista e non dalla riga (punto 3a): l'alternativa era lasciarla sempre, e le liste uniformi
+  sarebbero rimaste con 42 px vuoti in fondo a ogni riga.
+- L'intaglio che cade con l'ultimo pulsante (punto 3b), e i 120 px restituiti al sottotitolo dell'esito.
+- La revisione passata del prompt che apre il confronto (punto 3c): è l'unica freccia nuova del prodotto.
+- L'anteprima dell'editor che tiene matita e freccia, dichiarata come i 45 indicatori della versione 17.
+- Il gallone `i-chevr` del log resta dov'è (la riga che apre una richiesta): la regola dice dove sta una freccia, non
+  quale freccia.
+
+#### Coda: la misura del conto nel titolo (studio del 2026-09-07)
+
+Alla vista della versione 18 l'utente ha chiesto di rivedere il prezzo pagato nella versione 17 per far stare il quadro
+«due per due»: la riga dei due numeri grandi tolta dalla schermata 1 e il conto passato dentro il titolo. Tre forme
+disegnate nel telefono vero dietro `?conta=`, catturate e affiancate in `m-conta-titolo.png`:
+
+| `?conta=` | Che cos'è | Card visibile sopra la navigazione | La riga di approva e rifiuta |
+|---|---|---|---|
+| **1** (la scelta di adesso) | conto a 26, come il titolo | **248** px su 256 | sopra, 4 px di margine |
+| **2** (la strada di mezzo) | titolo a 26, conto a **36** | **244** px su 256 | sopra |
+| **0** (com'era prima) | la riga dei due numeri grandi | **176** px su 256 | **sotto**: la decisione va cercata scorrendo |
+
+**La strada di mezzo costa 4 px.** Il numero torna a essere la prima cosa che si vede — quello che faceva la riga dei due
+numeri grandi — senza ricomprarne i 78 px di altezza: il conto eredita l'interlinea del titolo e le cifre non hanno
+discendenti, quindi la riga cresce di 4 px e basta. Misurato: nessuna delle due forme va a capo o sfora, **nemmeno con un
+conto a tre cifre** (il modello ne fa 4 a undici dipendenti e 7 a quaranta, ma il numero non ha un tetto).
+
+Una correzione a quello che diceva la versione 17: il commento nel codice motivava il titolo a 26 px con lo spazio che
+resta al conto a due cifre. Il conto non c'entra — a 26 come a 36 ci stanno tre cifre senza sforare. **Quello che manda
+il titolo a capo è la parola**: «DA APPROVARE» a 30 px chiede 214 px su 222 di riga libera, e col numero e lo stacco non
+ci sta. Il titolo sta a 26 per la sua larghezza, non per la misura del numero.
+
+Quattro verifiche nuove in `prove/mobile.js` inchiodano le tre misure, e la terza (`?conta=0` che rifà cadere la riga di
+approva e rifiuta sotto la navigazione) impedisce di ripagare per sbaglio un prezzo già pagato una volta.
+
+**La scelta dell'utente è la 2** (2026-09-07): `CONTA = 2` in `mobile.js`, le altre due restano dietro il parametro come
+`?quadro=1|3`. La ragione, con i tre telefoni affiancati davanti: **a 26 il numero si legge come la coda del titolo, a 36
+torna a essere un conto** — che è quello che faceva la riga dei due numeri grandi, e che le costava 78 px di altezza. Qui
+ne costa 4.
+
+Il prezzo vero della scelta non sono i 4 px di card ma il margine sotto: la riga con approva e rifiuta passa da 4 px di
+stacco sopra la barra di navigazione a **0**. Ci sta ancora tutta — la prova lo controlla a ogni giro — ma non c'è più
+niente da spendere: se un domani il quadro o la card crescono di un pixel, la riga della decisione finisce sotto, ed è la
+prova a dirlo prima delle catture.
+
+
 ## 5. File
 
 | File | Ruolo |
@@ -1479,7 +1636,7 @@ scelta, per sezione); gli attrezzi comuni sono `cercaSez`, `filtraCerca`, `pille
 | `dati.js` | modello sintetico (11 e 40) condiviso; dalla versione 17 anche i gruppi del giorno (`gruppiOggi`), letti dalla barra della Console e dal quadro del telefono; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`), le richieste di tipo `revisione` e l'esecuzione (`esecuzioneDi`: sei scritte a mano, le altre generate); dal 2026-09-05 la decisione del titolare (`decidi`), condivisa fra Console e telefono; `azienda.scadenzaMese` per la linea del tempo del mobile; dal 2026-09-06 l'aggregatore dei costi (`costi(periodo, dip)`, `spesaDi`) per la pagina Costi e la sezione «Spesa del mese», e (versione 15) l'agenda (`giornata`, `settimana`, `scadenze`) e i fili della chat (`filoDi`, `scrivi`, `fili`, `nonLetti`) per la Console e per il telefono |
 | `comune.js` | sprite di icone di DGT, prefisso CSS, utilità |
 | `../componenti.js` (`schermate/componenti.js`) | dal 2026-09-06 (versione 14) i componenti della Console condivisi con il telefono e con le pagine degli avatar: il CSS delle primitive (`.rb`, `.av`, `.pair`, `.pill`, `.chip`, `.dots`, `.badge`, `.ncard`/`.nt`, `.lead`, `.task`, `.crow`, `.hrow`, `.erow`, `.qrow`, `.dcard`, `.ripart`/`.leg`, e dalla versione 15 le bolle della chat `.msg`/`.bub`), `variabili`, e `av`, `pair`, `dots`, `chipStato`, `chipEsito`, `messaggio`, `iconaTipo`, `nomeTipo`, `eur`, `delta`, `differenze`; `window.DGT_COMPONENTI`, va caricato dopo `comune.js` e il suo CSS messo in pagina prima di quello della Console |
-| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo), pagina Costi (per dipartimento, dipendente, cliente, modello, strumento, con le pillole del periodo per sezione; `?pagina=costi`), pagina Agenda (barra del giorno, eventi, scadenze, settimana; `?pagina=agenda`) e pagina Chat (fili, filo aperto, barra di scrittura; `?pagina=chat&filo=4`, versione 15); dalla versione 16 la barra «Oggi in azienda» è il quadro del giorno in caselle contate (`barraStato`, che legge `m.gruppiOggi()`; `?barra=0` rimette quella di prima) e la barra dei passi si stringe da sola; dalla versione 17 i controlli delle intestazioni di sezione seguono la regola «un controllo si vede solo se fa quello che promette» (`cercaSez`, `filtraCerca`, `pilleSez`, `filtraSez`, `contoSez`, stato in `st.cerca` e `st.sez`); cliccabile; dalla versione 14 prende le primitive da `../componenti.js` e tiene la cornice, le pagine, le tendine e `monta` |
+| `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo), pagina Costi (per dipartimento, dipendente, cliente, modello, strumento, con le pillole del periodo per sezione; `?pagina=costi`), pagina Agenda (barra del giorno, eventi, scadenze, settimana; `?pagina=agenda`) e pagina Chat (fili, filo aperto, barra di scrittura; `?pagina=chat&filo=4`, versione 15); dalla versione 16 la barra «Oggi in azienda» è il quadro del giorno in caselle contate (`barraStato`, che legge `m.gruppiOggi()`; `?barra=0` rimette quella di prima) e la barra dei passi si stringe da sola; dalla versione 17 i controlli delle intestazioni di sezione seguono la regola «un controllo si vede solo se fa quello che promette» (`cercaSez`, `filtraCerca`, `pilleSez`, `filtraSez`, `contoSez`, stato in `st.cerca` e `st.sez`) e dalla versione 18 la stessa regola vale per le **frecce di riga** (regola 26: la freccia sta solo dove la riga ha una destinazione; `soloDecise`, `logSolo` e `versoConfronto` dicono per lista se la colonna da 32 px cade, classe `nofr`); cliccabile; dalla versione 14 prende le primitive da `../componenti.js` e tiene la cornice, le pagine, le tendine e `monta` |
 | `mobile.js` / `.html` | il telefono del titolare: le approvazioni (versioni 11 e 12, schermate «Da approvare», «Richiesta» — anche la revisione di performance con le due versioni a confronto e le quattro decisioni — e «Riepilogo di oggi», con il rifiuto con motivo e lo stato vuoto a coda finita) e, dalla versione 15, le due tab «Chat» (elenco dei fili e conversazione con la barra di scrittura) e «Agenda» (la giornata sulla linea del tempo, i prossimi giorni, le scadenze); dalla versione 17 il **quadro del giorno** in cima alla schermata 1 (`quadroGiorno`, tre forme dietro `?quadro=0|1|2|3`, la 2 è quella scelta) e la tab **Dipartimenti** (schermate 7 e 8: l'elenco e il dipartimento aperto); otto telefoni affiancati che condividono il modello, la richiesta corrente, il filo aperto e il dipartimento scelto; `DGT_MOBILE.monta`, `coda`; `?schermata=1…8&richiesta=0&filo=4&dip=mkt&quadro=`, `?n=40`; dalla versione 14 carica `../componenti.js` e non più `direzione-a.js` |
 | `avatar/avatar-dgt.js` | involucro degli avatar nel linguaggio della Console (colori, stati, simboli statici, animazione); `usa('orbe'|'kit')` sceglie la famiglia |
 | `avatar/avatar-orbe.js` | la famiglia «orbe» (versioni 5b, 5c, 7, 7b, 7c): cerchi dal seme con le pupille e lo sguardo del kit, un solo motore `requestAnimationFrame` con funzioni continue del tempo, sguardo che segue il puntatore; senza disco, con le pelli (`pelle('perla'|'grigio'|'chiaro'|'alone'|'disco')`, solo variabili CSS; perla predefinita); `fermo(t)`, `riprendi()`, `fotogramma(svg, t)` per gli screenshot |
@@ -1494,8 +1651,8 @@ scelta, per sezione); gli attrezzi comuni sono `cercaSez`, `filtraCerca`, `pille
 | `build-unico.js` | genera il file unico per l'artefatto (`node build-unico.js direzione-a.html out.html`) |
 | `scelta-barra.src.html` | la pagina delle quattro scelte per la barra «Oggi in azienda», con il voto condiviso: quella che il titolare ha mandato al collega. Sorgente, non pagina: le catture sono segnaposto `IMG:<nome>`, quindi non si apre da sola |
 | `costruisci-scelta.js` | costruisce `scelta-barra.html` dal sorgente, incorporando i PNG di `screenshot/` come data URI, più le otto catture del commutatore undici / quaranta (`node costruisci-scelta.js [out.html]`). Il risultato non entra nel repository (megabyte di base64): si rifà in un comando |
-| `scatta.js` | rigenera le catture di `screenshot/` dalla lista di parametri dichiarata nel file (`node scatta.js`, `console` / `barra` / `quadro` / `dip` / `controlli` per un gruppo, `--in <cartella>` per il confronto prima/dopo); le catture che restano fuori sono elencate in `FUORI` |
-| `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`); le cornici del telefono (`mobile-*.png`: le versioni 11 e 12, le quattro della revisione rifatte nella versione 14 e le tre schermate nuove `mobile-4-chat`, `mobile-5-filo`, `mobile-6-agenda` della versione 15) e le sezioni delle pagine Costi (`a-costi-*.png`, versione 13), Agenda e Chat (`a-agenda-*.png`, `a-chat-*.png`, versione 15) con `screenshot-elementi.js`; le catture dello studio della barra (`a-barra-*.png`, versione 16) e quelle della versione 17: la forma scelta del quadro del giorno e le due scartate, le due schermate dei Dipartimenti (`m-*.png`), i controlli delle sezioni (`a-sez-*.png`). Si rigenerano con `scatta.js` |
-| `prove/` | le prove cliccate con Playwright, con il `README.md` che dice il comando: `console.js` (97 verifiche: tendine, Richieste, editor, esecuzione, 40, la barra «Oggi in azienda» e la barra dei passi, e dalla versione 17 i controlli delle intestazioni di sezione), `mobile.js` (69: le schermate delle approvazioni, revisione, rifiuto con motivo, prova, stato vuoto, 40, e dalla versione 17 il quadro del giorno e la tab Dipartimenti), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le pagine Agenda e Chat della Console e le due tab del telefono, versione 15); leggono `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH` |
+| `scatta.js` | rigenera le catture di `screenshot/` dalla lista di parametri dichiarata nel file (`node scatta.js`, `console` / `barra` / `quadro` / `dip` / `controlli` per un gruppo, `--in <cartella>` per il confronto prima/dopo); le catture che restano fuori sono elencate in `FUORI`, e dalla versione 18 ci sono anche i prima/dopo `a-frecce-*.png` e `m-conta-titolo.png`, che vogliono l'albero della versione precedente e si compongono con `design-system/tools/affianca.js` |
+| `screenshot/` | catture a 1440 px (`design-system/tools/screenshot-page.js`); le cornici del telefono (`mobile-*.png`: le versioni 11 e 12, le quattro della revisione rifatte nella versione 14 e le tre schermate nuove `mobile-4-chat`, `mobile-5-filo`, `mobile-6-agenda` della versione 15) e le sezioni delle pagine Costi (`a-costi-*.png`, versione 13), Agenda e Chat (`a-agenda-*.png`, `a-chat-*.png`, versione 15) con `screenshot-elementi.js`; le catture dello studio della barra (`a-barra-*.png`, versione 16) e quelle della versione 17: la forma scelta del quadro del giorno e le due scartate, le due schermate dei Dipartimenti (`m-*.png`), i controlli delle sezioni (`a-sez-*.png`); della versione 18 i prima/dopo delle frecce di riga (`a-frecce-*.png`) e il confronto del conto nel titolo del telefono (`m-conta-titolo.png`), composti con `affianca.js`. Si rigenerano con `scatta.js`, tranne quelli elencati in `FUORI` |
+| `prove/` | le prove cliccate con Playwright, con il `README.md` che dice il comando: `console.js` (107 verifiche: tendine, Richieste, editor, esecuzione, 40, la barra «Oggi in azienda» e la barra dei passi, dalla versione 17 i controlli delle intestazioni di sezione e dalla 18 le frecce di riga), `mobile.js` (70: le schermate delle approvazioni, revisione, rifiuto con motivo, prova, stato vuoto, 40, dalla versione 17 il quadro del giorno e la tab Dipartimenti e dalla 18 il conto delle frecce), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le pagine Agenda e Chat della Console e le due tab del telefono, versione 15); leggono `LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `CHROME_PATH` |
 
 Per gli screenshot: `design-system/tools/screenshot-page.js` (vedi `design-system/tools/README.md`).

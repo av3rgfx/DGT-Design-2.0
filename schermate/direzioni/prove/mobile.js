@@ -120,9 +120,10 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   await page.goto(file('n=40')); await page.waitForTimeout(600);
   check(await conta(tel(1) + '.m-quadro.duedue .qq') === 4 && await page.evaluate(() => [...document.querySelectorAll('.m-quadro .qq > span:not(.ico):not(.pair)')].every(e => e.scrollWidth <= e.clientWidth + 1)), 'il quadro «due per due» regge anche a quaranta, senza tagli');
   /* Il prezzo della forma 2: è alta 118 px e spinge giù la card della richiesta. Le due misure che contano, sulla schermata
-     che serve a decidere: quanta card resta visibile sopra la barra di navigazione (senza quadro 256 su 256, con la 2
-     misurati 248; la forma 3, scartata, ne lasciava 240) e se la riga con approva e rifiuta ci sta sopra — prima di
-     togliere la riga dei due numeri grandi finiva sotto. Se un domani il quadro cresce, queste due lo dicono subito. */
+     che serve a decidere: quanta card resta visibile sopra la barra di navigazione (senza quadro 256 su 256, con la 2 e
+     il conto a 36 — la forma scelta — misurati 244; la forma 3 del quadro, scartata, ne lasciava 240) e se la riga con
+     approva e rifiuta ci sta sopra — prima di togliere la riga dei due numeri grandi finiva sotto. Se un domani il
+     quadro cresce, queste due lo dicono subito. */
   await page.goto(file('')); await page.waitForTimeout(600);
   const misure = await page.evaluate(() => {
     const Z = 1.25, tel = document.querySelector('.m-tel'), nav = tel.querySelector('.m-bnav').getBoundingClientRect();
@@ -130,8 +131,37 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
     const riga = tel.querySelector('.ncard.task .st .row').getBoundingClientRect();
     return { visibile: Math.round((Math.min(card.bottom, nav.top) - card.top) / Z), sopra: riga.bottom <= nav.top, spazio: Math.round((nav.top - riga.bottom) / Z) };
   });
-  check(misure.visibile >= 245, `della card della richiesta restano visibili ${misure.visibile} px su 256 sopra la navigazione`);
+  check(misure.visibile >= 240, `della card della richiesta restano visibili ${misure.visibile} px su 256 sopra la navigazione`);
   check(misure.sopra, `la riga con approva e rifiuta sta sopra la navigazione (${misure.spazio} px di margine)`);
+  /* Lo studio della misura del conto nel titolo (2026-09-07): `?conta=` mette a confronto le tre forme. La scelta
+     dell'utente è la 2, «la strada di mezzo» (titolo a 26, conto a 36), ed è quella che il telefono disegna senza
+     parametri; la 1 (conto a 26, come il titolo) è la forma scartata; la 0 rimette la riga dei due numeri grandi e fa
+     ricadere la riga di approva e rifiuta sotto la navigazione — è il prezzo che la forma 2 del quadro ha già pagato
+     una volta, e questa prova impedisce di ripagarlo per sbaglio. */
+  const cardVisibile = () => page.evaluate(() => {
+    const Z = 1.25, tel = document.querySelector('.m-tel'), nav = tel.querySelector('.m-bnav').getBoundingClientRect();
+    const card = tel.querySelector('.ncard.task').getBoundingClientRect();
+    const riga = tel.querySelector('.ncard.task .st .row').getBoundingClientRect();
+    const h1 = tel.querySelector('.m-h1'), num = h1.querySelector('b');
+    return { visibile: Math.round((Math.min(card.bottom, nav.top) - card.top) / Z), sopra: riga.bottom <= nav.top,
+      misura: num ? getComputedStyle(num).fontSize : '', righe: Math.round((h1.getBoundingClientRect().height / Z - 12) / (parseFloat(getComputedStyle(h1).lineHeight) / Z)) };
+  });
+  const mezzo = await cardVisibile();   // il telefono senza parametri: è già la forma scelta
+  check(mezzo.misura === '36px' && mezzo.righe === 1, 'la forma scelta: il conto sta a 36 e il titolo resta su una riga');
+  check(mezzo.sopra && mezzo.visibile >= 240, `e costa 4 px rispetto al conto a 26: della card ne restano ${mezzo.visibile}, con la riga di approva e rifiuta ancora sopra la navigazione`);
+  /* il titolo non va a capo con nessun conto: a undici sono 4, ma il numero non ha un tetto nel modello */
+  check(await page.evaluate(() => {
+    const h1 = document.querySelector('.m-tel .m-h1.conta'), num = h1.querySelector('b'), era = num.textContent;
+    const ok = ['4', '47', '147'].every(t => { num.textContent = t; const r = num.getBoundingClientRect(), c = h1.getBoundingClientRect();
+      return r.right <= c.right + 0.5 && c.height / 1.25 <= 50; });
+    num.textContent = era; return ok;
+  }), 'e regge fino a tre cifre senza sforare né andare a capo');
+  await page.goto(file('conta=1')); await page.waitForTimeout(600);
+  const stretto = await cardVisibile();
+  check(stretto.misura === '26px' && stretto.visibile > mezzo.visibile, `?conta=1 disegna la forma scartata: il conto torna a 26 come il titolo e la card guadagna ${stretto.visibile - mezzo.visibile} px`);
+  await page.goto(file('conta=0')); await page.waitForTimeout(600);
+  const riga0 = await cardVisibile();
+  check(await conta(tel(1) + '.m-stats .m-stat') === 2 && !riga0.sopra, `?conta=0 rimette la riga dei due numeri grandi, e la riga di approva e rifiuta ritorna sotto la navigazione (${riga0.visibile} px di card su 256): è il prezzo che la forma 2 ha pagato`);
   await passo('il quadro del giorno');
 
   console.log('7. la tab Dipartimenti (versione 17)');
@@ -173,6 +203,25 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   await clic(tel(1) + `.m-coda .qrow[data-idx="${iLungo}"]`);
   check(await txt(tel(2) + '.m-tit h2') === c[iLungo].cosa, 'il titolo più lungo: ' + c[iLungo].cosa);
   await passo('quaranta');
+
+  console.log('\nle frecce di riga sul telefono (versione 18, regola 25)');
+  /* Sul telefono la freccia è una sola, nell'intaglio della card della richiesta corrente, e apre la richiesta.
+     La verifica tiene il conto a zero inerti su tutte e otto le schermate, a undici e a quaranta. */
+  let inertiM = 0, viveM = 0;
+  for (const n of ['11', '40']) for (let s = 1; s <= 8; s++) {
+    await page.goto(file('schermata=' + s + '&n=' + n)); await page.waitForTimeout(300);
+    const r = await page.evaluate(() => {
+      let i = 0, v = 0;
+      document.querySelectorAll('svg use').forEach(u => {
+        if ((u.getAttribute('href') || '') !== '#i-ne') return;
+        u.closest('svg').parentElement.closest('[data-az]') ? v++ : i++;
+      });
+      return { i, v };
+    });
+    inertiM += r.i; viveM += r.v;
+  }
+  check(inertiM === 0, 'nessuna freccia inerte sulle otto schermate, a undici e a quaranta (' + viveM + ' vive)');
+
   check(errors.length === 0, 'nessun errore in console: ' + JSON.stringify(errors));
   console.log(`\n${ok} ok, ${ko} ko`);
   await browser.close(); process.exit(ko ? 1 : 0);
