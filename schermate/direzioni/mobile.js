@@ -317,16 +317,19 @@ window.DGT_MOBILE = (function () {
    2. cade la riga dei due numeri grandi (78 px). «Approvate oggi» era lo stesso conto della casella «approvate» del
       quadro a 60 px di distanza (correzione 16a: un elemento fisso non ripete quello che un altro dice già); «da
       approvare» resta, ma dentro il titolo, che diceva già la stessa parola.
-   Risultato misurato: della card restano visibili 238 px su 256 (erano 162; la forma 3, scartata, ne lasciava 240).
+   Risultato misurato: della card restano visibili 244 px su 256 col conto a 36 (la scelta), 248 col conto a 26; erano 176
+   con la riga dei due numeri grandi, e la forma 3 del quadro, scartata, ne lasciava 240.
    Col quadro 0, 1 o 3 la riga dei due numeri grandi resta com'era.
-   Il titolo col conto sta a 26 px e non a 30: la riga ha 234 px liberi e a 30 «DA APPROVARE» ne chiede 214, che col numero
-   e lo stacco fanno 243 e mandano il titolo a capo. A 26 ne chiede 186: 215 in tutto, e restano 19 px anche col conto a due
-   cifre. È anche la misura dei numeri grandi che sostituisce, così titolo e conto si leggono come una riga sola. */
+   Il titolo sta a 26 px e non a 30 per la larghezza della PAROLA, non per la misura del numero: la riga ha 222 px liberi e
+   a 30 «DA APPROVARE» ne chiede 214, che col numero e lo stacco mandano il titolo a capo; a 26 ne chiede 186. Il conto
+   invece ci sta a 26 come a 36, e fino a tre cifre, senza sforare né andare a capo (misurato: la prova lo controlla). */
 .m-h1.conta{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:26px;line-height:32px;white-space:nowrap;padding-top:12px}
 .m-h1.conta b{font-weight:300;font-size:26px;line-height:30px;flex:none;letter-spacing:0}
-/* la strada di mezzo (?conta=2): il titolo resta a 26 e il conto sale a 36, così il numero torna a essere la prima cosa
-   che si vede — quello che faceva la riga dei due numeri grandi — senza ricomprarne i 78 px di altezza. La riga non
-   cresce perché il numero eredita l'interlinea del titolo e le cifre non hanno discendenti. */
+/* la strada di mezzo (?conta=2, LA SCELTA DELL'UTENTE del 2026-09-07): il titolo resta a 26 e il conto sale a 36, così
+   il numero torna a essere la prima cosa che si vede — quello che faceva la riga dei due numeri grandi — senza
+   ricomprarne i 78 px di altezza. La riga cresce di 4 px e basta, perché il numero eredita l'interlinea del titolo e le
+   cifre non hanno discendenti; e regge fino a tre cifre senza sforare né andare a capo (misurato). Il conto a 26,
+   dietro ?conta=1, è la forma scartata. */
 .m-h1.conta.grande b{font-size:36px;line-height:32px}
 /* forma 3 «la riga che parla» (scartata): una riga sola, le tre caselle che chiedono un'azione, numero e parola accanto.
    Niente pila: con la pila le tre caselle sommano 273 px e la colonna ne dà 254. */
@@ -441,10 +444,12 @@ window.DGT_MOBILE = (function () {
   const QUADRO = 2;
 
   /* La misura del conto nel titolo della schermata 1 (studio del 2026-09-07, dopo la scelta della forma 2). Col quadro
-     «due per due» la riga dei due numeri grandi è caduta e «da approvare» è passato nel titolo: resta da decidere quanto
-     grande sia quel numero. 1 = come il titolo (26); 2 = la strada di mezzo, titolo 26 e numero 36; 0 = la riga dei due
-     numeri grandi torna al suo posto. `?conta=` sceglie. */
-  const CONTA = 1;
+     «due per due» la riga dei due numeri grandi è caduta e «da approvare» è passato nel titolo, e restava da decidere
+     quanto grande fosse quel numero. Tre forme messe a confronto nel telefono vero, `?conta=` le sceglie: 1 = come il
+     titolo (26); 2 = la strada di mezzo, titolo 26 e numero 36; 0 = la riga dei due numeri grandi torna al suo posto.
+     LA SCELTA DELL'UTENTE È LA 2 (2026-09-07): a 26 il numero si legge come la coda del titolo, a 36 torna a essere un
+     conto — quello che faceva la riga dei due numeri grandi, e che le costava 78 px di altezza. Qui ne costa 4. */
+  const CONTA = 2;
 
   /* ---------- il quadro del giorno (versione 17, 2026-09-07) ----------
      La barra «Oggi in azienda» della Console sul telefono. Stessi conti (`m.gruppiOggi()`), tre forme messe a confronto
@@ -502,8 +507,8 @@ window.DGT_MOBILE = (function () {
         ${st.quadro === 2 && st.conta
           /* con il quadro «due per due» il titolo porta il conto e la riga dei due numeri grandi cade: «approvate oggi» lo
              dice già la casella del quadro (correzione 16a) e «da approvare» lo dice il titolo. Vedi il commento sotto.
-             ?conta= sceglie la misura del numero: 1 come il titolo (26), 2 la strada di mezzo (36), 0 rimette la riga dei
-             due numeri grandi anche col quadro 2, per il confronto. */
+             ?conta= sceglie la misura del numero: 2 la strada di mezzo (36, la scelta dell'utente), 1 come il titolo (26,
+             la forma scartata), 0 rimette la riga dei due numeri grandi anche col quadro 2, per il confronto. */
           /* niente spazio fra la parola e il numero: sono due elementi flex e lo spazio, con nowrap, allarga il primo
              quanto basta a mandare il titolo a capo (misurato: 234 px liberi, 222 senza spazio, oltre con) */
           ? `<h3 class="m-h1 conta${st.conta === 2 ? ' grande' : ''}">DA APPROVARE<b>${c.length}</b></h3>`

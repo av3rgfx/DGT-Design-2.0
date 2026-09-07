@@ -76,7 +76,7 @@ Sull'insieme di riferimento (a quaranta i numeri crescono, le famiglie no). Tabe
 ### Verifica
 
 - **Le quattro prove cliccate passano**: `console.js` **107** (erano 97: dieci verifiche nuove sulle frecce),
-  `mobile.js` **74** (era 69: una sulle frecce e quattro sullo studio del conto nel titolo), `costi.js` 48, `agenda-chat.js` 54. In tutto **283** (erano 268).
+  `mobile.js` **75** (era 69: una sulle frecce e cinque sullo studio del conto nel titolo), `costi.js` 48, `agenda-chat.js` 54. In tutto **284** (erano 268).
 - Zero frecce senza azione su tredici pagine, quattro viste e le due taglie; le due dell'anteprima dell'editor sono
   contate a parte e dichiarate.
 - **Sessantacinque liste** con più di una riga, tutte con le righe sulla stessa griglia (è la prova che tiene in piedi
@@ -116,14 +116,28 @@ e affiancate in `m-conta-titolo.png`:
 
 | `?conta=` | Che cos'è | Card visibile | La riga di approva e rifiuta |
 |---|---|---|---|
-| **1** (la scelta di adesso) | conto a 26, come il titolo | 248 px su 256 | sopra, 4 px di margine |
-| **2** (la strada di mezzo) | titolo a 26, conto a **36** | 244 px su 256 | sopra |
+| **2 · la scelta dell'utente** | titolo a 26, conto a **36** | 244 px su 256 | sopra, 0 px di margine |
+| **1** (scartata) | conto a 26, come il titolo | 248 px su 256 | sopra, 4 px di margine |
 | **0** (com'era prima) | la riga dei due numeri grandi | 176 px su 256 | **sotto** |
 
-**La strada di mezzo costa 4 px** e nessuna delle due va a capo, nemmeno con un conto a tre cifre. Una correzione a
-quello che diceva la versione 17: il titolo sta a 26 px per la larghezza della *parola*, non per la misura del numero.
-Quattro verifiche nuove in `prove/mobile.js`. **`CONTA = 1` resta la forma attiva** finché l'utente non sceglie: le
-undici catture del telefono sono identiche byte per byte.
+**La strada di mezzo costa 4 px** e nessuna delle due va a capo, nemmeno con un conto a tre cifre. La ragione della
+scelta, con i tre telefoni affiancati davanti: a 26 il numero si legge come la coda del titolo, a 36 torna a essere un
+conto — quello che faceva la riga dei due numeri grandi, e che le costava 78 px.
+
+Una correzione a quello che diceva la versione 17: il titolo sta a 26 px per la larghezza della *parola*, non per la
+misura del numero.
+
+**Il prezzo vero non sono i 4 px di card ma il margine sotto**: la riga con approva e rifiuta passa da 4 px di stacco
+sopra la barra di navigazione a **0**. Ci sta ancora tutta e la prova lo controlla a ogni giro, ma non c'è più niente da
+spendere: se un domani il quadro o la card crescono di un pixel, la riga della decisione finisce sotto. **Cinque
+verifiche** in `prove/mobile.js` tengono le tre forme e quel margine.
+
+Cambiano **due catture su 51**, `m-quadro-duedue.png` e `m-quadro-duedue-40.png`, ed è tutto quello che scende di 4 px.
+Ripubblicato **il solo artefatto del telefono**: la Console non carica `mobile.js` e non cambia (controllato).
+
+**Attenzione, una cattura instabile**: `a-11.png` cambia di **5 pixel** (riquadro `x 1136–1415, y 173–175`) anche fra due
+giri identici, senza toccare niente. È un'instabilità preesistente, non una regressione: quando compare in un confronto
+prima/dopo va riconosciuta e la cattura riportata com'era, se no sporca il diff.
 
 ## Decisioni dell'utente (in ordine)
 
@@ -297,6 +311,16 @@ undici catture del telefono sono identiche byte per byte.
       che cosa **non** è un dubbio progettuale — quello che si può misurare o contare — e che il contesto va scritto per
       esteso, perché è la parte che decide la qualità della risposta.
 
+42. **2026-09-07: l'utente conferma le due cose che erano rimaste aperte.**
+    - **Il conto nel titolo è la 36**, «la strada di mezzo»: `CONTA = 2` in `mobile.js`, il conto a 26 resta dietro
+      `?conta=1` come forma scartata. Cambiano due catture su 51 e la riga della decisione resta sopra la barra con 0 px
+      di margine — vedi «Coda» nello Stato.
+    - **Chi parla nel filo del dipartimento: confermata la proposta del consiglio**, cioè **DGT che indossa il
+      dipartimento** (disco con l'icona del dipartimento, nome «Coordinamento ‹dipartimento›»; il prompt di
+      coordinamento è una proprietà del dipartimento, versionato; il costo va sulla riga «coordinamento» del
+      dipartimento). Niente Coordinatore come dipendente nuovo: il conto dei dipendenti non cambia. **Questa è una
+      decisione di progetto, non codice scritto**: il candidato 5 resta da costruire.
+
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti sintetici di DGT; documenti in italiano.
 
@@ -331,8 +355,10 @@ dipendenti fra loro e condividere memorie e conoscenze per un obiettivo comune.
   l'archivio come **oggetto di prima classe** con l'interfaccia che mostra chi ci ha messo cosa e chi l'ha usata; le
   dipendenze come **legame sull'obiettivo o sull'esecuzione**.
 
-**Le due domande sono state portate all'utente il 2026-09-07 e la prima è passata da un consiglio di cinque pareri
-indipendenti con revisione incrociata anonima** (`llm-council`). Il verdetto, da confermare con lui:
+**Tutte e due le domande hanno risposta (2026-09-07): non si riaprono.** La prima è passata da un consiglio di cinque
+pareri indipendenti con revisione incrociata anonima (`llm-council`) e **l'utente ha confermato il verdetto**
+(decisione 42); la seconda l'ha decisa lui con i nomi che ha scelto (decisione 41). Quello che resta da fare è
+**costruirlo**. Il verdetto, adesso vincolante:
 
 - **Chi parla nel filo: DGT che indossa il dipartimento** (la strada «economica», ma non nella forma nuda). Tre
   consiglieri su cinque avevano scelto il Coordinatore-dipendente; tutti e cinque però hanno proposto una terza strada, e
@@ -355,9 +381,10 @@ indipendenti con revisione incrociata anonima** (`llm-council`). Il verdetto, da
   servire); e va deciso se i dipendenti **possono rispondere** nel filo del dipartimento — se no non è una chat, è un
   modulo.
 
-**Le due domande, per esteso** (se l'utente non le conferma, vanno rifatte prima di scrivere):
+**Le due domande per esteso, con la risposta data** (restano scritte perché la risposta si capisca):
 
-1. **Chi parla nel filo del dipartimento?** Un dipartimento non è una persona. Risposta economica: parla **DGT**, con i
+1. **Chi parla nel filo del dipartimento? RISPOSTA: DGT che indossa il dipartimento** (confermata dall'utente, decisione
+   42). Un dipartimento non è una persona. Risposta economica: parla **DGT**, con i
    messaggi `sistema` che già esistono e che il filo sa già disegnare — zero personaggi nuovi. Risposta ambiziosa: un
    **Coordinatore** di dipartimento, un dipendente vero con avatar, tinta e voce (il ruolo esiste già nel vocabolario
    degli avatar, `avatar-motore.js`: «il fulcro stabile della squadra») — più caldo, ma è un personaggio nuovo nel
@@ -414,16 +441,18 @@ stato toccato, con la verifica byte per byte alle spalle (vedi «Stato»). Quind
 cominciare. Quando si ripubblica: `build-unico.js`, poi lo strumento con `url`, dopo aver letto la versione pubblicata
 per intero (vedi «Note tecniche»).
 
-**Prima cosa: sentire l'utente sulla versione 18.** Le frecce toccano ogni riga e ogni card, ed è il primo lavoro in cui
-il prodotto *perde* qualcosa da tutte le parti: le catture del prima/dopo (`a-frecce-*.png`) sono fatte apposta per
-questo. Se manda correzioni, quelle vengono prima di tutto il resto.
+**Prima cosa: il candidato 5, la chat di dipartimento.** Le due domande che lo bloccavano hanno risposta (decisioni 41
+e 42): parla **DGT che indossa il dipartimento**, e la distribuzione ha la pillola **`Fai pure` / `Chiedimi prima`**.
+Non manca più una decisione, manca il codice — ma **prima di scriverlo va fatta vedere la forma** che prende sulla
+pagina Dipartimento della Console e sul telefono, come sempre.
 
-**Poi il candidato 5, la chat di dipartimento**, che è il prossimo nell'ordine che ha scelto lui. **Le due domande sopra
-vanno risposte prima di scrivere codice**: chi parla nel filo, e se la distribuzione passa dall'approvazione.
+**Resta da sentire il giudizio sulla versione 17 e sulla 18.** Le frecce toccano ogni riga e ogni card, ed è il primo
+lavoro in cui il prodotto *perde* qualcosa da tutte le parti: le catture del prima/dopo (`a-frecce-*.png`) sono fatte
+apposta per questo. Se manda correzioni, quelle vengono prima di tutto il resto.
 
 **Non rimettere in discussione**: la direzione A, la barra «Oggi in azienda» della versione 16 con la correzione 16a, la
-versione 17 (il quadro «due per due», i Dipartimenti, la regola 25), la regola 26 delle frecce, gli avatar della versione
-10, la regola «niente emoji».
+versione 17 (il quadro «due per due», i Dipartimenti, la regola 25), la regola 26 delle frecce, il conto nel titolo a 36,
+le due risposte del candidato 5 (decisioni 41 e 42), gli avatar della versione 10, la regola «niente emoji».
 
 **Il metodo di sempre**, e da adesso con una regola in più: **ogni dubbio progettuale passa dal consiglio prima del
 codice** (`llm-council`, regola fondamentale in `CLAUDE.md`, decisione 41). Non tutto è un dubbio progettuale: quello che
@@ -459,7 +488,7 @@ non un controllo) e le quattro liste miste, in cui la colonna resta e qualche ce
   `node schermate/direzioni/prove/console.js` (**107**: tendine, Richieste, editor del dipendente, esecuzione, 40, la barra
   «Oggi in azienda» e la barra dei passi, i controlli delle intestazioni di sezione e, dalla versione 18, **le frecce di
   riga**: zero inerti su tredici pagine, le 65 liste allineate, il confronto che si apre dalla revisione passata),
-  `mobile.js` (**74**: gli otto telefoni, la revisione, le frecce, il rifiuto con motivo, la prova, lo stato vuoto, 40, il
+  `mobile.js` (**75**: gli otto telefoni, la revisione, le frecce, il rifiuto con motivo, la prova, lo stato vuoto, 40, il
   quadro del giorno e la tab Dipartimenti; a ogni passo nessuno schermo che scorre di lato e console pulita), `costi.js`
   (48) e `agenda-chat.js` (54); da qualunque cartella, leggono anche `CHROME_PATH`, girano con `reducedMotion: 'reduce'`,
   escono con 1 se una verifica fallisce. Attenzione: Playwright scorre da solo per cliccare un elemento fuori dallo
@@ -563,12 +592,11 @@ non un controllo) e le quattro liste miste, in cui la colonna resta e qualche ce
 1. **Il giudizio dell'utente sulla versione 18**: le frecce toccano ogni riga e ogni card, e le catture del prima/dopo
    sono pronte. In particolare va risollevata la scelta della decisione 40 sulle **liste miste** (la colonna che resta
    con la cella vuota): è l'unica che si vede e si può ribaltare.
-2. **La chat di dipartimento (candidato 5)**: la seconda domanda ha risposta (la pillola `Fai pure` / `Chiedimi prima`,
-   decisione 41). **Resta aperta la prima**: chi parla nel filo. Il consiglio ha dato il suo verdetto — DGT che indossa
-   il dipartimento — ma l'utente non l'ha ancora confermato, e finché non lo fa non si scrive.
-3. **La scelta fra le tre misure del conto nel titolo** (`?conta=0|1|2`, studio del 2026-09-07): l'utente ha visto le tre
-   forme affiancate in `m-conta-titolo.png` e deve dire quale tiene. Finché non decide resta la 1. Resta anche da sentire
-   il **giudizio sulla versione 17** (i Dipartimenti, i controlli).
+2. **La chat di dipartimento (candidato 5): tutte e due le domande hanno risposta** (decisioni 41 e 42), quindi non
+   manca più una decisione, manca il **codice**. È il lavoro della prossima sessione, e prima di scriverlo va fatta
+   vedere la forma che prende sulla pagina Dipartimento della Console e sul telefono.
+3. **Il giudizio sulla versione 17** (i Dipartimenti, i controlli) e su tutta la 18: mai dato. La misura del conto nel
+   titolo invece è decisa (la 36, decisione 42).
 4. I giudizi in sospeso delle versioni 6, 8, 11, 12, 14, 15 e 15a; le scelte di dettaglio della barra (decisioni 33 e 34).
 5. I punti aperti elencati in «Come riprendere».
 
@@ -582,16 +610,18 @@ Lavoriamo nella direzione A · Console (schermate/componenti.js, schermate/direz
 avatar/, mobile.js): niente emoji, solo le icone dello sprite; gli avatar sono quelli della versione 10; i colori
 restano quelli del sistema. Sono decise e non si rimettono in discussione: la direzione A, la barra «Oggi in azienda»
 della versione 16 con la correzione 16a, la versione 17 (quadro «due per due», Dipartimenti, regola 25) e la regola 26
-delle frecce di riga della versione 18.
+delle frecce di riga della versione 18, e il conto nel titolo della schermata 1 nella misura da 36.
 
 Vale la regola fondamentale nuova: ogni dubbio progettuale passa dal consiglio (llm-council) prima del codice, con il
 contesto scritto per esteso a ogni consigliere. Quello che si può misurare o contare non è un dubbio progettuale: lì
 misuri.
 
-Questa sessione facciamo il candidato 5, la chat di dipartimento. Della seconda domanda ho già deciso: la pillola nella
-barra di scrittura con «Fai pure» e «Chiedimi prima», predefinito «Chiedimi prima», ricordata per dipartimento, e vale
-sulla distribuzione dei compiti, mai sulle consegne. Resta aperta la prima: chi parla nel filo. Riportami il verdetto
-del consiglio (DGT che indossa il dipartimento) con le sue conseguenze, e aspetta che scelga.
+Questa sessione costruiamo il candidato 5, la chat di dipartimento. Le due domande sono già decise e non si riaprono:
+nel filo parla DGT che indossa il dipartimento (disco con l'icona del dipartimento, nome «Coordinamento ‹dipartimento›»,
+prompt di coordinamento come proprietà del dipartimento e versionato, costo sulla riga «coordinamento» del
+dipartimento, nessun Coordinatore come dipendente nuovo); e la distribuzione ha la pillola nella barra di scrittura con
+«Fai pure» e «Chiedimi prima», predefinito «Chiedimi prima», ricordata per dipartimento, valida sulla distribuzione dei
+compiti e mai sulle consegne.
 
 Poi costruisci nell'ordine che consigli tu: prima il filo di dipartimento (scrivere al dipartimento, i messaggi che
 arrivano ai fili dei singoli citando l'origine), poi la distribuzione. Prima di scrivere fammi vedere che forma prende

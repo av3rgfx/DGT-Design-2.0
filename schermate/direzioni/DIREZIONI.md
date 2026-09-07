@@ -1618,8 +1618,15 @@ ci sta. Il titolo sta a 26 per la sua larghezza, non per la misura del numero.
 Quattro verifiche nuove in `prove/mobile.js` inchiodano le tre misure, e la terza (`?conta=0` che rifà cadere la riga di
 approva e rifiuta sotto la navigazione) impedisce di ripagare per sbaglio un prezzo già pagato una volta.
 
-**La forma scelta resta la 1** finché l'utente non decide: `CONTA = 1` in `mobile.js`, le altre due dietro il parametro
-come `?quadro=1|3`. Le undici catture del gruppo `quadro` e `dip` sono identiche byte per byte prima e dopo.
+**La scelta dell'utente è la 2** (2026-09-07): `CONTA = 2` in `mobile.js`, le altre due restano dietro il parametro come
+`?quadro=1|3`. La ragione, con i tre telefoni affiancati davanti: **a 26 il numero si legge come la coda del titolo, a 36
+torna a essere un conto** — che è quello che faceva la riga dei due numeri grandi, e che le costava 78 px di altezza. Qui
+ne costa 4.
+
+Il prezzo vero della scelta non sono i 4 px di card ma il margine sotto: la riga con approva e rifiuta passa da 4 px di
+stacco sopra la barra di navigazione a **0**. Ci sta ancora tutta — la prova lo controlla a ogni giro — ma non c'è più
+niente da spendere: se un domani il quadro o la card crescono di un pixel, la riga della decisione finisce sotto, ed è la
+prova a dirlo prima delle catture.
 
 
 ## 5. File
