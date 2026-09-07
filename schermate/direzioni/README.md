@@ -3,6 +3,11 @@
 Tre direzioni sulla stessa schermata (vista principale dell'azienda: 4 dipartimenti, 11 dipendenti AI, 3 al lavoro),
 prova di scala a 40, direzione scelta: **A · Console**. Lo studio e la decisione sono in `DIREZIONI.md`.
 
+**Sezione 6 di `DIREZIONI.md` (2026-09-07): l'analisi delle tre proposte nuove** — il lavoro del dipartimento che si
+tiene d'occhio, l'editor di workflow, i connettori. Nessun codice di prodotto: numeri presi aprendo le pagine, strade
+con il prezzo, la parola, e per le ultime due il verdetto del consiglio (`llm-council`) con i punti ciechi della
+revisione incrociata. **Le decisioni sono dell'utente e sono ancora da prendere.**
+
 - Aprire `confronto.html` nel browser (serve rete per Google Fonts) oppure l'artefatto pubblicato:
   https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f
 - Schermate singole: `direzione-a.html`, `direzione-b.html`, `direzione-c.html`; con `?n=40` la prova di scala.

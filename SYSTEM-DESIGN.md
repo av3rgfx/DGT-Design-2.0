@@ -374,19 +374,39 @@ barra «Oggi in azienda» come quadro del giorno), 17 (il quadro del giorno anch
 controlli inerti) e 18 (le frecce di riga: la regola 25 portata dalle intestazioni alle righe) in `DIREZIONI.md`, sezione 4.
 
 
-### Che cosa il prodotto ancora non ha (2026-09-07)
+### Che cosa il prodotto ancora non ha (2026-09-07, analizzato e contato)
 
-Tre zone segnalate dall'utente a fine sessione, da analizzare prima di disegnarle (dettaglio e fatti in
-`PROSSIMA-SESSIONE.md`, candidati 6, 7 e 8):
+Tre zone segnalate dall'utente. Il 2026-09-07 sono state **analizzate aprendo le pagine e contando**, e le due con più
+di una risposta difendibile sono passate dal consiglio (`llm-council`). Analisi per esteso in
+`schermate/direzioni/DIREZIONI.md`, **sezione 6**; verdetti e domande aperte in `PROSSIMA-SESSIONE.md`. **Le decisioni
+sono dell'utente e sono ancora da prendere.**
 
-- **Le cose create non si guardano insieme.** Gli output di un'esecuzione si vedono solo dentro la pagina Esecuzione —
-  è l'unico punto del prodotto che li legge — e non si aprono. Manca la vista «che cosa ha prodotto questo dipartimento».
-- **L'editor di workflow è solo una figura.** Sta nello specimen (sezione 07, dal secondo riferimento) e non esiste nella
-  direzione A: niente modello, niente clic. Le sue tre porte — Modello, Memoria, Strumento — corrispondono però a cose
-  che il prodotto ha già, e i passi di un'esecuzione sono già la sequenza che un workflow dichiarerebbe.
-- **I connettori stanno sul dipendente.** Strumenti e connessioni vivono nel dossier di ogni dipendente, e lo stesso
-  strumento si ripete su molti (l'«Archivio del cliente» quindici volte). Se il livello giusto sia il dipendente,
-  il dipartimento o l'azienda è un dubbio progettuale, e passa dal consiglio.
+- **Le cose create non si guardano insieme, e si chiamano in quattro modi.** La parola «Output» compare in **4 viste su
+  20** e sono sempre la stessa pagina, l'Esecuzione; «artefatto» **zero volte** in tutto il prodotto. Gli output sono
+  **18** a undici dipendenti e **40** a quaranta; di questi **9** e **19** sono già creati, e **3** e **0** si aprono.
+  Per vederli tutti servono **11 pagine** a undici e **40** a quaranta. E il prodotto risponde in **quattro modi
+  diversi** alla domanda «quante cose abbiamo creato» — gli obiettivi dicono 31 consegne su 59, gli output 9 su 18, le
+  richieste decise 16 su 20, l'aggregatore dei costi 318 — perché «consegna» copre quattro oggetti su quattro periodi e
+  nessuna pagina dice quale sta contando. Nella stessa intestazione di sezione convivono già due parole: `<h3>Output</h3>`
+  con il contatore «Consegne».
+- **L'editor di workflow è solo una figura** (specimen, sezione 07, dal secondo riferimento): non legge il modello, non
+  è cliccabile, e la parola «workflow» compare **zero volte** nel prodotto. Si scosta dal sistema in modo misurabile:
+  **14 icone su 20 non sono nello sprite** (12 da disegnare), **16 colori su 19 fuori palette** fra cui **sei verdi che
+  non sono il lime** (deroga alla regola 4), un **secondo rail** accanto a quello di 6 voci, e un pan/zoom dentro una
+  pagina che si scala già con `zoom` (regola 17). I **18 token `--dgt-ed-*`** di `tokens.css` **non li usa nessuno**:
+  lo specimen non importa `tokens.css` e ridichiara variabili sue. Le sue tre porte (Modello, Memoria, Strumento) e due
+  delle tre tab (Esecuzioni, Test) corrispondono a cose che il prodotto ha già, e i **43 passi** a undici (**156** a
+  quaranta, da 3 a 10 per esecuzione) sono già la sequenza che un workflow dichiarerebbe.
+- **I connettori stanno sul dipendente, e il modello ha già una faglia che nessuno aveva visto.** Strumenti e
+  connessioni vivono nel dossier di ogni dipendente: **46 istanze per 17 nomi** a undici, **160 per 14** a quaranta, e
+  **40 copie di una sola connessione** («Drive di Nova Studio»). Ma **quattro nomi su quattordici sono spenti su ogni
+  dipendente e non sono mai stati usati** — Deploy in produzione, Pubblicazione diretta, Invio e-mail, Banca — e sono
+  gli unici quattro la cui descrizione parla di **permesso** («Solo con approvazione», «Sola lettura») invece che di
+  contenuto: la divisione fra **accesso** e **capacità** è già scritta, sono i 4 spenti contro i 10 accesi. Tre
+  difetti aperti: il chip **«Rinnova»** della connessione scaduta è **inerte**; l'errore di Kim «Chiavi di accesso
+  scadute» **non è attaccato a nessuna connessione**; il permesso «Strumenti e connessioni» ce l'hanno **2 dipendenti
+  su 11**. E lo sprite **non ha** busta, chiave, nuvola né immagine, mentre la scorciatoia delle iniziali in un disco
+  colorato è vietata dalla regola 19: serve una regola nuova per disegnare un servizio senza il suo marchio.
 
 ## 11. Collegamenti
 
@@ -406,7 +426,8 @@ Tre zone segnalate dall'utente a fine sessione, da analizzare prima di disegnarl
 - Branch delle pagine Agenda e Chat (versione 15): `claude/direzione-a-agenda-chat-l1z8tr`, PR #12: https://github.com/av3rgfx/DGT-Design-2.0/pull/12 (unita)
 - Branch della barra «Oggi in azienda» (versione 16): `claude/console-oggi-azienda-bar-kzetlz`, PR #13 (unita): https://github.com/av3rgfx/DGT-Design-2.0/pull/13
 - Branch del quadro del giorno sul telefono, della tab Dipartimenti e dei controlli inerti (versione 17): `claude/console-direzione-a-mobile-vdb1tb`, PR #14 (unita): https://github.com/av3rgfx/DGT-Design-2.0/pull/14
-- Branch delle frecce di riga (versione 18): `claude/candidato-1-frecce-riga-nmd2pt`
+- Branch delle frecce di riga (versione 18): `claude/candidato-1-frecce-riga-nmd2pt`, PR #15 (unita)
+- Branch dell'analisi delle tre proposte (candidati 6, 7 e 8; nessun codice di prodotto, solo documenti): `claude/analisi-proposte-direzione-a-vxpham`
 
 - Artefatto pubblicato: https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b
 - Branch di lavoro: `claude/dgt-design-system-fz5r1g`, PR #1 verso `main`: https://github.com/av3rgfx/DGT-Design-2.0/pull/1
