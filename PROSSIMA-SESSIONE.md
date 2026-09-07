@@ -1,7 +1,9 @@
 # Prossima sessione — passaggio di consegne
 
-Stato al 2026-09-07, fine di una sessione in due tempi: prima **l'analisi delle tre proposte** (candidati 6, 7 e 8),
-poi — dopo la scelta dell'utente — **la versione 19: le consegne del dipartimento**.
+Stato al 2026-09-07, fine di una sessione in tre tempi: prima **l'analisi delle tre proposte** (candidati 6, 7 e 8),
+poi — dopo la scelta dell'utente — **la versione 19: le consegne del dipartimento**, e infine la **correzione
+dell'utente sull'«aprire»**: la consegna si apre in una **pagina dedicata**, non in una tendina. I due artefatti sono
+stati ripubblicati allo stesso indirizzo con la versione 19.
 
 ## Che cosa ha scelto l'utente
 
@@ -74,10 +76,13 @@ Tutto committato e pushato sul branch indicato sotto, con la PR aperta verso `ma
   instabile per `a-11.png`. Controllato: due giri dello stesso codice danno file identici, quindi dentro una sessione è
   stabile; fra sessioni no. La pagina dei Costi non è stata toccata e i suoi numeri non si muovono (318 consegne per
   cliente a undici, 1 179 a quaranta, prima e dopo).
-- **Artefatti: da ripubblicare.** La Console e il telefono cambiano (la pagina Dipartimento), quindi i due artefatti
-  `e6699f3a-879b-4bce-a9d8-6fc21ed84e34` e `34192ba0-51da-4f02-9e64-3a6d698a44e9` **non sono più aggiornati**: vanno
-  rifatti con `build-unico.js` e ripubblicati allo stesso indirizzo. **Non è stato fatto in questa sessione.** Il
-  terzo (`3a3fcb9e-…`, la scelta della barra) non cambia: incorpora otto catture, tutte fra le 46 identiche.
+- **Artefatti: ripubblicati allo stesso indirizzo**, a fine sessione, con la versione 19:
+  - Console `console-unico.html` (492 292 byte, 5 926 righe) → `e6699f3a-879b-4bce-a9d8-6fc21ed84e34`
+  - telefono `mobile-unico.html` (365 413 byte, 4 793 righe) → `34192ba0-51da-4f02-9e64-3a6d698a44e9`
+  I due file unici sono stati costruiti con `build-unico.js` e provati headless prima di pubblicare: zero errori in
+  console, la pagina Dipartimento con le sue sei sezioni, il clic sulla consegna che apre «PAGINA DEL CARRELLO» con le
+  sue tre sezioni, e sul telefono nove schermate con la 9 che si apre al tocco. Il terzo artefatto
+  (`3a3fcb9e-…`, la scelta della barra) non è stato toccato: incorpora otto catture, tutte fra le 50 identiche.
 
 ### Il lavoro della sessione precedente (versione 18): il censimento, 260 non 84
 
@@ -444,7 +449,8 @@ la regola in `SYSTEM-DESIGN.md`, **regola 27**. Che cosa è stato costruito e a 
   apri la pagina». Va detta così nell'interfaccia, o va tolta.
 - **Restano fuori**, dichiarati e col prezzo pagato scegliendo la strada A: «che cosa ha creato l'azienda» e «che cosa
   abbiamo fatto per Rossi Srl». Chiederebbero la strada B (una pagina nel rail).
-- **Da ripubblicare**: i due artefatti (Console e telefono), che questa sessione non ha toccato.
+- **Artefatti**: fatto. Console e telefono sono stati ripubblicati allo stesso indirizzo a fine sessione con la
+  versione 19.
 
 ### 7 · L'editor di workflow — **analizzato, passato dal consiglio, in attesa di scelta**
 
@@ -645,13 +651,12 @@ frecce dei passi tornano da sole (la regola 26 dice che una riga con una destina
 
 ## Come riprendere
 
-**Prima cosa: ripubblicare i due artefatti.** La pagina Dipartimento è cambiata (in Console e sul telefono), quindi
-`e6699f3a-879b-4bce-a9d8-6fc21ed84e34` e `34192ba0-51da-4f02-9e64-3a6d698a44e9` **non sono più aggiornati**: questa
-sessione non ha fatto in tempo. `node build-unico.js`, poi lo strumento con `url`, dopo aver letto la versione
-pubblicata per intero (vedi «Note tecniche»: 4 700–5 600 righe, un centinaio di migliaia di token). Il terzo artefatto
-non cambia — controllato: le otto catture che incorpora sono fra le 46 identiche.
+**Gli artefatti sono a posto.** Console e telefono sono stati ripubblicati allo stesso indirizzo alla fine di questa
+sessione con la versione 19 (`e6699f3a-879b-4bce-a9d8-6fc21ed84e34` e `34192ba0-51da-4f02-9e64-3a6d698a44e9`); il terzo
+(la scelta della barra) non è stato toccato perché le otto catture che incorpora sono fra le 50 identiche. Vanno
+rifatti solo se la prossima sessione cambia la Console o il telefono.
 
-**Poi: il giudizio sulla versione 19.** Le quattro cose aperte stanno sotto il candidato 6, e la prima si vede a occhio:
+**Prima cosa: il giudizio sulla versione 19.** Le quattro cose aperte stanno sotto il candidato 6, e la prima si vede a occhio:
 una consegna che aspetta il titolare **compare due volte** sulla pagina, in «Consegne di oggi» e in «Da approvare».
 Sono 1–2 card, a 1 988–2 302 px di distanza (due schermate piene). Restano lime tutte e due; si toglie in una riga.
 
@@ -791,8 +796,13 @@ non un controllo) e le quattro liste miste, in cui la colonna resta e qualche ce
 - L'artefatto si ripubblica allo stesso indirizzo passando `url` allo strumento, dopo averlo letto con `action: read`: lo strumento
   salva il file e chiede che sia letto **per intero** (a blocchi di 250–450 righe, ognuno sotto i 25 000 token; il `grep` non
   basta). Il file unico della Console pesa circa 460 KB (5 710 righe), quello del telefono 345 KB (4 679). Mai forzare. La
-  sottoscrizione agli aggiornamenti dell'artefatto **non si registra da questa sessione** (`mint_failed`): non dire che si sta
-  «guardando».
+  sottoscrizione agli aggiornamenti dell'artefatto **non si registra da questa sessione** (`mint_failed`, e in questa
+  sessione `subscribe_forbidden` con un 403: «subscribing requires a session credential», per tutti gli artefatti fino
+  alla fine della sessione): non dire che si sta «guardando». La pubblicazione riesce lo stesso.
+- **Il conto vero della rilettura, misurato in questa sessione**: la Console 5 713 righe, il telefono 4 700. Blocchi da
+  900 righe passano finché le righe sono corte (il motore degli avatar), ma appena si arriva al CSS e alle funzioni
+  della Console il limite dei 25 000 token obbliga a scendere a 400–450. In tutto sono servite **13 letture** e circa
+  **200 000 token** per i due artefatti: da mettere in conto prima, non alla fine.
 - **Prima di ripubblicare, controllare se serve**: la pagina della scelta della barra incorpora otto catture; in questa
   sessione sono risultate tutte identiche byte per byte, quindi l'artefatto non è stato toccato e non è costato la
   rilettura. Il controllo è un `cmp` per immagine, un minuto.
@@ -828,18 +838,19 @@ non un controllo) e le quattro liste miste, in cui la colonna resta e qualche ce
 
 ## Cosa manca
 
-1. **Ripubblicare i due artefatti** (Console e telefono): la pagina Dipartimento è cambiata e questa sessione non ha
-   fatto in tempo. È la prima cosa della prossima.
-2. **Il giudizio dell'utente sulla versione 19**, e in particolare sulla ripetizione della consegna in attesa (1–2 card
+1. **Il giudizio dell'utente sulla versione 19**, e in particolare sulla ripetizione della consegna in attesa (1–2 card
    per pagina, a 1 988–2 302 px di distanza) e sul perimetro «di oggi».
-3. **La scelta fra il candidato 7 e il candidato 8**, e le risposte alle domande che sono **sue** e non del consiglio:
+2. **La scelta fra il candidato 7 e il candidato 8**, e le risposte alle domande che sono **sue** e non del consiglio:
    per il 7 la riscrittura della spina dorsale delle approvazioni e la sorte della sezione 07 dello specimen (che
    **emenda `CLAUDE.md`**); per l'8 il verdetto, la parola «accesso» e la regola di disegno di un servizio senza il
    suo marchio.
-4. **Il giudizio sulla versione 18** (le frecce) e sulla 17: mai dato. Le catture del prima/dopo sono pronte.
-5. **La chat di dipartimento (candidato 5)**: le due domande hanno risposta (decisioni 41 e 42), manca il codice.
-6. I giudizi in sospeso delle versioni 6, 8, 11, 12, 14, 15 e 15a; le scelte di dettaglio della barra (decisioni 33 e 34).
-7. I punti aperti elencati in «Come riprendere».
+3. **Il giudizio sulla versione 18** (le frecce) e sulla 17: mai dato. Le catture del prima/dopo sono pronte.
+4. **La chat di dipartimento (candidato 5)**: le due domande hanno risposta (decisioni 41 e 42), manca il codice.
+5. I giudizi in sospeso delle versioni 6, 8, 11, 12, 14, 15 e 15a; le scelte di dettaglio della barra (decisioni 33 e 34).
+6. I punti aperti elencati in «Come riprendere».
+
+Gli artefatti **non** sono in questa lista: Console e telefono sono stati ripubblicati alla fine della sessione con la
+versione 19.
 
 ### Prompt di avvio suggerito per la prossima sessione
 
@@ -855,11 +866,13 @@ restano quelli del sistema; niente logo o marchi di terzi. Sono decise e non si 
 A, la barra «Oggi in azienda» della versione 16 con la correzione 16a, la versione 17, la regola 26 delle frecce, il
 conto nel titolo a 36, le due risposte del candidato 5, e la decisione 45 (candidato 6, strada A, parola «consegna»).
 
-Prima cosa: ripubblica i due artefatti (Console e telefono), che la versione 19 ha reso vecchi.
+Gli artefatti sono già allineati alla versione 19 (ripubblicati a fine sessione allo stesso indirizzo): si rifanno solo
+se questa sessione tocca la Console o il telefono.
 
-[POI: il mio giudizio sulla versione 19, e quale fra il candidato 7 (l'editor di workflow) e il candidato 8 (i
+[QUI VA LA MIA RISPOSTA: il giudizio sulla versione 19 — in particolare se la consegna in attesa debba comparire una
+volta sola invece che in due sezioni — e quale fra il candidato 7 (l'editor di workflow) e il candidato 8 (i
 connettori) si costruisce. Tutti e due aspettano risposte mie, elencate in «Come riprendere»: senza quelle non si
-comincia.]
+comincia, quindi chiedimele prima di scrivere codice.]
 
 Il metodo di sempre: prima e dopo, rifare i font locali, lanciare le quattro prove di prove/ e catturare le pagine
 prima di toccare qualcosa; ogni dubbio progettuale passa dal consiglio, ma quello che si misura si misura. Alla fine:
