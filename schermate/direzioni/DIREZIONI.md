@@ -2630,3 +2630,84 @@ avevi scritto entra in vigore e va da sola. È un **rodaggio dell'innesco**, non
 
 **Da confermare dall'utente**: la regola «la clausola può solo stringere», il rodaggio degli inneschi
 esterni (e con quale N), e che cosa fa una routine quando tocca il tetto.
+
+### 7.9 Le tre risposte dell'utente, verificate (2026-09-08)
+
+#### 1 · «Fai pure» con una sezione dove provare la routine — l'idea è giusta, e il prodotto la fa già due volte
+
+L'utente scarta (correttamente) la proposta «la clausola può solo stringere»: bloccherebbe proprio ciò
+per cui le routine esistono. Accetta il rischio delle uscite non controllate e chiede in cambio **un
+posto dove provare la routine prima di darle il «fai pure»**, e lo stesso per i workflow.
+
+**Misurato: non è un meccanismo nuovo, è il terzo uso di uno schema che c'è già.**
+
+| Meccanismo | Che cosa mette alla prova | Numeri veri nel modello |
+|---|---|---|
+| **Colloquio** | un dipendente, prima che lavori | Nora: **12 casi** con l'esito atteso, punteggio **91** su **soglia 85**, **4 €**, 18 min. Social media manager: 10 casi, 88 su 85, 5 €, 24 min |
+| **Prova** (di una revisione) | un cambiamento, prima che si applichi | **20 esecuzioni, 30 €, 5 giorni** (rv1) e **20 esecuzioni, 60 €, 10 giorni** (rv2); una revisione è **già** in `stato: 'prova'` |
+| **Prova della routine** (da fare) | una routine, prima del «fai pure» | — |
+
+Quindi la sezione non va inventata: si applica a un terzo oggetto la forma che il prodotto usa già per i
+dipendenti e per i cambiamenti, con lo stesso vocabolario (casi, soglia, esito, costo, durata).
+
+**Proposta che affina l'idea: il «fai pure» non si sceglie, si guadagna.** La routine nasce «chiedi
+prima»; la pillola «fai pure» si accende solo dopo che la routine ha passato la sua prova — N avvii che
+il titolare ha firmato senza cambiare niente. È esattamente la forma della revisione (`prova` →
+`applicata`), ed è coerente con la decisione della versione 20, dove **la delega nasce spenta**.
+Chi vuole il «fai pure» subito lo può ancora forzare, ma è una scelta esplicita e non il valore di
+partenza.
+
+#### 2 · «Più stretta» e «più permissiva», in parole semplici
+
+La regola d'azienda dice **quanto controllo serve**. Una routine può chiederne **di più** (stretta) o
+**di meno** (permissiva).
+
+- **Più stretta = chiedi più controllo di quanto la regola pretenda.** `g3` dice «le liste di lead
+  escono da sole sotto i 20 €»; la lista dei 120 lead costa **14 €**, quindi uscirebbe da sola. Se la
+  routine dice «questa voglio vederla sempre», stai chiedendo *più* firme del minimo. Non fa danni:
+  al massimo firmi una cosa che potevi non firmare.
+- **Più permissiva = chiedi meno controllo di quanto la regola pretenda.** `g1` dice «uscite verso i
+  clienti: sempre da approvare»; se la routine del follow-up dice «esce da sola», stai togliendo una
+  firma che la regola pretendeva. Qui il danno è possibile, ed è il caso che l'utente ha deciso di
+  accettare — in cambio della prova.
+
+#### 3 · Il tetto e l'avviso: l'idea regge, ma va corretta su due punti misurati
+
+**Il buco.** L'avviso proposto confronta la routine nuova con *un'altra* routine che ha un tetto più
+alto. Ma il rischio vero è la **somma**: tre routine da 30 € al giorno sullo stesso dipendente non
+scattano in nessun confronto a due a due, e insieme espongono **90 € al giorno**.
+
+**Il tetto esiste già, ed è per dipendente.** Nel dossier: `budget: { mese: 120, speso: 72, giorno: 10,
+oggi: 12 }` per Nora, `{ mese: 300, …, giorno: 15, oggi: 9 }` per il Social media manager. Quindi la
+domanda giusta non è «c'è un'altra routine con un tetto più alto?» ma **«i tetti delle routine di questo
+dipendente, sommati, sfondano il suo budget del giorno o del mese?»**.
+
+**Un difetto che salta fuori da questa verifica**: il `oggi` di Nora è **12 €** contro un `giorno` di
+**10 €**. È già oltre il suo tetto giornaliero, e in tutta la Console non c'è un posto che lo dica.
+
+**Tetto e soglia non sono la stessa cosa.** `g4` «Spese sopra 50 €: sempre da approvare» **non è un
+tetto**: è una soglia di approvazione, e per giunta oggi è **spenta** (`attiva: false`). Un tetto
+*ferma*, una soglia *chiede*. Da qui tre livelli distinti:
+
+| Livello | Che cos'è | Che cosa fa |
+|---|---|---|
+| Azienda · `g4` | soglia | sopra 50 € **chiede** al titolare |
+| Dipendente · `budget.giorno` / `.mese` | tetto | **ferma** il dipendente |
+| Routine · il suo tetto | tetto | **ferma** quella routine, prima degli altri due |
+
+L'avviso allora dice una cosa vera e utile: «questa routine porta Nora a 45 € al giorno, ma il suo tetto
+è 10 € — sospendo, abbasso, o alzo il tetto di Nora?».
+
+#### 4 · Rodaggio approvato
+
+Le prime N volte un innesco esterno produce una richiesta. Proposta: **N = 3**, e il conto è lo stesso
+della prova del punto 1 — non due meccanismi, uno solo.
+
+#### Nuova pagina in arretrato: **Impostazioni**
+
+L'utente vuole sia «approvazione a ogni avvio» sia «approvazione dell'uscita», con la preferenza
+modificabile in una schermata Impostazioni **che non esiste ancora**. Sono due porte diverse: la prima
+sta *prima* che i soldi si spendano, la seconda *dopo*. Oggi DGT ha solo la seconda.
+
+**Da confermare dall'utente**: il «fai pure» che si guadagna invece di sceglierlo, N = 3, e l'avviso
+sulla somma invece che sul confronto a due a due.
