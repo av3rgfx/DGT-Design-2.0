@@ -90,6 +90,20 @@ const CATTURE = [
   { g: 'consegne', nome: 'm-consegna-post', file: 'mobile.html', q: 'schermata=9&dip=mkt&consegna=c4-2', sel: '.m-tel', h: 1100 },
   { g: 'consegne', nome: 'a-dipartimento-40', q: 'pagina=dipartimento&dip=svi&n=40&tendina=chiusa' },
   { g: 'consegne', nome: 'm-consegne', file: 'mobile.html', q: 'schermata=8&dip=svi', sel: '.m-tel', h: 1100, eval: "document.querySelector('.m-scroll').scrollTop=350" },
+  /* --- versione 20: i workflow e il perimetro delle consegne (2026-09-08) ---
+     Le due sezioni si cercano ancora con `nth-of-type(2)` qui sopra e continuano a valere: la versione 20 **non ha
+     aggiunto nessuna sezione** al Dipartimento, e l'ingresso ai workflow e' una pillola dentro l'intestazione della
+     prima. Se un domani una sezione si aggiunge, questi indici vanno rifatti dal titolo, come nelle prove. */
+  { g: 'workflow', nome: 'a-workflow-elenco', q: 'pagina=workflow&dip=mkt&tendina=chiusa' },
+  { g: 'workflow', nome: 'a-workflow', q: 'pagina=workflow&workflow=w1&tendina=chiusa' },
+  { g: 'workflow', nome: 'a-workflow-nodo', q: 'pagina=workflow&workflow=w5&nodo=2&tendina=chiusa' },
+  { g: 'workflow', nome: 'a-workflow-firma', q: 'pagina=workflow&workflow=w5&tendina=chiusa', clic: '[data-az="firma"]' },
+  { g: 'workflow', nome: 'a-workflow-canvas', q: 'pagina=workflow&workflow=w5&nodo=2&tendina=chiusa', sel: '.wcanvas', h: 1400 },
+  { g: 'workflow', nome: 'a-workflow-40', q: 'n=40&pagina=workflow&workflow=w3&tendina=chiusa' },
+  { g: 'workflow', nome: 'm-workflow', file: 'mobile.html', q: 'schermata=10&dip=mkt&workflow=w5', sel: '.m-tel', h: 1100 },
+  { g: 'workflow', nome: 'a-sez-consegne-mese', q: 'pagina=dipartimento&dip=mkt&tendina=chiusa', sel: '.a-main section:nth-of-type(2)', h: 1600, clic: '[data-az="periodo"][data-sez="dip.consegne"][data-v="mese"]' },
+  { g: 'workflow', nome: 'a-dipartimento-workflow', q: 'pagina=dipartimento&dip=mkt&tendina=chiusa' },
+  { g: 'workflow', nome: 'spec-editor', file: '../../design-system/specimen.html', q: '', sel: '.editor', h: 1100 },
   { g: 'dip', nome: 'm-chat-cerca', file: 'mobile.html', q: 'schermata=4', sel: '.m-tel', h: 1100, clic: '[data-az="mcerca"]', eval: "(()=>{const i=document.querySelector('input[data-mcerca]');i.value='mar';i.dispatchEvent(new Event('input',{bubbles:true}))})()" },
   /* --- versione 17: i controlli delle intestazioni di sezione, la regola applicata --- */
   { g: 'controlli', nome: 'a-sez-dipendenti', q: 'tendina=chiusa', sel: '.a-main section:nth-of-type(3) .shead', h: 1400 },

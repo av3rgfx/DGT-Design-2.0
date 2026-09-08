@@ -30,7 +30,7 @@ DGT al posto di Google Meet. Contenuti sintetici, in italiano.
 | `design-system/tools/` | `screenshot.js` (cattura desktop/mobile dello specimen), `screenshot-page.js` e `screenshot-elementi.js` (cattura di una pagina o di elementi per selettore), `fetch-fonts.py` (Urbanist locale per gli ambienti senza Google Fonts), `wcag.py` (utilità di contrasto, non è una regola). |
 | `design-system/archive/` | Varianti precedenti (A e B). **Non fanno testo.** |
 | `schermate/componenti.js` | I componenti della Console condivisi con il telefono e con le pagine degli avatar (dal 2026-09-06, versione 14): il CSS delle primitive del sistema applicate al prodotto (pulsanti rotondi, avatar e pile, pillole, chip, punti, badge, card con intaglio, righe, ripartizione, e dalla versione 15 le bolle della chat), le variabili, e le funzioni che le stampano (`av`, `pair`, `chipStato`, `messaggio`, `iconaTipo`, `eur`, `differenze`…); `window.DGT_COMPONENTI`, caricato dopo `comune.js`, con il suo CSS in pagina prima di quello della Console. |
-| `schermate/direzioni/` | Schermate reali: tre direzioni per la vista principale, prova a 40, direzione scelta (`DIREZIONI.md`); dentro la direzione A le pagine Richieste, Dipartimento, Dipendente, Esecuzione, Costi, Agenda e Chat; il telefono del titolare (`mobile.html`: approvazioni, chat, agenda); le prove cliccate in `prove/` (`console.js`, `mobile.js`, `costi.js`, `agenda-chat.js`, con il README che dice il comando); gli screenshot in `screenshot/`. |
+| `schermate/direzioni/` | Schermate reali: tre direzioni per la vista principale, prova a 40, direzione scelta (`DIREZIONI.md`); dentro la direzione A le pagine Richieste, Dipartimento, Dipendente, Esecuzione, Consegna, **Workflow**, Costi, Agenda e Chat; il telefono del titolare (`mobile.html`: approvazioni, chat, agenda, dipartimenti, consegna, **workflow**); le prove cliccate in `prove/` (`console.js`, `mobile.js`, `costi.js`, `agenda-chat.js`, `workflow.js`, con il README che dice il comando); gli screenshot in `screenshot/`. |
 | `schermate/direzioni/avatar/` | Avatar dei dipendenti AI: motore del kit (verbatim in `vendor-avatars/`, impacchettato in `avatar-motore.js`) e involucro `avatar-dgt.js` con colori, stati e animazione della Console. |
 | `PRODUCT.md`, `CLAUDE.md` | Contesto di prodotto e istruzioni per le sessioni. |
 | `PROSSIMA-SESSIONE.md` | Passaggio di consegne: stato, decisioni, come riprendere. |
@@ -61,8 +61,12 @@ Valori campionati dalle immagini originali a 1920 px.
 | `--dgt-t2` / `--dgt-t2-light` | `#9A9A9A` / `#6B6B6B` | testo secondario su scuro / su chiaro |
 | `--dgt-border` / `--dgt-border-light` | `rgb(255 255 255/.14)` / `rgb(0 0 0/.14)` | bordi di pillole e pulsanti vuoti |
 
-L'editor a nodi ha una palette propria (`--dgt-ed-*`): neri `#0A0A0A…#1A1A1A`, verde `#4FCB58`
-con bagliore, nodo selezionato `#2F8F3E → #1C5A22`, rosso `#F05A50`.
+L'editor a nodi ha una palette propria (`--dgt-ed-*`): neri `#0A0A0A…#1A1A1A`. **Dal 2026-09-08 (versione 20) il suo
+accento è il lime `#B8FC64`, non più il verde `#4FCB58`**: il canvas a nodi non è più solo una figura — il prodotto lo
+applica nella pagina Workflow, e due accenti nella stessa applicazione violerebbero la regola 4. Nodo selezionato
+`#B8FC64 → #9AD84B` con il **testo all'inchiostro** (sul lime il bianco non si legge), bagliore
+`rgb(184 252 100/.55)`, rosso `#F04848`, quello del sistema. È l'emendamento a `CLAUDE.md` deciso dall'utente, e vale
+solo per il colore. I 18 token non li importa nessun file: restano inerti, ma non più sbagliati.
 
 ## 4. Tipografia
 
@@ -120,7 +124,8 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 | Campione colore | 220×220 r38, bordo 4 `#565656`, cursore con etichetta bianca |
 | Card sfida | `#4D4D4D` r30, icona in cerchio contornato 80 (lime), testo 14/20 centrato; una lime |
 | Passo del processo | cerchio contornato 64 con icona + pillola `#4D4D4D` 64; il primo lime; frecce tratteggiate |
-| Editor a nodi | rail di tessere 44 r14 (attiva verde luminosa), titolo 26 con percorso e tag rosso, tab a pillola, canvas puntinato 18, nodi 96 r18 con riflesso, nodo agente 208×100, nodo selezionato verde con campi, nodo disattivato con cestino, connettori `#4FCB58` con bagliore, mini-mappa, zoom, pillole in basso a destra (ora in lime), barra chat con ID monospazio |
+| Editor a nodi (specimen, sezione 07) | rail di tessere 44 r14 (attiva lime luminosa), titolo 26 con percorso e tag rosso, tab a pillola, canvas puntinato 18, nodi 96 r18 con riflesso, nodo agente 208×100, nodo selezionato lime con i campi e il testo all'inchiostro, nodo disattivato con cestino, connettori `#B8FC64` con bagliore, mini-mappa, zoom, pillole in basso a destra, barra chat con ID monospazio |
+| **Canvas del workflow** (prodotto, versione 20) | il precedente portato dentro la Console, **senza pan, zoom e mini-mappa** (regola 17: la cornice si scala già con `zoom`). Griglia puntinata 18 su `--dots-box`; nodi 208×96 r18 su `--card` con riflesso; serpentina di cinque nodi per riga, passo 248×210, la riga dispari all'indietro; connettori lime con bagliore, tratteggiati verso il titolare, punteggiati e chiari per i passi da fare; porte 10 px con l'etichetta 10/14 sotto il nodo (spente se il passo non è ancora stato fatto); nodo aperto con l'orlo lime e i suoi campi (il canvas cresce di 168 px); ultimo nodo **il titolare**, orlo tratteggiato, e lime pieno quando aspetta; barra in fondo con il conto e l'uscita all'esecuzione. Sul telefono la stessa cosa **in colonna**, con il connettore a barretta |
 
 ## 7. Schermate
 
@@ -158,8 +163,10 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 - Confronto visivo sezione per sezione con le immagini originali a 1920 px.
 - Differenza voluta: le card delle sfide sono su una griglia regolare invece che sparse attorno al
   titolo, per restare leggibili su mobile.
-- Le schermate del prodotto hanno quattro prove cliccate con Playwright in `schermate/direzioni/prove/` (Console 107,
-  mobile 70, Costi 48, Agenda e Chat 54; 279 verifiche in tutto) e gli screenshot in `schermate/direzioni/screenshot/`. La manutenzione del
+- Le schermate del prodotto hanno **cinque** prove cliccate con Playwright in `schermate/direzioni/prove/` (Console
+  141, mobile 82, Costi 48, Agenda e Chat 54, **Workflow 60**; **385 verifiche** in tutto) e gli screenshot in
+  `schermate/direzioni/screenshot/` (**70 catture**). La quinta prova sta in un file suo perché `console.js` sceglie
+  tre sezioni con `nth-of-type`: aggiungerle una prova che ne aggiunge una li sposterebbe. La manutenzione del
   2026-09-06 (versione 14) è stata verificata con trentuno catture identiche byte per byte prima e dopo e con le impronte
   degli stili calcolati di ogni elemento (`DIREZIONI.md`, «Versione 14»); le pagine Agenda e Chat (versione 15) con
   venticinque catture identiche byte per byte e le cornici del telefono confrontate con l'albero precedente. La
@@ -391,6 +398,37 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     - **una sezione nuova sposta gli indici di tutte quelle dopo.** Aggiungendo la sesta si sono rotte tre prove e una
       cattura che puntavano a `section:nth-of-type(5)`: da qui in avanti prove e catture cercano la sezione **dal
       titolo**, non dalla posizione.
+
+28. **Un workflow è il lavoro dichiarato di un dipartimento, disegnato a nodi; e un nodo è un passo, non un
+    dipendente** (2026-09-08, versione 20). L'utente ha scelto **l'editor a nodi vero** del secondo riferimento,
+    contro il parere unanime di un consiglio; la parola è **workflow**, sua. Che cosa ci sta dentro l'ha deciso una
+    misura contro un 5-0: il consiglio voleva il **nodo-dipendente**, e tutti e cinque i consiglieri hanno poi scritto
+    da soli l'obiezione giusta — il passaggio di mano fra due dipendenti nei dati non c'è. Contato: **zero casi**, in
+    tutte e due le taglie (quello che esiste sono 4 riferimenti alla *propria* consegna passata e 11 `serie`, tutte
+    dello stesso dipendente). **Il nodo è un passo**, che nel modello c'è per davvero — 43 a undici, 156 a quaranta,
+    con modello, strumenti, costo, durata ed esito — e i workflow sono **6 a undici** e **26 a quaranta**, da 4 a 11
+    nodi, fino a **36 elementi** sul canvas contro i 17 della figura di riferimento. Quattro conseguenze:
+    - **l'ultimo nodo è il titolare, e porta la regola che ferma lì la consegna.** Non è un dipendente in più:
+      l'ultimo passo di ogni dipartimento è già «Consegna al titolare», e la consegna lì si ferma davvero. Il nodo
+      porta il nome di una delle quattro regole di `m.regole`, quindi **il workflow non sostituisce le regole di
+      approvazione: le fa vedere**. È così che il canvas mostra il punto in cui il titolare è il collo di bottiglia
+      della sua azienda, senza inventare un secondo lavoratore. Il nodo del titolare **non porta un avatar in tinta**:
+      la regola 19 dice che il disco in tinta è un dipendente AI.
+    - **la delega si dichiara prima di essere accesa, e nasce spenta.** «Firma anticipata» vuol dire firmare in
+      anticipo le uscite che rispettano quel workflow, e si accende **un workflow alla volta**. I tre freni —
+      soglia di costo, perimetro, scadenza — si disegnano sempre, anche da spenta, e portano numeri misurati (la
+      soglia dal costo vero del workflow, il perimetro dal cliente dell'esecuzione). Finché è spenta la coda resta
+      esattamente com'è: **la spina dorsale non si riscrive per costruire il posto dove un giorno la si riscriverà.**
+    - **un canvas dentro una cornice che si scala non si trascina: si stende.** Niente pan, niente zoom, niente
+      mini-mappa (regola 17: due zoom annidati litigano). I nodi si dispongono su una **serpentina** calcolata nella
+      funzione che stampa — cinque per riga, la riga dispari all'indietro così i connettori non si incrociano — e gli
+      archi rileggono le stesse coordinate: nessuna misura presa dopo il disegno, quindi la pagina è identica a ogni
+      giro. Su uno schermo stretto lo stesso oggetto **si gira di novanta gradi** e diventa una colonna: non un
+      canvas rimpicciolito, la stessa cosa letta per lungo.
+    - **una pagina nuova non deve costare una sezione.** L'ingresso ai workflow è una **pillola nell'intestazione**
+      della prima sezione del Dipartimento: zero sezioni aggiunte, zero pixel, zero voci nel rail, e gli indici
+      `nth-of-type` di tre prove e due catture restano al loro posto. Una settima sezione sarebbe costata ~700 px
+      misurati e li avrebbe spostati tutti.
     Il perimetro dichiarato: la sezione dice «di oggi» e mostra le consegne delle esecuzioni correnti. Il modello non
     ha un orologio (`azienda.ora` è fisso), quindi il «tempo reale» che il prodotto può promettere è *lo stato al
     momento in cui si apre la pagina*, con i quattro stati che `giornata()` distingue — e va detto così, non di più.
@@ -425,14 +463,14 @@ sono dell'utente e sono ancora da prendere.**
   richieste decise 16 su 20, l'aggregatore dei costi 318 — perché «consegna» copre quattro oggetti su quattro periodi e
   nessuna pagina dice quale sta contando. Nella stessa intestazione di sezione convivono già due parole: `<h3>Output</h3>`
   con il contatore «Consegne».
-- **L'editor di workflow è solo una figura** (specimen, sezione 07, dal secondo riferimento): non legge il modello, non
-  è cliccabile, e la parola «workflow» compare **zero volte** nel prodotto. Si scosta dal sistema in modo misurabile:
-  **14 icone su 20 non sono nello sprite** (12 da disegnare), **16 colori su 19 fuori palette** fra cui **sei verdi che
-  non sono il lime** (deroga alla regola 4), un **secondo rail** accanto a quello di 6 voci, e un pan/zoom dentro una
-  pagina che si scala già con `zoom` (regola 17). I **18 token `--dgt-ed-*`** di `tokens.css` **non li usa nessuno**:
-  lo specimen non importa `tokens.css` e ridichiara variabili sue. Le sue tre porte (Modello, Memoria, Strumento) e due
-  delle tre tab (Esecuzioni, Test) corrispondono a cose che il prodotto ha già, e i **43 passi** a undici (**156** a
-  quaranta, da 3 a 10 per esecuzione) sono già la sequenza che un workflow dichiarerebbe.
+- ~~**L'editor di workflow è solo una figura**~~ — **fatto nella versione 20** (2026-09-08): il canvas a nodi è la
+  pagina **Workflow** della Console (la decima superficie) e la schermata 10 del telefono, e legge il modello vero.
+  Quello che restava aperto è stato risolto così: i **sei verdi** sono diventati il lime (emendamento a `CLAUDE.md`,
+  regola 4), il **secondo rail** non c'è (l'ingresso è una pillola nell'intestazione di sezione, il rail resta a sei),
+  il **pan/zoom** non c'è (regola 17: il canvas si stende invece di trascinarsi), e le icone nuove sono zero — i nodi
+  usano lo sprite che c'era (`i-bolt`, `i-bot`, `i-star`, `i-hand`, `i-rows`, `i-gear`). Le tre porte e le due tab che
+  già corrispondevano a cose del prodotto non sono state reinventate. **Restano fuori**: il trascinamento dei nodi, il
+  collegamento di un nodo a un altro con il mouse, e la mini-mappa.
 - **I connettori stanno sul dipendente, e il modello ha già una faglia che nessuno aveva visto.** Strumenti e
   connessioni vivono nel dossier di ogni dipendente: **46 istanze per 17 nomi** a undici, **160 per 14** a quaranta, e
   **40 copie di una sola connessione** («Drive di Nova Studio»). Ma **quattro nomi su quattordici sono spenti su ogni

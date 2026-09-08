@@ -1,205 +1,109 @@
 # Prossima sessione — passaggio di consegne
 
-Stato al 2026-09-07, fine di una sessione in tre tempi: prima **l'analisi delle tre proposte** (candidati 6, 7 e 8),
-poi — dopo la scelta dell'utente — **la versione 19: le consegne del dipartimento**, e infine la **correzione
-dell'utente sull'«aprire»**: la consegna si apre in una **pagina dedicata**, non in una tendina. I due artefatti sono
-stati ripubblicati allo stesso indirizzo con la versione 19.
+Stato al 2026-09-08, fine della sessione della **versione 20**: il perimetro delle consegne e **i workflow** (il
+candidato 7), con il canvas a nodi vero che l'utente ha scelto contro il verdetto unanime di un consiglio.
 
 ## Che cosa ha scelto l'utente
 
-Letta l'analisi, ha scelto: **si comincia dal candidato 6**, **strada A** (una sezione in più sulla pagina
-Dipartimento, nessuna pagina nuova nel rail), e la parola è **«consegna»**. Ha aggiunto una domanda sua — *«avrebbe
-senso poter espandere la sezione mostrando per intero tutti gli output con più dettagli?»* — e ha detto di non aver
-capito la domanda che gli avevo fatto sull'«aprire», che era scritta in gergo. Le due cose erano **la stessa domanda
-vista dai due lati**, e la risposta è nel punto 5 qui sotto.
+Sette risposte, date **prima** che scrivessi una riga di codice (il prompt diceva di chiederle):
 
-**I due verdetti del consiglio (editor e connettori) restano `da confermare`**: non sono stati toccati.
+| Domanda | Risposta |
+|---|---|
+| La consegna in attesa che compare due volte | **Resta com'è**: due volte, lime tutte e due |
+| Il perimetro di «Consegne di oggi» | **Pillole del periodo**, come nei Costi |
+| Quale candidato | Il **7**, l'editor di workflow |
+| La forma | **L'editor a nodi vero**, come la sezione 07 — contro il 5-0 di un consiglio precedente |
+| La delega | **Nasce spenta**: i tre freni si disegnano, la firma anticipata è una pillola che accende lui |
+| La sezione 07 dello specimen | **Si ripunta con la palette del sistema** (emenda `CLAUDE.md`) |
+| La parola | **Workflow** — «è un termine informatico e non credo abbia una vera traduzione» |
 
-## Che cosa è stato costruito (versione 19)
+## Che cosa è stato costruito (versione 20)
 
-Una **sezione nuova sulla pagina Dipartimento**, seconda su sei, in Console e sul telefono: **«Consegne di oggi»**.
+### 1. Il perimetro: le consegne passate c'erano già
 
-1. **Una parola sola.** «Consegna» = la cosa creata da un'esecuzione. Prima ne servivano quattro (`output`,
-   «Consegne», `allegato`, `consegne`) e il prodotto rispondeva in quattro modi diversi a «quante cose abbiamo
-   creato». Sceglierla ha costretto a due rinomine nel codice, invisibili sulla pagina: `consegneDi(e, periodo,
-   approvate)` → **`contaConsegne`** (conta, non elenca) e `rigaConsegna` del telefono → **`rigaRichiesta`** (prende
-   una richiesta). Il primo tentativo è finito in `SyntaxError: Identifier 'consegneDi' has already been declared`.
-2. **Nessun numero nuovo.** `consegneDi(dip)` raccoglie gli `output` delle esecuzioni: 18 a undici (Sviluppo 7,
-   Marketing 5, Vendite 4, Amministrazione 2), 40 a quaranta (10 per dipartimento). In più collega due cose che il
-   modello aveva e nessuno leggeva insieme: **il passo che l'ha prodotta** (con esito, strumenti, durata, costo) e
-   **le voci di log di quel passo**.
-3. **Il costo, in pixel.** La pagina Sviluppo passa da 1 880 a **2 594 px**, Marketing da 2 258 a **2 960**, Sviluppo
-   a quaranta da 2 882 a **3 894**. La sezione da sola: 674 px (7 card in 2 righe), 972 px (10 card in 3 righe). Card
-   316×294, quattro per riga, la stessa griglia di «Da approvare». **Zero pagine nuove, rail sempre a sei voci.**
-4. **Tre cose decise dalla misura e non da un'opinione**: niente cerchio «cerca» (soglia del prodotto 12 righe, le
-   consegne arrivano a 10 — **è stata la prova esistente a cogliermi in fallo**); nella riga di stato **il solo chip**
-   (al testo restano 30–52 px, «Passo 3 · 23,6 €» ne chiede 89); sotto il titolo il «quando» **senza il verbo** che il
-   chip dice già («Summit Marketing · parte alle 17:00» sforava di 29 px).
-5. **Che cosa vuol dire «aprire una consegna»: una pagina dedicata** — e qui l'utente ha corretto la prima proposta.
-   Avevo messo la **tendina** larga; parole sue: *«la tendina per me è in anteprima presente nel popup a notifica delle
-   approvazioni. Voglio che si apra una pagina dedicata quando si apre una consegna.»* Ha ragione, ed è un confine fra
-   due mestieri: **la tendina serve a decidere in fretta senza perdere la coda** (è ancorata al pannello delle
-   approvazioni, ha il pager «1 di 4» e le quattro decisioni), **una consegna si legge**, e nel prodotto tutto quello
-   che si legge ha una pagina. Quindi `?pagina=consegna&consegna=c1-0` nella cornice delle altre, e sul telefono la
-   **schermata 9**. La freccia della cornice torna al dipartimento.
-   Le sezioni: testata, **Il contenuto** (sempre), **Il passo che l'ha prodotta** (9 consegne su 18 a undici),
-   **La richiesta al titolare** (3 su 18), **Le altre consegne**. Due misure hanno deciso la testata: **due numeri e
-   non tre** (con tre sforava di 77 px, il titolo più lungo del prodotto ha 32 caratteri) e **solo quelli che hanno un
-   valore** (nove consegne su diciotto non nascono da un passo, e «—» due volte è rumore). Provata su tutte e **58 le
-   pagine**: peggior margine 118 px, nessuna scorre di lato, **zero controlli inerti**.
-   La sua idea dell'espansione resta giusta sul suo asse: quello che si espande non è la sezione (dieci righe stanno in
-   una schermata, e la soglia del prodotto è dodici) ma **la singola consegna** — solo che si espande in una pagina.
+Il passaggio di consegne diceva che le pillole del periodo avrebbero richiesto di **inventare dati storici**. Non era
+vero, e bastava guardare: le **richieste decise** sono le consegne uscite in passato, e portano già `giorno`, `tipo`,
+`costo`, `testo`, `allegato` e la data della decisione. **Zero dati inventati.**
 
-**Una ripetizione, misurata e lasciata**: una consegna in attesa compare due volte sulla pagina (in «Consegne di oggi»
-e in «Da approvare»), **1 o 2 card per pagina, a 1 988–2 302 px di distanza** — due schermate piene, non si vedono mai
-insieme. Restano lime tutte e due (regola 4). **Si toglie in una riga** (`TONO_CONSEGNA.attesa`) se l'utente vuole.
+| Consegne | oggi | sette giorni | trenta giorni |
+|---|---|---|---|
+| Azienda, a undici | **18** | **30** | **31** |
+| Sviluppo · Marketing · Vendite · Amministrazione | 7 · 5 · 4 · 2 | 9 · 11 · 8 · 2 | 9 · 12 · 8 · 2 |
+| Marketing a quaranta | 10 | 13 | 17 |
 
-Tutto committato e pushato sul branch indicato sotto, con la PR aperta verso `main`.
+Tre cose decise dalla misura: il filtro parte da **ieri** (`giorno >= 1`) perché le decise di oggi sono già nella
+lista corrente — e la conseguenza voluta è che **con «oggi» la pagina è identica alla versione 19**, 2 594 px su
+Sviluppo; il cerchio **«cerca» lo decide il numero** (`SOGLIA_CERCA`, che finalmente serve a qualcosa invece di
+stare in un commento) e compare da solo quando la lista passa le dodici; e una pillola in più, **«Da rifare»**, per
+le consegne che il titolare ha rimandato indietro, che esistono solo nei giorni scorsi.
+
+### 2. I workflow: una misura ha battuto un 5-0
+
+Le tre domande residue — che cos'è un nodo, dove vive il canvas, da dove nasce — sono passate dal consiglio.
+**Cinque pareri su cinque: «il nodo è un dipendente»**, e tutti e cinque hanno poi scritto da soli l'obiezione
+giusta: il passaggio di mano fra due dipendenti non sta nei dati. **L'ho misurato: zero casi**, in tutte e due le
+taglie (esistono 4 riferimenti alla *propria* consegna passata e 11 `serie`, tutte dello stesso dipendente).
+
+Quindi **il nodo è un passo** — 43 a undici, 156 a quaranta, con modello, strumenti, costo, durata ed esito — e
+**l'ultimo nodo è il titolare**, che nei dati c'è pure: l'ultimo passo di ogni dipartimento è già «Consegna al
+titolare». Il nodo del titolare porta la **regola** di `m.regole` che ferma lì la consegna: il workflow non
+sostituisce le quattro regole, **le fa vedere**.
+
+| | Numero |
+|---|---|
+| Workflow (Sviluppo · Marketing · Vendite · Amministrazione) | **6** a undici (1·2·2·1), **26** a quaranta (6·7·7·6) |
+| Nodi per workflow | 4–8 a undici, 4–11 a quaranta |
+| Elementi sul canvas | fino a **24** a undici, **36** a quaranta — la figura di riferimento ne ha **17** |
+| Sezioni aggiunte al Dipartimento · voci nel rail | **zero** · **zero** (resta a sei) |
+| Altezza della pagina Dipartimento | **2 594 / 2 960 px, invariata** |
+
+**L'ingresso è una pillola nell'intestazione di «Oggi in ‹dip›»**, non una settima sezione: una sezione sarebbe
+costata ~700 px e avrebbe spostato gli indici `nth-of-type` su cui si reggono tre prove e **due catture**. **Niente
+pan, zoom e mini-mappa** (regola 17): il canvas si stende su una serpentina calcolata nella funzione che stampa, e
+gli archi rileggono le stesse coordinate. **Il nodo si apre** e mostra modello, strumenti ed esito: è il gesto con
+cui si modifica il workflow. **La firma anticipata nasce spenta**, e i tre freni portano numeri misurati.
+
+**Sul telefono la schermata 10**: lo stesso canvas **girato di novanta gradi**, perché lo schermo è 300×620 px
+dentro `zoom:1.25` e non deve poter scorrere di lato. Nessuno dei cinque consiglieri aveva nominato il telefono.
+
+### 3. La sezione 07 dello specimen, ripuntata
+
+Dodici occorrenze dei sei verdi che non erano il lime → **zero**. Cambia solo la tinta: notte, tessere, griglia
+puntinata, forma dei nodi e porte restano quelle del riferimento. **Una cosa che il verde nascondeva**: sul lime il
+testo bianco non si legge, quindi il nodo selezionato porta il testo all'inchiostro.
+
+### 4. Che cosa ha trovato la revisione incrociata (di nuovo la parte che ha cambiato la risposta)
+
+- **La premessa del contesto era sbagliata, ed era mia**: avevo scritto che le 4 regole di approvazione stanno nella
+  pagina Dipendente. Stanno in **Richieste** (`direzione-a.js:989`), e sono **card**, non righe. Tutti e cinque i
+  consiglieri hanno costruito sulla pagina sbagliata.
+- La Console ha **nove** pagine, non sette: il canvas è la **decima** superficie.
+- **Due regole fantasma**, difetto preesistente e **non corretto**: `r16` «Fatture ricorrenti» e `r17` «Follow-up»
+  sono citate su richieste decise ma non esistono in `m.regole`.
+- `scatta.js` inchioda `section:nth-of-type(2)` sul Dipartimento: una sezione nuova rompe **le catture**.
+- Rendere cliccabili le 4 card delle regole **riaprirebbe la regola 26**; un nodo-titolare col disco in tinta
+  **violerebbe la regola 19**.
+- **Due affermazioni dei revisori erano false**, trovate controllandole: «il titolare non compare mai
+  nell'Esecuzione» (`tipo:'titolare'` e `.lrow.titolare` esistono) e «il passaggio di mano esiste, `dati.js:482`»
+  (quella riga sta nell'esecuzione del dipendente 1 e `r5` ha `chi: 1` — è la stessa mano).
 
 ## Stato
 
-- Branch: `claude/analisi-proposte-direzione-a-vxpham` (da `main`: la **PR #15 era già unita** all'inizio della
-  sessione, quindi si è ripartiti da `main`, come chiedeva il prompt). A fine sessione è aperta la **PR #16** verso
-  `main`: se all'avvio della prossima sessione risulta già unita, ripartire da `main` con un branch nuovo; se è ancora
-  aperta, continuare sullo stesso branch e la PR si aggiorna da sola.
-- **Codice toccato** (versione 19): `dati.js` (`consegneDi`, `consegnaDi`, rinominato `contaConsegne`),
-  `direzione-a.js` (la sezione, `cardConsegna`, la **pagina** `paginaConsegna` con la sua testata, l'azione `consegna`,
-  il CSS `.cdoc`), `direzione-a.html` (`?pagina=consegna&consegna=`), `mobile.js` (la sezione e la **schermata 9**,
-  `rigaConsegna`, rinominato `rigaRichiesta`), `mobile.html` (`?schermata=9&consegna=`), `prove/console.js` e
-  `prove/mobile.js`, `scatta.js`. **Non toccati**: `componenti.js`, `comune.js`, `avatar/`, `costi.js`,
-  `agenda-chat.js`.
-- **Le quattro prove cliccate passano: 141 + 82 + 48 + 54 = 325 verifiche, 0 ko** (erano 284).
-- **Le catture**: **50 su 57 identiche byte per byte**, 7 cambiano e 9 nascono (gruppo `consegne` in `scatta.js`).
-  Due cambiamenti sono di sola resa e vanno detti: `a-sez-spesa-oggi` cambia in **348 pixel su 923 000** perché la
-  sezione sta 714 px più in basso (contenuto identico, antialiasing); e **`a-costi.png` cambia in 6 pixel** nel
-  riquadro **`x 1136–1415, y 173–175`** — che è **esattamente** quello segnalato dalla sessione precedente come
-  instabile per `a-11.png`. Controllato: due giri dello stesso codice danno file identici, quindi dentro una sessione è
-  stabile; fra sessioni no. La pagina dei Costi non è stata toccata e i suoi numeri non si muovono (318 consegne per
-  cliente a undici, 1 179 a quaranta, prima e dopo).
-- **Artefatti: ripubblicati allo stesso indirizzo**, a fine sessione, con la versione 19:
-  - Console `console-unico.html` (492 292 byte, 5 926 righe) → `e6699f3a-879b-4bce-a9d8-6fc21ed84e34`
-  - telefono `mobile-unico.html` (365 413 byte, 4 793 righe) → `34192ba0-51da-4f02-9e64-3a6d698a44e9`
-  I due file unici sono stati costruiti con `build-unico.js` e provati headless prima di pubblicare: zero errori in
-  console, la pagina Dipartimento con le sue sei sezioni, il clic sulla consegna che apre «PAGINA DEL CARRELLO» con le
-  sue tre sezioni, e sul telefono nove schermate con la 9 che si apre al tocco. Il terzo artefatto
-  (`3a3fcb9e-…`, la scelta della barra) non è stato toccato: incorpora otto catture, tutte fra le 50 identiche.
-
-### Il lavoro della sessione precedente (versione 18): il censimento, 260 non 84
-
-Contate aprendo le pagine e prendendo ogni `i-ne` senza `data-az` **né su di sé né su un antenato** (una freccia dentro
-una riga cliccabile non è inerte — è la stessa ricetta della versione 17):
-
-| | Frecce inerti |
-|---|---|
-| L'insieme di riferimento (nove pagine della Console a undici, più tendina, Riepilogo ed editor) | **86** |
-| Tutte le pagine e tutte e due le taglie (28 viste della Console + le 8 del telefono) | **260** |
-| Sul telefono | **0** — il telefono ha una freccia sola, ed è viva |
-
-Il prodotto aveva **752** frecce in tutto e una su tre non apriva niente. Adesso ne ha **498**, di cui 2 dichiarate.
-
-### Le diciotto famiglie e il verdetto
-
-Sull'insieme di riferimento (a quaranta i numeri crescono, le famiglie no). Tabella per esteso, con le motivazioni, in
-`DIREZIONI.md`, «Versione 18», sezione 2.
-
-| Famiglia | N | Destinazione? |
-|---|---|---|
-| Storico delle Richieste (`rigaStorico`, in quattro punti) | 22 | **No** per le decise (una richiesta decisa non ha una pagina); **sì** per quelle in attesa, che la freccia la tengono |
-| Casi del colloquio | 12 | No |
-| Log dell'esecuzione | 9 | No per passi, strumenti, modello, note; **sì** per la voce che apre una richiesta in attesa (che già oggi la apre) |
-| Rendimento, righe delle metriche | 5 | No: sono misure, non oggetti |
-| Colloqui precedenti · Regole di approvazione · Budget e permessi · Passi | 4 ognuna | No |
-| Revisioni passate | 3 | **Sì, una su tre**: la revisione del *soul prompt* con due versioni ancora nel dossier apre il confronto (`confronta`), che nel prodotto esiste già |
-| Strumenti e connessioni · Costo dell'esecuzione · Costi per modello · Obiettivi del dipartimento | 3 ognuna | No |
-| Consegne dell'esecuzione (card) | 2 | Come il log: sì solo se la consegna è una richiesta in attesa |
-| Per cliente (Costi e Spesa del mese) | 2 | Sì per i clienti veri — e lì era già viva; no per le voci che clienti non sono |
-| Esito del colloquio (card) · Diario del Riepilogo (card) | 1 ognuna | No |
-| **Anteprima della card del dipendente, dentro l'editor** | 1 | **Eccezione dichiarata**: non è un controllo, è il disegno di come verrà la card. Toglierle matita e freccia farebbe mentire l'anteprima |
-
-### Le tre cose imparate applicandola (sono la regola 26)
-
-1. **La colonna segue la freccia, ma la decide la lista, non la riga.** Ogni riga finisce con 32 px di colonna più 10 di
-   gap: togliere la freccia e lasciare la colonna vuol dire 42 px di niente in fondo a ogni riga, che in dodici casi si
-   legge come un errore. Ma toglierla riga per riga disallineerebbe le liste miste. Quindi: **se nessuna riga della
-   lista ha una destinazione cade anche la colonna** (classe `nofr`) e il contenuto se la riprende; **se qualcuna ce
-   l'ha la colonna resta per tutte** e la cella è vuota dove la destinazione non c'è. Le liste miste sono quattro (lo
-   storico dentro «Oggi» del dipendente, le consegne precedenti, il log, la spesa per cliente) e sono le più belle da
-   guardare: nel log **nove righe su dieci perdono la freccia e una la tiene**, e per la prima volta si vede a colpo
-   d'occhio qual è l'unica cosa cliccabile della sezione.
-2. **L'intaglio è il taglio che fa posto ai pulsanti: senza pulsanti è un buco per niente.** Otto card avevano
-   nell'intaglio la sola freccia inerte (le quattro regole di approvazione, l'esito del colloquio, due consegne, il
-   diario del Riepilogo): hanno perso la freccia e con lei l'intaglio, e sono tornate card intere. **Un difetto trovato
-   per caso**: la card dell'esito del colloquio teneva liberi 120 px per due pulsanti che non ci sono, e il sottotitolo
-   ci finiva tagliato («v7 · Standard · 18 min…»); i 120 px sono tornati al sottotitolo, che adesso si legge intero.
-3. **Applicare la regola non è solo togliere.** La domanda giusta non è «questa freccia funziona?» ma «questa riga dove
-   porterebbe?». Su diciotto famiglie la risposta è stata sì una volta sola, ed è un buon segno: il prodotto non aveva
-   pagine nascoste da collegare, aveva promesse da ritirare.
-
-### Verifica
-
-- **Le quattro prove cliccate passano**: `console.js` **107** (erano 97: dieci verifiche nuove sulle frecce),
-  `mobile.js` **75** (era 69: una sulle frecce e cinque sullo studio del conto nel titolo), `costi.js` 48, `agenda-chat.js` 54. In tutto **284** (erano 268).
-- Zero frecce senza azione su tredici pagine, quattro viste e le due taglie; le due dell'anteprima dell'editor sono
-  contate a parte e dichiarate.
-- **Sessantacinque liste** con più di una riga, tutte con le righe sulla stessa griglia (è la prova che tiene in piedi
-  la scelta 1 qui sopra).
-- La revisione passata del prompt apre davvero il confronto v6/v7, con le due versioni affiancate.
-- **Il cambiamento è chirurgico**: delle 48 catture di `scatta.js`, **34 sono identiche byte per byte** — tutte e dieci
-  quelle del telefono, la home a undici e a quaranta, la Chat, l'Agenda, le tendine, la barra e l'editor. Delle
-  quattordici che cambiano, `a-riepilogo.png` cambia in un riquadro di **62×63 px** (l'intaglio della card del diario) e
-  `a-sez-spesa-oggi.png` in una freccia sola. Tabella dei riquadri in `DIREZIONI.md`, «Versione 18», sezione 4.
-- Catture nuove del prima/dopo: `a-frecce-storico.png` (la famiglia del punto 2), `a-frecce-log.png` (la lista mista),
-  `a-frecce-colloquio.png`, `a-frecce-revisioni.png`, `a-frecce-esecuzione.png`, `a-frecce-card.png`. Si compongono con
-  **`design-system/tools/affianca.js`** (strumento nuovo) dalle stesse sezioni catturate nelle due copie dell'albero, e
-  stanno in `FUORI` dentro `scatta.js`: non si rifanno da sole.
-- **Artefatti ripubblicati allo stesso indirizzo** con la versione 18:
-  [Console](https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34) e
-  [telefono](https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9). **La terza**,
-  [la pagina della scelta della barra](https://claude.ai/code/artifact/3a3fcb9e-c894-4a83-9cdb-54820f65756f), **non è
-  stata toccata perché non cambia**: tutte e otto le immagini che incorpora sono identiche byte per byte dopo la
-  modifica (controllato, non dato per scontato).
-- Artefatti precedenti, non ripubblicati (le loro pagine non cambiano): identità degli orbi
-  https://claude.ai/code/artifact/1fc2ee53-3c23-4462-922a-cd581a90b6d6, pelli dell'orbe
-  https://claude.ai/code/artifact/c68a8d4e-488f-40c3-ab36-038dd49b9569, le due famiglie kit/orbe
-  https://claude.ai/code/artifact/22823dc3-4c9e-4874-92ec-2007b3a95526, confronto A/B/C
-  https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f, specimen
-  https://claude.ai/code/artifact/8835669b-c385-4039-88e9-e252f619442b.
-- Documenti: `SYSTEM-DESIGN.md` (**regola 26**, riga «Riga di elenco» nella tabella dei componenti, riga «Card lead»
-  allungata, sezione 9 con le verifiche a 279, sezione 11 con i branch), `schermate/direzioni/DIREZIONI.md`
-  («Versione 18» con il censimento, le diciotto famiglie, le tre lezioni, i riquadri dei pixel e le scelte da
-  confermare), i quattro README.
-- Regole in `CLAUDE.md`: invariate (direzione A, avatar della versione 10, niente emoji).
-
-### Coda: la misura del conto nel titolo (studio del 2026-09-07)
-
-Alla vista della versione 18 l'utente ha chiesto di rivedere il prezzo pagato nella versione 17 per far stare il quadro
-«due per due» (la riga dei due numeri grandi tolta e il conto passato nel titolo). Tre forme dietro `?conta=`, catturate
-e affiancate in `m-conta-titolo.png`:
-
-| `?conta=` | Che cos'è | Card visibile | La riga di approva e rifiuta |
-|---|---|---|---|
-| **2 · la scelta dell'utente** | titolo a 26, conto a **36** | 244 px su 256 | sopra, 0 px di margine |
-| **1** (scartata) | conto a 26, come il titolo | 248 px su 256 | sopra, 4 px di margine |
-| **0** (com'era prima) | la riga dei due numeri grandi | 176 px su 256 | **sotto** |
-
-**La strada di mezzo costa 4 px** e nessuna delle due va a capo, nemmeno con un conto a tre cifre. La ragione della
-scelta, con i tre telefoni affiancati davanti: a 26 il numero si legge come la coda del titolo, a 36 torna a essere un
-conto — quello che faceva la riga dei due numeri grandi, e che le costava 78 px.
-
-Una correzione a quello che diceva la versione 17: il titolo sta a 26 px per la larghezza della *parola*, non per la
-misura del numero.
-
-**Il prezzo vero non sono i 4 px di card ma il margine sotto**: la riga con approva e rifiuta passa da 4 px di stacco
-sopra la barra di navigazione a **0**. Ci sta ancora tutta e la prova lo controlla a ogni giro, ma non c'è più niente da
-spendere: se un domani il quadro o la card crescono di un pixel, la riga della decisione finisce sotto. **Cinque
-verifiche** in `prove/mobile.js` tengono le tre forme e quel margine.
-
-Cambiano **due catture su 51**, `m-quadro-duedue.png` e `m-quadro-duedue-40.png`, ed è tutto quello che scende di 4 px.
-Ripubblicato **il solo artefatto del telefono**: la Console non carica `mobile.js` e non cambia (controllato).
-
-**Attenzione, una cattura instabile**: `a-11.png` cambia di **5 pixel** (riquadro `x 1136–1415, y 173–175`) anche fra due
-giri identici, senza toccare niente. È un'instabilità preesistente, non una regressione: quando compare in un confronto
-prima/dopo va riconosciuta e la cattura riportata com'era, se no sporca il diff.
+- Branch: `claude/v19-console-direzione-a-b04bmi` (la **PR #16 era già unita** all'avvio, quindi si è ripartiti da
+  `main` come chiedeva il prompt). A fine sessione la PR verso `main`: se all'avvio della prossima risulta unita,
+  ripartire da `main` con un branch nuovo.
+- **Codice toccato**: `dati.js` (`consegneDi(dip, periodo)` con le consegne passate, `workflowDi`, `workflowIdDi`,
+  `firme`), `direzione-a.js` (le pillole del periodo e la sesta pillola della sezione, il CSS del canvas,
+  `paginaWorkflow`, `elencoWorkflow`, `canvasWorkflow`, `nodoWorkflow`, la pillola d'ingresso, tre azioni nuove),
+  `direzione-a.html`, `mobile.js` (la schermata 10, il CSS della colonna, due azioni, le righe nel dipartimento),
+  `mobile.html`, `scatta.js` (gruppo `workflow`), `prove/workflow.js` (**nuovo**), `design-system/specimen.html` e
+  `tokens.css`. **Non toccati**: `componenti.js`, `comune.js`, `avatar/`, `costi.js`, `agenda-chat.js`.
+- **Le cinque prove cliccate passano: 141 + 82 + 48 + 54 + 60 = 385 verifiche, 0 ko** (erano 325).
+- **Le catture: 52 su 70 identiche byte per byte**, 8 cambiano e 10 nascono. Le 8 sono tutte e sole le pagine
+  Dipartimento. `a-dipartimento.png` cambia in **5 196 px su 3 735 360 (lo 0,14 %)**, riquadro `x 986–1412,
+  y 233–680` (le due intestazioni), **altezza invariata**. `a-costi.png` è stata **riportata com'era**: cambiava di
+  13 px nel riquadro `x 1136–1425, y 136–175`, la stessa zona che due sessioni hanno già segnalato come instabile
+  fra sessioni, e la pagina dei Costi non è stata toccata.
 
 ## Decisioni dell'utente (in ordine)
 
@@ -421,38 +325,79 @@ prima/dopo va riconosciuta e la cattura riportata com'era, se no sporca il diff.
     - **Resta da decidere**: se la consegna in attesa deve restare **lime** anche nella sezione nuova (compare due
       volte sulla pagina, a 1 988–2 302 px di distanza) e se il perimetro resta «di oggi».
 
+46. **2026-09-08: sette risposte in una volta, e una di queste ribalta un consiglio.** All'avvio della sessione
+    l'utente ha risposto alle domande che il passaggio di consegne segnava come necessarie (tabella in cima a questo
+    file). Le tre che pesano:
+    - **la consegna in attesa resta due volte, lime tutte e due**: la ripetizione della versione 19 non si tocca;
+    - **il candidato 7, e con il canvas a nodi vero** — «l'editor a nodi vero, come la sezione 07» — cioè **contro
+      il verdetto 5-0** del consiglio della sessione precedente, che aveva raccomandato la sequenza di righe. Il
+      consiglio aveva scritto da solo, nella revisione incrociata, che quel 5-0 era «in parte un artefatto del
+      contesto»: l'utente ha deciso di conseguenza;
+    - **la delega nasce spenta**: i tre freni si disegnano, ma la firma anticipata è una pillola che accende lui,
+      un workflow alla volta. **La spina dorsale non si riscrive in questa versione.**
+    Più: la sezione 07 **si ripunta con la palette del sistema** (che emenda `CLAUDE.md`, unica eccezione al
+    «copiato così com'è», e vale solo per il colore), il perimetro delle consegne prende le **pillole del periodo**,
+    e la parola è **workflow**: «è un termine informatico e non credo abbia una vera traduzione».
+    **Costruito nella stessa sessione** (versione 20, `DIREZIONI.md` sezione 4; regola 28 in `SYSTEM-DESIGN.md`).
+
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti sintetici di DGT; documenti in italiano.
 
 ## Il lavoro della prossima sessione
 
-**Le tre proposte sono state analizzate** (decisione 44) e **la prima è stata scelta e costruita** (decisione 45,
-versione 19). L'analisi per esteso, con tutte le tabelle, sta in `schermate/direzioni/DIREZIONI.md`, **sezione 6**;
-la versione 19 nella sezione 4 dello stesso file.
+**Due delle tre proposte sono state costruite**: il candidato 6 nella versione 19 (le consegne) e il **candidato 7
+nella versione 20** (i workflow). L'analisi per esteso sta in `schermate/direzioni/DIREZIONI.md`, **sezione 6**; le
+due versioni nella sezione 4 dello stesso file.
 
-**Quello che manca adesso**: il giudizio dell'utente sulla versione 19 (le quattro cose aperte sotto il candidato 6),
-e la sua scelta fra il **candidato 7** e il **candidato 8**, che aspettano tutti e due una decisione **sua** — non del
-consiglio. L'ordine suggerito resta quello dell'analisi: **prima il 7, poi l'8**, perché la procedura dichiara quali
-strumenti un passo usa, e chi decide la sua forma ha già in mano metà della domanda sugli accessi.
+**Quello che manca adesso**, in ordine di quello che aspetta una risposta:
 
-### 6 · Il lavoro del dipartimento — **scelto e costruito** (versione 19)
+1. **Il giudizio sulla versione 20** — e in particolare sulle due cose che la misura non ha deciso al posto mio: il
+   **nodo che è un passo e non un dipendente** (l'ho scelto contro il 5-0 del consiglio, perché i passaggi di mano
+   nei dati sono zero: se lui vuole il nodo-dipendente, va prima inventato il passaggio di mano nel modello) e i
+   **due soli numeri della versione che non vengono da una misura** — la soglia arrotondata ai 5 € e la scadenza a
+   10 esecuzioni.
+2. **Il candidato 8, i connettori**, ultimo dei tre: aspetta ancora le sue risposte, elencate sotto.
+3. **Il candidato 5, la chat di dipartimento**: non manca una decisione, manca il codice.
 
-Scelta dell'utente: **strada A**, parola **«consegna»**. Fatto: la sezione «Consegne di oggi», seconda su sei, in
-Console e sul telefono, con la tendina che apre una consegna per intero. Dettaglio in `DIREZIONI.md`, «Versione 19»;
-la regola in `SYSTEM-DESIGN.md`, **regola 27**. Che cosa è stato costruito e a che prezzo sta in cima a questo file.
+### 6 · Il lavoro del dipartimento — **scelto e costruito** (versioni 19 e 20)
+
+Scelta dell'utente: **strada A**, parola **«consegna»**. Fatto nella versione 19 (la sezione, la pagina della
+consegna, la schermata 9 del telefono) e completato nella **versione 20** con il **perimetro**: tre pillole
+oggi · sette giorni · trenta giorni, con le consegne passate lette dalle richieste decise — **nessun dato
+inventato**. Regola 27 in `SYSTEM-DESIGN.md`.
 
 **Che cosa resta aperto su questo candidato:**
-- **La ripetizione della consegna in attesa** (compare in «Consegne di oggi» e in «Da approvare»): 1–2 card per
-  pagina, a 1 988–2 302 px di distanza. Restano lime tutte e due; si toglie in una riga (`TONO_CONSEGNA.attesa`).
-- **Il perimetro**: la sezione dice «di oggi» e mostra le consegne delle esecuzioni correnti. Il mese non c'è.
-- **Il «tempo reale»**: il modello non ha un orologio, quindi la promessa mantenuta è «lo stato al momento in cui
-  apri la pagina». Va detta così nell'interfaccia, o va tolta.
-- **Restano fuori**, dichiarati e col prezzo pagato scegliendo la strada A: «che cosa ha creato l'azienda» e «che cosa
-  abbiamo fatto per Rossi Srl». Chiederebbero la strada B (una pagina nel rail).
-- **Artefatti**: fatto. Console e telefono sono stati ripubblicati allo stesso indirizzo a fine sessione con la
-  versione 19.
+- **La ripetizione della consegna in attesa**: l'utente ha deciso, **resta com'è** (decisione 46). Chiuso.
+- **Il perimetro**: fatto (versione 20). Chiuso.
+- **Il «tempo reale»**: il modello non ha un orologio (`azienda.ora` è `'10:42'` fisso), quindi la promessa
+  mantenuta è «lo stato al momento in cui apri la pagina». **Ancora aperto**: va detta così nell'interfaccia, o va
+  tolta.
+- **Restano fuori**, dichiarati e col prezzo pagato scegliendo la strada A: «che cosa ha creato l'azienda» e «che
+  cosa abbiamo fatto per Rossi Srl». Chiederebbero la strada B (una pagina nel rail).
 
-### 7 · L'editor di workflow — **analizzato, passato dal consiglio, in attesa di scelta**
+### 7 · L'editor di workflow — **scelto e costruito** (versione 20)
+
+Scelta dell'utente: **il canvas a nodi vero**, la parola **workflow**, la **delega spenta**, la sezione 07
+**ripuntata**. Fatto: la pagina Workflow della Console (elenco + canvas), la schermata 10 del telefono, la firma
+anticipata con i tre freni, e lo specimen ripuntato con il lime. Dettaglio in `DIREZIONI.md`, «Versione 20»; la
+regola in `SYSTEM-DESIGN.md`, **regola 28**.
+
+**Che cosa resta aperto su questo candidato:**
+- **Il nodo è un passo, non un dipendente** — scelto contro il 5-0 del consiglio, per una misura (zero passaggi di
+  mano nei dati). Se l'utente vuole il nodo-dipendente, il modello va cambiato prima.
+- **I due numeri non misurati**: la soglia arrotondata ai **5 €** e la scadenza a **10 esecuzioni**.
+- **Restano fuori dal canvas**: il **trascinamento** dei nodi, il **collegamento** di un nodo a un altro col mouse,
+  e la **mini-mappa**. Il canvas si legge e si apre nodo per nodo, non si ricompone col mouse. È il prezzo
+  dichiarato della regola 17 (niente zoom annidati) e va confermato guardandolo.
+- **La spina dorsale non è stata riscritta**: la firma anticipata esiste come oggetto ma nasce spenta, e finché lo
+  è la coda è quella di sempre. Accenderla per davvero — cioè far uscire una consegna senza la firma — è la
+  decisione grossa che resta.
+- **Due regole fantasma nel modello**, difetto preesistente trovato dalla revisione incrociata e **non corretto**:
+  `r16` cita la regola «Fatture ricorrenti» e `r17` «Follow-up», che in `m.regole` non esistono (ci sono «Uscite
+  verso i clienti», «Report interni», «Liste di lead», «Spese sopra 50 €»). Da sistemare quando si tocca la coda.
+
+### 7bis · L'analisi del candidato 7, per memoria
+
 
 **I numeri, contati:** la bozza (specimen, sezione 07) ha **5 nodi, 5 porte, 7 archi**; usa **20 icone**, **14 non
 nello sprite** (12 da disegnare); **19 colori**, **16 fuori palette**, fra cui **sei verdi che non sono il lime**
@@ -651,79 +596,78 @@ frecce dei passi tornano da sole (la regola 26 dice che una riga con una destina
 
 ## Come riprendere
 
-**Gli artefatti sono a posto.** Console e telefono sono stati ripubblicati allo stesso indirizzo alla fine di questa
-sessione con la versione 19 (`e6699f3a-879b-4bce-a9d8-6fc21ed84e34` e `34192ba0-51da-4f02-9e64-3a6d698a44e9`); il terzo
-(la scelta della barra) non è stato toccato perché le otto catture che incorpora sono fra le 50 identiche. Vanno
-rifatti solo se la prossima sessione cambia la Console o il telefono.
+**Prima cosa: il giudizio sulla versione 20.** Le tre cose da guardare con gli occhi, perché nessuna misura le
+decide:
+1. **Il canvas mantiene la promessa?** L'utente ha scelto «l'editor a nodi vero come la figura» e si ritrova un
+   canvas che **non si trascina** (regola 17: la cornice si scala già con `zoom`) e i cui nodi sono **passi**, non
+   dipendenti. È più denso della figura — fino a 24 elementi contro 17, 36 a quaranta — e i dati sono tutti veri,
+   ma il gesto di **comporre** non c'è: si legge e si apre un nodo alla volta.
+2. **Il nodo del titolare in fondo alla catena** è la risposta alla domanda «dove sono il collo di bottiglia della
+   mia azienda». Va guardato se si legge come tale.
+3. **La firma anticipata spenta**: la pagina la mostra come una cosa da accendere. Se va bene così, la prossima
+   domanda grossa è che cosa succede quando si accende davvero.
 
-**Prima cosa: il giudizio sulla versione 19.** Le quattro cose aperte stanno sotto il candidato 6, e la prima si vede a occhio:
-una consegna che aspetta il titolare **compare due volte** sulla pagina, in «Consegne di oggi» e in «Da approvare».
-Sono 1–2 card, a 1 988–2 302 px di distanza (due schermate piene). Restano lime tutte e due; si toglie in una riga.
+**Poi il candidato 8, i connettori** — l'ultimo dei tre, e il più lungo. Aspetta ancora le sue risposte: se il
+verdetto va bene (**credenziale dell'azienda nominata per cliente**, **permesso d'uso del dipartimento** — cioè la
+sua ipotesi, sulla metà che il consiglio non aveva votato), se la parola è **«accesso»**, e se il Dipartimento
+spende una sezione per «che cosa può toccare». Prima del codice servono una **regola di disegno nuova** (l'accesso
+quadrato e monocromo, mai tondo — la regola 19 vieta il disco in tinta per un oggetto che non è una persona) e due
+icone che nello sprite non ci sono (**chiave**, **busta**).
 
-**Poi la scelta fra il candidato 7 e il candidato 8.** Tutti e due aspettano una decisione **dell'utente**, non del
-consiglio:
-- **7 · l'editor**: se il verdetto va bene (la **procedura** come sequenza di righe dichiarate dentro la pagina
-  Dipartimento, nata da un'esecuzione riuscita); se accetta che **approvare una procedura sia approvare in anticipo le
-  uscite che la rispettano** (è una riscrittura della spina dorsale, con tre freni da disegnare: soglia di costo,
-  perimetro, scadenza); e che cosa succede alla **sezione 07 dello specimen**, perché declassarla o ripuntarla
-  **emenda `CLAUDE.md`**.
-- **8 · i connettori**: se il verdetto va bene (**credenziale dell'azienda nominata per cliente**, **permesso d'uso del
-  dipartimento** — cioè la sua ipotesi, sulla metà che il consiglio non aveva votato), se la parola è **«accesso»**, e
-  se il Dipartimento spende la sua **settima** sezione per «che cosa può toccare». Prima del codice serve una **regola
-  di disegno nuova** (l'accesso quadrato e monocromo, mai tondo; l'icona dice la funzione, il nome porta il marchio) e
-  due icone che nello sprite non ci sono (**chiave**, **busta**).
+**Poi il candidato 5, la chat di dipartimento**: le due domande che lo bloccavano hanno risposta (decisioni 41 e
+42). Non manca una decisione, manca il codice.
 
-**Poi, quando toccherà: il candidato 5, la chat di dipartimento.** Le due domande che lo bloccavano hanno risposta
-(decisioni 41 e 42): parla **DGT che indossa il dipartimento**, e la distribuzione ha la pillola **`Fai pure` /
-`Chiedimi prima`**. Non manca più una decisione, manca il codice.
+**Resta da sentire il giudizio sulle versioni 17, 18 e 19** (mai dato). Se manda correzioni, quelle vengono prima.
 
-**Resta da sentire il giudizio sulla versione 17 e sulla 18** (mai dato). Se manda correzioni, quelle vengono prima.
+**Non rimettere in discussione**: la direzione A, la barra «Oggi in azienda» della versione 16 con la correzione
+16a, la versione 17, la regola 26 delle frecce, il conto nel titolo a 36, le due risposte del candidato 5
+(decisioni 41 e 42), gli avatar della versione 10, la regola «niente emoji», la **decisione 45** (candidato 6,
+strada A, parola «consegna») e la **decisione 46** (canvas a nodi vero, parola «workflow», delega spenta, specimen
+ripuntato, ripetizione della consegna lasciata com'è).
 
-**Non rimettere in discussione**: la direzione A, la barra «Oggi in azienda» della versione 16 con la correzione 16a, la
-versione 17, la regola 26 delle frecce, il conto nel titolo a 36, le due risposte del candidato 5 (decisioni 41 e 42),
-gli avatar della versione 10, la regola «niente emoji», e la **decisione 45** (candidato 6, strada A, parola
-«consegna»).
+**Il metodo di sempre**, con tre lezioni fresche di questa sessione:
+- **Una misura batte un consiglio unanime, e va cercata prima di votare.** Cinque consiglieri su cinque hanno
+  risposto «il nodo è un dipendente» e tutti e cinque hanno poi scritto da soli l'obiezione giusta. Bastava
+  contare: **zero passaggi di mano nei dati**. La regola «quello che si misura si misura» vale anche *dentro* una
+  domanda che sembrava tutta di opinione.
+- **Il contesto del consiglio va verificato nel codice prima di scriverlo, non solo scritto per esteso.** Avevo
+  messo le quattro regole di approvazione nella pagina sbagliata (Dipendente invece di Richieste) e tutti e cinque
+  ci hanno costruito sopra. Il contesto è la parte che decide la qualità della risposta: se è falso, cinque pareri
+  valgono zero.
+- **Non credere ai revisori più che ai consiglieri.** Due affermazioni della revisione incrociata erano false, e
+  sono venute fuori solo aprendo il codice. È la quarta volta in questo repository che un conto fatto a memoria
+  finisce sbagliato in un documento.
 
-**Il metodo di sempre**, con due lezioni fresche di questa sessione:
-- **Quello che si misura si misura, non si vota.** In questa sessione ha deciso tre volte al posto di un'opinione (il
-  cerchio «cerca», il testo nella riga di stato, il «quando» sotto il titolo), e ha smontato una discussione del
-  consiglio (i 18 token dell'editor che nessuno usa). Ma soprattutto: **è stata una prova esistente a cogliermi in
-  fallo** sul cerchio «cerca». Le prove servono a questo.
-- **Un nome nuovo si cerca prima di sceglierlo**, e non solo fra le classi CSS: `consegneDi` esisteva già come
-  funzione e il primo tentativo è morto in `SyntaxError`. Stessa famiglia: **una sezione nuova sposta gli indici di
-  tutte quelle dopo** — `section:nth-of-type(5)` ha rotto tre prove e una cattura. Adesso prove e catture cercano la
-  sezione **dal titolo** (`sez('^Spesa')` in `prove/console.js`).
+Prima e dopo, come sempre: rifare i font locali (`fetch-fonts.py`), lanciare le **cinque** prove di `prove/` e
+catturare le pagine prima di toccare qualcosa (`scatta.js --in <cartella>`); leggere `CLAUDE.md`,
+`SYSTEM-DESIGN.md` (sezioni 2, 6, 8, 9 e 10, regole 24–**28**) e `DIREZIONI.md` (sezione 4 dalla versione 14,
+**sezione 6** per l'analisi delle tre proposte, sezione 5 per i file); controllare branch e PR. Alla fine: prove
+aggiornate, screenshot con `scatta.js`, artefatti ripubblicati allo stesso indirizzo, i documenti, commit, push e
+PR.
 
-Prima e dopo, come sempre: rifare i font locali (`fetch-fonts.py`), lanciare le **quattro** prove di `prove/` e
-catturare le pagine prima di toccare qualcosa (`scatta.js --in <cartella>`); leggere `CLAUDE.md`, `SYSTEM-DESIGN.md`
-(sezioni 2, 6, 8, 9 e 10, regole 24, 25, 26 e **27**) e `DIREZIONI.md` (sezione 4 dalla versione 14, **sezione 6** per
-l'analisi delle tre proposte, sezione 5 per i file); controllare branch e PR. Alla fine: prove aggiornate, screenshot
-con `scatta.js`, artefatti ripubblicati allo stesso indirizzo, i documenti, commit, push e PR.
+**Attenzione, la trappola di questa sessione**: `scatta.js` e `prove/console.js` si reggono su
+`section:nth-of-type(2)` per la sezione delle consegne del Dipartimento. Hanno tenuto **perché la versione 20 non
+ha aggiunto nessuna sezione** — l'ingresso ai workflow è una pillola dentro un'intestazione. La prossima sezione
+che si aggiunge lì rompe tre prove **e due catture**: prima di aggiungerla, spostare quei selettori sul titolo.
 
-**Come si è contato in questa sessione, se serve rifarlo**: uno script Playwright che apre le viste con
-`page.route('https://fonts.googleapis.com/**', …)` per servire il CSS dei font locale (**senza quello `goto` resta
-appeso al foglio di Google bloccato**: mezz'ora buttata), poi `page.evaluate` che conta nel DOM e legge
-`DGT_DATI.modello(11)` / `(40)` dentro la pagina. Gli script stanno nella cartella di lavoro della sessione e **non
-sono entrati nel repository**: sono attrezzi da un giro, non strumenti da mantenere. La ricetta è questa riga.
-
-Punti aperti ereditati (non chiesti dall'utente, da non toccare senza richiesta): la tendina del passo dell'Esecuzione
-(è anche il candidato 12 della lista qui sopra); «Ripeti»; lo stato vuoto del dipendente appena creato; il badge rosa
-«campanella 2» accanto al numero «da approvare» copia quello della riga WORKSPACE della Console (`min(2, n)`) e non ha
-ancora un significato nel modello; il badge «↓12%» del numero «spesi oggi» nella home è decorativo;
-`design-system/tokens.css` porta solo tre token di moto e un easing diverso da quello dello specimen
-(`cubic-bezier(.2,.8,.2,1)` contro `(.22,1,.36,1)`).
-Punti aperti della versione 15: nell'agenda «Sposta» porta all'agenda ma non sposta davvero l'orario e i giorni della
-settimana non si aprono; nella chat il dipendente non risponde da solo alla nota del titolare e non c'è ricerca dentro il
-filo; il «non letto» si azzera aprendo il filo e non sopravvive al ricaricamento.
-Punti aperti della versione 16: la lista `m.agenda` in `dati.js` non la legge più nessuno tranne la barra di prima
-(`?barra=0`); nella barra dei passi il «+N da fare» e il «+N fatti» non sono cliccabili.
-Punti aperti della versione 17: restano inerti i **36 indicatori** nell'intaglio delle card (campanella col punto, matita,
-bersaglio, scarica del Riepilogo: dicono uno stato e vengono dal riferimento) e le **9 campanelle** in alto a destra della
-cornice, 45 in tutto; sul telefono restano inerti il download e la matita nell'intaglio delle card del Riepilogo; la
-ricerca di sezione non ricorda il testo cambiando pagina.
-Punti aperti nuovi della versione 18: **le 2 frecce dell'anteprima dell'editor** (dichiarate: sono il disegno della card,
-non un controllo) e le quattro liste miste, in cui la colonna resta e qualche cella è vuota — è la scelta 1 della decisione
-40 e si può ribaltare, ma allora vanno ribaltate tutte e 65 le liste insieme.
+Punti aperti ereditati (non chiesti dall'utente, da non toccare senza richiesta): la tendina del passo
+dell'Esecuzione; «Ripeti»; lo stato vuoto del dipendente appena creato; il badge rosa «campanella 2» accanto al
+numero «da approvare»; il badge «↓12%» del numero «spesi oggi» nella home; `design-system/tokens.css` porta un
+easing diverso da quello dello specimen.
+Punti aperti della versione 15: nell'agenda «Sposta» porta all'agenda ma non sposta davvero l'orario e i giorni
+della settimana non si aprono; nella chat il dipendente non risponde da solo e non c'è ricerca dentro il filo; il
+«non letto» si azzera aprendo il filo e non sopravvive al ricaricamento.
+Punti aperti della versione 16: la lista `m.agenda` non la legge più nessuno tranne la barra di prima (`?barra=0`);
+nella barra dei passi il «+N da fare» e il «+N fatti» non sono cliccabili.
+Punti aperti della versione 17: restano inerti i **36 indicatori** nell'intaglio delle card e le **9 campanelle**
+in alto a destra della cornice, 45 in tutto; sul telefono il download e la matita nell'intaglio delle card del
+Riepilogo; la ricerca di sezione non ricorda il testo cambiando pagina.
+Punti aperti della versione 18: **le 2 frecce dell'anteprima dell'editor** (dichiarate) e le quattro liste miste.
+Punti aperti nuovi della versione 20: il canvas **non si trascina e non si collega col mouse** (niente
+mini-mappa); i **due numeri non misurati** (soglia ai 5 €, scadenza a 10 esecuzioni); le **due regole fantasma**
+del modello (`r16`, `r17`); e a «trenta giorni» **Amministrazione mostra sempre 2 consegne** in tutti e tre i
+perimetri, perché le sue richieste decise stanno a giorno 0 e a giorno 34 — è vero, ma fa sembrare le pillole
+inerti su quella pagina.
 
 ## Strumenti (`design-system/tools/` e `schermate/direzioni/prove/`)
 
@@ -838,44 +782,44 @@ non un controllo) e le quattro liste miste, in cui la colonna resta e qualche ce
 
 ## Cosa manca
 
-1. **Il giudizio dell'utente sulla versione 19**, e in particolare sulla ripetizione della consegna in attesa (1–2 card
-   per pagina, a 1 988–2 302 px di distanza) e sul perimetro «di oggi».
-2. **La scelta fra il candidato 7 e il candidato 8**, e le risposte alle domande che sono **sue** e non del consiglio:
-   per il 7 la riscrittura della spina dorsale delle approvazioni e la sorte della sezione 07 dello specimen (che
-   **emenda `CLAUDE.md`**); per l'8 il verdetto, la parola «accesso» e la regola di disegno di un servizio senza il
-   suo marchio.
-3. **Il giudizio sulla versione 18** (le frecce) e sulla 17: mai dato. Le catture del prima/dopo sono pronte.
-4. **La chat di dipartimento (candidato 5)**: le due domande hanno risposta (decisioni 41 e 42), manca il codice.
-5. I giudizi in sospeso delle versioni 6, 8, 11, 12, 14, 15 e 15a; le scelte di dettaglio della barra (decisioni 33 e 34).
-6. I punti aperti elencati in «Come riprendere».
-
-Gli artefatti **non** sono in questa lista: Console e telefono sono stati ripubblicati alla fine della sessione con la
-versione 19.
+1. **Il giudizio dell'utente sulla versione 20**: il canvas che non si trascina e i cui nodi sono passi e non
+   dipendenti (scelto contro il 5-0 del consiglio, per una misura), il nodo del titolare in fondo alla catena, e la
+   firma anticipata spenta.
+2. **Il candidato 8, i connettori**: il verdetto, la parola «accesso», la regola di disegno di un servizio senza il
+   suo marchio, e se il Dipartimento spende una sezione per «che cosa può toccare».
+3. **La chat di dipartimento (candidato 5)**: le due domande hanno risposta (decisioni 41 e 42), manca il codice.
+4. **I giudizi sulle versioni 17, 18 e 19**: mai dati. Le catture del prima/dopo sono pronte.
+5. **Che cosa succede quando la firma anticipata si accende davvero**: è la riscrittura della spina dorsale, che
+   questa versione ha preparato senza farla.
+6. I giudizi in sospeso delle versioni 6, 8, 11, 12, 14, 15 e 15a; le scelte di dettaglio della barra (decisioni 33
+   e 34); le **due regole fantasma** del modello (`r16`, `r17`).
+7. I punti aperti elencati in «Come riprendere».
 
 ### Prompt di avvio suggerito per la prossima sessione
 
 ```
-Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md (in particolare «Che cosa è stato costruito», «Stato», «Il lavoro della
-prossima sessione» e «Come riprendere»), DIREZIONI.md sezione 4 «Versione 19» e sezione 6 (l'analisi delle tre
-proposte). Controlla la PR #16: se è unita riparti da main con un branch nuovo, altrimenti continua sullo stesso
-branch.
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md (in particolare «Che cosa ha scelto l'utente», «Che cosa è stato
+costruito», «Stato», «Il lavoro della prossima sessione» e «Come riprendere»), DIREZIONI.md sezione 4 «Versione 20»
+e sezione 6.3 (l'analisi dei connettori). Controlla la PR della sessione precedente: se è unita riparti da main con
+un branch nuovo, altrimenti continua sullo stesso branch.
 
-Lavoriamo nella direzione A · Console (schermate/componenti.js, schermate/direzioni/direzione-a.js, dati.js, comune.js,
-avatar/, mobile.js): niente emoji, solo le icone dello sprite; gli avatar sono quelli della versione 10; i colori
-restano quelli del sistema; niente logo o marchi di terzi. Sono decise e non si rimettono in discussione: la direzione
-A, la barra «Oggi in azienda» della versione 16 con la correzione 16a, la versione 17, la regola 26 delle frecce, il
-conto nel titolo a 36, le due risposte del candidato 5, e la decisione 45 (candidato 6, strada A, parola «consegna»).
+Lavoriamo nella direzione A · Console (schermate/componenti.js, schermate/direzioni/direzione-a.js, dati.js,
+comune.js, avatar/, mobile.js): niente emoji, solo le icone dello sprite; gli avatar sono quelli della versione 10;
+i colori restano quelli del sistema; niente logo o marchi di terzi. Sono decise e non si rimettono in discussione:
+la direzione A, la barra «Oggi in azienda» della versione 16 con la correzione 16a, la versione 17, la regola 26
+delle frecce, il conto nel titolo a 36, le due risposte del candidato 5, la decisione 45 (candidato 6, strada A,
+parola «consegna») e la decisione 46 (canvas a nodi vero, parola «workflow», delega spenta, specimen ripuntato).
 
-Gli artefatti sono già allineati alla versione 19 (ripubblicati a fine sessione allo stesso indirizzo): si rifanno solo
-se questa sessione tocca la Console o il telefono.
-
-[QUI VA LA MIA RISPOSTA: il giudizio sulla versione 19 — in particolare se la consegna in attesa debba comparire una
-volta sola invece che in due sezioni — e quale fra il candidato 7 (l'editor di workflow) e il candidato 8 (i
-connettori) si costruisce. Tutti e due aspettano risposte mie, elencate in «Come riprendere»: senza quelle non si
+[QUI VA LA MIA RISPOSTA: il giudizio sulla versione 20 — il canvas dei workflow, i nodi che sono passi e non
+dipendenti, il nodo del titolare in fondo, la firma anticipata spenta — e se si costruisce il candidato 8 (i
+connettori) o il candidato 5 (la chat di dipartimento). Per l'8 servono anche le risposte elencate in «Come
+riprendere»: il verdetto, la parola «accesso», e se il Dipartimento spende una sezione. Senza quelle non si
 comincia, quindi chiedimele prima di scrivere codice.]
 
-Il metodo di sempre: prima e dopo, rifare i font locali, lanciare le quattro prove di prove/ e catturare le pagine
-prima di toccare qualcosa; ogni dubbio progettuale passa dal consiglio, ma quello che si misura si misura. Alla fine:
-prove aggiornate, screenshot, artefatti ripubblicati allo stesso indirizzo, DIREZIONI.md, SYSTEM-DESIGN.md, i README,
-PROSSIMA-SESSIONE.md, commit, push e PR.
+Il metodo di sempre: prima e dopo, rifare i font locali, lanciare le cinque prove di prove/ e catturare le pagine
+prima di toccare qualcosa; ogni dubbio progettuale passa dal consiglio, ma quello che si misura si misura — e in
+questa sessione una misura ha battuto un consiglio unanime, quindi cercala prima di votare. Attenzione: scatta.js e
+prove/console.js si reggono su section:nth-of-type(2) per la sezione delle consegne del Dipartimento; la prossima
+sezione aggiunta lì rompe tre prove e due catture. Alla fine: prove aggiornate, screenshot, artefatti ripubblicati
+allo stesso indirizzo, DIREZIONI.md, SYSTEM-DESIGN.md, i README, PROSSIMA-SESSIONE.md, commit, push e PR.
 ```

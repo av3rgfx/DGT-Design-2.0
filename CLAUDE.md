@@ -2,7 +2,14 @@
 
 Repository di design del prodotto DGT (sistema operativo aziendale per agenti AI).
 
-- Il design da seguire è quello delle due immagini in `design-system/reference/`: va copiato così com'è. Per il primo riferimento (case study) fa fede l'originale ad alta risoluzione su Behance (galleria 188798347): nero `#000000`/`#181818`, lime `#B8FC64`, Urbanist leggero, pillole e cerchi, card con intaglio per i pulsanti, barra agenda, pannello Riepilogo chiaro, app mobile. Per il secondo: rail di icone, tab a pillola, canvas a nodi con connettori luminosi, nodo selezionato verde, barra chat.
+- Il design da seguire è quello delle due immagini in `design-system/reference/`: va copiato così com'è. Per il primo riferimento (case study) fa fede l'originale ad alta risoluzione su Behance (galleria 188798347): nero `#000000`/`#181818`, lime `#B8FC64`, Urbanist leggero, pillole e cerchi, card con intaglio per i pulsanti, barra agenda, pannello Riepilogo chiaro, app mobile. Per il secondo: rail di icone, tab a pillola, canvas a nodi con connettori luminosi, nodo selezionato acceso, barra chat.
+- **Emendamento del 2026-09-08, deciso dall'utente** (unica eccezione al «copiato così com'è», e vale solo per il
+  colore): il **nodo selezionato e i connettori del secondo riferimento passano dal verde `#4FCB58` al lime
+  `#B8FC64`**. La ragione: dalla versione 20 il canvas a nodi non è più solo una figura nello specimen — il prodotto
+  lo applica davvero, nella pagina Workflow, e due accenti diversi nella stessa applicazione violerebbero la regola 4.
+  Il verde del riferimento era l'unico posto del repository dove un secondo accento sopravviveva (sei verdi che non
+  erano il lime, contati). **Cambia solo la tinta**: notte, tessere, griglia puntinata, bagliore, porte con
+  l'etichetta e forma dei nodi restano quelli del riferimento. Sul lime il testo va all'inchiostro, non al bianco.
 - Documento unico: `SYSTEM-DESIGN.md`. Il sistema di design vive in `design-system/` (`DESIGN.md`, `tokens.css`, `specimen.html`, `tools/`). Le varianti precedenti sono archiviate in `design-system/archive/` e non fanno testo.
 - All'inizio di una nuova sessione leggere `PROSSIMA-SESSIONE.md` (stato, decisioni, strumenti, come riprendere).
 - Le schermate reali del prodotto stanno in `schermate/`. Direzione scelta il 2026-09-04: **A · Console** (il sistema di design applicato senza sconti). Le schermate successive si generano solo dentro quella direzione, con le regole di scala in `schermate/direzioni/DIREZIONI.md` (sezione 4) e in `SYSTEM-DESIGN.md` (sezione 10). Modello dati e componenti in codice: `schermate/direzioni/dati.js`, `comune.js`, `direzione-a.js` (home, Richieste, Dipartimento; tutto cliccabile).

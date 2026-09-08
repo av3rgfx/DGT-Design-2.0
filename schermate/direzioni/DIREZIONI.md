@@ -1785,6 +1785,162 @@ apre la pagina con le sue tre sezioni, il telefono con nove schermate — e **ri
 pubblicata è costata **13 letture e circa 200 000 token**: con il CSS e le funzioni della Console i blocchi non
 possono superare le 400–450 righe.
 
+### Versione 20: i workflow e il perimetro delle consegne (2026-09-08, sessione successiva)
+
+**Le scelte dell'utente**, prese prima di scrivere una riga di codice (il prompt diceva di chiederle): la consegna in
+attesa **resta due volte e lime tutte e due**; il perimetro della sezione prende le **pillole del periodo**; si
+costruisce il **candidato 7**; la forma è **l'editor a nodi vero**, contro il 5-0 di un consiglio precedente; la delega
+**nasce spenta**; la sezione 07 dello specimen **si ripunta con la palette del sistema**; e la parola è **workflow**
+(«è un termine informatico e non credo abbia una vera traduzione»).
+
+#### 1. Il perimetro: le consegne passate esistevano già
+
+La domanda l'aveva posta il passaggio di consegne come «pillole del periodo = inventare dati storici». **Non era
+vero, e bastava guardare**: le richieste **decise** sono le consegne uscite in passato, e portano già `giorno`,
+`tipo`, `costo`, `testo`, `allegato` e la data della decisione. Il filtro per periodo (`giorno <= 7`, `<= 31`) era
+scritto da tre versioni. Zero dati inventati.
+
+| Consegne | oggi | sette giorni | trenta giorni |
+|---|---|---|---|
+| Tutta l'azienda, a undici | **18** | **30** | **31** |
+| Sviluppo · Marketing · Vendite · Amministrazione | 7 · 5 · 4 · 2 | 9 · 11 · 8 · 2 | 9 · 12 · 8 · 2 |
+| Marketing a quaranta | 10 | 13 | 17 |
+
+Tre cose decise dalla misura, non da un'opinione:
+
+1. **Il filtro parte da ieri (`giorno >= 1`), non da oggi.** Le decise di oggi sono già nella lista corrente — `r3`,
+   «Lista di 120 lead verificati», è puntata da una consegna in corso — e contarle due volte le raddoppierebbe.
+   Conseguenza voluta e verificata: **con «oggi» la pagina è identica alla versione 19**, 7 card e 2 594 px su
+   Sviluppo, 2 960 su Marketing. Il perimetro non costa niente a chi non lo tocca.
+2. **Il cerchio «cerca» lo decide il numero, non io.** `SOGLIA_CERCA` era una costante che nessuno leggeva: adesso la
+   ricerca compare quando la lista passa davvero le dodici righe. A «oggi» non compare mai (dieci al massimo); a
+   quaranta e trenta giorni Marketing arriva a diciassette e compare da sola. Nella versione 19 il cerchio ce l'avevo
+   messo a mano ed era stata una prova a cogliermi in fallo: adesso non può più succedere.
+3. **Una pillola in più, «Da rifare».** Le consegne che il titolare ha rimandato indietro (`modifiche`, `rifiutata`)
+   esistono solo nei giorni scorsi e nessuna delle cinque pillole le prendeva: sarebbero state raggiungibili solo da
+   «Tutte». La parola è quella che la pagina Richieste usa già nel suo terzo numero. E i due stati nuovi dicono
+   «Modifiche» e «Rifiutata» come nello storico: `chipOut` prende le parole di `chipEsito`, non ne inventa altre.
+
+#### 2. Il workflow: che cosa il consiglio ha detto, e che cosa la misura ha corretto
+
+Le tre domande residue — che cos'è un nodo, dove vive il canvas, da dove nasce un workflow — sono passate dal
+consiglio (regola fondamentale). **Cinque pareri su cinque hanno risposto «il nodo è un dipendente»**, e tutti e
+cinque hanno poi scritto, come obiezione a sé stessi, che il passaggio di mano fra due dipendenti non sta nei dati.
+
+**L'ho misurato: zero casi, in tutte e due le taglie.** Non «pochi»: zero. Quello che esiste sono **4 riferimenti alla
+propria consegna passata** (a undici; zero a quaranta) e **11 `serie`**, tutte dello stesso dipendente. Un canvas di
+nodi-dipendente avrebbe chiesto di inventare la relazione che lo regge, nella pagina che deve dimostrare che i numeri
+sono veri. **Quello che si misura si misura, non si vota** — e qui la misura ha battuto un 5-0.
+
+Quindi: **il nodo è un passo**, che nel modello c'è davvero (43 a undici, 156 a quaranta, con modello, strumenti,
+costo, durata ed esito), e **l'ultimo nodo è il titolare**, che nei dati c'è pure — l'ultimo passo di ogni
+dipartimento è già «Consegna al titolare» (`PASSI_DIP`), e la consegna lì si ferma per davvero. Il nodo del titolare
+porta la **regola** di `m.regole` che l'ha fermata: il workflow non sostituisce le quattro regole, **le fa vedere**.
+
+L'attesa che il canvas era stato scelto per mostrare c'è, e senza inventare un secondo dipendente.
+
+#### 3. Che cosa ha trovato la revisione incrociata (ed è di nuovo la parte che ha cambiato la risposta)
+
+| Trovato | Verificato nel codice |
+|---|---|
+| **La premessa del contesto era sbagliata, ed era mia**: avevo scritto che le 4 regole di approvazione stanno nella pagina Dipendente | **Vero, sbagliavo io**: stanno in **Richieste**, terza sezione (`direzione-a.js:989`), e sono **card** `ncard lead`, non righe. Tutti e cinque i consiglieri hanno costruito sulla pagina sbagliata |
+| La Console ha **nove** pagine, non sette: il canvas è la **decima** superficie | Vero, `render()` ne smista nove |
+| **Due regole fantasma**: `r16` «Fatture ricorrenti» e `r17` «Follow-up» sono citate su richieste decise ma non esistono in `m.regole` | Vero. Difetto del modello, **preesistente e non corretto qui**: sta nei punti aperti |
+| `scatta.js` inchioda `section:nth-of-type(2)` sul Dipartimento: una settima sezione romperebbe **le catture**, non solo le prove | Vero |
+| Rendere cliccabili le 4 card delle regole **riaprirebbe la regola 26** (hanno perso freccia e intaglio nella versione 18 proprio perché non avevano destinazione) | Vero |
+| Un nodo-titolare col disco in tinta **violerebbe la regola 19** (il disco in tinta è un dipendente AI) | Vero: il nodo del titolare non porta avatar, e una prova lo controlla |
+| «Il titolare non compare mai nelle righe dell'Esecuzione» (detto da tre pareri) | **Falso**: `tipo: 'titolare'` e `.lrow.titolare` esistono |
+| «Il passaggio di mano esiste, `dati.js:482`» (detto da una revisione) | **Falso**: quella riga sta nell'esecuzione del dipendente 1 e `r5` ha `chi: 1` — è la stessa mano che rilegge sé stessa |
+| **Il telefono: zero menzioni** in cinque pareri su cinque | Vero, e da lì è nata la schermata 10 |
+
+Due delle otto sono affermazioni **sbagliate dei revisori**, trovate controllandole: è la quarta volta in questo
+repository che un conto fatto senza aprire il codice finisce in un documento. La regola tiene: si guarda, non si crede.
+
+#### 4. Che cosa è stato costruito, e a che prezzo
+
+**La pagina Workflow** (`?pagina=workflow&dip=…` per l'elenco, `&workflow=w1&nodo=n` per il canvas), decima superficie
+della Console. Tre sezioni: il canvas, la firma anticipata con i suoi tre freni, gli altri workflow del dipartimento.
+
+| | Numero |
+|---|---|
+| Workflow a undici (Sviluppo · Marketing · Vendite · Amministrazione) | **6** (1 · 2 · 2 · 1) |
+| Workflow a quaranta | **26** (6 · 7 · 7 · 6) |
+| Nodi per workflow | da **4** a **8** a undici, da 4 a **11** a quaranta |
+| Elementi sul canvas (nodi + porte) | fino a **24** a undici, **36** a quaranta — la figura di riferimento ne ha **17** |
+| Sezioni aggiunte alla pagina Dipartimento | **zero** |
+| Voci aggiunte al rail | **zero** (resta a sei) |
+| Altezza della pagina Dipartimento | **2 594 / 2 960 px, invariata** |
+
+**L'ingresso è una pillola nell'intestazione di «Oggi in ‹dip›»**, non una settima sezione: una sezione sarebbe
+costata ~700 px misurati e avrebbe spostato gli indici `nth-of-type` su cui si reggono tre prove e due catture. È la
+quarta strada proposta da un consigliere, e l'unica delle cinque che teneva conto dell'impianto di prova.
+
+**Il canvas si dispone da solo**: cinque nodi per riga su una griglia a serpentina (la riga dispari va all'indietro,
+così i connettori non si incrociano mai), passo 248×210 px, nodi 208×96. Le posizioni si calcolano nella funzione che
+stampa e gli archi le rileggono: **nessuna misura presa dopo il disegno**, quindi la pagina è identica a ogni giro.
+
+**Due cose della figura non ci sono, e sono due regole già scritte, non due rinunce:**
+- **niente pan e niente zoom** (regola 17: la Console si scala già con `zoom` alla larghezza della finestra, e due
+  zoom annidati litigano). Il canvas non si trascina: si stende, e cresce in basso come ogni altra sezione;
+- **il verde diventa lime** (regola 4, un solo accento). È l'emendamento a `CLAUDE.md` deciso dall'utente.
+
+**Il nodo si apre** e mostra i suoi campi — modello, strumenti, esito dell'ultima volta — come il nodo selezionato
+della figura: è il gesto con cui si modifica il workflow. Il canvas cresce di 168 px quando un nodo è aperto, se no i
+campi finirebbero sotto la barra.
+
+**La firma anticipata nasce spenta**, e i suoi tre freni portano numeri misurati: la soglia dal costo vero del
+workflow (arrotondato ai 5 € sopra), il perimetro dal cliente dell'esecuzione, la scadenza in esecuzioni. Finché è
+spenta la coda resta esattamente com'è: la spina dorsale non si riscrive in questa versione.
+
+**Un workflow nasce da un'esecuzione riuscita**, e «riuscita» vuol dire due cose insieme: almeno due passi conclusi
+**e nessun passo rotto**. Senza la seconda, l'esecuzione ferma di Kim («Chiavi di accesso scadute») sarebbe diventata
+un modo di lavorare da ripetere. Costo e durata sono **sommati dai passi**, e una prova lo verifica su tutti e sei.
+
+**Sul telefono la schermata 10**: il canvas **girato di novanta gradi**. Lo schermo è 300×620 px dentro `zoom:1.25` e
+la regola del telefono dice che non deve poter scorrere di lato: quindi gli stessi nodi, uno sopra l'altro, con lo
+stesso connettore lime, le porte come chip e in fondo il nodo del titolare. Non è un canvas ridotto, è lo stesso
+oggetto letto in colonna. La firma si accende anche da lì, ed è lo stesso stato della Console.
+
+#### 5. La sezione 07 dello specimen, ripuntata
+
+Dodici occorrenze dei sei verdi che non erano il lime → **zero**. `--egreen` diventa `#B8FC64`, le due tinte del nodo
+selezionato `#9AD84B` e `#5F8A2E`, il bagliore `rgb(184 252 100/.55)`, la tessera attiva del rail `#C8FF7E→#A2E052`,
+il rosso del tag passa da `#F05A50` al `#F04848` del sistema. Notte, tessere, griglia puntinata, forma dei nodi e
+porte con l'etichetta restano quelli del riferimento: **cambia solo la tinta**.
+
+**Una cosa che il verde nascondeva**: sul lime il testo bianco non si legge. Il nodo selezionato porta adesso il testo
+all'inchiostro e i suoi campi su bianco al 72 % — è la stessa regola delle pillole lime del prodotto.
+
+I **18 token `--dgt-ed-*`** di `tokens.css` erano morti (nessun file li importa) e restano morti, ma adesso dicono il
+vero: tenerli sbagliati sarebbe stato peggio che tenerli inutili.
+
+#### 6. Verifica
+
+- **Le cinque prove cliccate passano: 141 + 82 + 48 + 54 + 60 = 385 verifiche, 0 ko** (erano 325). La quinta,
+  `prove/workflow.js`, sta in un file suo apposta: `console.js` sceglie tre sezioni con `nth-of-type` e ogni prova
+  nuova che ne aggiungesse una li sposterebbe.
+- **Le catture: 52 su 70 identiche byte per byte**, 8 cambiano e 10 nascono. Le 8 sono tutte e sole le pagine
+  Dipartimento (Console e telefono). `a-dipartimento.png` cambia in **5 196 px su 3 735 360 (lo 0,14 %)**, nel
+  riquadro **`x 986–1412, y 233–680`** — le due intestazioni di sezione — e **l'altezza non si muove** (2 594 →
+  2 594). Sul telefono il riquadro è più grande perché le righe dei workflow spingono giù quello che segue.
+- **`a-costi.png` è stata riportata com'era**: cambiava di 13 px nel riquadro `x 1136–1425, y 136–175`, cioè
+  esattamente la zona che le due sessioni precedenti avevano già segnalato come instabile fra sessioni. La pagina dei
+  Costi non è stata toccata.
+- Zero errori in console su tutte le pagine nuove, a undici e a quaranta; nessuna scorre di lato; zero controlli
+  inerti nella pagina del workflow.
+
+#### 7. Scelte fatte in costruzione, da confermare
+
+- **il nodo è un passo e non un dipendente** (contro il 5-0 del consiglio, per una misura: zero passaggi di mano nei
+  dati). Se l'utente vuole il nodo-dipendente, va prima inventato il passaggio di mano nel modello;
+- **l'ultimo nodo è il titolare**, e porta la regola che ferma lì la consegna;
+- **l'ingresso è una pillola**, non una settima sezione;
+- **niente pan, zoom e minimappa** (regola 17), e il canvas che cresce invece di scorrere;
+- **la soglia dei 5 €** per arrotondare la soglia di costo, e la **scadenza a 10 esecuzioni**: sono due numeri scelti
+  da me, gli unici due della versione che non vengono da una misura;
+- **«Da rifare»** come sesta pillola delle consegne;
+- sul telefono il workflow è **una colonna**, non un canvas stretto.
+
 ## 5. File
 
 | File | Ruolo |
