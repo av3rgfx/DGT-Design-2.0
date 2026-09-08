@@ -549,6 +549,56 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     un workflow non esiste la pagina dice perché (il dipendente è pianificato, zero passi conclusi) invece di lasciare
     un buco.
 
+36. **Il canvas del workflow è un grafo, e il significato sta sul connettore** (2026-09-08, versione 23, decisioni
+    64–67 dell'utente). La richiesta: *«letteralmente la complessità di n8n per creare flussi, ma con una UX che
+    aiuta e semplifica; poter spostare liberamente ogni card e connettere e biforcare più connettori anche su un
+    singolo task»*. Il canvas passa da **catena** a **grafo**: posizioni libere, **fan-out e fan-in illimitati**.
+    Quattro conseguenze, tutte con un numero dietro:
+    - **il significato di un connettore sta sul connettore, non nelle porte del nodo.** n8n lo distribuisce su tre
+      tipi di nodo (`IF` con 2 uscite, `Switch` con *n*, `Merge` con fino a 10 entrate) più una porta d'errore che
+      compare solo con `onError`. In DGT i quattro significati — `poi`, `se…`, `insieme`, `se si ferma` — stanno
+      sull'arco: il nodo non cresce di porte e il fan-out illimitato resta gratis. È la forma su cui **quattro
+      consiglieri su cinque erano arrivati indipendentemente**, con quattro nomi diversi, senza che nessuno la
+      scegliesse come risposta principale — perché la domanda chiedeva *che tipo* di biforcazione, e quella
+      risponde a *dove vive*.
+    - **il ramo d'errore non è una verità nuova**: è lo stato `errore` che la pagina Esecuzione mostra già, a cui
+      il canvas dà una strada. Una sola fonte, due letture. Duplicarlo come porta autonoma sarebbe stato due verità
+      sullo stesso fatto, ed è la ragione per cui il consiglio lo scartava.
+    - **il titolare resta un nodo, e l'autorizzazione va anche in testa.** Tre consiglieri su cinque volevano
+      trasformarlo in una **linea di confine** in fondo al canvas; un revisore ha aperto `mobile.js` e ha trovato
+      che sulla schermata 10 il nodo del titolare è la riga «aspetta te» col chip lime, cioè **l'unica superficie
+      da cui il titolare firma dal telefono**. Il confine la cancellava e nessuno dei tre se n'era accorto. In più,
+      per idea dell'utente, il canvas prende un **nodo d'innesco in testa** con la sua clausola — come il *trigger*
+      di n8n. Non è un concetto nuovo: sono la `clausola` della routine e la firma anticipata della versione 20,
+      promosse da interruttore a forma del canvas. **La convergenza non è obbligatoria**: il vincolo non è «tutto
+      finisce sul nodo firma» ma «tutto ciò che **esce dall'azienda** passa dalla firma», e un ramo che resta
+      dentro finisce dove vuole.
+    - **la biforcazione aggiunge una capacità, non svela un dato.** Contati: **43 passi a undici e 156 a quaranta,
+      zero condizioni, zero duplicati, zero parallelismi.** È la stessa lezione della versione 20, dove «il nodo è
+      un dipendente» cadde contando zero passaggi di mano. Quindi la biforcazione vive **solo nel dichiarato**
+      («la prossima volta»); «l'ultima volta» è e resta una catena, perché è quello che è successo.
+    L'aggancio è a **18 px**, i punti che il canvas già disegna (n8n usa 16, ma la sua griglia è invisibile).
+
+37. **Un canvas che si compone a mano ha bisogno di un «Riordina», o diventa più lento** (2026-09-08, versione 23).
+    È il corollario che **nessuno dei cinque consiglieri aveva visto** e che la revisione incrociata ha nominato:
+    il consiglio ha risposto in cinque su cinque alla prima metà della richiesta (*che cosa è una biforcazione*) e
+    **zero su cinque alla seconda** (*una UX che aiuta e semplifica, più veloce ed efficace*). Il trascinamento
+    libero, da solo, sposta sull'utente un lavoro che prima faceva la macchina. Quindi la **serpentina che il
+    canvas già calcola non si butta: diventa il pulsante** che rimette dritto il disegno — il «Tidy up» di n8n, che
+    lì usa dagre con `rankdir LR`, `nodesep 96`, `ranksep 128`. Con lui entrano gli altri tre acceleratori scelti:
+    il **rilascio del connettore nel vuoto** che crea il passo già collegato (la migliore idea di UX di n8n), il
+    **«+» sul connettore**, e **selezione multipla, scorciatoie, zoom e mini-mappa**.
+
+38. **`transform` non è `zoom`: il canvas può avere il suo zoom e la sua mini-mappa** (2026-09-08, versione 23,
+    emendamento alla regola 17). La regola 28 diceva «niente pan, niente zoom, niente mini-mappa, perché due zoom
+    annidati litigano», e il **secondo riferimento di disegno la mini-mappa e le pillole dello zoom ce le ha**.
+    Misurato: la cornice si scala con `zoom`, ma un `transform: scale()` **dentro** di essa compone esattamente —
+    nodo 208 px → **312 a 1,5×** e **124,8 a 0,6×**, a viewport 1440, 1920 e 1024, e la tendina `position:fixed`
+    resta al bordo dello schermo. Il divieto valeva per `zoom` annidato, non per `transform`: quindi zoom interno e
+    mini-mappa **rientrano**, e con loro il riferimento torna copiato com'è. Resta vero che **1 px del canvas vale
+    esattamente `zoom` px di schermo**, ed è la ragione per cui il trascinamento è possibile: uno spostamento del
+    mouse diviso per `zoom` dà lo spostamento nel canvas, esatto a ogni taglia.
+
 Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in
 `schermate/direzioni/DIREZIONI.md`, sezione 1. Sorgenti in `schermate/direzioni/` (`dati.js`, `comune.js`,

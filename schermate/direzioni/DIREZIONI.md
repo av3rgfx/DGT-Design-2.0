@@ -2184,6 +2184,94 @@ prova confronta il conto con la resa su **792 stati** del canvas: zero nodi cope
   dell'intestazione — più **7 nuove** (i tre gesti, il ramo, le tre della pagina Routine).
 - Le pagine crescono tutte di 68 px: home 2 320 → 2 388, Dipartimento 3 130 → 3 198, Richieste 3 033 → 3 101.
 
+### Versione 23: il canvas diventa un grafo — decisioni prese, disegno da fare (2026-09-08, stessa giornata)
+
+L'utente ha scelto il gesto A e ha allargato la commessa: *«letteralmente la complessità di n8n per poter creare
+flussi ma con una UX che aiuta e semplifica il processo. Di conseguenza voglio poter spostare liberamente ogni card
+nel canvas e poter connettere e biforcare più connettori anche a un singolo task»*, chiedendo di analizzare il
+repository di n8n. **Questa sessione si è fermata alle decisioni**, per scelta dell'utente: il modello è costruito
+e provato, il disegno comincia la prossima volta.
+
+#### 1. Che cosa fa n8n davvero (letto nel repository, non a memoria)
+
+| | |
+|---|---|
+| Modello | `connections[nomeSorgente][tipo][indiceUscita] = [{node, type, index}]` — tre livelli, perché n8n ha **13 tipi di connessione** e porte multiple per lato |
+| Biforcazioni | tre **nodi** diversi: `IF` 2 uscite (`true`/`false`), `Switch` *n* (4 di default + `Fallback`), `Merge` fino a **10 entrate**; la porta d'errore è in più, solo con `onError` |
+| Vincoli | fan-out e fan-in **illimitati**, **cicli ammessi** (Tarjan), nessuna validazione «nodo scollegato» |
+| Canvas | snap **16 px**, `connection-radius` **60**, selezione multipla e drag di gruppo, zoom **0–4**, mini-mappa 200×120 che si nasconde dopo **1 s**, ~40 scorciatoie |
+| I tre acceleratori | **rilascio del connettore nel vuoto** che apre il pannello già collegato; **«+» sul connettore** che infila un nodo spostando i nodi a valle *solo se non c'è spazio*; **«Tidy up»** con **dagre** (`shift+alt+T`, `rankdir LR`, `nodesep 96`, `ranksep 128`) |
+
+#### 2. Le misure prese prima di votare
+
+- **Nei dati le biforcazioni non esistono**: 43 passi a undici, 156 a quaranta, **zero** condizioni, **zero**
+  duplicati, **zero** parallelismi. Come nella versione 20 (zero passaggi di mano): la biforcazione **aggiunge una
+  capacità, non svela un dato**. Quindi vive solo nel dichiarato.
+- **Trascinare è possibile**: 1 px del canvas = **esattamente `zoom` px di schermo** (misurato a 1440, 1920, 1200,
+  1024). Lo spostamento del mouse diviso per `zoom` è lo spostamento nel canvas.
+- **Lo zoom interno è possibile**: `transform: scale()` dentro il `zoom` compone esattamente (208 → **312** a 1,5×,
+  → **124,8** a 0,6×, a tutti i viewport) e la tendina fissa resta al bordo. La regola 28 vietava lo zoom perché
+  «due zoom annidati litigano»: vale per `zoom`, **non** per `transform`. Il riferimento la mini-mappa ce l'ha.
+- **La banda tiene 4 nodi affiancati** (1008 px, nodo 208, margini 36 → 936 utili; 4 con 34 px d'aria, 3 comodi,
+  5 no: −104). Ma con le posizioni libere e lo zoom **non è più un tetto**.
+- **Il telefono**: colonna **348 px**, card **318** → ce ne sta **una**. I rami lì non si affiancano.
+
+#### 3. Il consiglio, e le quattro affermazioni che la revisione ha demolito
+
+Voti: **«che cos'è una biforcazione» 3 condizione / 2 parallelo**; **«la firma» 3 il confine / 1 una sola / 1 una
+per ramo**. L'utente ha scelto altro su entrambe, e la revisione incrociata spiega perché:
+
+1. **Il telefono ha ribaltato il voto sulla firma.** Tre consiglieri volevano il titolare come **linea di
+   confine**; un revisore ha aperto `mobile.js` e ha trovato che sulla schermata 10 il nodo del titolare è la riga
+   «aspetta te» col chip lime — **l'unica superficie da cui si firma dal telefono**. Il confine la cancella, e
+   **nessuno dei tre se n'era accorto**.
+2. **«Il parallelo è gratis: due nodi scollegati sono già paralleli»** — l'argomento migliore del consiglio — è
+   **falso**: due nodi scollegati non hanno antenato, sono **orfani**, non simultanei.
+3. **«Due biforcazioni annidate riempiono la banda»** è **falso**: ne danno tre, e due rami affiancati lasciano
+   **520 px liberi**. La biforcazione non obbliga allo zoom.
+4. **«Il parallelo ha già un dato dietro»** è **falso**: i parallelismi misurati sono **zero**, come le condizioni.
+
+E la cosa più grossa, che nessuno dei cinque ha visto: **5 su 5 hanno risposto alla prima metà della richiesta**
+(che cos'è una biforcazione) **e 0 su 5 alla seconda** (una UX più veloce ed efficace) — con il corollario che
+**il trascinamento libero senza un «Riordina» rende il canvas più lento, non più veloce**.
+
+**Quattro consiglieri su cinque** hanno proposto la stessa terza strada con quattro nomi diversi — il significato
+**sul connettore** invece che nelle porte del nodo — e nessuno l'aveva scelta come risposta principale: è la forma
+adottata.
+
+#### 4. Le decisioni dell'utente, e la sua idea
+
+**Tutte e tre le biforcazioni** (condizione, parallelo, errore), **sul connettore**. Il **titolare resta un nodo**,
+e — sua idea — l'autorizzazione va **anche in testa** al flusso, come il trigger di n8n, *«così viene richiesta
+ancor prima di far partire il flusso e non lo si limita nella creazione di nodi complessi e biforcazioni ampie
+senza l'obbligo di farle convergere su un nodo finale»*.
+
+**La sua idea aveva già un nome nel prodotto**: la `clausola` della routine (`avvio` = chiede prima di partire) e
+la **firma anticipata** del workflow, decise nella versione 20 e spente. Qui diventano la **forma del canvas**.
+**Misurato**: con la clausola `uscita` un ramo staccato **non esce** e la pagina lo dice; con `avvio` escono tutti
+e la convergenza non serve. Il timore («mi dà l'idea di limitare») era infondato: la convergenza è **permessa, non
+obbligata** — il vincolo è «ciò che **esce** passa dalla firma», non «tutto finisce sul nodo firma».
+
+E **tutti e quattro gli acceleratori**: «Riordina», il rilascio nel vuoto, il «+» sul connettore, selezione
+multipla con scorciatoie, zoom e mini-mappa.
+
+#### 5. Che cosa è costruito, e che cosa manca
+
+**Costruito** (`dati.js`, sei prove verdi, 478 verifiche): `ramoDi` restituisce `{nodi, archi}`; nodi con
+`id`/`x`/`y` liberi (che nascono dalla serpentina); archi `{id, da, a, tipo, se}`; `ramoPosiziona` (aggancio
+**18 px**, i punti che il canvas già disegna), `ramoCollega`, `ramoScollega`, `ramoAggiungi`, `ramoTogli` (ricuce),
+`ramoArco`, `ramoGradi`, `ramoNumera` (il numero del passo diventa la **distanza dall'inizio**), `ramoTerminali`,
+`ramoEsce`; il **nodo d'innesco** con la clausola; i quattro `RAMO_TIPI` e le tre `RAMO_CLAUSOLE`; `r.ciclo`.
+Vietati: arco verso se stessi, arco doppio, arco in uscita dal titolare.
+
+**Manca il disegno**, tutto: gli archi fra posizioni libere, il nodo d'innesco, il trascinamento, «Riordina», il
+collegamento, lo zoom con la mini-mappa, il «+», e il telefono. L'ordine sta in `PROSSIMA-SESSIONE.md`.
+
+**Una conseguenza già emersa e messa nelle prove**: con le posizioni libere **niente può spingere in giù quello che
+sta sotto** senza spostare il disegno dell'utente, quindi il nodo aperto **galleggia** sopra gli altri come la card
+selezionata di qualunque canvas. La regola che resta, e che la prova verifica, è che **due nodi chiusi non si
+coprono mai**.
+
 ## 5. File
 
 | File | Ruolo |

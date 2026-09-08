@@ -231,7 +231,13 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
           await page.goto(file('n=' + n + '&pagina=workflow&workflow=' + id + '&nodo=' + k + modo + '&tendina=chiusa'));
           await page.waitForTimeout(45);
           const r = await page.evaluate(() => {
-            const ns = [...document.querySelectorAll('.wcanvas .wnode')].map(e => { const b = e.getBoundingClientRect(); return { x: b.left, y: b.top, w: b.width, h: b.height }; });
+            /* Versione 23: nel **ramo** le posizioni sono libere, quindi niente puo' spingere in giu' quello che
+               sta sotto senza spostare il disegno dell'utente. Il nodo aperto **galleggia** sopra gli altri
+               (`.wnode.on` ha z-index 3), come la card selezionata di qualunque canvas. La regola che resta, e
+               che qui si verifica, e' che **due nodi chiusi non si coprono mai**: quella e' la disposizione, e la
+               disposizione dev'essere leggibile. Nell'ultima volta, dove la serpentina dispone da sola, il nodo
+               aperto continua a spingere (regola 33) e infatti li' non ci sono sovrapposizioni di nessun tipo. */
+            const ns = [...document.querySelectorAll('.wcanvas .wnode:not(.on)')].map(e => { const b = e.getBoundingClientRect(); return { x: b.left, y: b.top, w: b.width, h: b.height }; });
             let s = 0;
             for (let i = 0; i < ns.length; i++) for (let j = i + 1; j < ns.length; j++) {
               const a = ns[i], c = ns[j];
@@ -246,7 +252,7 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
     }
   }
   check(stati >= 120, 'provati ' + stati + ' stati del canvas: ogni nodo aperto e chiuso, nei tre modi, a due taglie');
-  check(copertiN === 0, 'nessun nodo ne copre un altro: era uno coperto per intero a ogni nodo aperto (' + copertiN + ')');
+  check(copertiN === 0, 'due nodi chiusi non si coprono mai: la disposizione resta leggibile (' + copertiN + ')');
   check(sottoBarra === 0, 'e nessun nodo finisce sotto la barra in fondo al canvas (' + sottoBarra + ')');
 
   if (!errors.length) ok++; else ko++;

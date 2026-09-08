@@ -1,5 +1,131 @@
 # Prossima sessione — passaggio di consegne
 
+## Versione 23 — le decisioni sono prese, il disegno è da fare (2026-09-08, fine sessione)
+
+**Questa sessione si è fermata dopo le decisioni, per scelta dell'utente**: il contesto era lungo, e il lavoro di
+disegno comincia la prossima volta. Qui c'è tutto quello che serve per non rifare niente.
+
+### Le tre decisioni dell'utente
+
+| | Domanda | Risposta |
+|---|---|---|
+| **64** | Il gesto per comporre (era la domanda 1 del consiglio della versione 22) | **A · il nodo aperto è l'editor** — ma con una ragione che cambia tutto: *«voglio letteralmente la complessità di n8n per creare flussi, con una UX che aiuta e semplifica. Poter spostare liberamente ogni card nel canvas e connettere e biforcare più connettori anche a un singolo task»* |
+| **65** | Che cosa dicono due connettori che escono dallo stesso nodo | **Tutte e tre come n8n**: condizione, parallelo ed errore |
+| **66** | Dove va la firma quando la catena si biforca | Il titolare **resta un nodo**, e in più — **idea dell'utente** — l'autorizzazione va **in testa** al flusso, così non c'è l'obbligo di far convergere i rami |
+| **67** | Gli acceleratori da portare da n8n | **Tutti e quattro**: «Riordina», il rilascio del connettore nel vuoto, il «+» sul connettore, e selezione multipla + scorciatoie + zoom e mini-mappa |
+
+### La risposta al dubbio dell'utente sulla convergenza, verificata nel codice
+
+Il timore era: *«obbligare tutti i nodi a convergere alla fine mi dà l'idea di limitare la creazione dei flussi»*.
+**Non limita, e la sua idea aveva già un nome nel prodotto.**
+
+- La convergenza è **permessa, non obbligata**: nessuna validazione la impone. Il vincolo non è «tutto finisce sul
+  nodo firma», è «tutto ciò che **esce dall'azienda** passa dalla firma». Un ramo che resta dentro (un controllo,
+  un test) finisce dove vuole.
+- L'idea dell'autorizzazione in testa **esiste già**: è la `clausola` della routine (`avvio` = *chiede prima di
+  partire*, `uscita` = *chiede prima di consegnare*, `libera` = *fai pure*) e la **firma anticipata** del workflow
+  con i suoi tre freni, decise nella versione 20 e oggi spente. L'utente ha chiesto di promuoverle da interruttore
+  a **forma del canvas** — ed è esattamente il *trigger node* che n8n mette in testa a ogni flusso.
+- **Misurato**: con la clausola `uscita` un ramo staccato **non esce** (e la pagina lo dice); con `avvio` escono
+  tutti e la convergenza non serve. L'idea dell'utente fa quello che sperava.
+
+### Che cosa è già costruito (modello, nessun disegno)
+
+In `dati.js`, il ramo è passato da **catena** a **grafo**:
+- `ramoDi(w)` → `{ nodi, archi, seq }`; i nodi hanno `id`, `x`, `y` (posizione **libera**, che nasce dalla
+  serpentina così il ramo si apre come stava prima); gli archi sono `{ id, da, a, tipo, se }`;
+- `ramoPosiziona` (aggancio a **18 px**, cioè i punti che il canvas già disegna — n8n usa 16 ma la sua griglia è
+  invisibile; qui i nodi cadono sui punti che si vedono), `ramoCollega`, `ramoScollega`, `ramoAggiungi`,
+  `ramoTogli` (ricuce la catena), `ramoCampo`, `ramoArco`, `ramoGradi`, `ramoNumera` (il numero del passo diventa
+  la **distanza dall'inizio**: su una catena dà 1, 2, 3… come prima; su una biforcazione i due rami portano lo
+  stesso numero, ed è giusto — sono lo stesso momento del lavoro), `ramoTerminali`, `ramoEsce`;
+- **fan-out e fan-in illimitati**, come n8n. Vietati soltanto: l'arco verso se stessi, l'arco doppio, e l'arco **in
+  uscita dal titolare** (dopo la firma non c'è altro lavoro). Il titolare non si toglie;
+- il **nodo d'innesco** in testa (`id: 'inn'`) con la sua `clausola`;
+- i **quattro tipi di arco** (`RAMO_TIPI`): `poi`, `se…`, `insieme`, `se si ferma`. **L'errore non è una verità
+  nuova**: è lo stato `errore` che la pagina Esecuzione mostra già, a cui qui si dà una strada — una sola fonte,
+  due letture. Era la ragione per cui il consiglio scartava il ramo d'errore, e così non si corre il rischio;
+- `r.ciclo` dice se il grafo si chiude ad anello (n8n li ammette; qui almeno si sanno).
+
+Nel canvas: `wpos` legge `x`/`y` dal nodo quando c'è (l'ultima volta resta la serpentina calcolata — è avvenuta,
+non si dispone), e l'altezza del canvas segue il nodo più in basso.
+
+### Che cosa manca, ed è tutto disegno
+
+1. **Il disegno del grafo**: archi fra posizioni libere (non più serpentina), le porte, l'etichetta sull'arco, il
+   nodo d'innesco con la sua forma (n8n dà al trigger un angolo arrotondato da 36 px), il nodo terminale che non
+   esce dall'azienda.
+2. **I gesti**: trascinare (la matematica è misurata: 1 px del canvas = `zoom` px di schermo, esatto, a ogni
+   viewport), collegare tirando da una porta, il rilascio nel vuoto che crea il passo già collegato.
+3. **I quattro acceleratori** scelti, e il primo è il più importante per una ragione misurata dalla revisione
+   incrociata: **il trascinamento libero senza un «Riordina» rende il canvas più lento, non più veloce.**
+4. **Lo zoom interno e la mini-mappa.** Il secondo riferimento **ce li ha**; la regola 17 li aveva tolti perché
+   «due zoom annidati litigano». **Misurato: vale per `zoom`, non per `transform`** — `transform: scale()` dentro
+   la cornice compone esattamente (nodo 208 → 312 a 1,5×, → 124,8 a 0,6×, a 1440, 1920 e 1024) e la tendina
+   `position:fixed` resta al bordo dello schermo. La regola 17 va emendata di conseguenza.
+5. **Il telefono**: la schermata 10 mostra il workflow **in colonna**, e una colonna rappresenta una catena, non un
+   grafo. **Misurato**: la colonna è larga **348 px** e una card **318** — ce ne sta **una**, quindi due rami
+   affiancati lì non esistono. Va deciso che cosa mostra: la strada percorsa, o un blocco «2 passi insieme».
+
+### Che cosa ha detto il consiglio, e che cosa la revisione incrociata gli ha demolito
+
+Cinque pareri, poi revisione incrociata. **Domanda «che cos'è una biforcazione»: 3 condizione, 2 parallelo.**
+**Domanda «la firma»: 3 il confine, 1 una sola, 1 una per ramo.** L'utente ha poi scelto altro su entrambe, e la
+revisione spiega perché aveva ragione a farlo:
+
+- **il telefono ha ribaltato il voto sulla firma.** Tre consiglieri su cinque volevano trasformare il titolare in
+  una **linea di confine** in fondo al canvas. Un revisore ha aperto `mobile.js`: sulla schermata 10 il nodo del
+  titolare è la riga «aspetta te» col chip lime, ed è **l'unica superficie da cui il titolare firma dal telefono**.
+  Il confine la cancella, e **nessuno dei tre se n'era accorto**;
+- **«il parallelo è gratis, due nodi scollegati sono già paralleli»** (l'argomento migliore del consiglio) è
+  **falso**: due nodi scollegati non hanno antenato, sono **orfani**, non simultanei;
+- **«due biforcazioni annidate riempiono la banda»** è **falso**: ne danno tre, e due rami affiancati lasciano
+  **520 px liberi**. Quindi la biforcazione **non** obbliga allo zoom (che serve per altre ragioni);
+- **«il parallelo ha già un dato dietro»** è **falso**: i parallelismi misurati sono **zero**, esattamente come le
+  condizioni — 43 passi a undici, 156 a quaranta, **zero** condizioni, **zero** duplicati, **zero** parallelismi.
+  La biforcazione non svela un dato che c'è: **aggiunge una capacità che non c'è**, ed è la stessa lezione della
+  versione 20 (dove «il nodo è un dipendente» cadde contando zero passaggi di mano);
+- **quattro consiglieri su cinque hanno proposto la stessa terza strada con quattro nomi diversi** (etichetta,
+  attributo, riga di testo, domanda **sul connettore**), e nessuno l'aveva scelta come risposta principale perché
+  la domanda chiedeva *che tipo* di biforcazione mentre quella risponde a *dove vive*. È la forma adottata;
+- **il buco più grosso, e nessuno dei cinque l'ha visto: 5 su 5 hanno risposto alla prima metà della frase
+  dell'utente** (che cos'è una biforcazione) **e 0 su 5 alla seconda** (una UX che aiuta e semplifica, più veloce
+  ed efficace). Da lì è nata la terza domanda all'utente, quella sugli acceleratori.
+
+**Punti ciechi rimasti aperti, da decidere prima o durante il disegno:**
+- che aspetto ha, nella tab **«l'ultima volta»** che è misurata, un **ramo mai percorso**: non ha esecuzione, non
+  ha euro, non ha dipendente. Se lo si disegna spento si inventa un terzo stato che il riferimento non ha; se lo si
+  nasconde, le due tab mostrano grafi di forma diversa e la pillola smette di essere due tempi della stessa cosa;
+- **la tendina delle approvazioni**: un flusso biforcato produce una voce o *n*? Nessuno dei cinque l'ha guardata;
+- un ramo che gira e **non arriva alla firma** ha speso euro che non risalgono a nessuna uscita: il titolare
+  **smette di vedere lavoro pagato e scartato**;
+- **la condizione stessa va approvata?** Se la si scrive a mano, il flusso può prendere una strada che il titolare
+  non ha mai visto;
+- i **cicli**: trascinamento libero e fan-in li rendono disegnabili, e un anello non ha ultimo nodo. Il modello li
+  rileva (`r.ciclo`), il disegno non li dice ancora;
+- **le parole**: ne girano sei per il connettore e quattro per la firma-confine. Vanno fissate quelle che il
+  prodotto stampa. «Biforcazione» e «condizione» sono parole da progettista: sull'interfaccia il consiglio
+  suggerisce **«insieme»** e **«se…»**.
+
+### Che cosa fa n8n, letto nel suo repository (non a memoria)
+
+Serve per non rileggerlo. Sorgente: `n8n-io/n8n`, canvas in
+`packages/frontend/editor-ui/src/features/workflows/canvas/`, modello in `packages/workflow/src/interfaces.ts`.
+
+- **Modello**: `connections[nomeNodoSorgente][tipoConnessione][indiceUscita] = [{node, type, index}]` — tre livelli,
+  perché n8n ha **13 tipi di connessione** (`main` più 12 di AI) e porte multiple per lato. Fan-out **illimitato**,
+  fan-in pure, **cicli ammessi** (rilevati con Tarjan). `position: [x, y]` interi, anche negativi.
+- **Le biforcazioni sono tre nodi diversi**: `IF` ha **2 uscite** (`true`/`false`); `Switch` ne ha *n* (4 di
+  default, una per regola, più `Fallback`); `Merge` ha fino a **10 entrate**. La porta d'errore è **in più** e
+  compare solo con `onError: 'continueErrorOutput'`.
+- **Canvas**: griglia e snap a **16 px**; `connection-radius` **60**; selezione multipla e trascinamento di gruppo;
+  **rilasciando il connettore nel vuoto si apre il pannello dei nodi già collegato** (la loro idea di UX migliore);
+  «+» sul connettore che infila un nodo in mezzo, spostando i nodi a valle **solo se non c'è spazio**; **«Tidy up»**
+  con **dagre** (`shift+alt+T`, `rankdir LR`, `nodesep 96`, `ranksep 128`); zoom da **0 a 4**; **mini-mappa**
+  200×120 che compare e si nasconde dopo **1 s**; **una quarantina di scorciatoie**.
+- Nessuna validazione «nodo scollegato»: un ramo non cablato perde il lavoro in silenzio.
+
+
 Stato al 2026-09-08, fine della sessione della **versione 22**: le **sei conferme** prese come raccomandato, il
 **ramo** (un canvas, due tempi) scelto dall'utente, e i **tre gesti del comporre** costruiti tutti e tre perché
 l'utente li vedesse invece di sceglierli sulla carta.
@@ -641,6 +767,28 @@ testo bianco non si legge, quindi il nodo selezionato porta il testo all'inchios
       ramo). «Ramo» è la parola del codice, non del prodotto: sull'interfaccia si leggono solo «l'ultima volta» e
       «la prossima volta», ed è voluto.
 
+64. **2026-09-08** (versione 23): il gesto per comporre è **A, il nodo aperto è l'editor** — con la ragione che
+    cambia la portata del lavoro: *«voglio letteralmente la complessità di n8n per poter creare flussi ma con una
+    UX che aiuta e semplifica il processo. Di conseguenza voglio poter spostare liberamente ogni card nel canvas e
+    poter connettere e biforcare più connettori anche a un singolo task»*. Quindi: **posizioni libere**, **fan-out
+    e fan-in illimitati**, e il canvas passa da catena a **grafo**.
+
+65. **2026-09-08**: due connettori che escono dallo stesso nodo possono dire **tutte e tre le cose di n8n** —
+    condizione, parallelo ed errore. Stanno **sul connettore**, non come porte del nodo (la forma su cui quattro
+    consiglieri su cinque erano arrivati da soli). **L'errore non è una verità nuova**: è lo stato `errore` che la
+    pagina Esecuzione mostra già, a cui si dà una strada.
+
+66. **2026-09-08**: il titolare **resta un nodo** (il confine votato da tre consiglieri cancellava l'unica
+    superficie da cui si firma dal telefono, e nessuno dei tre se n'era accorto). In più, **idea dell'utente**:
+    l'autorizzazione va anche **in testa** al flusso, come il trigger di n8n — così le biforcazioni non hanno
+    l'obbligo di convergere su un nodo finale. Non è un concetto nuovo: è la `clausola` della routine e la firma
+    anticipata, promosse da interruttore a forma del canvas.
+
+67. **2026-09-08**: si portano dentro **tutti e quattro** gli acceleratori di n8n — «Riordina», il rilascio del
+    connettore nel vuoto che crea il passo già collegato, il «+» sul connettore, e selezione multipla +
+    scorciatoie + **zoom interno e mini-mappa** (che il riferimento ha già, e che la regola 17 aveva tolto per un
+    motivo misurato non valido: `transform` non è `zoom`).
+
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti sintetici di DGT; documenti in italiano.
 
@@ -897,19 +1045,25 @@ frecce dei passi tornano da sole (la regola 26 dice che una riga con una destina
 
 ## Come riprendere
 
-**L'ordine consigliato**, se non arrivano correzioni che vengono prima:
+**Tutte le decisioni sono prese** (64–67, qui sopra): non c'è niente da chiedere prima di cominciare. La prossima
+sessione è **di disegno**, e l'ordine è questo:
 
-1. **La scelta del gesto**, che è l'unica cosa aperta e blocca il resto dell'editor: guardare le tre anteprime
-   (artefatto <https://claude.ai/code/artifact/523d0e19-8bc8-4721-8027-8734086fdc5b>, o la pagina vera con
-   `?pagina=workflow&workflow=w1&ramo=1&gesto=a|b|c`) e dire A, B o C. **Poi si tolgono le due strade non scelte**:
-   `gesto` in `direzione-a.js`, il CSS `.azioni-n` / `.azioni-b` / `.wplus`, il parametro `?gesto=` nella pagina,
-   nelle catture di `scatta.js` (gruppo `gesto`) e nella prova `workflow.js`.
-2. **Il giudizio sulle versioni 21 e 22**: le pagine sono larghe 1008 px invece di 1312 (versione 21) e adesso anche
-   68 px più alte, perché l'intestazione è andata a due righe (versione 22, conferma f). 47 catture su 70 sono
-   cambiate per quel motivo.
-3. **Finire l'editor** con il gesto scelto: quello che manca è dire **che cosa succede quando si salva** — oggi il
-   ramo vive in memoria (`m.rami`, come `m.decidi` e `firme`) e si perde ricaricando, e nessuna pagina dice che una
-   prossima volta è stata scritta.
+1. **Il disegno del grafo**: gli archi fra posizioni libere, il nodo d'innesco in testa, le porte, l'etichetta
+   sull'arco, il nodo terminale che non esce. Il modello c'è tutto e le prove sono verdi: si disegna soltanto.
+2. **Il trascinamento**, che è la richiesta dell'utente: la matematica è già misurata (1 px del canvas = `zoom` px
+   di schermo, esatto), l'aggancio è a 18 px sui punti che il canvas già disegna, i limiti sono la banda da 1008.
+3. **«Riordina» subito dopo**, non alla fine: la revisione incrociata ha misurato che **il trascinamento libero
+   senza riordino rende il canvas più lento, non più veloce**. La serpentina che c'è già diventa il pulsante.
+4. **Collegare**: tirare da una porta, e il rilascio nel vuoto che crea il passo già collegato (l'idea di UX
+   migliore di n8n).
+5. **Lo zoom interno e la mini-mappa**, che il riferimento ha già ed è misurato si possano fare.
+6. **Il «+» sul connettore**, la selezione multipla e le scorciatoie.
+7. **Il telefono**, per ultimo, e con una misura in mano: la colonna è 348 px, una card 318, quindi i rami lì non
+   si affiancano.
+
+**Prima di disegnare, tre punti ciechi da chiudere** (stanno per esteso nella «Versione 23»): che aspetto ha un
+ramo mai percorso nella tab misurata; se un flusso biforcato produce una voce o *n* nella tendina; e le parole che
+il prodotto stampa (ne girano sei per il connettore).
 
 **Che cosa c'è già, e non va rifatto**: il ramo (`ramoDi`, `ramoAggiungi`, `ramoSposta`, `ramoTogli`, `ramoCampo` in
 `dati.js`), la tab a pillola dei due tempi, i tre gesti, e il divieto che vale per tutti e tre — **il nodo del
@@ -1155,50 +1309,47 @@ stanno qui sopra, in «Versione 22», e le regole **31–35** in `SYSTEM-DESIGN.
 ### Prompt di avvio suggerito per la prossima sessione
 
 ```
-Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md («Versione 22», «Come riprendere» e «Cosa manca») e DIREZIONI.md
-sezione 4 «Versione 22»: sono le sei conferme costruite, il ramo, e i tre gesti del comporre messi a confronto.
-Controlla la PR della sessione precedente (#19): se è unita riparti da main con un branch nuovo, altrimenti
-continua sullo stesso branch.
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md («Versione 23» e «Come riprendere»). Controlla la PR #20: se è unita
+riparti da main con un branch nuovo, altrimenti continua sullo stesso branch.
 
-Lavoriamo nella direzione A · Console (schermate/componenti.js, schermate/direzioni/direzione-a.js, dati.js,
-comune.js, avatar/, mobile.js): niente emoji, solo le icone dello sprite; gli avatar sono quelli della versione 10;
-i colori restano quelli del sistema; niente logo o marchi di terzi. Sono decise e non si rimettono in discussione:
-la direzione A, la versione 17, la regola 26 delle frecce, le decisioni 45 e 46, le 47–56, le 57–58 (soffitto con
-avviso, ferma prima del passo), la 61 (le sei conferme come raccomandate) e la 62 (il ramo: un canvas, due tempi).
+Le decisioni sono già prese e NON si rimettono in discussione (sono le 64–67): il canvas dei workflow diventa un
+GRAFO con la complessità di n8n — posizioni libere, fan-out e fan-in illimitati; due connettori dallo stesso nodo
+possono dire condizione, parallelo o errore, e il significato sta SUL CONNETTORE, non come porte del nodo; il
+titolare resta un nodo e in più l'autorizzazione sta anche in testa al flusso (il nodo d'innesco), così i rami non
+devono convergere per forza; e si portano dentro tutti e quattro gli acceleratori di n8n.
 
-[QUI VA LA MIA RISPOSTA, la sola cosa che blocca il resto:
- quale dei TRE GESTI per comporre — A il nodo aperto che diventa l'editor, B la barra sotto il canvas, C il «+»
- sul connettore. Le anteprime sono nell'artefatto della scelta e nella pagina vera
- (?pagina=workflow&workflow=w1&ramo=1&gesto=a|b|c). Il consiglio diceva A. Quando rispondo, TOGLI dal codice le
- due strade non scelte: `gesto` in direzione-a.js, il CSS .azioni-n/.azioni-b/.wplus, il parametro ?gesto= nella
- pagina, in scatta.js e nella prova workflow.js.
- Dimmi anche, se vuoi, il giudizio sulle versioni 21 e 22: le pagine sono larghe 1008 px invece di 1312 e adesso
- 68 px più alte, perché l'intestazione è andata a due righe.]
+Il modello è GIÀ COSTRUITO in dati.js e le sei prove sono verdi (478 verifiche): ramoDi restituisce {nodi, archi},
+i nodi hanno id/x/y, gli archi {id, da, a, tipo, se}, più ramoPosiziona (aggancio 18 px), ramoCollega, ramoScollega,
+ramoAggiungi, ramoTogli, ramoArco, ramoGradi, ramoNumera, ramoTerminali, ramoEsce, il nodo d'innesco con la
+clausola, i quattro RAMO_TIPI e le tre RAMO_CLAUSOLE. Non rifarlo: manca solo il DISEGNO.
 
-Poi finisci l'editor con il gesto scelto. Restano tre cose non decise, e le prime due sono dubbi progettuali da
-passare dal consiglio: (1) che cosa vuol dire SALVARE una prossima volta — diventa una routine, cambia il
-workflow, o è una proposta che approvo io? Oggi il ramo vive in memoria e si perde ricaricando, e non c'è nessun
-pulsante perché la regola 26 vieta di prometterlo prima di sapere che cosa fa; (2) chi approva un passo scritto a
-mano, e che cosa io SMETTO di firmare quando una prossima volta parte da sola — tocca la spina dorsale, non solo
-il canvas; (3) che cosa vedo quando il dichiarato e il misurato non coincidono. E il telefono: la schermata 10 non
-ha il ramo, va deciso se dal telefono si compone o si legge soltanto.
+Fai il disegno nell'ordine di «Come riprendere»: (1) il grafo disegnato dalle posizioni libere e dagli archi, con
+il nodo d'innesco in testa; (2) il trascinamento (la matematica è misurata: 1 px del canvas = zoom px di schermo);
+(3) «Riordina» SUBITO DOPO, perché è misurato che il trascinamento libero senza riordino rende il canvas più
+lento; (4) collegare tirando da una porta, col rilascio nel vuoto che crea il passo già collegato; (5) zoom interno
+e mini-mappa (il riferimento ce li ha, e transform non è zoom: misurato); (6) il «+» sul connettore, selezione
+multipla e scorciatoie; (7) il telefono per ultimo (colonna 348 px, card 318: i rami non si affiancano).
+
+Prima di disegnare chiudi i tre punti ciechi che stanno in «Versione 23»: che aspetto ha un ramo mai percorso nella
+tab «l'ultima volta», che è misurata; se un flusso biforcato produce una voce o n nella tendina delle approvazioni;
+e quali parole stampa il prodotto (ne girano sei per il connettore — il consiglio suggerisce «insieme» e «se…»,
+mai «biforcazione»). Sono dubbi progettuali: passali dal consiglio e poi chiedimi la decisione.
 
 Il metodo di sempre: prima e dopo, rifare i font locali, lanciare le SEI prove di prove/ e catturare le pagine
-prima di toccare qualcosa; ogni dubbio progettuale passa dal consiglio, ma quello che si misura si misura — in
-questa sessione la revisione incrociata ha smontato due fatti falsi che sembravano decisivi («le routine hanno
-zero nodi»: ne hanno 3; «il bersaglio del + è l'arco intero, 242 px»: misurato fa 34), e costruendo le anteprime è
-saltato fuori che dalla versione 20 un nodo aperto ne copriva un altro per intero. Attenzione: scatta.js e
-prove/console.js si reggono ancora su section:nth-of-type(2) per la sezione delle consegne del Dipartimento. Alla
-fine: prove aggiornate, screenshot, artefatti ripubblicati allo stesso indirizzo, DIREZIONI.md, SYSTEM-DESIGN.md,
-i README, PROSSIMA-SESSIONE.md, commit, push e PR.
+prima di toccare qualcosa; quello che si misura si misura — in questa sessione la revisione incrociata ha demolito
+quattro affermazioni del consiglio aprendo il codice (il telefono che cancellava la firma da mobile, «il parallelo
+è gratis», «due biforcazioni riempiono la banda», «il parallelo ha già un dato dietro»). Attenzione: scatta.js e
+prove/console.js si reggono ancora su section:nth-of-type(2) per le consegne del Dipartimento. Alla fine: prove
+aggiornate, screenshot, artefatti ripubblicati allo stesso indirizzo, DIREZIONI.md, SYSTEM-DESIGN.md, i README,
+PROSSIMA-SESSIONE.md, commit, push e PR.
 ```
 
 ### Prompt breve, se vuoi solo tirare dritto
 
 ```
-Leggi CLAUDE.md e PROSSIMA-SESSIONE.md («Versione 22», «Come riprendere», «Cosa manca»). Controlla la PR #19: se è
-unita riparti da main con un branch nuovo. Il gesto per comporre è [A|B|C]: togli dal codice le due strade non
-scelte e finisci l'editor. Poi passa dal consiglio le due domande rimaste — che cosa vuol dire salvare una
-prossima volta, e chi approva un passo scritto a mano — e chiedimi la decisione. Il metodo di sempre, e alla fine
-prove, screenshot, artefatti, documenti, commit, push e PR.
+Leggi CLAUDE.md e PROSSIMA-SESSIONE.md («Versione 23», «Come riprendere»). Controlla la PR #20: se è unita riparti
+da main con un branch nuovo. Le decisioni 64–67 sono prese e il modello a grafo è già in dati.js con le prove
+verdi: manca solo il disegno. Fallo nell'ordine di «Come riprendere», cominciando dal grafo disegnato e dal
+trascinamento, e mettendo «Riordina» subito dopo. Il metodo di sempre, e alla fine prove, screenshot, artefatti,
+documenti, commit, push e PR.
 ```

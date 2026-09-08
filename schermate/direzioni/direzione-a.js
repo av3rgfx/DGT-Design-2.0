@@ -1372,14 +1372,17 @@ window.DIREZIONE_A = (function () {
     if (i < 0) return { riga: -1, px: 0 };
     return { riga: Math.floor(i / W_COL), px: Math.max(0, altNodo(nodi[i], true, ramo, gesto) - W_H_CHIUSO) };
   };
-  const wpos = (i, sp) => {
+  const wpos = (i, sp, nd) => {
+    /* Nel ramo la posizione la porta il nodo (versione 23: e' libera, la sposta l'utente). Nell'ultima volta la
+       calcola la serpentina, come sempre: quello che e' avvenuto non si dispone. */
+    if (nd && nd.x !== undefined) return { x: nd.x, y: nd.y, r: -1, c: -1 };
     const r = Math.floor(i / W_COL); const c = r % 2 ? W_COL - 1 - (i % W_COL) : i % W_COL;
     const giu = sp && sp.riga >= 0 && r > sp.riga ? sp.px : 0;
     return { x: W_PAD + c * W_PX, y: W_PAD + r * W_PY + giu, r, c };
   };
   const ICONA_NODO = { rapido: 'i-bolt', standard: 'i-bot', esperto: 'i-star' };
   function nodoWorkflow(m, w, nd, i, sel, ramo, gesto, tot, sp) {
-    const p = wpos(i, sp);
+    const p = wpos(i, sp, nd);
     const on = sel === nd.n;
     const cls = nd.titolare ? `wnode tit${nd.stato === 'attesa' ? ' att' : ''}${on ? ' on' : ''}` : `wnode${on ? ' on' : ''}`;
     const icona = nd.titolare ? 'i-hand' : ICONA_NODO[nd.modello] || 'i-bot';
@@ -1413,16 +1416,23 @@ window.DIREZIONE_A = (function () {
       ${campi}${campiTit}</div>`;
   }
   function canvasWorkflow(m, w, sel, ramo, gesto) {
-    /* Il ramo (versione 22): stesso canvas, altro tempo. I nodi vengono da `ramoDi` invece che dal workflow —
-       stessa serpentina, stesse misure, stessi connettori: e' la stessa figura, non una seconda. */
-    const nodiFonte = ramo ? m.ramoDi(w) : w.nodi;
+    /* Il ramo (versione 22): stesso canvas, altro tempo. Dalla **versione 23** i nodi della prossima volta hanno
+       una posizione libera e gli archi sono un elenco, non piu' l'ordine dell'array: e' il grafo che l'utente ha
+       chiesto («spostare liberamente ogni card, collegare e biforcare piu' connettori anche su un singolo task»).
+       «L'ultima volta» resta la serpentina calcolata: e' avvenuta, non si dispone. */
+    const G = ramo ? m.ramoDi(w) : null;
+    const nodiFonte = ramo ? G.nodi : w.nodi;
     w = Object.assign({}, w, { nodi: nodiFonte });
     const n = w.nodi.length;
     const righe = Math.ceil(n / W_COL);
     /* La spinta del nodo aperto: le righe sotto la sua scendono di quanto lui cresce, e il canvas si allunga dello
        stesso numero. 78: le porte sotto l'ultima riga; 62: la barra in fondo. */
-    const sp = spintaDi(w.nodi, sel, ramo, gesto);
-    const alt = W_PAD * 2 + (righe - 1) * W_PY + W_H + 78 + 62 + sp.px;
+    const sp = ramo ? { riga: -1, px: 0 } : spintaDi(w.nodi, sel, ramo, gesto);
+    /* Nel ramo l'altezza non viene dalle righe della serpentina ma dal nodo piu' in basso: le posizioni sono
+       libere, quindi il canvas cresce dietro a quello che l'utente ha disegnato. Il nodo aperto cresce con i suoi
+       campi e il canvas se ne accorge (regola 33: quello che cresce spinge, non copre). */
+    const bassoRamo = ramo ? Math.max(...w.nodi.map(nd => nd.y + altNodo(nd, nd.n === sel, ramo, gesto))) : 0;
+    const alt = ramo ? bassoRamo + 78 + 62 + W_PAD : W_PAD * 2 + (righe - 1) * W_PY + W_H + 78 + 62 + sp.px;
     const nodi = w.nodi.map((nd, i) => nodoWorkflow(m, w, nd, i, sel, ramo, gesto, n, sp)).join('');
     /* **Gesto C**: il «+» sul connettore. Uno per arco, piu' uno in coda prima del titolare. Il cerchio si vede al
        passaggio; il bersaglio e' il tratto libero dell'arco — 34 px fra due nodi della stessa riga, 123 nel salto
@@ -1438,7 +1448,7 @@ window.DIREZIONE_A = (function () {
        ancora stato fatto: una porta accesa dice che quello strumento e' stato davvero usato. */
     const porte = w.nodi.map((nd, i) => {
       if (nd.titolare) return '';
-      const p = wpos(i, sp);
+      const p = wpos(i, sp, nd);
       /* sotto il nodo aperto le porte scendono con lui: prima finivano dentro la card, sopra le sue etichette */
       const giu = nd.n === sel ? altNodo(nd, true, ramo, gesto) - W_H_CHIUSO : 0;
       /* l'etichetta della porta deve stare in 56 px: si prende la **prima parola** del nome dello strumento invece di
