@@ -2491,3 +2491,81 @@ lista sta in piedi, la funzione ha contenuto; se non sta in piedi, lo si scopre 
 pagina.
 
 **Da confermare dall'utente**: i 4 punti aperti qui sopra e la scelta 4 (dove vive).
+
+### 7.7 Correzione: il riferimento è n8n, non Zapier (2026-09-08)
+
+L'utente ha chiarito: «per la mia idea io mi ispiravo a **n8n**, che permette di creare automazioni di
+ogni tipo anche di livello complesso». Il consiglio aveva ricevuto un contesto costruito su Zapier e
+IFTTT, e su quel contesto **una delle sue conclusioni cade**. Le altre reggono.
+
+#### Che cosa fa n8n, verificato
+
+1. **L'innesco è un NODO, il primo del grafo.** Ogni workflow di n8n comincia con un nodo di innesco:
+   Schedule (a intervalli o cron), Webhook (il workflow diventa un indirizzo HTTP che chiunque può
+   chiamare), Form, Manual, o un evento di un'applicazione. I nodi di innesco hanno un'uscita e
+   **nessuna entrata**. → In n8n **non esiste un oggetto «routine»**: una routine è semplicemente un
+   workflow che ha uno Schedule Trigger in testa. È esattamente la **strada Z**, e non come compromesso
+   di implementazione: come modello.
+2. **È lo STESSO canvas a fare l'editor e il consuntivo.** Si apre il workflow nell'editor e si passa
+   alla linguetta *Executions* in cima al canvas: la stessa figura mostra, nodo per nodo, i dati entrati
+   e usciti, con il **contorno verde** se è andata e **rosso** dove si è rotta; cliccando il nodo rotto
+   si leggono errore e dati che l'hanno causato.
+3. **Nessun editor ufficiale sul telefono.** L'app mobile ufficiale **tiene l'editor nel browser**: mostra
+   salute delle esecuzioni, attività recente e grafici. Sono nate app di terzi che provano il canvas a
+   dita — segno che la domanda esiste, e che il prodotto ufficiale si rifiuta di rispondere così.
+4. **La composizione si fa con i sotto-workflow** (nodo *Execute Workflow*): un workflow autonomo che un
+   altro chiama, con ingressi e uscite. La regola pratica: se ricopi la stessa sequenza in più workflow,
+   quella sequenza è un sotto-workflow.
+5. **2 709 modelli pronti** nella libreria. È la lezione di Lindy una seconda volta.
+6. **L'organizzazione è per cartelle e progetti**, piatta con raggruppamento — non per «reparto».
+
+#### Che cosa cade del verdetto
+
+**«Il canvas è una lente, non un editor» (4 consiglieri su 5) cade.** Era fondata su un'osservazione
+giusta — una routine mai eseguita ha costo, durata ed esito vuoti — ma con una conclusione sbagliata:
+quei campi vuoti non sono «nodi coi trattini» su un diagramma di sola lettura, sono **lo stato di
+modifica**. n8n lo dimostra: una figura, due stati.
+
+> **Il canvas della versione 20 è già la vista *Executions* di n8n** — disegna costo, durata, esito e
+> strumenti per passo. Quello che manca non è una pagina diversa: è **l'altro stato della stessa
+> figura**, quello in cui si scrive.
+
+Quindi la coppia non è «routine (frase) ↔ workflow (canvas)», è:
+
+| | Stato | Che cosa mostra |
+|---|---|---|
+| **Come lavora** | dichiarato, modificabile | i nodi, l'innesco in testa, la clausola sul nodo del titolare |
+| **Com'è andata** | eseguito | la stessa figura con costo, durata, esito, verde e rosso |
+
+#### Che cosa regge
+
+- **Si promuove un fatto invece di comporre da vuoto** (5 su 5) **regge, e diventa più importante**: è
+  la *strada veloce*, quella che n8n non ha e che l'utente ha chiesto per nome («una modalità più
+  semplice e veloce»). Non sostituisce il canvas: è l'altra estremità dello stesso oggetto.
+- **Il telefono non compone** regge, e n8n lo conferma dal lato più forte: il prodotto più capace del
+  campo **non ci prova nemmeno**. Il telefono di DGT deve fare quello che fa l'app di n8n — guardare,
+  far partire, decidere — più l'unico gesto di scrittura che il telefono regge davvero: promuovere.
+- **La parola** regge: «routine» è libera, «mansione» e «regola» sono occupate.
+- **Un oggetto solo** regge, e n8n lo rende letterale: la routine **è** un workflow con un innesco in
+  testa. Non due altezze di un oggetto: un oggetto.
+- **La fascia morta** e le sue misure non c'entrano con n8n: restano com'erano.
+
+#### Che cosa n8n aggiunge, che nessun consigliere aveva sul tavolo
+
+- **Il sotto-workflow è il posto dove nascerà il passaggio di mano.** Oggi nei dati i passaggi fra due
+  dipendenti sono **zero**, ed è per questo che il nodo è un passo e non un dipendente. Il giorno in cui
+  un dipendente ne chiama un altro, quella è la chiamata a un sotto-workflow — non un nodo-dipendente
+  dentro lo stesso grafo. La versione 20 non va rifatta per farcelo stare.
+- **I modelli pronti**: se n8n ne ha 2 709 e l'adozione di Lindy è venuta dagli agenti già pronti,
+  DGT deve spedire routine già scritte, non un foglio bianco.
+- **Le cartelle** confermano la pagina di azienda con filtro, contro i silos per dipartimento.
+
+Fonti: [n8n: i tipi di innesco](https://n8n.spot/n8n-trigger-types-webhook-schedule-app-event-manual-explained/) ·
+[n8n: Schedule Trigger](https://madebyaime.com/blog/n8n-schedule-trigger/) ·
+[n8n docs: vedere le esecuzioni di un workflow](https://docs.n8n.io/build/understand-workflows/understand-executions/view-executions-for-a-single-workflow) ·
+[n8n: canvas, nodi ed esecuzioni](https://aiworkflowsautomation.com/understanding-the-n8n-interface-canvas-nodes-and-executions/) ·
+[n8n: il nodo Execute Workflow](https://synta.io/blog/n8n-execute-workflow-node-guide-2026) ·
+[n8n: l'app mobile tiene l'editor nel browser](https://www.n8n-hub.site/)
+
+**Da confermare dall'utente**: che il canvas diventi modificabile (e non solo una lente), e in quale
+ordine rispetto alla strada veloce.
