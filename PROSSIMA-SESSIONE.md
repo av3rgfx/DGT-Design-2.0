@@ -70,7 +70,25 @@ cresce, l'altezza del nodo aperto è un **conto fatto prima di stampare** (i cam
 una riga sola, se no cresce di un'altezza imprevedibile) e una prova verifica **792 stati** del canvas: zero nodi
 coperti, zero sotto la barra.
 
-### 4. Il prezzo, misurato
+### 4. Un artefatto non ripubblicato, e perché
+
+L'artefatto della **Console** (<https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34>) è rimasto
+alla **versione 21**. Non è una dimenticanza: per ripubblicare sopra un artefatto il servizio chiede di averne
+letto la versione viva riga per riga, e sono 6 416 righe — circa 275 000 token di codice generato. Prima di
+cominciare ho verificato che la versione viva è **identica byte per byte** a quello che `build-unico.js` produce
+da `origin/main`, quindi non c'era niente da salvare: solo un costo. Si ripubblica in due comandi, all'inizio
+della prossima sessione, quando la lettura non toglie spazio al lavoro:
+
+```
+cd schermate/direzioni && node build-unico.js direzione-a.html /tmp/console-unico.html
+# poi Artifact publish con url=…e6699f3a… (leggendo prima la versione viva, come chiede il servizio)
+```
+
+L'artefatto del **telefono** (…34192ba0…) non ne ha bisogno: le sue venti schermate non mostrano nessuna delle
+richieste toccate dalla conferma b, e le sue catture sono identiche byte per byte.
+**Nuovo, e pubblicato**: la pagina della scelta del gesto, <https://claude.ai/code/artifact/523d0e19-8bc8-4721-8027-8734086fdc5b>.
+
+### 5. Il prezzo, misurato
 
 - Le **sei** prove: **478 verifiche, 0 ko** (erano 421 su cinque). La sesta è `prove/routine.js`, 49 verifiche.
 - Le catture: **23 su 70 identiche** byte per byte, **47 cambiate** (tutte per i 68 px dell'intestazione), **7 nuove**.
