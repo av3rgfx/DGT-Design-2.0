@@ -1309,7 +1309,7 @@ stanno qui sopra, in «Versione 22», e le regole **31–35** in `SYSTEM-DESIGN.
 ### Prompt di avvio suggerito per la prossima sessione
 
 ```
-Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md («Versione 23» e «Come riprendere»). Controlla la PR #20: se è unita
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md («Versione 23» e «Come riprendere»). Controlla la PR #19: se è unita
 riparti da main con un branch nuovo, altrimenti continua sullo stesso branch.
 
 Le decisioni sono già prese e NON si rimettono in discussione (sono le 64–67): il canvas dei workflow diventa un
@@ -1347,7 +1347,7 @@ PROSSIMA-SESSIONE.md, commit, push e PR.
 ### Prompt breve, se vuoi solo tirare dritto
 
 ```
-Leggi CLAUDE.md e PROSSIMA-SESSIONE.md («Versione 23», «Come riprendere»). Controlla la PR #20: se è unita riparti
+Leggi CLAUDE.md e PROSSIMA-SESSIONE.md («Versione 23», «Come riprendere»). Controlla la PR #19: se è unita riparti
 da main con un branch nuovo. Le decisioni 64–67 sono prese e il modello a grafo è già in dati.js con le prove
 verdi: manca solo il disegno. Fallo nell'ordine di «Come riprendere», cominciando dal grafo disegnato e dal
 trascinamento, e mettendo «Riordina» subito dopo. Il metodo di sempre, e alla fine prove, screenshot, artefatti,
