@@ -6,4 +6,5 @@ node_modules/
 
 # pagine generate per gli artefatti (immagini incorporate, megabyte di base64): si rifanno con il loro costruttore
 schermate/direzioni/scelta-barra.html
+schermate/direzioni/scelta-gesto.html
 *-unico.html

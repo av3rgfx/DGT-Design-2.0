@@ -1,0 +1,208 @@
+<title>Con che gesto si compone</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600&display=swap">
+<style>
+/* Palette e misure dal sistema di design di DGT (schermate/componenti.js): nero, lime, Urbanist, pillole e cerchi.
+   Stessa impostazione della pagina della scelta della barra (versione 16), perché è la stessa domanda: tre strade
+   costruite davvero, messe una accanto all'altra con il loro prezzo misurato. */
+:root{
+  --nero:#000; --card:#1C1C1C; --card-top:#262626; --riga:rgb(255 255 255/.12); --riga-forte:rgb(255 255 255/.2);
+  --ink:#FCFCFC; --t2:#9A9A9A; --t3:#6B6B6B;
+  --lime:#B8FC64; --su-lime:#0A0A0A; --lime-testo:#B8FC64;
+  --rosa:#F9A3A3; --rosa-ink:#7A1F1F;
+  --fondo:#0A0A0A; --piano:linear-gradient(180deg,var(--card-top),var(--card));
+  --r-pill:9999px; --r-card:28px; --r-inner:18px;
+  --font:"Urbanist",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --colonna:min(100% - 2.5rem, 74rem);
+}
+:root:not([data-theme="dark"]){
+  --nero:#FFF; --card:#FCFCFC; --card-top:#FFF; --riga:rgb(0 0 0/.1); --riga-forte:rgb(0 0 0/.18);
+  --ink:#0A0A0A; --t2:#5E5E5E; --t3:#8A8A8A;
+  --rosa:#B4443F; --rosa-ink:#FFF;
+  --fondo:#F4F4F4; --piano:#FCFCFC; --lime-testo:#4E7A10;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --nero:#000; --card:#1C1C1C; --card-top:#262626; --riga:rgb(255 255 255/.12); --riga-forte:rgb(255 255 255/.2);
+    --ink:#FCFCFC; --t2:#9A9A9A; --t3:#6B6B6B; --rosa:#F9A3A3; --rosa-ink:#7A1F1F;
+    --lime-testo:#B8FC64; --fondo:#0A0A0A; --piano:linear-gradient(180deg,var(--card-top),var(--card));
+  }
+}
+:root[data-theme="dark"]{
+  --nero:#000; --card:#1C1C1C; --card-top:#262626; --riga:rgb(255 255 255/.12); --riga-forte:rgb(255 255 255/.2);
+  --ink:#FCFCFC; --t2:#9A9A9A; --t3:#6B6B6B; --rosa:#F9A3A3; --rosa-ink:#7A1F1F;
+  --lime-testo:#B8FC64; --fondo:#0A0A0A; --piano:linear-gradient(180deg,var(--card-top),var(--card));
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fondo);color:var(--ink);font-family:var(--font);font-weight:300;-webkit-font-smoothing:antialiased}
+.w{width:var(--colonna);margin-inline:auto}
+header{padding:56px 0 28px}
+h1{font-size:clamp(30px,5vw,52px);line-height:1.06;letter-spacing:.01em;font-weight:300;margin:0 0 14px}
+h1 b{font-weight:500}
+.sub{font-size:clamp(15px,2vw,19px);line-height:1.5;color:var(--t2);max-width:62ch;margin:0}
+.tag{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 14px;border-radius:var(--r-pill);
+  border:1px solid var(--riga);font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--t2);margin-bottom:20px}
+section{padding:26px 0}
+h2{font-size:clamp(21px,3vw,28px);font-weight:400;margin:0 0 8px;letter-spacing:.01em}
+h2 .n{color:var(--t3);margin-right:12px;font-weight:300}
+p{font-size:16px;line-height:1.62;color:var(--t2);max-width:74ch;margin:0 0 14px}
+p b,li b{color:var(--ink);font-weight:500}
+.lime{color:var(--lime-testo);font-weight:500}
+.griglia{display:grid;gap:22px;margin-top:22px}
+@media(min-width:60rem){.griglia{grid-template-columns:repeat(3,1fr)}}
+.opz{background:var(--piano);border:1px solid var(--riga);border-radius:var(--r-card);overflow:hidden;display:flex;flex-direction:column}
+.opz .cap{padding:22px 24px 6px}
+.opz .lett{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--lime);
+  color:var(--su-lime);font-size:16px;font-weight:500;margin-bottom:12px}
+.opz h3{font-size:20px;font-weight:500;margin:0 0 8px;line-height:1.25}
+.opz .d{font-size:14px;line-height:1.55;color:var(--t2);margin:0 0 16px}
+.opz figure{margin:0;padding:0 12px 12px}
+.opz img{display:block;width:100%;height:auto;border-radius:var(--r-inner);border:1px solid var(--riga)}
+.opz .num{border-top:1px solid var(--riga);padding:16px 24px 22px;margin-top:auto;display:grid;gap:9px}
+.opz .num div{display:flex;justify-content:space-between;gap:14px;font-size:13.5px;line-height:1.4}
+.opz .num .k{color:var(--t3)}
+.opz .num .v{color:var(--ink);font-weight:500;text-align:right}
+.opz .num .v.no{color:var(--rosa)}
+.opz .num .v.si{color:var(--lime-testo)}
+table{width:100%;border-collapse:collapse;margin:18px 0 8px;font-size:14.5px}
+th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--riga);vertical-align:top}
+th{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);font-weight:500}
+td b{font-weight:500}
+.scroll{overflow-x:auto}
+.nota{background:var(--piano);border:1px solid var(--riga);border-radius:var(--r-inner);padding:20px 24px;margin-top:20px}
+.nota h4{margin:0 0 8px;font-size:16px;font-weight:500}
+.nota p{margin:0;font-size:14.5px}
+ul{margin:0 0 14px;padding-left:20px;color:var(--t2);font-size:15.5px;line-height:1.6}
+li{margin-bottom:7px}
+footer{padding:36px 0 60px;border-top:1px solid var(--riga);margin-top:34px;color:var(--t3);font-size:13px;line-height:1.6}
+</style>
+
+<div class="w">
+<header>
+  <span class="tag">DGT · versione 22 · 8 settembre 2026</span>
+  <h1>Con che gesto si <b>compone</b> il canvas</h1>
+  <p class="sub">Tre strade, costruite tutte e tre nella pagina vera — non sono disegni. Le immagini sono catture
+  della Console, e i numeri sotto ognuna sono misurati aprendo la pagina. La scelta è tua.</p>
+</header>
+
+<section>
+  <h2><span class="n">Prima</span>Che cos'è già deciso</h2>
+  <p>Il <b>ramo</b>: un canvas solo, due tempi. La pillola sopra il canvas passa da <b>«L'ultima volta»</b> — quello
+  che è successo, misurato, immutabile — a <b>«La prossima volta»</b>, che è dichiarata e si compone. Nessuna pagina
+  nuova, nessuna parola nuova, e i due numeri in cima alla pagina restano sempre dell'ultima volta: è il motivo per
+  cui comporre non sporca «misurati, non stimati».</p>
+  <p>Vale per tutte e tre le strade qui sotto, che si distinguono <b>solo per il gesto</b>. E in tutte e tre
+  l'ultimo nodo è la <b>tua firma</b>: non si toglie, non si sposta, non si scavalca. Nessuno dei cinque consiglieri
+  l'aveva detto — l'ha trovato la revisione incrociata.</p>
+</section>
+
+<section>
+  <h2><span class="n">Le tre strade</span></h2>
+  <div class="griglia">
+
+    <article class="opz">
+      <div class="cap">
+        <span class="lett">A</span>
+        <h3>Il nodo aperto è l'editor</h3>
+        <p class="d">Le azioni stanno <b>dentro il nodo</b>, sotto i suoi campi: aggiungi, su, giù, togli. Il gesto sta
+        dove sta la cosa che cambia. È il verdetto del consiglio.</p>
+      </div>
+      <figure><img src="IMG:a-gesto-a" alt="Il canvas con il nodo «Pagina del carrello» aperto: dentro il nodo, sotto i campi Modello e Strumenti, una riga di quattro cerchi — più, su, giù, togli."></figure>
+      <div class="num">
+        <div><span class="k">Altezza del nodo aperto</span><span class="v si">311 px</span></div>
+        <div><span class="k">…contro il nodo aperto di oggi</span><span class="v si">328 px: <b>meno</b> di adesso</span></div>
+        <div><span class="k">Distanza dal nodo che modifica</span><span class="v si">149 px</span></div>
+        <div><span class="k">Bersaglio più piccolo</span><span class="v no">28 × 28 px</span></div>
+        <div><span class="k">Controlli sul canvas</span><span class="v">4, solo col nodo aperto</span></div>
+        <div><span class="k">Pixel in più sulla pagina</span><span class="v si">nessuno</span></div>
+      </div>
+    </article>
+
+    <article class="opz">
+      <div class="cap">
+        <span class="lett">B</span>
+        <h3>La barra sotto il canvas</h3>
+        <p class="d">Le azioni nella <b>barra in fondo</b>, che esiste già: il conto a sinistra, le azioni al centro,
+        l'uscita a destra. Sempre visibili, senza dover cliccare niente per scoprirle.</p>
+      </div>
+      <figure><img src="IMG:a-gesto-b" alt="Lo stesso canvas: le azioni stanno nella barra in fondo — «Aggiungi dopo il passo 2» in lime, poi Su, Giù, Togli — e il nodo aperto mostra solo i suoi campi."></figure>
+      <div class="num">
+        <div><span class="k">Altezza del nodo aperto</span><span class="v si">264 px</span></div>
+        <div><span class="k">…contro il nodo aperto di oggi</span><span class="v si">328 px: <b>meno</b> di adesso</span></div>
+        <div><span class="k">Distanza dal nodo che modifica</span><span class="v no">497 px</span></div>
+        <div><span class="k">Bersaglio più piccolo</span><span class="v si">2 361 px²</span></div>
+        <div><span class="k">Controlli sul canvas</span><span class="v">4, sempre visibili</span></div>
+        <div><span class="k">Pixel in più sulla pagina</span><span class="v si">nessuno</span></div>
+      </div>
+    </article>
+
+    <article class="opz">
+      <div class="cap">
+        <span class="lett">C</span>
+        <h3>Il «+» sul connettore</h3>
+        <p class="d">Un <b>«+» su ogni arco</b>: il passo nasce lì, e il posto dice dove. Il cerchio si accende al
+        passaggio del mouse. Non serve aprire nessun nodo.</p>
+      </div>
+      <figure><img src="IMG:a-gesto-c" alt="Lo stesso canvas senza nodi aperti: fra un nodo e il successivo, su ogni connettore, un piccolo cerchio col segno più."></figure>
+      <div class="num">
+        <div><span class="k">Altezza del nodo aperto</span><span class="v">non serve aprirlo</span></div>
+        <div><span class="k">Quanti «+» su 8 nodi</span><span class="v no">7 (n − 1)</span></div>
+        <div><span class="k">Distanza dal punto dove nasce</span><span class="v si">zero: è lì</span></div>
+        <div><span class="k">Bersaglio</span><span class="v">38 × 40 px</span></div>
+        <div><span class="k">Arco libero fra due nodi</span><span class="v no">34 px in orizzontale</span></div>
+        <div><span class="k">Pixel in più sulla pagina</span><span class="v si">nessuno</span></div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">Perché</span>Quello che il consiglio ha detto, e quello che la misura ha corretto</h2>
+  <p>I cinque consiglieri si sono spaccati <b>2–2–1</b>. La revisione incrociata ha fatto quello che i pareri non
+  avevano fatto: ha controllato i fatti.</p>
+  <div class="scroll">
+  <table>
+    <thead><tr><th>Affermazione</th><th>Chi la faceva</th><th>Verifica</th></tr></thead>
+    <tbody>
+      <tr><td>«rt1 e rt2 hanno <b>zero nodi</b>, quindi solo la barra funziona a canvas vuoto»</td>
+          <td>Era l'argomento decisivo di chi sceglieva <b>B</b></td>
+          <td><b>Falsa.</b> Le due routine hanno due passi dichiarati più il titolare: <b>3 nodi</b>. Tolto quello, B perde il suo unico sostegno — e tutti e cinque i revisori l'hanno indicata come il punto cieco più grave.</td></tr>
+      <tr><td>«il bersaglio del “+” è tutto l'arco, <b>242 px</b> in orizzontale»</td>
+          <td>Era la difesa di chi sceglieva <b>C</b></td>
+          <td><b>Falsa, e si misurava.</b> 242 è il <i>passo</i> della serpentina; il nodo ne occupa 208, quindi l'arco libero è <b>34 px</b> (123 solo nel salto di riga). Sette volte più corto.</td></tr>
+      <tr><td>«C apre <b>32 canvas</b> invece di 2»</td>
+          <td>Tre pareri su cinque</td>
+          <td><b>Falsa.</b> 6 workflow a undici dipendenti e 26 a quaranta sono la <i>stessa</i> azienda a due scale, non due insiemi da sommare.</td></tr>
+      <tr><td>«l'ultimo nodo è il titolare»</td>
+          <td><b>Nessuno dei cinque</b></td>
+          <td>L'ha trovato la revisione: così com'erano proposte, tutte e tre le strade lasciavano <b>togliere o scavalcare la firma del titolare</b>. Adesso nessuna delle tre può farlo.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="nota">
+    <h4>Un difetto trovato costruendo le anteprime, e chiuso</h4>
+    <p>Aprire un nodo ne copriva un altro <b>per intero</b> — 18 096 px², cioè tutti i 208 × 87 del nodo sotto. Era
+    della versione 20: il canvas aggiungeva 168 px in fondo, dove non servivano, invece di spostare in giù le righe
+    seguenti. Con una figura da leggere era già sbagliato; con una da comporre era insostenibile, perché il gesto
+    che si usa di più è proprio aprire un nodo. Adesso le righe scendono di quanto il nodo cresce, e una prova
+    verifica <b>792 stati</b> del canvas: nessun nodo coperto, nessuno sotto la barra.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">Comunque</span>Quanto costa un nodo in più</h2>
+  <p>Misurato su tutti i workflow, a undici e a quaranta dipendenti, aggiungendone davvero uno, due, tre e quattro:</p>
+  <ul>
+    <li>un nodo in più costa <b>0 px oppure 210</b>, mai altro: 210 solo quando apre una riga nuova;</li>
+    <li>oggi <b>4 workflow su 6</b> a undici e <b>20 su 26</b> a quaranta stanno sul salto, perché hanno 4 o 8 nodi;</li>
+    <li><b>quattro nodi in più costano sempre 210 px in tutto</b> — una riga sola, cioè 52,5 px a nodo;</li>
+    <li>la <b>larghezza non cambia mai</b>: 1008 px, nessuno scorrimento laterale in nessuna delle 160 misure;</li>
+    <li>non c'è un muro: a 39 nodi il canvas è alto 2 198 px e cresce di 210 ogni quattro nodi.</li>
+  </ul>
+</section>
+
+<footer>
+  <p>DGT · le tre strade sono costruite nella Console, non disegnate: <code>?pagina=workflow&amp;workflow=w1&amp;ramo=1&amp;gesto=a|b|c</code>.
+  Quando la scelta è fatta, le due strade non scelte si tolgono dal codice.</p>
+</footer>
+</div>

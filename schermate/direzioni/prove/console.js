@@ -313,10 +313,19 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   const serie = await page.evaluate(() => [...document.querySelectorAll('.a-main section:nth-of-type(4) .hlist .hrow')].map(r => ({ attesa: r.classList.contains('attesa'), freccia: !!r.querySelector('.rb.xs'), nofr: r.classList.contains('nofr') })));
   check(serie.length > 1 && serie.some(r => r.attesa) && serie.some(r => !r.attesa), 'le consegne precedenti sono una lista mista: ' + serie.length + ' righe');
   check(serie.every(r => r.freccia === r.attesa) && serie.every(r => !r.nofr), 'la freccia solo sulla riga che aspetta il titolare, e la colonna resta per tutte');
-  /* la lista sola: lo storico delle Richieste non ha nessuna destinazione, quindi cade anche la colonna */
+  /* Lo storico delle Richieste: fino alla versione 21 nessuna riga aveva una destinazione e la colonna cadeva.
+     Dalla 22 le richieste decise da una **routine** ne hanno una — la routine ha la sua pagina — quindi la colonna
+     torna e la freccia sta esattamente sulle righe che portano da qualche parte, come vuole la regola 25. */
   await vai('pagina=richieste&tendina=chiusa');
-  const sto2 = await page.evaluate(() => [...document.querySelectorAll('.hlist .hrow')].map(r => ({ freccia: !!r.querySelector('.rb.xs'), nofr: r.classList.contains('nofr') })));
-  check(sto2.length > 8 && sto2.every(r => !r.freccia && r.nofr), 'nello storico (' + sto2.length + ' righe decise) nessuna freccia e nessuna colonna sprecata');
+  const sto2 = await page.evaluate(() => [...document.querySelectorAll('.hlist .hrow')].map(r => ({ freccia: !!r.querySelector('.rb.xs'), nofr: r.classList.contains('nofr'), routine: r.dataset.az === 'routine' })));
+  const conDest = sto2.filter(r => r.routine).length;
+  check(sto2.length > 8 && conDest === 2, 'nello storico (' + sto2.length + ' righe decise) due portano alla loro routine (' + conDest + ')');
+  check(sto2.every(r => r.freccia === r.routine), 'e la freccia sta solo su quelle due: nessuna riga senza destinazione la porta');
+  /* La colonna cade **per gruppo**, non per pagina: lo storico è raggruppato per periodo, e un gruppo in cui
+     nessuna riga porta da qualche parte continua giustamente a non sprecare la colonna. Quello che non deve mai
+     succedere è una riga con destinazione dentro un gruppo che la colonna l'ha tolta. */
+  check(sto2.every(r => !(r.routine && r.nofr)), 'nessuna riga con destinazione finisce in un gruppo che ha tolto la colonna');
+  check(sto2.some(r => r.nofr), 'e i gruppi di sole righe senza destinazione la colonna continuano a non sprecarla');
 
   /* ---- versione 19: le consegne del dipartimento ---- */
   console.log('\n11. le consegne del dipartimento: la sesta sezione, i filtri, la ricerca, la tendina che apre una consegna');
@@ -424,7 +433,10 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
       copHead += c.length;
     }
   }
-  check(copHead === 4, 'difetto preesistente, dichiarato: 4 numeri dell\'intestazione stanno sotto la tendina aperta (home e Dipartimento, due taglie) — si chiude solo rifacendo l\'intestazione (' + copHead + ')');
+  /* Era 4, ed era il difetto dichiarato della versione 21: l'intestazione si stendeva fino a x 1414 e i suoi ultimi
+     numeri — cliccabili — nascevano sotto la tendina aperta. La versione 22 (conferma f) l'ha rifatta a due righe
+     dentro i 1008 px della colonna: adesso è **zero**, e non su una pagina sola ma su tutte, a undici e a quaranta. */
+  check(copHead === 0, 'nessun numero dell\'intestazione nasce sotto la tendina aperta: il difetto della versione 21 è chiuso (' + copHead + ')');
 
   /* Nessuna eccezione, nemmeno il canvas: ci sta anche lui, a quattro colonne invece di cinque. */
   await page.goto(file('pagina=workflow&dip=svi&tendina=chiusa')); await page.waitForTimeout(200);
@@ -449,7 +461,15 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(rDecise.filter(t => /routine ·/.test(t)).length === 2, 'due le ha decise una routine');
   check(rDecise.filter(t => /regola ·/.test(t)).length === 1, 'una la regola «Report interni», che esiste davvero');
   check(rDecise.every(t => !/non si sa quale/.test(t)), 'e nessuna dice «non si sa quale»');
-  check(await conta('.hrow [data-az="routine"]') === 0, 'nessuna freccia verso le routine: la pagina non esiste ancora e la regola 26 vieta di prometterla');
+  /* Dalla versione 22 la pagina della routine esiste (conferma e), quindi la riga ci porta davvero: la regola 26
+     vieta di promettere una destinazione che non c'è, non di mantenerne una che c'è. La si clicca per essere
+     sicuri che apra la routine giusta, e non solo che il bottone ci sia. */
+  const rigaRt = page.locator('.hrow[data-az="routine"]').first();
+  check(await page.locator('.hrow[data-az="routine"]').count() === 2, 'due righe dello storico portano alla loro routine');
+  const nomeRt = await rigaRt.evaluate(el => (el.textContent.match(/routine · ([^·]+?)\s*\d/) || [])[1] || '');
+  await rigaRt.click(); await page.waitForTimeout(300);
+  check((await txt('.a-title')).toUpperCase() === nomeRt.trim().toUpperCase(), 'e apre proprio quella: «' + (await txt('.a-title')) + '»');
+  check(await conta('.a-rail .rb') === 6, 'il rail resta a sei cerchi: con tre routine la pagina non ne merita un settimo (conferma e)');
 
   check(errors.length === 0, 'nessun errore in console: ' + JSON.stringify(errors));
   console.log(`\n${ok} ok, ${ko} ko`);

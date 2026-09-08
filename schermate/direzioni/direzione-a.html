@@ -17,7 +17,7 @@
 <script src="dati.js"></script>
 <script src="direzione-a.js"></script>
 <script>
-  // Parametri: ?n=11|40  ?tendina=chiusa|aperta|estesa|dossier  ?pannello=richieste|riepilogo  ?pagina=home|richieste|dipartimento|dipendente|esecuzione|consegna|workflow|costi|agenda|chat  ?dip=svi|mkt|ven|amm  ?id=<id dipendente>  ?filo=<id dipendente, pagina chat>  ?barra=0 (la barra «Oggi in azienda» di prima, versione 15, per il confronto)  ?confronto=6,7  ?richiesta=0  ?pagina=consegna&consegna=<id, es. c1-0> (la pagina della consegna, versione 19)  ?pagina=workflow&dip=<dip> (l'elenco) oppure ?pagina=workflow&workflow=<id, es. w1>&nodo=<n> (il canvas, versione 20)  ?editor=nuovo|<id dipendente>  ?avatar=orbe|kit  ?pelle=perla|grigio|chiaro|alone|disco  ?identita=tinta|dipartimento|toni|nessuna  ?palette=vivace|pastello|scura  ?corpo=piatta|orlo|perla  ?occhi=lilguy|neri|colorati|punti|kit  ?segnale=nessuno|punto|anello|gesto  ?carattere=1
+  // Parametri: ?n=11|40  ?tendina=chiusa|aperta|estesa|dossier  ?pannello=richieste|riepilogo  ?pagina=home|richieste|dipartimento|dipendente|esecuzione|consegna|workflow|costi|agenda|chat  ?dip=svi|mkt|ven|amm  ?id=<id dipendente>  ?filo=<id dipendente, pagina chat>  ?barra=0 (la barra «Oggi in azienda» di prima, versione 15, per il confronto)  ?confronto=6,7  ?richiesta=0  ?pagina=consegna&consegna=<id, es. c1-0> (la pagina della consegna, versione 19)  ?pagina=routine (l'elenco), ?pagina=routine&dip=<dip> (quelle di un dipartimento) oppure ?pagina=routine&routine=<id, es. rt1> (la pagina della routine, versione 22)  ?pagina=workflow&dip=<dip> (l'elenco) oppure ?pagina=workflow&workflow=<id, es. w1>&nodo=<n> (il canvas, versione 20; &ramo=1 la prossima volta e &gesto=a|b|c il gesto con cui si compone, versione 22)  ?editor=nuovo|<id dipendente>  ?avatar=orbe|kit  ?pelle=perla|grigio|chiaro|alone|disco  ?identita=tinta|dipartimento|toni|nessuna  ?palette=vivace|pastello|scura  ?corpo=piatta|orlo|perla  ?occhi=lilguy|neri|colorati|punti|kit  ?segnale=nessuno|punto|anello|gesto  ?carattere=1
   const q = new URLSearchParams(location.search);
   DGT_UI.iconeInserisci();
   DGT_AVATAR.usa(q.get('avatar') || 'orbe');   // ?avatar=kit per le forme del kit
@@ -33,7 +33,7 @@
   DIREZIONE_A.monta(root, modello, {
     pagina: q.get('pagina') || 'home', dip: q.get('dip') || 'svi', id: +(q.get('id') || 4), richiesta: +(q.get('richiesta') || 0),
     pannello: q.get('pannello') || 'richieste', editor: q.get('editor'), confronto: q.get('confronto'), filo: +(q.get('filo') || 0), barra: q.get('barra') || '',
-    consegna: q.get('consegna') || '', workflow: q.get('workflow') || '', nodo: +(q.get('nodo') || 0), tendina: q.get('tendina') || 'aperta' });
+    consegna: q.get('consegna') || '', workflow: q.get('workflow') || '', nodo: +(q.get('nodo') || 0), routine: q.get('routine') || '', ramo: q.get('ramo') || 0, gesto: q.get('gesto') || 'a', tendina: q.get('tendina') || 'aperta' });
   // La Console è progettata a 1440 px e riempie sempre la larghezza dello schermo: sopra i 1440 si ingrandisce, sotto si riduce
   // (richiesta dell'utente, 2026-09-04). Si usa `zoom`, non `transform`: così le tendine e le pillole fisse restano al bordo dello
   // schermo e non scorrono con la pagina; i 100vh delle tendine si dividono per --z (vedi il CSS in direzione-a.js).

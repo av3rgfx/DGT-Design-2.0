@@ -34,7 +34,7 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   /* Il numero era 2 594 px fino alla versione 20. La banda riservata della versione 21 stringe la colonna da 1312 a
      1008 px e la pagina si allunga: il prezzo misurato del non avere più controlli sotto la tendina. Resta il senso
      dell'asserzione — a «oggi» la pagina non si muove — e infatti la si rilegge sotto, dopo le pillole del periodo. */
-  check(altOggi === 3130, 'Sviluppo a «oggi» è alta 3 130 px: la banda riservata la allunga di 536 px, e da lì non si muove (' + altOggi + ')');
+  check(altOggi === 3198, 'Sviluppo a «oggi» è alta 3 198 px: 3 130 più i 68 px dell\'intestazione a due righe della versione 22, e da lì non si muove (' + altOggi + ')');
   check(await conta(sez('^Consegne') + ' .ncard.task') === 7, 'sette consegne di oggi in Sviluppo, come prima');
   check(await conta(sez('^Consegne') + ' [data-az="cerca"]') === 0, 'niente cerchio «cerca» a «oggi»: sette righe stanno in una schermata');
 
@@ -68,7 +68,7 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   const alt = await page.evaluate(() => document.documentElement.scrollHeight);
   /* 2 960 px fino alla versione 20; 3 526 con la banda riservata. L'ingresso ai workflow continua a non costare un
      pixel: la differenza è tutta della colonna più stretta, non della pillola. */
-  check(alt === 3526, 'Marketing è alta 3 526 px: l\'ingresso ai workflow non costa un pixel, la banda riservata sì (' + alt + ')');
+  check(alt === 3594, 'Marketing è alta 3 594 px: l\'ingresso ai workflow non costa un pixel, la banda riservata e l\'intestazione a due righe sì (' + alt + ')');
   check(await conta('.shead [data-pagina="workflow"]') === 1, 'la pillola «Workflow» sta nell\'intestazione di «Oggi in Marketing»');
   check((await txt('.shead [data-pagina="workflow"]')).includes('2'), 'e dice quanti sono: due');
   check(await conta('.a-rail .rb') === 6, 'il rail resta a sei cerchi');
@@ -214,6 +214,40 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   const cw = await page.evaluate(() => ({ main: Math.round(document.querySelector('.a-main').getBoundingClientRect().width), canvas: Math.round(document.querySelector('.wcanvas').getBoundingClientRect().width), col: [...document.querySelectorAll('.wnode')].map(n => Math.round(n.getBoundingClientRect().x)).filter((v, i, a) => a.indexOf(v) === i).length }));
   check(cw.main === 1008 && cw.canvas <= 1008, 'il canvas sta nella colonna riservata senza eccezioni (' + cw.canvas + ' px in ' + cw.main + ')');
   check(cw.col <= 4, 'su quattro colonne invece di cinque: 6 px di passo in meno, non le due colonne che la stima prometteva (' + cw.col + ')');
+
+  /* ---- versione 22: il nodo aperto non copre piu' il nodo sotto ----
+     Difetto della versione 20, trovato misurando in questa sessione: aprire un nodo ne copriva un altro **per
+     intero** (18 096 px², cioe' tutti i 208×87 del nodo sotto), perche' il canvas aggiungeva 168 px in fondo
+     invece di spostare in giu' le righe seguenti. Adesso le righe scendono di quanto il nodo cresce, e l'altezza
+     del nodo aperto e' un conto fatto prima di stampare, non una misura presa dopo. */
+  console.log('\n11. il nodo aperto non copre nessuno, e nessun nodo finisce sotto la barra');
+  let stati = 0, copertiN = 0, sottoBarra = 0;
+  for (const n of ['11', '40']) {
+    await page.goto(file('n=' + n + '&pagina=workflow&dip=svi&tendina=chiusa')); await page.waitForTimeout(200);
+    const wids = await page.evaluate(() => [...document.querySelectorAll('[data-az="workflow"]')].map(e => e.dataset.id));
+    for (const id of wids.slice(0, 3)) {
+      for (const modo of ['', '&ramo=1&gesto=a', '&ramo=1&gesto=b']) {
+        for (let k = 0; k <= 9; k++) {
+          await page.goto(file('n=' + n + '&pagina=workflow&workflow=' + id + '&nodo=' + k + modo + '&tendina=chiusa'));
+          await page.waitForTimeout(45);
+          const r = await page.evaluate(() => {
+            const ns = [...document.querySelectorAll('.wcanvas .wnode')].map(e => { const b = e.getBoundingClientRect(); return { x: b.left, y: b.top, w: b.width, h: b.height }; });
+            let s = 0;
+            for (let i = 0; i < ns.length; i++) for (let j = i + 1; j < ns.length; j++) {
+              const a = ns[i], c = ns[j];
+              if (Math.min(a.x + a.w, c.x + c.w) - Math.max(a.x, c.x) > 2 && Math.min(a.y + a.h, c.y + c.h) - Math.max(a.y, c.y) > 2) s++;
+            }
+            const cv = document.querySelector('.wcanvas').getBoundingClientRect();
+            return { s, fuori: ns.filter(e => e.y + e.h > cv.top + cv.height - 62 + 1).length };
+          });
+          stati++; copertiN += r.s; sottoBarra += r.fuori;
+        }
+      }
+    }
+  }
+  check(stati >= 120, 'provati ' + stati + ' stati del canvas: ogni nodo aperto e chiuso, nei tre modi, a due taglie');
+  check(copertiN === 0, 'nessun nodo ne copre un altro: era uno coperto per intero a ogni nodo aperto (' + copertiN + ')');
+  check(sottoBarra === 0, 'e nessun nodo finisce sotto la barra in fondo al canvas (' + sottoBarra + ')');
 
   if (!errors.length) ok++; else ko++;
   console.log('\n' + ok + ' ok, ' + ko + ' ko');

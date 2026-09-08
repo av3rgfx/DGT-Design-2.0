@@ -67,7 +67,7 @@ faceva, e le altre consegne intorno. Studio e misure in `DIREZIONI.md`, «Versio
   il CSS delle primitive, le variabili e le funzioni che le stampano (`av`, `pair`, `chipStato`, `iconaTipo`, `eur`,
   `differenze`…). Ogni pagina lo carica subito dopo `comune.js` e mette in pagina `DGT_COMPONENTI.css` prima del CSS della
   Console (`direzione-a.js`, che tiene la cornice, le pagine, le tendine e `monta`).
-- **Cinque** prove cliccate in `prove/` (con il `README.md` che dice il comando), **421 verifiche in tutto** (dalla versione 21; erano 385): la quinta è `workflow.js` (77: il perimetro delle consegne, il canvas dei workflow, la firma anticipata, la schermata 10 del telefono), e sta in un file suo perché `console.js` sceglie tre sezioni con `nth-of-type`. `console.js` (154 verifiche: tendine, Richieste, editor del
+- **Sei** prove cliccate in `prove/` (con il `README.md` che dice il comando), **478 verifiche in tutto** (dalla versione 22; erano 421 alla 21 e 385 alla 20): la quinta è `workflow.js` (80: il perimetro delle consegne, il canvas dei workflow, la firma anticipata, la schermata 10 del telefono e — dalla versione 22 — i 120 stati del canvas in cui nessun nodo ne copre un altro) e la sesta è `routine.js` (49: le sei conferme della versione 22, cioè «Uscita» al posto di «Approvata», la precedenza fra routine e regola, `g4` accesa col suo conto, la pagina delle routine e l'intestazione a due righe). Stanno in un file loro perché `console.js` sceglie tre sezioni con `nth-of-type`. `console.js` (154 verifiche: tendine, Richieste, editor del
   dipendente, esecuzione, 40, la barra «Oggi in azienda», la barra dei passi, i controlli delle intestazioni, le frecce di
   riga e — dalla versione 21 — le **asserzioni di visibilità** su nove pagine per due taglie e due stati della tendina,
   più l'invariante «chi ha deciso al posto del titolare risolve a un record che esiste»), `mobile.js` (83: le otto
@@ -79,6 +79,11 @@ faceva, e le altre consegne intorno. Studio e misure in `DIREZIONI.md`, «Versio
   `PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css node schermate/direzioni/prove/console.js`
   (e così `mobile.js`, `costi.js`, `agenda-chat.js`).
 - File unico per l'artefatto: `node build-unico.js /percorso/confronto-unico.html`.
+- **La scelta del gesto** (versione 22): le tre strade per comporre il canvas, costruite nella pagina vera
+  (`?pagina=workflow&workflow=w1&ramo=1&gesto=a|b|c`) e messe a confronto con i numeri misurati. Pagina:
+  `node costruisci-gesto.js` da `scelta-gesto.src.html`; artefatto
+  https://claude.ai/code/artifact/523d0e19-8bc8-4721-8027-8734086fdc5b — **aspetta la scelta dell'utente**, e quando
+  arriva le due strade non scelte si tolgono dal codice.
 - La pagina delle quattro scelte per la barra, con il voto condiviso: sorgente `scelta-barra.src.html` (le catture sono
   segnaposto `IMG:<nome>`, quindi non si apre da sola), `node costruisci-scelta.js` la costruisce incorporando i PNG di
   `screenshot/`. Artefatto: https://claude.ai/code/artifact/3a3fcb9e-c894-4a83-9cdb-54820f65756f

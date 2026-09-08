@@ -1,5 +1,83 @@
 # Prossima sessione — passaggio di consegne
 
+Stato al 2026-09-08, fine della sessione della **versione 22**: le **sei conferme** prese come raccomandato, il
+**ramo** (un canvas, due tempi) scelto dall'utente, e i **tre gesti del comporre** costruiti tutti e tre perché
+l'utente li vedesse invece di sceglierli sulla carta.
+
+## Versione 22 (2026-09-08, questa sessione)
+
+### Che cosa è aperto, e viene prima di tutto
+
+**La domanda 1 del consiglio aspetta la risposta dell'utente.** Alla domanda «con che gesto si compone senza
+trascinare» ha risposto **«fammi delle anteprime delle 3 opzioni così scelgo meglio»**: le tre strade sono
+costruite nella pagina vera (`?pagina=workflow&workflow=w1&ramo=1&gesto=a|b|c`) e messe a confronto con i numeri
+misurati nella pagina della scelta — artefatto
+<https://claude.ai/code/artifact/523d0e19-8bc8-4721-8027-8734086fdc5b>. **Quando la scelta è fatta, le due strade
+non scelte si tolgono dal codice** (`gesto` in `direzione-a.js`, il CSS `.azioni-n` / `.azioni-b` / `.wplus`, e il
+parametro `?gesto=` nella pagina e in `scatta.js`).
+
+| | A · nel nodo aperto | B · nella barra | C · sul connettore |
+|---|---|---|---|
+| Altezza del nodo aperto | 311 px | 264 px | non serve aprirlo |
+| …contro il nodo aperto di oggi | **328**: meno di adesso | **328**: meno di adesso | — |
+| Distanza dal nodo che modifica | **149 px** | **497 px** | zero: nasce lì |
+| Bersaglio più piccolo | 28 × 28 px | 2 361 px² | 38 × 40 px |
+| Controlli sul canvas | 4, col nodo aperto | 4, sempre visibili | **7** su 8 nodi (n − 1) |
+| Pixel in più sulla pagina | nessuno | nessuno | nessuno |
+
+**Il verdetto del consiglio era A**, e vale la pena sapere perché prima di guardare: il consiglio si era spaccato
+2–2–1, e la revisione incrociata ha sciolto il pareggio smontando due fatti falsi — «rt1 e rt2 hanno zero nodi»
+(ne hanno **3**: due passi dichiarati più il titolare) che era l'argomento decisivo di B, e «il bersaglio del “+” è
+tutto l'arco, 242 px» che era la difesa di C: misurato, **l'arco libero è 34 px** in orizzontale.
+
+### Che cosa ha deciso l'utente in questa sessione
+
+| Domanda | Risposta |
+|---|---|
+| Su che cosa si compone (domanda 2) | **Il ramo**: un canvas, due tempi — «L'ultima volta» misurata, «La prossima volta» dichiarata e componibile |
+| Con che gesto (domanda 1) | **Aperta**: ha chiesto le anteprime, che adesso ci sono |
+| Le sei conferme | Prese come raccomandato, senza richiederle (era nel prompt) |
+
+### 1. La misura che il prompt chiedeva in apertura
+
+Quanto costa un nodo in più sulla serpentina a quattro colonne, misurato aggiungendone davvero uno, due, tre e
+quattro su tutti i workflow, a undici e a quaranta — 160 misure:
+
+- **0 px oppure 210, mai altro**: 210 solo quando il nodo apre una riga nuova;
+- oggi **4 workflow su 6** a undici e **20 su 26** a quaranta stanno sul salto (hanno 4 o 8 nodi);
+- **quattro nodi in più costano 210 px in tutto**, cioè una riga: **52,5 px a nodo**;
+- la **larghezza non cambia mai** (1008 px, zero scorrimenti laterali in 160 misure), e non c'è un soffitto: a 39
+  nodi il canvas è alto 2 198 px e cresce di 210 ogni quattro;
+- **inserire a metà catena** fa scorrere di **una casella** tutti i nodi che vengono dopo (8 su 8 se in testa, solo
+  il titolare se in coda): è il prezzo vero di un inserimento, e nessuno dei cinque consiglieri l'aveva citato.
+
+### 2. Le sei conferme, costruite
+
+| | Cosa | Fatto |
+|---|---|---|
+| a | Le due regole fantasma | **Lasciate come sono**. Nessun codice |
+| b | «Approvata» falso su `r17` | Le tre uscite senza il titolare dicono **«Uscita»**, pillola neutra: il lime resta la sua firma. Corretta anche la pagina della consegna (1 consegna a undici, 2 a quaranta) |
+| c | La regola di precedenza | Scritta: **una routine esegue, non decide** — vince la regola d'azienda, la clausola può solo stringere. `regolaPer` e `contrastoDi` nel modello. Trova quello che nega: **0 contrasti a undici, 2 a quaranta**, segnati in pagina |
+| d | `g4` spenta | **Accesa**, e la card stampa quante richieste governa: **zero**. La consegna più cara costa 33,80 € e la soglia sta a 50 — il problema è la soglia, non lo stato |
+| e | La pagina delle routine | Costruita, **fuori dal rail** (sei cerchi). Da due strade che c'erano già: il nome nello storico (era testo morto) e una pillola nel Dipartimento |
+| f | L'intestazione fuori dalla banda | **A capo sotto il titolo**: da 56 a 124 px, ogni pagina scende di **68** (la stima diceva 64). I numeri sotto la tendina: da **4 a 0**, su 24 pagine per due taglie |
+
+### 3. Un difetto della versione 20 trovato e chiuso
+
+**Aprire un nodo ne copriva un altro per intero** — 18 096 px², cioè tutti i 208 × 87 del nodo sotto: il canvas
+aggiungeva 168 px in fondo invece di spostare in giù le righe seguenti. Adesso le righe scendono di quanto il nodo
+cresce, l'altezza del nodo aperto è un **conto fatto prima di stampare** (i campi hanno altezza fissa e stanno su
+una riga sola, se no cresce di un'altezza imprevedibile) e una prova verifica **792 stati** del canvas: zero nodi
+coperti, zero sotto la barra.
+
+### 4. Il prezzo, misurato
+
+- Le **sei** prove: **478 verifiche, 0 ko** (erano 421 su cinque). La sesta è `prove/routine.js`, 49 verifiche.
+- Le catture: **23 su 70 identiche** byte per byte, **47 cambiate** (tutte per i 68 px dell'intestazione), **7 nuove**.
+- Le pagine: home 2 320 → 2 388, Richieste 3 033 → 3 101, Dipartimento 3 130 → 3 198.
+
+---
+
 Stato al 2026-09-08, fine della sessione della **versione 21**: il **record della routine**, la **banda riservata**
 dei 304 px, le **asserzioni di visibilità** e le **due regole fantasma** — il primo giro deciso dall'analisi.
 Nessuna interfaccia nuova, come chiedeva il prompt: modello, CSS di due colonne, prove.
@@ -521,6 +599,30 @@ testo bianco non si legge, quindi il nodo selezionato porta il testo all'inchios
     che il riferimento apre. `r8` resta una regola, `r16` e `r17` diventano routine. La revisione incrociata
     preferiva le eccezioni nei dossier con il contatore dentro `g1`: da confermare.
 
+61. **2026-09-08** (versione 22): sulle **sei conferme** aperte, prendere la raccomandazione già scritta accanto a
+    ognuna, senza richiederle. La numero 60 è quindi **confermata come stava**: `r16` e `r17` restano attribuite
+    alla routine, e le eccezioni nei dossier col contatore dentro `g1` sono scartate.
+
+62. **2026-09-08** (versione 22, domanda 2 del consiglio): su che cosa si compone → **il ramo**. Un canvas solo,
+    due tempi, con la tab a pillola: «L'ultima volta» misurata e immutabile, «La prossima volta» dichiarata e
+    componibile. Non era fra le tre strade proposte — l'ha portata la revisione incrociata, e tutti e cinque i
+    revisori l'hanno indicata come l'idea migliore emersa. Zero pagine nuove, zero parole nuove.
+
+63. **2026-09-08** (versione 22, domanda 1 del consiglio): **ancora aperta**. Alla domanda «con che gesto si
+    compone» l'utente ha risposto «fammi delle anteprime delle 3 opzioni così scelgo meglio». Le tre strade sono
+    costruite nella pagina vera e messe a confronto nell'artefatto della scelta. Il verdetto del consiglio era **A ·
+    il nodo aperto è l'editor**, dopo che la revisione incrociata ha smontato l'argomento decisivo di B (falso: le
+    routine hanno 3 nodi, non zero) e una misura ha tolto di mezzo la difesa di C (l'arco libero è 34 px, non 242).
+
+    **I punti ciechi che il consiglio ha nominato e che restano aperti** (nessuno deciso, tutti scritti):
+    - **che cosa vuol dire salvare** una prossima volta: routine, workflow, o proposta da approvare;
+    - **chi approva un passo scritto a mano**, e che cosa il titolare *smette* di firmare — è la domanda che tocca
+      la spina dorsale, e l'ha nominata solo la revisione incrociata;
+    - **che cosa vede il titolare** quando il dichiarato e il misurato non coincidono;
+    - **le parole**: il consiglio ne ha usate cinque per la stessa cosa (routine, workflow, esecuzione, copia,
+      ramo). «Ramo» è la parola del codice, non del prodotto: sull'interfaccia si leggono solo «l'ultima volta» e
+      «la prossima volta», ed è voluto.
+
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti sintetici di DGT; documenti in italiano.
 
@@ -779,31 +881,30 @@ frecce dei passi tornano da sole (la regola 26 dice che una riga con una destina
 
 **L'ordine consigliato**, se non arrivano correzioni che vengono prima:
 
-1. **Il giudizio sulla versione 21.** 45 catture su 70 sono cambiate e tutto il resto si costruisce su questa
-   colonna: le pagine sono larghe 1008 px invece di 1312 e più alte dal 4 al 26 %. Se il prezzo non va bene, va
-   detto prima di costruirci sopra l'editor. E c'è la PR da unire.
-2. **Le sei conferme del punto 2 di «Cosa manca»**, in un colpo solo: sono brevi e ognuna ha già la sua
-   raccomandazione scritta accanto.
-3. **Il canvas componibile**, che a quel punto ha la strada libera.
+1. **La scelta del gesto**, che è l'unica cosa aperta e blocca il resto dell'editor: guardare le tre anteprime
+   (artefatto <https://claude.ai/code/artifact/523d0e19-8bc8-4721-8027-8734086fdc5b>, o la pagina vera con
+   `?pagina=workflow&workflow=w1&ramo=1&gesto=a|b|c`) e dire A, B o C. **Poi si tolgono le due strade non scelte**:
+   `gesto` in `direzione-a.js`, il CSS `.azioni-n` / `.azioni-b` / `.wplus`, il parametro `?gesto=` nella pagina,
+   nelle catture di `scatta.js` (gruppo `gesto`) e nella prova `workflow.js`.
+2. **Il giudizio sulle versioni 21 e 22**: le pagine sono larghe 1008 px invece di 1312 (versione 21) e adesso anche
+   68 px più alte, perché l'intestazione è andata a due righe (versione 22, conferma f). 47 catture su 70 sono
+   cambiate per quel motivo.
+3. **Finire l'editor** con il gesto scelto: quello che manca è dire **che cosa succede quando si salva** — oggi il
+   ramo vive in memoria (`m.rami`, come `m.decidi` e `firme`) e si perde ricaricando, e nessuna pagina dice che una
+   prossima volta è stata scritta.
 
-**Una cosa si può misurare in apertura, senza chiedere niente a nessuno**: quanto costa un nodo in più sulla
-serpentina a quattro colonne. È la terza delle tre cose che servono prima di scrivere l'editor, ed è l'unica delle
-tre che non è un dubbio progettuale.
+**Che cosa c'è già, e non va rifatto**: il ramo (`ramoDi`, `ramoAggiungi`, `ramoSposta`, `ramoTogli`, `ramoCampo` in
+`dati.js`), la tab a pillola dei due tempi, i tre gesti, e il divieto che vale per tutti e tre — **il nodo del
+titolare non si toglie, non si sposta e non si scavalca**, e sta nel modello, non nel gesto.
 
-**Il lavoro grosso: il canvas componibile** (decisione 59, il giudizio dell'utente sulla versione 20). Il record c'è, i
-riferimenti risolvono: quello che manca è il gesto. Tre cose da decidere prima di scrivere una riga, e almeno due
-sono dubbi progettuali da passare dal consiglio:
-1. **Comporre senza trascinare.** La regola 17 vieta pan e zoom dentro una cornice che si scala già. Aggiungere un
-   nodo in coda, spostarlo di una posizione nella serpentina, cambiargli modello e strumenti si può fare senza
-   trascinamento — ma è una scelta di forma con più di una risposta sensata.
-2. **Su che cosa si compone.** Un nodo è un passo, e i passi vengono dall'esecuzione. Comporre vuol dire scrivere
-   passi non ancora eseguiti, cioè la routine *dichiarata*. Delle tre routine **due non hanno un workflow** (i
-   dipendenti 9 e 11 sono `pianificato`): l'editor nasce lì, non sulle esecuzioni finite.
-3. **Quanto costa un nodo in più**, in pixel, sulla serpentina a quattro colonne. Questa si misura: si misura.
-
-**Poi le conferme aperte**: le due regole fantasma (routine, come sono adesso, oppure eccezioni nei dossier con il
-contatore dentro `g1`), «Approvata» che è falso su `r17`, la regola di precedenza fra clausola e regola, `g4`
-spenta, e dove vive la pagina delle routine — con tre voci non merita un cerchio nel rail.
+**Le tre domande che l'editor lascia aperte** (nessuna è stata decisa, e almeno le prime due sono dubbi progettuali):
+1. **Che cosa vuol dire salvare una prossima volta.** Diventa una routine? Cambia il workflow? Resta una proposta
+   che il titolare approva? Oggi non c'è nessun pulsante e nessuna promessa: la regola 26 lo vieta finché non si sa.
+2. **Chi approva un passo scritto a mano.** La revisione incrociata l'ha chiesto e nessuno dei cinque consiglieri
+   l'aveva detto: comporre una routine con la clausola «libera» vuol dire che il titolare **smette** di firmare
+   quelle uscite. Tocca la spina dorsale, non solo il canvas.
+3. **Che cosa vede il titolare quando il dichiarato e il misurato non coincidono** — cioè quando la prossima volta
+   è andata diversamente da come era scritta.
 
 **Poi il candidato 8, i connettori** — l'ultimo dei tre, e il più lungo. Aspetta ancora le sue risposte: se il
 verdetto va bene (**credenziale dell'azienda nominata per cliente**, **permesso d'uso del dipartimento** — cioè la
@@ -846,7 +947,8 @@ del passo).
   finisce sbagliato in un documento.
 
 Prima e dopo, come sempre: rifare i font locali (`fetch-fonts.py`), lanciare le **cinque** prove di `prove/` e
-catturare le pagine prima di toccare qualcosa (`scatta.js --in <cartella>`); leggere `CLAUDE.md`,
+catturare le pagine prima di toccare qualcosa (`scatta.js --in <cartella>`); dalla versione 22 le prove sono **sei**
+e le catture **77**; leggere `CLAUDE.md`,
 `SYSTEM-DESIGN.md` (sezioni 2, 6, 8, 9 e 10, regole 24–**28**) e `DIREZIONI.md` (sezione 4 dalla versione 14,
 **sezione 6** per l'analisi delle tre proposte, sezione 5 per i file); controllare branch e PR. Alla fine: prove
 aggiornate, screenshot con `scatta.js`, artefatti ripubblicati allo stesso indirizzo, i documenti, commit, push e
@@ -989,41 +1091,38 @@ inerti su quella pagina.
 
 ## Cosa manca
 
-### 1. Il canvas componibile — il giudizio dell'utente sulla versione 20, e adesso il lavoro grosso
+### 1. Il canvas componibile — metà costruito, e la metà che manca è una domanda sola
 
-L'utente ha dato il giudizio che mancava, ed è uno solo: **«il canvas deve diventare componibile»**. Il canvas
-oggi si legge e si apre un nodo alla volta; il gesto di *comporre* non c'è. È coerente con la decisione 50 («il
-canvas diventerà modificabile, non resterà una lente — su questo il consiglio aveva torto») e adesso è il primo
-lavoro dell'arretrato.
+**Che cosa c'è**: il ramo (la scelta dell'utente sulla domanda 2), la tab a pillola dei due tempi, i tre gesti
+costruiti tutti e tre, e le tre azioni del comporre nel modello — aggiungi, sposta, togli — con il divieto che
+protegge il nodo del titolare. Si compone davvero: si aggiunge un passo, lo si sposta, lo si toglie, gli si cambia
+il modello, e il canvas si ridisegna con la serpentina che spinge invece di coprire.
 
-**Che cosa questo giro gli ha messo sotto** — ed è il motivo per cui l'ordine era giusto: prima non esisteva un
-record su cui scrivere. `workflowDi()` è una derivazione e `firme` un oggetto in memoria che si perde ricaricando.
-Adesso la routine è un record vero (`id`, `nome`, `chi`, `innesco`, `clausola`, `origine`, `autore`, `limiti`,
-`decise`, `passi`, `stato`) e i riferimenti risolvono. **Ma il record non basta ancora**, e tre cose vanno decise
-prima di scrivere l'editor:
-- **che cosa si può comporre**: un nodo è un passo, e i passi vengono dall'esecuzione. Comporre vuol dire scrivere
-  passi che non sono ancora stati eseguiti — cioè la routine *dichiarata*, non il workflow *avvenuto*. Delle tre
-  routine, **due non hanno un workflow** (i dipendenti 9 e 11 sono `pianificato`, zero passi conclusi): l'editor
-  nasce su quelle, non sulle esecuzioni finite;
-- **la regola 17 dice che il canvas non si trascina** (due zoom annidati litigano, e la cornice si scala già con
-  `zoom`). Comporre senza trascinare si può — aggiungere un nodo in coda, spostarlo di una posizione nella
-  serpentina, cambiargli modello e strumenti — ma va deciso, ed è un dubbio progettuale;
-- **il canvas adesso è a quattro colonne** e largo 1006 px: un nodo in più cambia la serpentina, e la pagina si
-  ridisegna. Va misurato prima quanto costa un nodo aggiunto.
+**Che cosa manca**, in ordine:
+- **la scelta del gesto** (domanda 1), che è dell'utente e ha le sue anteprime;
+- **che cosa vuol dire salvare**: oggi `m.rami` vive in memoria e si perde ricaricando, come `m.decidi` e `firme`.
+  Nessun pulsante «salva» e nessuna promessa, perché la regola 26 vieta di prometterlo prima di sapere che cosa fa;
+- **chi approva un passo scritto a mano**, e che cosa il titolare smette di firmare quando una prossima volta parte
+  da sola. È la domanda che tocca la spina dorsale, e la revisione incrociata l'ha nominata mentre i cinque pareri
+  no;
+- **il telefono**: la schermata 10 mostra il canvas in colonna e **non ha il ramo**. Va deciso se comporre dal
+  telefono ha senso, o se lì si legge soltanto.
 
-### 2. Le sei conferme rimaste (tutte **da confermare**, con la raccomandazione)
+### 2. Le sei conferme: chiuse
 
-Sono brevi e si possono chiudere in un colpo solo. La colonna «raccomando» è il parere di chi ha scritto il codice,
-non una decisione presa: la decisione è dell'utente.
+Erano da confermare dalla versione 21 e il prompt di questa sessione diceva di prendere la raccomandazione scritta
+accanto a ognuna. Fatto: (a) le regole fantasma restano attribuite alla routine; (b) «Uscita» al posto di
+«Approvata»; (c) la precedenza scritta — vince la regola d'azienda; (d) `g4` accesa, e il suo conto dice zero;
+(e) la pagina delle routine, fuori dal rail; (f) l'intestazione a due righe dentro la banda. I dettagli con i numeri
+stanno qui sopra, in «Versione 22», e le regole **31–35** in `SYSTEM-DESIGN.md`.
 
-| # | Cosa | Raccomando | Perché |
-|---|---|---|---|
-| a | **Le due regole fantasma** | **Lasciarle come sono** (`r16` e `r17` puntano alla routine) | L'alternativa che la revisione incrociata preferiva — eccezioni nei dossier dei dipendenti 9 e 10 più il contatore «2 eccezioni ›» dentro `g1` — costa una riga-contatore da costruire e sposta la verità nel dossier, che è il posto dove non si guarda. Dettaglio in `DIREZIONI.md`, versione 21, punto 2 |
-| b | **«Approvata» è falso su `r17`** | **Sistemarlo** | Tre revisori su cinque l'hanno indicato come **più grave della domanda che era stata posta**: l'autore è un dettaglio in fondo alla riga, il participio è l'affermazione principale e nega la spina dorsale. Nessuno l'ha approvata: dovrebbe dire «Uscita». Costa un valore di stato nuovo e una variante di pillola |
-| c | **La regola di precedenza** | **Scriverla** | Chi vince fra la clausola di una routine e una regola d'azienda attiva. Oggi il prodotto lascia vincere la routine **senza dirlo**, e quattro pareri su cinque lo davano per scontato senza accorgersene |
-| d | **`g4` «Spese sopra 50 €» è spenta** | **Accenderla o togliere la card** | Mentre è spenta, `r16` fa uscire 14.200 € di fatture. Una regola spenta che resta in pagina è decorazione |
-| e | **Dove vive la pagina delle routine** | **Non nel rail** | Con tre voci non merita un settimo cerchio: è la soglia che il consiglio stesso aveva proposto (sotto ~900 px di pagina non lo merita). Raggiungibile dalle Richieste e dal Dipartimento |
-| f | **L'intestazione che non sta nella banda** | **Mandare i numeri a capo sotto il titolo** | Le tre strade sono: farli scorrere come le strisce di pillole (ma nascondere un numero è peggio che nascondere un filtro), mandarli a capo (l'intestazione passa da 56 a ~120 px e spinge giù ogni pagina di 64 px), o tenerne meno di tre. I numeri del difetto sono in «Stato» |
+**Quello che le conferme hanno aperto, e che nessuno ha ancora deciso**:
+- **la soglia di `g4`**. Accenderla non trattiene niente finché resta a 50 €, perché la consegna più cara del
+  modello ne costa 33,80. La card adesso lo dice («governa 0 richieste»), ma il numero giusto è una scelta
+  dell'utente;
+- **i due contrasti a quaranta**. Due richieste sono uscite senza il titolare mentre `g1` dice «Sempre da
+  approvare». La pagina li segna in rosa; che cosa il prodotto debba *fare* quando succede — rimandarle in coda,
+  spegnere la routine, avvisare — non è deciso.
 
 ### 3. Rimasto dalle sessioni precedenti
 
@@ -1038,51 +1137,50 @@ non una decisione presa: la decisione è dell'utente.
 ### Prompt di avvio suggerito per la prossima sessione
 
 ```
-Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md (in particolare «Versione 21», «Stato», «Cosa manca» e «Come
-riprendere») e DIREZIONI.md sezione 4 «Versione 21» più la sezione 7: sono il primo giro fatto, e la ricerca e le
-decisioni che l'hanno deciso. Controlla la PR della sessione precedente (#18): se è unita riparti da main con un
-branch nuovo, altrimenti continua sullo stesso branch.
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md («Versione 22», «Come riprendere» e «Cosa manca») e DIREZIONI.md
+sezione 4 «Versione 22»: sono le sei conferme costruite, il ramo, e i tre gesti del comporre messi a confronto.
+Controlla la PR della sessione precedente (#19): se è unita riparti da main con un branch nuovo, altrimenti
+continua sullo stesso branch.
 
 Lavoriamo nella direzione A · Console (schermate/componenti.js, schermate/direzioni/direzione-a.js, dati.js,
 comune.js, avatar/, mobile.js): niente emoji, solo le icone dello sprite; gli avatar sono quelli della versione 10;
 i colori restano quelli del sistema; niente logo o marchi di terzi. Sono decise e non si rimettono in discussione:
-la direzione A, la versione 17, la regola 26 delle frecce, le decisioni 45 e 46, le 47–56 (routine, innesco, n8n
-come forma, il dipendente che propone, il rodaggio a 3, il «fai pure» che si guadagna, i quattro livelli di tetto)
-e le 57–58 (soffitto con avviso sopra il 100 %, ferma prima del passo).
+la direzione A, la versione 17, la regola 26 delle frecce, le decisioni 45 e 46, le 47–56, le 57–58 (soffitto con
+avviso, ferma prima del passo), la 61 (le sei conferme come raccomandate) e la 62 (il ramo: un canvas, due tempi).
 
-[QUI VA LA MIA RISPOSTA, due cose:
- 1. il GIUDIZIO SULLA VERSIONE 21 — le pagine della Console adesso sono larghe 1008 px invece di 1312 e più alte
-    dal 4 al 26 %, e 45 catture su 70 sono cambiate. Va bene, o il prezzo è troppo?
- 2. le SEI CONFERME del punto 2 di «Cosa manca», che hanno già la raccomandazione scritta accanto: (a) le due
-    regole fantasma restano attribuite alla routine o diventano eccezioni nei dossier con il contatore dentro g1;
-    (b) «Approvata» che è falso su r17; (c) la regola di precedenza fra clausola di routine e regola d'azienda;
-    (d) g4 spenta mentre escono 14.200 € di fatture; (e) dove vive la pagina delle routine; (f) l'intestazione che
-    non ci sta nella banda.
- Chiedimele prima di scrivere codice, e se su qualcuna non rispondo prendi la raccomandazione scritta.]
+[QUI VA LA MIA RISPOSTA, la sola cosa che blocca il resto:
+ quale dei TRE GESTI per comporre — A il nodo aperto che diventa l'editor, B la barra sotto il canvas, C il «+»
+ sul connettore. Le anteprime sono nell'artefatto della scelta e nella pagina vera
+ (?pagina=workflow&workflow=w1&ramo=1&gesto=a|b|c). Il consiglio diceva A. Quando rispondo, TOGLI dal codice le
+ due strade non scelte: `gesto` in direzione-a.js, il CSS .azioni-n/.azioni-b/.wplus, il parametro ?gesto= nella
+ pagina, in scatta.js e nella prova workflow.js.
+ Dimmi anche, se vuoi, il giudizio sulle versioni 21 e 22: le pagine sono larghe 1008 px invece di 1312 e adesso
+ 68 px più alte, perché l'intestazione è andata a due righe.]
 
-Poi il canvas componibile (decisione 59, il mio giudizio sulla versione 20). Il record c'è e i riferimenti
-risolvono: manca il gesto. Prima di scrivere una riga servono tre cose, e due sono dubbi progettuali da passare dal
-consiglio: (1) comporre senza trascinare, perché la regola 17 vieta pan e zoom dentro una cornice che si scala;
-(2) su che cosa si compone — due routine su tre non hanno un workflow, perché i dipendenti 9 e 11 sono pianificati
-con zero passi conclusi, quindi l'editor nasce lì; (3) quanto costa un nodo in più sulla serpentina a quattro
-colonne, e questa non è un dubbio: misurala in apertura, senza chiedermi niente.
+Poi finisci l'editor con il gesto scelto. Restano tre cose non decise, e le prime due sono dubbi progettuali da
+passare dal consiglio: (1) che cosa vuol dire SALVARE una prossima volta — diventa una routine, cambia il
+workflow, o è una proposta che approvo io? Oggi il ramo vive in memoria e si perde ricaricando, e non c'è nessun
+pulsante perché la regola 26 vieta di prometterlo prima di sapere che cosa fa; (2) chi approva un passo scritto a
+mano, e che cosa io SMETTO di firmare quando una prossima volta parte da sola — tocca la spina dorsale, non solo
+il canvas; (3) che cosa vedo quando il dichiarato e il misurato non coincidono. E il telefono: la schermata 10 non
+ha il ramo, va deciso se dal telefono si compone o si legge soltanto.
 
-Il metodo di sempre: prima e dopo, rifare i font locali, lanciare le cinque prove di prove/ e catturare le pagine
-prima di toccare qualcosa; ogni dubbio progettuale passa dal consiglio, ma quello che si misura si misura — nella
-versione 21 una misura ha battuto il consiglio sull'eccezione del canvas (bastavano 6 px di passo in meno, non due
-colonne in meno), e la revisione incrociata ha trovato che «i nomi fantasma sono i nomi delle routine» era una
-deduzione e non una misura. Attenzione: scatta.js e prove/console.js si reggono ancora su section:nth-of-type(2)
-per la sezione delle consegne del Dipartimento. Alla fine: prove aggiornate, screenshot, artefatti ripubblicati
-allo stesso indirizzo, DIREZIONI.md, SYSTEM-DESIGN.md, i README, PROSSIMA-SESSIONE.md, commit, push e PR.
+Il metodo di sempre: prima e dopo, rifare i font locali, lanciare le SEI prove di prove/ e catturare le pagine
+prima di toccare qualcosa; ogni dubbio progettuale passa dal consiglio, ma quello che si misura si misura — in
+questa sessione la revisione incrociata ha smontato due fatti falsi che sembravano decisivi («le routine hanno
+zero nodi»: ne hanno 3; «il bersaglio del + è l'arco intero, 242 px»: misurato fa 34), e costruendo le anteprime è
+saltato fuori che dalla versione 20 un nodo aperto ne copriva un altro per intero. Attenzione: scatta.js e
+prove/console.js si reggono ancora su section:nth-of-type(2) per la sezione delle consegne del Dipartimento. Alla
+fine: prove aggiornate, screenshot, artefatti ripubblicati allo stesso indirizzo, DIREZIONI.md, SYSTEM-DESIGN.md,
+i README, PROSSIMA-SESSIONE.md, commit, push e PR.
 ```
 
 ### Prompt breve, se vuoi solo tirare dritto
 
 ```
-Leggi CLAUDE.md e PROSSIMA-SESSIONE.md («Versione 21», «Cosa manca», «Come riprendere»). Controlla la PR #18: se è
-unita riparti da main con un branch nuovo. Poi fai il punto 3 di «Come riprendere», il canvas componibile: misura
-prima quanto costa un nodo in più sulla serpentina a quattro colonne, poi passa dal consiglio le due domande di
-forma (comporre senza trascinare; su che cosa si compone) e chiedimi la decisione. Sulle sei conferme aperte prendi
-la raccomandazione già scritta accanto a ognuna, senza chiedermele. Il metodo di sempre, e alla fine prove,
-screenshot, artefatti, documenti, commit, push e PR.
+Leggi CLAUDE.md e PROSSIMA-SESSIONE.md («Versione 22», «Come riprendere», «Cosa manca»). Controlla la PR #19: se è
+unita riparti da main con un branch nuovo. Il gesto per comporre è [A|B|C]: togli dal codice le due strade non
+scelte e finisci l'editor. Poi passa dal consiglio le due domande rimaste — che cosa vuol dire salvare una
+prossima volta, e chi approva un passo scritto a mano — e chiedimi la decisione. Il metodo di sempre, e alla fine
+prove, screenshot, artefatti, documenti, commit, push e PR.
 ```

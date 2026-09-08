@@ -190,6 +190,7 @@ window.DGT_COMPONENTI = (function () {
 .hrow .chip{height:24px;font-size:11px}
 .hrow .chi{font-size:12px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hrow .chi b{font-weight:500;color:var(--white)}
+
 .hrow .eur{font-size:13px;text-align:right;white-space:nowrap}
 .hrow .rb.xs{background:transparent;border-color:rgb(255 255 255/.16)}
 .hrow.attesa{background:var(--lime);color:var(--ink)}.hrow.attesa .ora,.hrow.attesa .tx span,.hrow.attesa .chi{color:rgb(0 0 0/.6)}.hrow.attesa .chi b{color:var(--ink)}.hrow.attesa .rb.xs{border-color:rgb(0 0 0/.16);color:var(--ink)}
@@ -296,8 +297,14 @@ window.DGT_COMPONENTI = (function () {
     if (s === 'pianificato') return `<span class="chip">${ic('i-clock')}${esc(e.att.quando)}</span>`;
     return `<span class="chip">Libero</span>`;
   }
+  /* L'esito di una richiesta. **«Uscita», non «Approvata», quando non l'ha approvata il titolare** (versione 22,
+     conferma b): `r.deciso` è il riferimento alla routine o alla regola che ha deciso al posto suo. Prima la riga
+     diceva «Approvata» anche per `r17`, che nessuno ha approvato: l'autore era un dettaglio in fondo alla riga e il
+     participio era l'affermazione principale — cioè la riga negava la spina dorsale invece di raccontarla.
+     Il lime resta la firma del titolare e non si presta a nient'altro: un'uscita automatica porta la pillola neutra
+     e l'icona dell'invio. */
   const chipEsito = r => r.stato === 'attesa' ? `<span class="chip ink">${ic('i-bell')}Da approvare</span>`
-    : r.stato === 'approvata' ? `<span class="chip lime">${ic('i-check')}Approvata</span>`
+    : r.stato === 'approvata' ? (r.deciso ? `<span class="chip">${ic('i-send')}Uscita</span>` : `<span class="chip lime">${ic('i-check')}Approvata</span>`)
     : r.stato === 'modifiche' ? `<span class="chip">${ic('i-pen')}Modifiche</span>` : `<span class="chip rosa">${ic('i-x')}Rifiutata</span>`;
 
   const eur = v => (Math.round(v * 10) / 10).toString().replace('.', ',') + ' €';

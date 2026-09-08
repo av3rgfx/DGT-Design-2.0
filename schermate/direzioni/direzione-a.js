@@ -123,7 +123,13 @@ window.DIREZIONE_A = (function () {
    tipografia dei numeri non basta (provate quattro varianti, la migliore resta a 351 px di sforo): per chiuderlo
    servirebbe rifare l'intestazione, ed e' una scelta di progetto che spetta all'utente. Scritto in
    PROSSIMA-SESSIONE.md con i numeri. */
-.a-head{position:absolute;left:102px;top:112px;right:26px;display:flex;align-items:center;gap:40px}
+/* L'intestazione dentro la banda riservata (versione 22, conferma f). Prima finiva a destra col margine: si stendeva fino a
+   x 1414 e il suo ultimo numero — che e' cliccabile — nasceva sotto la tendina aperta. Le tre strade misurate erano
+   farli scorrere (ma nascondere un numero e' peggio che nascondere un filtro), mandarli a capo, o tenerne meno di
+   tre. Scelta: **a capo sotto il titolo**, dentro i 1008 px della colonna. L'intestazione cresce e ogni pagina
+   scende dello stesso numero di px; il prezzo vero e' misurato nella prova, non stimato qui. */
+.a-head{position:absolute;left:102px;top:112px;width:1008px;display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.a-head .a-riga{display:flex;align-items:center;gap:40px;max-width:100%}
 .a-title{font-size:46px;line-height:56px;letter-spacing:.02em;white-space:nowrap}
 .a-new{height:52px;padding:0 24px 0 6px;border-radius:var(--r-pill);background:var(--white);color:var(--ink);display:flex;align-items:center;gap:14px;font-size:14px;white-space:nowrap;flex:none}
 .a-new i{width:40px;height:40px;border-radius:50%;background:#EDEDED;display:grid;place-items:center}
@@ -140,7 +146,9 @@ window.DIREZIONE_A = (function () {
    finisce dove la tendina comincia: 1008 px = 1110 meno i 102 del margine. Non dipende dallo stato della tendina,
    cosi' la pagina e' la stessa aperta e chiusa e un controllo non compare e sparisce con il cassetto.
    Nessuna eccezione: il canvas dei workflow ci sta anche lui, a quattro colonne invece di cinque (vedi W_COL). */
-.a-main{position:relative;margin:232px 0 0 102px;width:1008px;display:grid;grid-template-columns:minmax(0,1fr);gap:40px}
+/* 300 e non piu' 232 (versione 22, conferma f): l'intestazione a due righe e' alta 124 px invece di 56 e finisce a
+   y 236; i 64 px d'aria fra l'intestazione e la prima sezione sono quelli di prima, misurati, non stimati. */
+.a-main{position:relative;margin:300px 0 0 102px;width:1008px;display:grid;grid-template-columns:minmax(0,1fr);gap:40px}
 
 .a-main>section{min-width:0}
 .shead{display:flex;align-items:center;gap:14px;white-space:nowrap;height:46px}
@@ -251,16 +259,24 @@ window.DIREZIONE_A = (function () {
 .wnode .tt{min-width:0}
 .wnode .tt b{display:block;font-weight:400;font-size:14px;line-height:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .wnode .tt span{display:block;font-size:11px;line-height:15px;color:var(--t2)}
-.wnode .ft{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--t2)}
+.wnode .ft{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--t2);white-space:nowrap;overflow:hidden}
 .wnode .ft .eur{margin-left:auto;color:var(--white)}
 .wnode.on{border-color:var(--lime);box-shadow:0 0 0 1px var(--lime),0 0 44px rgb(184 252 100/.28),inset 0 1px 0 rgb(255 255 255/.18);z-index:3}
 .wnode.on .nic{background:var(--lime)}.wnode.on .nic svg{color:var(--ink)}
 .wnode.tit{border-style:dashed}
 .wnode.tit.att{border-color:var(--lime);border-style:solid;box-shadow:0 0 0 1px var(--lime),0 0 40px rgb(184 252 100/.22)}
+/* Le altezze dei campi sono **fisse** e il testo sta su una riga sola (versione 22). Prima un'etichetta o un
+   valore lunghi andavano a capo — «Regola che ferma qui la consegna» su due righe, «Ambiente di test · staging»
+   su tre — e il nodo aperto cresceva di un'altezza che nessuno poteva prevedere. Serviva prevederla: le posizioni
+   della serpentina si calcolano nella funzione che stampa, senza misurare niente dopo il disegno (regola del
+   canvas, versione 20), quindi l'altezza del nodo aperto dev'essere un conto, non una scoperta. */
 .wnode .campi{display:grid;gap:6px;border-top:1px solid rgb(255 255 255/.08);padding-top:8px}
-.wnode .campi .fl{font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--t2)}
-.wnode .campi .fv{display:flex;align-items:center;gap:6px;font-size:12px;background:rgb(255 255 255/.06);border-radius:9px;padding:6px 9px}
-.wnode .campi .fv svg{width:12px;height:12px;margin-left:auto;color:var(--t2)}
+.wnode .campi .fl{height:20px;line-height:20px;font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wnode .campi .fv{height:32px;box-sizing:border-box;display:flex;align-items:center;gap:6px;font-size:12px;background:rgb(255 255 255/.06);border-radius:9px;padding:0 9px}
+.wnode .campi .fv>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wnode .campi .fv svg{width:12px;height:12px;margin-left:auto;flex:none;color:var(--t2)}
+.wnode .hd{height:33px}
+.wnode .ft{height:20px}
 .wport{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px rgb(184 252 100/.55);transform:translate(-50%,-50%);pointer-events:none}
 .wport.off{background:rgb(255 255 255/.28);box-shadow:none}
 .wplab{position:absolute;transform:translateX(-50%);font-size:10px;line-height:14px;color:var(--t2);white-space:nowrap;pointer-events:none}
@@ -273,6 +289,30 @@ window.DIREZIONE_A = (function () {
 .wbar .tx{flex:1;min-width:0}
 .wbar .tx b{display:block;font-weight:400;font-size:14px}
 .wbar .tx span{display:block;font-size:11px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* ---- Comporre (versione 22): il ramo e i tre gesti ----
+   La tab a pillola sopra il canvas e' quella del riferimento, gia' copiata nello specimen: due voci, l'attiva
+   piena. Non e' un componente nuovo. */
+.wtabs{display:flex;gap:8px;margin-top:24px}
+.wtabs .pill{height:40px;font-size:14px}
+/* gesto A — il nodo aperto e' l'editor: le azioni stanno dentro il nodo, sotto i suoi campi */
+.wnode .azioni-n{display:flex;gap:6px;border-top:1px solid rgb(255 255 255/.08);padding-top:8px;margin-top:2px}
+.wnode .azioni-n .rb{width:28px;height:28px}
+.wnode .azioni-n .rb svg{width:13px;height:13px}
+.wnode .azioni-n .rb.pieno{background:var(--lime);color:var(--ink);border-color:transparent}
+.wnode .azioni-n .rb[aria-disabled="true"]{opacity:.35}
+/* gesto B — la barra sotto il canvas: il conto a sinistra, le azioni al centro, l'uscita a destra */
+.wbar .azioni-b{display:flex;align-items:center;gap:8px}
+.wbar .azioni-b .pill{height:36px;padding:0 14px;font-size:13px;gap:7px}
+.wbar .azioni-b .pill svg{width:14px;height:14px}
+.wbar .azioni-b .pill[aria-disabled="true"]{opacity:.4}
+/* gesto C — il «+» sul connettore. Il bersaglio non e' il cerchio: e' tutto il tratto libero dell'arco, che
+   misurato fa 34 px fra due nodi della stessa riga e 123 px nel salto di riga. Il cerchio si accende al
+   passaggio, il bersaglio invisibile e' largo 34 e alto 40 perche' 34×2 non si centra col mouse. */
+.wplus{position:absolute;transform:translate(-50%,-50%);width:38px;height:40px;display:grid;place-items:center;z-index:2;cursor:pointer}
+.wplus i{width:22px;height:22px;border-radius:50%;background:var(--round);border:1px solid rgb(255 255 255/.22);display:grid;place-items:center;opacity:.55;transition:opacity .12s,background .12s}
+.wplus svg{width:11px;height:11px;color:var(--white)}
+.wplus:hover i{opacity:1;background:var(--lime);border-color:transparent}
+.wplus:hover svg{color:var(--ink)}
 .wfirma{display:grid;gap:14px;margin-top:24px;grid-template-columns:repeat(3,1fr)}
 .wfirma .fcard{background:var(--card);border-radius:var(--r-inner);padding:18px 20px;display:grid;gap:6px;align-content:start}
 .wfirma .fcard .k{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--t2)}
@@ -887,8 +927,7 @@ window.DIREZIONE_A = (function () {
       <div class="a-tr"><span class="rb">${ic('i-bell')}<i class="dot"></i></span><span class="av persona">${esc(m.azienda.titolare.iniziali)}</span></div>
       ${indietro ? `<span class="rb a-back" ${indietro}>${ic('i-left')}</span>` : ''}
       <div class="a-head">
-        <h3 class="a-title${lungo}">${esc(titolo)}</h3>
-        ${nuovo ? `<span class="a-new"><i>${ic('i-plus')}</i>${nuovo}</span>` : ''}
+        <div class="a-riga"><h3 class="a-title${lungo}">${esc(titolo)}</h3>${nuovo ? `<span class="a-new"><i>${ic('i-plus')}</i>${nuovo}</span>` : ''}</div>
         <div class="a-stats">${stats}</div>
       </div>
       <div class="a-rail">
@@ -1001,7 +1040,11 @@ window.DIREZIONE_A = (function () {
   /* La riga dello storico. Regola 25: la freccia sta solo dove la riga ha una destinazione — qui il pannello della
      richiesta, che si apre solo per le richieste ancora in attesa. Una richiesta già decisa non ha una pagina dove
      andare, quindi la freccia cade. `sola` (nessuna riga della lista ha una destinazione) fa cadere anche la colonna. */
-  const soloDecise = lst => !lst.some(r => r.stato === 'attesa');
+  /* Una lista perde la colonna della freccia solo se **nessuna** delle sue righe ha una destinazione. Dalla
+     versione 22 ne hanno una in piu': la richiesta decisa da una routine apre la routine, che adesso ha la sua
+     pagina. */
+  const apreRoutine = r => r.stato !== 'attesa' && r.deciso && r.deciso.tipo === 'routine';
+  const soloDecise = lst => !lst.some(r => r.stato === 'attesa' || apreRoutine(r));
   function rigaStorico(m, r, sola) {
     const chi = m.byId[r.chi];
     /* Chi ha deciso (versione 21). Prima era una stringa libera — `regola: 'Follow-up'` — che non risolveva a
@@ -1011,11 +1054,23 @@ window.DIREZIONE_A = (function () {
        e la prova lo prende. Niente freccia: la pagina delle routine non esiste ancora e la regola 26 vieta di
        promettere una destinazione che non c'e'. */
     const aut = m.autoreDi(r);
+    /* Dalla versione 22 (conferma e) il nome di una **routine** si apre: la sua pagina adesso esiste, e la regola 26
+       vieta di promettere una destinazione che non c'e' — non di tacerne una che c'e'. Le **regole** d'azienda non
+       hanno una pagina propria (stanno nella sezione delle Richieste), quindi il loro nome resta testo. */
+    const apre = apreRoutine(r) && aut && aut.nome;
     const decisa = r.stato === 'attesa' ? `in attesa da ${esc(r.ora)}`
       : aut ? (aut.nome ? `${aut.tipo} · <b>${esc(aut.nome)}</b>` : `${aut.tipo} · <b>non si sa quale</b>`)
       : `<b>${esc(m.azienda.titolare.iniziali)}</b> · ${esc(r.decisa)}${r.commento ? ' · «' + esc(r.commento) + '»' : ''}`;
+    /* Il contrasto (versione 22, conferma c): e' uscita senza il titolare mentre la regola che la governa dice
+       «Sempre da approvare». La precedenza scritta dice che vince la regola, quindi questa riga e' una cosa che
+       **non doveva succedere**: non si corregge il dato di nascosto, si dice. A undici zero, a quaranta due. */
+    const contr = m.contrastoDi(r);
     const idx = r.stato === 'attesa' ? inAttesa(m).indexOf(r) : -1;
-    return `<div class="hrow ${r.stato}${sola ? ' nofr' : ''}" ${idx >= 0 ? `data-az="richiesta" data-idx="${idx}"` : ''}><span class="ora">${esc(r.ora)}</span>${av(m, chi)}<div class="tx"><b>${esc(r.cosa)}</b><span>${esc(m.etichetta(chi))} · ${esc(r.cliente)}</span></div><span class="chip light">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]}</span>${chipEsito(r)}<span class="chi">${decisa}</span><span class="eur">${r.costo} €</span>${idx >= 0 ? `<span class="rb xs">${ic('i-ne')}</span>` : ''}</div>`;
+    /* La destinazione della riga: la richiesta se aspetta ancora, la **routine** se l'ha decisa una routine (il
+       nome dentro `.chi` non poteva diventare il controllo — quella colonna taglia col filetto, e un controllo
+       tagliato da un contenitore che non scorre e' esattamente quello che la versione 21 ha finito di togliere). */
+    const dest = idx >= 0 ? `data-az="richiesta" data-idx="${idx}"` : apre ? `data-az="routine" data-id="${esc(aut.id)}" title="Apri la routine «${esc(aut.nome)}»"` : '';
+    return `<div class="hrow ${r.stato}${sola ? ' nofr' : ''}" ${dest}><span class="ora">${esc(r.ora)}</span>${av(m, chi)}<div class="tx"><b>${esc(r.cosa)}</b><span>${esc(m.etichetta(chi))} · ${esc(r.cliente)}</span></div><span class="chip light">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]}</span>${chipEsito(r)}${contr ? `<span class="chip rosa" title="La regola «${esc(contr.nome)}» dice «${esc(contr.modo)}», e questa è uscita senza la tua firma">${ic('i-warn')}contro ${esc(contr.nome)}</span>` : ''}<span class="chi">${decisa}</span><span class="eur">${r.costo} €</span>${dest ? `<span class="rb xs">${ic('i-ne')}</span>` : ''}</div>`;
   }
   function barraFiltri(m, f, tot, filtrate) {
     const p = (k, v, testo, extra) => `<span class="pill sm${(f[k] || 'tutti') === String(v) ? ' on' : ''}" data-az="filtro" data-k="${k}" data-v="${esc(String(v))}">${extra || ''}${testo}</span>`;
@@ -1067,7 +1122,13 @@ window.DIREZIONE_A = (function () {
       <section class="regole">
         <div class="shead"><h3>Regole di approvazione</h3>${contoSez(reg.length, m.regole.length, 'Regole')}
           ${pilleSez(opz, 'richieste.regole', PILLE_REGOLE)}</div>
-        <div class="cards">${reg.map(g => `<div class="ncard lead${g.attiva ? '' : ' spenta'}"><span class="ico">${ic(g.icona)}</span><div class="name md">${esc(g.nome)}</div><div class="role">${esc(g.desc)}</div><div class="ft"><div><span class="k">Modo</span><span class="sel">${esc(g.modo)}${ic('i-chev')}</span></div><div><span class="k">Stato</span>${g.attiva ? `<span class="chip lime">${ic('i-check')}Attiva</span>` : `<span class="chip">Spenta</span>`}</div></div></div>`).join('')}</div>
+        <div class="cards">${reg.map(g => {
+          /* Il conto delle richieste che la regola governa davvero (versione 22, conferma d). Su `g4` fa zero, ed
+             e' l'informazione: accenderla non trattiene niente finche' la soglia sta a 50 € e la consegna piu' cara
+             ne costa 33,80. Un numero misurato al posto di una card che sembrava fare qualcosa. */
+          const n = m.contaRegola(g);
+          return `<div class="ncard lead${g.attiva ? '' : ' spenta'}"><span class="ico">${ic(g.icona)}</span><div class="name md">${esc(g.nome)}</div><div class="role">${esc(g.desc)}</div><div class="ft"><div><span class="k">Governa</span><span class="chip${n ? '' : ' rosa'}">${n} richiest${n === 1 ? 'a' : 'e'}</span></div><div><span class="k">Modo</span><span class="sel">${esc(g.modo)}${ic('i-chev')}</span></div><div><span class="k">Stato</span>${g.attiva ? `<span class="chip lime">${ic('i-check')}Attiva</span>` : `<span class="chip">Spenta</span>`}</div></div></div>`;
+        }).join('')}</div>
       </section>`;
     return cornice(m, opz, 'RICHIESTE', stats, 'richieste', corpo, 'Nuova regola');
   }
@@ -1100,6 +1161,7 @@ window.DIREZIONE_A = (function () {
        sezione in piu' costerebbe ~700 px misurati e sposterebbe gli indici `nth-of-type` su cui si reggono tre
        prove e due catture. Zero pixel, zero sezioni, zero voci nuove nel rail (resta a sei). */
     const wf = m.workflowDi(d.id);
+    const rtDip = (m.routine || []).filter(rt => (m.byId[rt.chi] || {}).dip === d.id);
     /* Le consegne del dipartimento (versione 19): le cose create dalle sue esecuzioni. Sta subito sotto «Oggi in ‹dip›»
        perche' e' il suo risultato — la pagina si legge adesso -> uscito -> chi -> obiettivi -> da approvare -> spesa —
        e perche' regola 2 dice che il «adesso» apre la pagina. Nessuna pillola «tutte le consegne» in fondo: non esiste
@@ -1126,7 +1188,10 @@ window.DIREZIONE_A = (function () {
       <section>
         <div class="shead"><h3>Oggi in ${esc(d.nome)}</h3>${contoSez(esecF.length, esec.length, 'Esecuzioni')}
           ${pilleSez(opz, 'dip.oggi', PILLE_ESEC)}
-          ${wf.length ? `<div class="destra"><span class="pill" data-az="pagina" data-pagina="workflow" data-dip="${d.id}" title="Il lavoro dichiarato di ${esc(d.nome)}">${ic('i-rows')}Workflow · ${wf.length}</span></div>` : ''}</div>
+          ${/* «dichiarato» era la parola sbagliata e stava qui dalla versione 20: il workflow e' il lavoro
+                **avvenuto**, il dichiarato e' la routine. Le due pillole adesso stanno accanto e dicono i due
+                tempi, che e' l'unico modo di non lasciare quattro parole per lo stesso oggetto. */''}
+          ${wf.length || rtDip.length ? `<div class="destra">${wf.length ? `<span class="pill" data-az="pagina" data-pagina="workflow" data-dip="${d.id}" title="Il lavoro avvenuto di ${esc(d.nome)}, misurato">${ic('i-rows')}Workflow · ${wf.length}</span>` : ''}${rtDip.length ? `<span class="pill" data-az="routine" title="Il lavoro dichiarato: parte da solo. Le routine dell'azienda sono ${(m.routine || []).length}">${ic('i-clock')}Routine · ${rtDip.length}</span>` : ''}</div>` : ''}</div>
         ${esecF.length ? `<div class="cards riga">${esecF.map((e, i) => cardEsecuzione(m, e, i)).join('')}</div>` : `<div class="vuoto">Nessuna esecuzione oggi in ${esc(d.nome)} con questo filtro</div>`}
       </section>
       <section>
@@ -1170,7 +1235,12 @@ window.DIREZIONE_A = (function () {
   function testataConsegna(m, c, e) {
     const r = c.richiesta ? m.richieste.find(x => x.id === c.richiesta) : null;
     const idx = r && r.stato === 'attesa' ? inAttesa(m).indexOf(r) : -1;
+    /* «Approvata dal titolare» solo se l'ha approvata il titolare (versione 22, conferma b): la consegna di una
+       richiesta decisa da una routine o da una regola e' **uscita senza la sua firma**, ed e' la stessa correzione
+       della pillola dello storico. A undici e' una consegna su 31, a quaranta due su 62. */
+    const aut = r ? m.autoreDi(r) : null;
     const frase = c.stato === 'attesa' ? `<b>Consegnata${c.passo ? ' al passo ' + c.passo.n : ''}</b> e aspetta l'approvazione del titolare. Finche' non la approvi non esce verso ${esc(c.cliente || 'il cliente')}.`
+      : c.stato === 'approvata' && aut ? `<b>Uscita senza la tua firma</b> verso ${esc(c.cliente || 'il cliente')}: l'ha decisa ${aut.nome ? `la ${esc(aut.tipo)} <b>${esc(aut.nome)}</b>` : `una ${esc(aut.tipo)} che non si sa quale`}, non tu.`
       : c.stato === 'approvata' ? `<b>Approvata dal titolare</b>: e' uscita verso ${esc(c.cliente || 'il cliente')}.`
       : c.stato === 'errore' ? `<b>Non fatta</b>: il passo${c.passo ? ' ' + c.passo.n : ''} si e' fermato e la consegna non e' stata prodotta. Serve un intervento.`
       : c.stato === 'bozza' ? `<b>In corso</b>${c.passo ? ' al passo ' + c.passo.n : ''}: ${esc(c.desc || 'la sta scrivendo')}.`
@@ -1274,57 +1344,117 @@ window.DIREZIONE_A = (function () {
      **un workflow su sei cresce di 210 px a undici, due su ventisei a quaranta**. Niente eccezione, quindi:
      nessuna pagina larga, nessun nodo che nasce sotto la tendina, e il prodotto resta uno. */
   const W_COL = 4, W_PX = 242, W_PY = 210, W_PAD = 36, W_W = 208, W_H = 96;
-  const wpos = i => { const r = Math.floor(i / W_COL); const c = r % 2 ? W_COL - 1 - (i % W_COL) : i % W_COL; return { x: W_PAD + c * W_PX, y: W_PAD + r * W_PY, r, c }; };
+  /* ---- Quanto e' alto un nodo, e dove finisce quello che gli sta sotto (versione 22) ----
+     Difetto trovato misurando, ed e' della versione 20: **il nodo aperto copriva per intero il nodo sotto di se'**
+     — 18 096 px², cioe' 208×87, tutta la sua superficie. Il canvas aggiungeva 168 px in fondo, dove non servivano,
+     invece di spostare in giu' le righe seguenti. Con una figura da leggere era gia' sbagliato; con una figura da
+     **comporre** e' insostenibile, perche' il gesto che si usa di piu' e' proprio aprire un nodo.
+     Adesso le righe sotto quella del nodo aperto scendono di quanto il nodo cresce. L'altezza si calcola qui, con
+     le costanti che rispecchiano il CSS, e una prova verifica che il conto e la resa coincidano su ogni nodo di
+     ogni workflow: se il CSS cambia, la prova se ne accorge invece di lasciar tornare le sovrapposizioni. */
+  const W_H_CHIUSO = 87;              /* 12+33+8+20+12 di riempimento e figli, piu' i due bordi */
+  const W_FL = 20, W_FV = 32, W_GAP = 6, W_CAMPI_SU = 9;   /* etichetta, valore, spazio fra loro, bordo + spazio in cima */
+  const W_AZ = 39;                    /* la riga delle azioni del gesto A: bordo, spazio, cerchi da 28 */
+  const altNodo = (nd, on, ramo, gesto) => {
+    if (!on) return W_H_CHIUSO;
+    const righe = nd.titolare
+      ? [W_FL, W_FV, W_FL, W_FV]                                  /* regola, firma anticipata */
+      : [W_FL, W_FV].concat(                                       /* modello */
+          [W_FL], (nd.strumenti && nd.strumenti.length ? nd.strumenti : ['x']).map(() => W_FV),
+          nd.esito ? [W_FL, W_FV] : []);
+    const campi = W_CAMPI_SU + righe.reduce((t, h) => t + h, 0) + W_GAP * (righe.length - 1);
+    const az = !nd.titolare && ramo && gesto === 'a' ? W_GAP + 2 + W_AZ : 0;
+    return W_H_CHIUSO + 8 + campi + az;
+  };
+  /* La spinta: di quanto scendono le righe sotto quella del nodo aperto. */
+  const spintaDi = (nodi, sel, ramo, gesto) => {
+    const i = nodi.findIndex(nd => nd.n === sel);
+    if (i < 0) return { riga: -1, px: 0 };
+    return { riga: Math.floor(i / W_COL), px: Math.max(0, altNodo(nodi[i], true, ramo, gesto) - W_H_CHIUSO) };
+  };
+  const wpos = (i, sp) => {
+    const r = Math.floor(i / W_COL); const c = r % 2 ? W_COL - 1 - (i % W_COL) : i % W_COL;
+    const giu = sp && sp.riga >= 0 && r > sp.riga ? sp.px : 0;
+    return { x: W_PAD + c * W_PX, y: W_PAD + r * W_PY + giu, r, c };
+  };
   const ICONA_NODO = { rapido: 'i-bolt', standard: 'i-bot', esperto: 'i-star' };
-  function nodoWorkflow(m, w, nd, i, sel) {
-    const p = wpos(i);
+  function nodoWorkflow(m, w, nd, i, sel, ramo, gesto, tot, sp) {
+    const p = wpos(i, sp);
     const on = sel === nd.n;
     const cls = nd.titolare ? `wnode tit${nd.stato === 'attesa' ? ' att' : ''}${on ? ' on' : ''}` : `wnode${on ? ' on' : ''}`;
     const icona = nd.titolare ? 'i-hand' : ICONA_NODO[nd.modello] || 'i-bot';
     const sotto = nd.titolare ? esc(nd.regola) : `Passo ${nd.n} · ${esc(nd.modello)}`;
     /* il nodo selezionato apre i suoi campi, come il nodo verde della figura: e' il gesto con cui si modifica il
        workflow — si sceglie il modello di un passo e gli strumenti che puo' toccare */
+    /* Le azioni del **gesto A** (versione 22): stanno dentro il nodo aperto, sotto i suoi campi, e ci sono solo
+       nella prossima volta — l'ultima volta e' successa e non si modifica. «Aggiungi» mette il passo **dopo
+       questo e prima della firma**: il nodo del titolare non si scavalca, non si sposta e non si toglie. */
+    const azA = on && ramo && gesto === 'a' && !nd.titolare ? `<div class="azioni-n">
+        <span class="rb pieno" data-az="ramo-aggiungi" data-n="${nd.n}" title="Aggiungi un passo dopo questo">${ic('i-plus')}</span>
+        <span class="rb"${i > 0 ? ` data-az="ramo-su" data-n="${nd.n}"` : ' aria-disabled="true"'} title="Spostalo prima">${ic('i-up')}</span>
+        <span class="rb"${i < tot - 2 ? ` data-az="ramo-giu" data-n="${nd.n}"` : ' aria-disabled="true"'} title="Spostalo dopo">${ic('i-dn')}</span>
+        <span class="rb"${tot > 2 ? ` data-az="ramo-togli" data-n="${nd.n}"` : ' aria-disabled="true"'} title="Toglilo">${ic('i-x')}</span>
+      </div>` : '';
     const campi = on && !nd.titolare ? `<div class="campi">
-        <span class="fl">Modello</span><span class="fv"><span>${esc((m.MODELLI[nd.modello] || {}).nome || nd.modello)}</span>${ic('i-chev')}</span>
+        <span class="fl">Modello</span><span class="fv"${ramo ? ` data-az="ramo-modello" data-n="${nd.n}" title="Cambia il modello"` : ''}><span>${esc((m.MODELLI[nd.modello] || {}).nome || nd.modello)}</span>${ic('i-chev')}</span>
         <span class="fl">Strumenti</span>${(nd.strumenti.length ? nd.strumenti : ['Nessuno']).map(s => `<span class="fv"><span>${esc(s)}</span>${ic('i-chev')}</span>`).join('')}
         ${nd.esito ? `<span class="fl">Esito dell'ultima volta</span><span class="fv"><span>${esc(nd.esito)}</span></span>` : ''}
-      </div>` : '';
+      </div>${azA}` : '';
     const campiTit = on && nd.titolare ? `<div class="campi">
         <span class="fl">Regola che ferma qui la consegna</span><span class="fv"><span>${esc(nd.regola)}</span>${ic('i-chev')}</span>
         <span class="fl">Firma anticipata</span><span class="fv"><span>${w.firma ? 'Accesa' : 'Spenta — ogni uscita passa da te'}</span>${ic('i-chev')}</span>
       </div>` : '';
     return `<div class="${cls}" style="left:${p.x}px;top:${p.y}px" data-az="nodo" data-n="${nd.n}" title="${esc(nd.nome)}">
       <div class="hd"><span class="nic">${ic(icona)}</span><div class="tt"><b>${esc(nd.nome)}</b><span>${sotto}</span></div></div>
-      <div class="ft">${nd.titolare ? `<span>${esc(nd.quando || 'non ancora consegnata')}</span>` : `<span>${esc(nd.durata || '—')}</span><span class="eur">${eur(nd.costo)}</span>`}</div>
+      ${/* Nella prossima volta il piede non porta numeri: di un passo che deve ancora succedere non si sa ne' il
+            costo ne' la durata, e stampare uno zero sarebbe inventarli. E' la ragione per cui il ramo non sporca
+            «misurati, non stimati»: i due totali in cima alla pagina restano dell'ultima volta. */''}
+      <div class="ft">${nd.titolare ? `<span>${esc(ramo ? 'aspetterà la tua firma' : nd.quando || 'non ancora consegnata')}</span>` : ramo ? `<span>${nd.nato ? 'passo nuovo' : 'come l\'ultima volta'}</span>` : `<span>${esc(nd.durata || '—')}</span><span class="eur">${eur(nd.costo)}</span>`}</div>
       ${campi}${campiTit}</div>`;
   }
-  function canvasWorkflow(m, w, sel) {
+  function canvasWorkflow(m, w, sel, ramo, gesto) {
+    /* Il ramo (versione 22): stesso canvas, altro tempo. I nodi vengono da `ramoDi` invece che dal workflow —
+       stessa serpentina, stesse misure, stessi connettori: e' la stessa figura, non una seconda. */
+    const nodiFonte = ramo ? m.ramoDi(w) : w.nodi;
+    w = Object.assign({}, w, { nodi: nodiFonte });
     const n = w.nodi.length;
     const righe = Math.ceil(n / W_COL);
-    /* 78: le porte sotto l'ultima riga; 62: la barra in fondo; 168: i campi del nodo aperto, che crescono in basso e
-       senza questo finirebbero tagliati dalla barra */
-    const alt = W_PAD * 2 + (righe - 1) * W_PY + W_H + 78 + 62 + (sel ? 168 : 0);
-    const nodi = w.nodi.map((nd, i) => nodoWorkflow(m, w, nd, i, sel)).join('');
+    /* La spinta del nodo aperto: le righe sotto la sua scendono di quanto lui cresce, e il canvas si allunga dello
+       stesso numero. 78: le porte sotto l'ultima riga; 62: la barra in fondo. */
+    const sp = spintaDi(w.nodi, sel, ramo, gesto);
+    const alt = W_PAD * 2 + (righe - 1) * W_PY + W_H + 78 + 62 + sp.px;
+    const nodi = w.nodi.map((nd, i) => nodoWorkflow(m, w, nd, i, sel, ramo, gesto, n, sp)).join('');
+    /* **Gesto C**: il «+» sul connettore. Uno per arco, piu' uno in coda prima del titolare. Il cerchio si vede al
+       passaggio; il bersaglio e' il tratto libero dell'arco — 34 px fra due nodi della stessa riga, 123 nel salto
+       di riga (misurati, non i 242 che il consiglio credeva: quello e' il passo, non l'arco). */
+    const piu = ramo && gesto === 'c' ? w.nodi.slice(0, -1).map((nd, i) => {
+      const a = wpos(i, sp), b = wpos(i + 1, sp);
+      const x = a.r === b.r ? (a.x + W_W + b.x) / 2 : (a.x + b.x) / 2 + W_W / 2;
+      const y = a.r === b.r ? a.y + W_H / 2 : (a.y + W_H + b.y) / 2;
+      return `<span class="wplus" style="left:${x}px;top:${y}px" data-az="ramo-aggiungi" data-n="${nd.n}" title="Aggiungi un passo qui"><i>${ic('i-plus')}</i></span>`;
+    }).join('') : '';
     /* Le porte: sotto ogni nodo che non e' il titolare, una per il modello e una per ogni strumento — le stesse tre
        del riferimento (Modello, Memoria, Strumento), che nel prodotto esistono gia'. Spente quando il passo non e'
        ancora stato fatto: una porta accesa dice che quello strumento e' stato davvero usato. */
     const porte = w.nodi.map((nd, i) => {
       if (nd.titolare) return '';
-      const p = wpos(i);
+      const p = wpos(i, sp);
+      /* sotto il nodo aperto le porte scendono con lui: prima finivano dentro la card, sopra le sue etichette */
+      const giu = nd.n === sel ? altNodo(nd, true, ramo, gesto) - W_H_CHIUSO : 0;
       /* l'etichetta della porta deve stare in 56 px: si prende la **prima parola** del nome dello strumento invece di
          tagliarlo a meta' («Archivio del» non e' un nome, «Archivio» si') */
       const corta = t => { const w0 = String(t).split(/[ ·]/)[0]; return w0.length > 11 ? w0.slice(0, 10) + '…' : w0; };
       const voci = [['Modello', true], ...nd.strumenti.slice(0, 2).map(s => [corta(s), true])];
-      const spenta = nd.stato === 'da fare';
+      const spenta = ramo || nd.stato === 'da fare';
       return voci.map((v, k) => {
-        const x = p.x + 34 + k * 62, y = p.y + W_H;
+        const x = p.x + 34 + k * 62, y = p.y + W_H + giu;
         return `<span class="wport${spenta ? ' off' : ''}" style="left:${x}px;top:${y}px"></span><span class="wplab" style="left:${x}px;top:${y + 8}px">${esc(v[0])}</span>`;
       }).join('');
     }).join('');
     /* Gli archi: da un nodo al seguente. Sulla stessa riga una curva orizzontale; a fine riga la serpentina scende
        dal basso del nodo e rientra dal basso del successivo, che nella riga dispari sta dall'altra parte. */
     const archi = w.nodi.slice(0, -1).map((nd, i) => {
-      const a = wpos(i), b = wpos(i + 1);
+      const a = wpos(i, sp), b = wpos(i + 1, sp);
       const suc = w.nodi[i + 1];
       const cls = suc.titolare && suc.stato === 'attesa' ? 'arc att' : nd.stato === 'da fare' ? 'arc off' : 'arc';
       if (a.r === b.r) {
@@ -1338,14 +1468,23 @@ window.DIREZIONE_A = (function () {
        dove il lavoro si ferma ad aspettare una firma. Nelle righe della pagina Esecuzione non c'e' posto, perche'
        li' la sequenza e' gia' finita quando l'attesa comincia. */
     const ult = w.nodi[w.nodi.length - 1];
-    const ia = w.nodi.length - 2, pa = wpos(ia), pb = wpos(w.nodi.length - 1);
-    const tag = ult.stato === 'attesa'
+    const ia = w.nodi.length - 2, pa = wpos(ia, sp), pb = wpos(w.nodi.length - 1, sp);
+    const tag = !ramo && ult.stato === 'attesa'
       ? `<span class="wtag lime" style="left:${pb.x + W_W / 2}px;top:${pb.y - 15}px">${ic('i-bell')}aspetta la tua firma</span>` : '';
     return `<div class="wcanvas" style="height:${alt}px">
       <div class="grid" aria-hidden="true"></div>
       <svg class="edges" viewBox="0 0 ${W_PAD * 2 + W_COL * W_PX} ${alt}" preserveAspectRatio="none" aria-hidden="true">${archi}</svg>
-      ${porte}${nodi}${tag}
-      <div class="wbar"><div class="tx"><b>${w.nodi.length} nodi · ${w.passi} passi e la tua firma</b><span>${esc(w.nome)} · ${esc(w.perimetro)} · ${eur(w.costo)} · ${w.minuti} min, misurati sull'esecuzione da cui è nato</span></div>
+      ${porte}${piu}${nodi}${tag}
+      ${/* **Gesto B**: le azioni nella barra, sul nodo scelto. La barra tiene il suo mestiere — il conto a
+            sinistra, l'uscita a destra — e le azioni stanno in mezzo. Senza un nodo scelto resta solo «aggiungi
+            in coda», che e' la ragione per cui questo gesto non ha bisogno di un nodo da aprire. */''}
+      <div class="wbar"><div class="tx"><b>${w.nodi.length} nodi · ${w.nodi.length - 1} passi e la tua firma</b><span>${ramo ? `${esc(w.nome)} · ${esc(w.perimetro)} · quello che succederà la prossima volta: nessun costo misurato, perché non è ancora successo` : `${esc(w.nome)} · ${esc(w.perimetro)} · ${eur(w.costo)} · ${w.minuti} min, misurati sull'esecuzione da cui è nato`}</span></div>
+        ${ramo && gesto === 'b' ? `<div class="azioni-b">
+          <span class="pill lime" data-az="ramo-aggiungi" data-n="${sel && sel < n ? sel : n - 1}">${ic('i-plus')}${sel && sel < n ? 'Aggiungi dopo il passo ' + sel : 'Aggiungi in coda'}</span>
+          <span class="pill"${sel && sel > 1 && sel < n ? ` data-az="ramo-su" data-n="${sel}"` : ' aria-disabled="true"'}>${ic('i-up')}Su</span>
+          <span class="pill"${sel && sel < n - 1 ? ` data-az="ramo-giu" data-n="${sel}"` : ' aria-disabled="true"'}>${ic('i-dn')}Giù</span>
+          <span class="pill"${sel && sel < n && n > 2 ? ` data-az="ramo-togli" data-n="${sel}"` : ' aria-disabled="true"'}>${ic('i-x')}Togli</span>
+        </div>` : ''}
         <span class="pill" data-az="pagina" data-pagina="esecuzione" data-id="${w.chi}">Vedi l'esecuzione ${ic('i-ne')}</span></div>
     </div>`;
   }
@@ -1370,12 +1509,102 @@ window.DIREZIONE_A = (function () {
       </section>`;
     return cornice(m, opz, ('Workflow · ' + d.nome).toUpperCase(), stats, 'org', corpo, '');
   }
+  /* ---------- pagina Routine (versione 22, conferma e) ----------
+     **Non nel rail**: con tre voci non merita il settimo cerchio — e' la soglia che il consiglio stesso aveva
+     proposto. Ci si arriva da dove il nome della routine gia' compare: la colonna «chi ha deciso» dello storico
+     delle Richieste (dalla versione 21 era testo morto, adesso si apre) e la pagina Dipartimento. Non si e'
+     aggiunta nessuna freccia nuova: se n'e' resa vera una che c'era gia'.
+     La pagina **si legge e basta**: che cosa la fa partire, che cosa il titolare si e' riservato, quante volte e'
+     girata davvero, che cosa ha deciso, e i passi che dichiara. Se qui dentro si potra' anche **comporre** — cioe'
+     se il canvas dell'editor nasce su questa pagina — e' la domanda 2 del consiglio, e la decide l'utente: finche'
+     non risponde qui non c'e' nessun canvas, perche' la regola 26 vieta di promettere quello che non c'e'.
+     I passi dichiarati sono **nomi**, non passi: nel record la routine porta `passi: ['Raccolta', 'Report']`, senza
+     modello, strumenti, costo ne' durata. E' la differenza vera fra il dichiarato e il misurato, ed e' scritta qui
+     invece di essere lasciata capire. */
+  const CLAUSOLA = { avvio: ['Chiede prima di partire', 'i-hand'], uscita: ['Chiede prima di consegnare', 'i-bell'], libera: ['Fai pure', 'i-bolt'] };
+  function rigaRoutine(m, rt) {
+    const e = m.byId[rt.chi], rod = m.rodaggioDi(rt);
+    const cl = CLAUSOLA[rt.clausola] || ['—', 'i-clock'];
+    return `<div class="crow" data-az="routine" data-id="${esc(rt.id)}"><span class="ico">${ic('i-clock')}</span>
+      <div class="tx"><b>${esc(rt.nome)}</b><span>${esc(m.etichetta(e))} · ${esc(m.dipDi(e).nome)} · ${esc(rt.innesco.testo)}</span></div>
+      <span class="v"><span class="chip${rt.clausola === 'libera' ? ' rosa' : ''}">${ic(cl[1])}${esc(cl[0])}</span></span>
+      <span class="v">${rod.fatte} su ${rod.di}<small>rodaggio</small></span>
+      <span class="rb xs">${ic('i-ne')}</span></div>`;
+  }
+  /* L'elenco e' quello di **tutta l'azienda**, non di un dipartimento: le routine sono tre a undici e tre a
+     quaranta, e tre righe non si filtrano — e' la stessa ragione per cui non prendono un cerchio nel rail. La
+     pillola del Dipartimento porta qui e la riga dice a quale dipartimento appartiene ognuna. */
+  function elencoRoutine(m, opz) {
+    const lst = m.routine || [];
+    const libere = lst.filter(rt => rt.clausola === 'libera').length;
+    const stats = `<div class="stat"><b>${lst.length}</b><span>routine</span></div>
+      <div class="stat"><b>${libere}</b><span>con il «fai pure»</span></div>`;
+    const corpo = `
+      <section>
+        <div class="shead"><h3>Le routine dell'azienda</h3>${contoSez(lst.length, lst.length, 'Routine')}
+          <div class="destra"><span class="pill" data-az="pagina" data-pagina="richieste">Le richieste ${ic('i-ne')}</span></div></div>
+        <p class="adesso" style="max-width:900px">Una routine è un lavoro <b>dichiarato</b>: parte da sola quando arriva il suo innesco, e la clausola dice che cosa resta comunque in mano al titolare. Il workflow è la stessa cosa vista dall'altro tempo — il lavoro <b>avvenuto</b>, con i costi misurati. ${libere ? `<b>${libere} su ${lst.length} girano con il «fai pure»</b> senza avere finito il rodaggio: nel modello di oggi non se l'è guadagnato nessuno.` : ''}</p>
+        ${lst.length ? `<div class="hlist">${lst.map(rt => rigaRoutine(m, rt)).join('')}</div>` : `<div class="vuoto">Nessuna routine nell'azienda</div>`}
+      </section>`;
+    return cornice(m, opz, 'ROUTINE', stats, 'richieste', corpo, '');
+  }
+  function paginaRoutine(m, opz) {
+    if (!opz.routine) return elencoRoutine(m, opz);
+    const rt = m.routineIdDi(opz.routine);
+    if (!rt) return elencoRoutine(m, opz);
+    const e = m.byId[rt.chi], d = m.dipDi(e), rod = m.rodaggioDi(rt);
+    const cl = CLAUSOLA[rt.clausola] || ['—', 'i-clock'];
+    const decise = (rt.decise || []).map(id => m.richieste.find(r => r.id === id)).filter(Boolean);
+    /* Il workflow di questa routine, se c'e': `workflowDi` nasce da un'esecuzione riuscita, e delle tre routine
+       solo «Fatture ricorrenti» ce l'ha — gli altri due dipendenti sono pianificati, zero passi conclusi. Dove non
+       c'e' la pagina lo dice, invece di lasciare un buco. */
+    const wf = m.workflowDi(null).find(w => w.chi === rt.chi) || null;
+    const gov = decise.length ? m.regolaPer(decise[0]) : null;
+    const contr = decise.filter(r => m.contrastoDi(r));
+    const stats = `<div class="stat"><b>${rod.fatte}</b><span>richieste decise</span></div>
+      <div class="stat"><b>${rt.passi.length + 1}</b><span>passi dichiarati e la tua firma</span></div>`;
+    const corpo = `
+      <section class="etesta">
+        <div class="ident">${av(m, e, 'lg', null, 'data-anima="1"')}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div>
+          <div class="chips"><span class="chip">${ic('i-org')}${esc(d.nome)}</span><span class="chip">${ic('i-clock')}${esc(rt.innesco.testo)}</span><span class="chip${rt.clausola === 'libera' ? ' rosa' : ''}">${ic(cl[1])}${esc(cl[0])}</span><span class="chip">${ic('i-hand')}dal ${esc(rt.dal)}</span></div>
+        </div>
+        <p class="adesso">Parte da sola: ${esc(rt.innesco.testo.toLowerCase())}. Ha deciso <b>${rod.fatte} richiest${rod.fatte === 1 ? 'a' : 'e'}</b> su ${rod.di} di rodaggio${rod.fatte < rod.di ? `, quindi il «fai pure» <b>non se l'è ancora guadagnato</b>` : ''}. ${gov ? `La regola d'azienda che la governa è <b>${esc(gov.nome)}</b> («${esc(gov.modo)}»), e <b>vince sulla clausola</b>: una routine esegue, non decide.` : ''}</p>
+        <div class="azioni"><span class="pill lime" data-az="pagina" data-pagina="dipendente" data-id="${e.id}">${ic('i-bot')}La pagina di ${esc(m.etichetta(e))}</span><span class="pill" data-az="pagina" data-pagina="routine">${ic('i-clock')}Tutte le routine</span>${wf ? `<span class="pill" data-az="workflow" data-id="${esc(wf.id)}">${ic('i-rows')}Il suo workflow</span>` : ''}</div>
+      </section>
+      <section>
+        <div class="shead"><h3>I passi dichiarati</h3><span class="cnt"><b>${rt.passi.length + 1}</b><span>Passi · l'ultimo è la tua firma</span></span></div>
+        <p class="adesso" style="max-width:900px">Sono <b>nomi</b>, non passi misurati: la routine dichiara che cosa farà, non che cosa è costato. ${wf ? 'Il costo vero si legge nel suo workflow, che nasce da un\'esecuzione riuscita.' : `${esc(m.etichetta(e))} è pianificato e non ha ancora concluso nessun passo, quindi di questa routine <b>non esiste ancora un workflow</b>: nessun costo misurato da mostrare.`}</p>
+        <div class="hlist">${rt.passi.map((p, i) => `<div class="crow nofr"><span class="ico">${ic('i-bot')}</span><div class="tx"><b>${esc(p)}</b><span>passo ${i + 1} dichiarato</span></div><span class="v"><span class="chip">${ic('i-clock')}non ancora misurato</span></span></div>`).join('')}
+          <div class="crow nofr"><span class="ico">${ic('i-hand')}</span><div class="tx"><b>Firma del titolare</b><span>passo ${rt.passi.length + 1} · dove la consegna si ferma</span></div><span class="v"><span class="chip lime">${ic('i-bell')}sempre tua</span></span></div></div>
+      </section>
+      <section>
+        <div class="shead"><h3>Che cosa ha deciso</h3>${contoSez(decise.length, decise.length, 'Richieste')}
+          <div class="destra"><span class="pill" data-az="pagina" data-pagina="richieste" data-chi="${e.id}">Nelle Richieste ${ic('i-ne')}</span></div></div>
+        ${contr.length ? `<p class="adesso" style="max-width:900px"><b>${contr.length} di queste è uscita contro una regola attiva</b> («${esc(contr[0] ? m.contrastoDi(contr[0]).nome : '')}», che dice «Sempre da approvare»). La precedenza dice che vince la regola: questo non doveva succedere.</p>` : ''}
+        ${decise.length ? `<div class="hlist">${decise.map(r => rigaStorico(m, r, true)).join('')}</div>` : `<div class="vuoto">Non ha ancora deciso niente</div>`}
+      </section>
+      <section>
+        <div class="shead"><h3>I limiti che ha</h3><span class="cnt"><b>${rt.limiti.giorno} €</b><span>al giorno</span></span></div>
+        <div class="wfirma">
+          <div class="fcard"><span class="k">Al giorno</span><b>${eur(rt.limiti.giorno)}</b><span class="d">Oltre questo non parte più oggi, e la coda la aspetta.</span></div>
+          <div class="fcard"><span class="k">Alla settimana</span><b>${eur(rt.limiti.settimana)}</b><span class="d">Il conto si azzera il lunedì.</span></div>
+          <div class="fcard"><span class="k">Al mese</span><b>${eur(rt.limiti.mese)}</b><span class="d">Il tetto della routine è facoltativo: quello d'azienda è l'unico obbligatorio.</span></div>
+        </div>
+      </section>`;
+    return cornice(m, opz, rt.nome.toUpperCase(), stats, 'richieste', corpo, '');
+  }
   function paginaWorkflow(m, opz) {
     if (!opz.workflow) return elencoWorkflow(m, opz);
     const w = m.workflowIdDi(opz.workflow);
     if (!w) return elencoWorkflow(m, opz);
     const e = m.byId[w.chi], d = m.dipDi(e);
     const sel = +opz.nodo || 0;
+    /* `?ramo=1` apre la prossima volta; `?gesto=a|b|c` sceglie il gesto con cui si compone — le tre strade della
+       domanda 1 del consiglio, costruite tutte e tre per poterle guardare invece che immaginarle. Quando l'utente
+       avra' scelto, le altre due si tolgono. */
+    const ramo = opz.ramo === '1' || opz.ramo === 1 || opz.ramo === true;
+    const gesto = ['a', 'b', 'c'].includes(opz.gesto) ? opz.gesto : 'a';
+    const nodiVisti = ramo ? m.ramoDi(w) : w.nodi;
     const ult = w.nodi[w.nodi.length - 1];
     const altri = m.workflowDi(w.dip).filter(x => x.id !== w.id);
     /* La firma anticipata e i suoi tre freni. Scelta del titolare: **nasce spenta**, quindi la pagina la mostra
@@ -1390,10 +1619,21 @@ window.DIREZIONE_A = (function () {
         <p class="adesso">Nato da un'esecuzione riuscita di ${esc(m.etichetta(e))}: ${w.conclusi} passi conclusi su ${w.passi}, ${eur(w.costo)} e ${w.minuti} minuti <b>misurati</b>, non stimati. ${ult.stato === 'attesa' ? 'In fondo alla catena una consegna <b>aspetta la tua firma</b>.' : ult.stato === 'fatto' ? 'L\'ultima consegna di questa catena l\'hai già firmata.' : 'La catena non è ancora arrivata alla tua firma.'}</p>
         <div class="azioni"><span class="pill lime" data-az="pagina" data-pagina="dipartimento" data-dip="${w.dip}">${ic('i-org')}Torna a ${esc(d.nome)}</span><span class="pill" data-az="pagina" data-pagina="workflow" data-dip="${w.dip}">${ic('i-rows')}Tutti i workflow di ${esc(d.nome)}</span></div>
       </section>
+      ${/* Il ramo (versione 22, decisione dell'utente sulla domanda 2 del consiglio): un canvas solo, due tempi.
+            La tab a pillola e' quella del riferimento. «L'ultima volta» e' misurata e non si tocca; «la prossima
+            volta» e' dichiarata e si compone. I due numeri in cima alla pagina restano sull'ultima volta, sempre:
+            e' il motivo per cui questa strada non sporca «misurati, non stimati». */''}
       <section>
-        <div class="shead"><h3>Il workflow</h3><span class="cnt"><b>${w.nodi.length}</b><span>Nodi · ${w.passi} passi e la tua firma</span></span>
+        <div class="shead"><h3>Il workflow</h3><span class="cnt"><b>${nodiVisti.length}</b><span>Nodi · ${nodiVisti.length - 1} passi e la tua firma</span></span>
           <div class="destra"><span class="pill${sel ? '' : ' on'}" data-az="nodo" data-n="0">Tutto il disegno</span></div></div>
-        ${canvasWorkflow(m, w, sel)}
+        <div class="wtabs">
+          <span class="pill${ramo ? '' : ' on'}" data-az="ramo" data-v="0" title="Quello che è successo: misurato, e non si modifica">${ic('i-eye')}L'ultima volta</span>
+          <span class="pill${ramo ? ' on' : ''}" data-az="ramo" data-v="1" title="Quello che succederà: dichiarato, e si compone">${ic('i-pen')}La prossima volta</span>
+        </div>
+        <p class="adesso" style="max-width:900px">${ramo
+          ? `Questo è il lavoro <b>dichiarato</b>: la prossima volta ${esc(m.etichetta(e))} farà questi passi. Nasce come copia di quello che ha funzionato l'ultima volta, <b>senza i numeri</b> — un passo che deve ancora succedere non ha un costo misurato. L'ultimo nodo resta la tua firma, e non si può togliere né scavalcare.`
+          : `Questo è il lavoro <b>avvenuto</b>: ${w.conclusi} passi conclusi su ${w.passi}, ${eur(w.costo)} e ${w.minuti} minuti misurati. Non si modifica — è già successo. Per scrivere la prossima volta c'è l'altra pillola.`}</p>
+        ${canvasWorkflow(m, w, sel, ramo, gesto)}
       </section>
       <section>
         <div class="shead"><h3>La firma anticipata</h3><span class="cnt"><b>${w.firma ? 'Accesa' : 'Spenta'}</b><span>${w.firma ? 'le uscite a norma escono da sole' : 'ogni uscita passa dalla coda'}</span></span>
@@ -1414,8 +1654,10 @@ window.DIREZIONE_A = (function () {
           return `<div class="crow" data-az="workflow" data-id="${esc(x.id)}"><span class="ico">${ic('i-rows')}</span><div class="tx"><b>${esc(x.nome)}</b><span>${esc(m.etichetta(xe))} · ${x.nodi.length} nodi · ${esc(x.perimetro)}</span></div><span class="v">${xu.stato === 'attesa' ? `<span class="chip lime">${ic('i-bell')}Aspetta te</span>` : `<span class="chip">${ic('i-clock')}In corso</span>`}</span><span class="v">${x.minuti} min<small>durata</small></span><span class="eur">${eur(x.costo)}</span><span class="rb xs">${ic('i-ne')}</span></div>`;
         }).join('')}</div>
       </section>` : ''}`;
+    /* I due numeri in cima restano dell'**ultima volta** anche quando si guarda la prossima: sono misurati, e la
+       parola lo dice invece di lasciarlo capire. E' la garanzia che il ramo non sporca «misurati, non stimati». */
     const stats = `<div class="stat"><b>${eur(w.costo)}</b><span>costo misurato</span></div>
-      <div class="stat"><b>${w.nodi.length}</b><span>nodi</span></div>`;
+      <div class="stat"><b>${w.nodi.length}</b><span>nodi${ramo ? " l'ultima volta" : ''}</span></div>`;
     return cornice(m, opz, w.nome.toUpperCase(), stats, 'org', corpo, '');
   }
 
@@ -2145,13 +2387,13 @@ window.DIREZIONE_A = (function () {
   }
 
   function render(m, opz) {
-    opz = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, confronto: null, motivo: false, periodo: {}, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '', cerca: {}, sez: {}, forma: '', consegna: '', workflow: '', nodo: 0 }, opz || {});
-    return opz.pagina === 'workflow' ? paginaWorkflow(m, opz) : opz.pagina === 'consegna' ? paginaConsegna(m, opz) : opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : opz.pagina === 'dipendente' ? dipendente(m, opz) : opz.pagina === 'esecuzione' ? esecuzione(m, opz) : opz.pagina === 'costi' ? paginaCosti(m, opz) : opz.pagina === 'agenda' ? agenda(m, opz) : opz.pagina === 'chat' ? chat(m, opz) : home(m, opz);
+    opz = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, confronto: null, motivo: false, periodo: {}, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '', cerca: {}, sez: {}, forma: '', consegna: '', workflow: '', nodo: 0, routine: '', ramo: 0, gesto: 'a' }, opz || {});
+    return opz.pagina === 'routine' ? paginaRoutine(m, opz) : opz.pagina === 'workflow' ? paginaWorkflow(m, opz) : opz.pagina === 'consegna' ? paginaConsegna(m, opz) : opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : opz.pagina === 'dipendente' ? dipendente(m, opz) : opz.pagina === 'esecuzione' ? esecuzione(m, opz) : opz.pagina === 'costi' ? paginaCosti(m, opz) : opz.pagina === 'agenda' ? agenda(m, opz) : opz.pagina === 'chat' ? chat(m, opz) : home(m, opz);
   }
 
   /* Disegna e collega i clic: tendina, cambio pagina, filtri, decisioni. Ritorna lo stato. */
   function monta(radice, m, opz) {
-    const st = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, editor: null, confronto: null, motivo: false, log: 'tutto', periodo: { dipartimenti: 'mese', dipendenti: 'mese', clienti: 'mese', modelli: 'mese' }, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '', cerca: {}, sez: {}, forma: '', workflow: '', nodo: 0 }, opz || {});
+    const st = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, editor: null, confronto: null, motivo: false, log: 'tutto', periodo: { dipartimenti: 'mese', dipendenti: 'mese', clienti: 'mese', modelli: 'mese' }, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '', cerca: {}, sez: {}, forma: '', workflow: '', nodo: 0, routine: '', ramo: 0, gesto: 'a' }, opz || {});
     const n = () => m.richiesteDi('attesa').length;
     /* parametri di avvio della pagina del dipendente: ?tendina=dossier (la revisione in sospeso del dipendente, estesa) e ?confronto=a,b (due versioni del prompt) */
     const idxRevisione = id => inAttesa(m).findIndex(r => r.tipo === 'revisione' && r.chi === id);
@@ -2256,10 +2498,28 @@ window.DIREZIONE_A = (function () {
          la firma anticipata di quel workflow — che nasce spenta e resta una decisione per workflow, non una regola
          di sistema. `firme` tiene le accensioni della sessione: il modello non le scrive, come per `m.decidi`. */
       else if (az === 'workflow') { ev.stopPropagation(); st.workflow = el.dataset.id; st.pagina = 'workflow'; st.nodo = 0; if (st.tendina === 'estesa') st.tendina = 'aperta'; tutto(); window.scrollTo(0, 0); }
+      /* la routine (versione 22, conferma e): dal nome nella colonna «chi ha deciso» e dal Dipartimento. Niente
+         cerchio nel rail: con tre voci non lo merita. */
+      else if (az === 'routine') { ev.stopPropagation(); st.routine = el.dataset.id || ''; st.pagina = 'routine'; if (el.dataset.dip) { st.dip = el.dataset.dip; st.routine = ''; } if (st.tendina === 'estesa') st.tendina = 'aperta'; tutto(); window.scrollTo(0, 0); }
       else if (az === 'nodo') { ev.stopPropagation(); const v = +el.dataset.n || 0; st.nodo = st.nodo === v ? 0 : v; tutto(); }
+      /* Il ramo e le tre azioni del comporre (versione 22). Il modello e' l'unico che sa che cosa si puo' fare —
+         il titolare non si tocca — e i tre gesti chiamano le stesse tre funzioni: e' il modo di poterli guardare
+         uno accanto all'altro senza che uno sia piu' capace degli altri. */
+      else if (az === 'ramo') { ev.stopPropagation(); st.ramo = el.dataset.v === '1' ? 1 : 0; st.nodo = 0; tutto(); }
+      else if (az === 'ramo-aggiungi' || az === 'ramo-su' || az === 'ramo-giu' || az === 'ramo-togli' || az === 'ramo-modello') {
+        ev.stopPropagation();
+        const w = m.workflowIdDi(st.workflow); if (!w) return;
+        const n = +el.dataset.n || 0;
+        if (az === 'ramo-aggiungi') st.nodo = m.ramoAggiungi(w, n);
+        else if (az === 'ramo-su') st.nodo = m.ramoSposta(w, n, -1);
+        else if (az === 'ramo-giu') st.nodo = m.ramoSposta(w, n, 1);
+        else if (az === 'ramo-togli') st.nodo = m.ramoTogli(w, n);
+        else { const ordine = Object.keys(m.MODELLI); const nd = m.ramoDi(w)[n - 1]; if (nd) m.ramoCampo(w, n, 'modello', ordine[(ordine.indexOf(nd.modello) + 1) % ordine.length]); }
+        tutto();
+      }
       else if (az === 'firma') { ev.stopPropagation(); const id = el.dataset.id; m.firme[id] = !m.firme[id]; tutto(); }
       else if (az === 'consegna') { ev.stopPropagation(); st.consegna = el.dataset.id; st.pagina = 'consegna'; if (st.tendina === 'estesa') st.tendina = 'aperta'; st.motivo = false; tutto(); window.scrollTo(0, 0); }
-      else if (az === 'pagina') { ev.stopPropagation(); st.pagina = el.dataset.pagina; if (el.dataset.dip) { st.dip = el.dataset.dip; if (st.pagina === 'richieste') st.filtri = { dip: el.dataset.dip }; } if (el.dataset.id) { if (st.pagina === 'chat') st.filo = +el.dataset.id; else st.id = +el.dataset.id; } if (el.dataset.chi) st.filtri = { chi: el.dataset.chi }; if (el.dataset.cliente) st.filtri = Object.assign(st.pagina === 'richieste' && el.dataset.dip ? { dip: el.dataset.dip } : {}, { cliente: el.dataset.cliente }); if (st.tendina === 'confronto' || st.tendina === 'estesa') st.tendina = 'aperta'; st.motivo = false; tutto(); window.scrollTo(0, 0); }
+      else if (az === 'pagina') { ev.stopPropagation(); st.pagina = el.dataset.pagina; st.routine = el.dataset.routine || ''; if (el.dataset.dip) { st.dip = el.dataset.dip; if (st.pagina === 'richieste') st.filtri = { dip: el.dataset.dip }; } if (el.dataset.id) { if (st.pagina === 'chat') st.filo = +el.dataset.id; else st.id = +el.dataset.id; } if (el.dataset.chi) st.filtri = { chi: el.dataset.chi }; if (el.dataset.cliente) st.filtri = Object.assign(st.pagina === 'richieste' && el.dataset.dip ? { dip: el.dataset.dip } : {}, { cliente: el.dataset.cliente }); if (st.tendina === 'confronto' || st.tendina === 'estesa') st.tendina = 'aperta'; st.motivo = false; tutto(); window.scrollTo(0, 0); }
       else if (az === 'filtro') { const k = el.dataset.k, v = el.dataset.v; st.filtri[k] = (st.filtri[k] === v || v === 'tutti') ? undefined : v; tutto(); }
       /* ---- i controlli delle intestazioni di sezione (versione 17): la ricerca, le pillole, le due forme dei dipendenti ---- */
       else if (az === 'cerca') { st.cerca = Object.assign({}, st.cerca, { [el.dataset.sez]: '' }); tutto(); const i = radice.querySelector(`input[data-cerca="${el.dataset.sez}"]`); if (i) i.focus({ preventScroll: true }); }

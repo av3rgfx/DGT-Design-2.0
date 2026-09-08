@@ -2089,10 +2089,107 @@ disponibili**; quattro varianti di tipografia più stretta non bastano. Serve ri
 progetto dell'utente, con le tre strade scritte in `PROSSIMA-SESSIONE.md`. Nel frattempo la prova **ne fissa il
 conto a 4** invece di far finta che non esista: se cresce, se ne accorge.
 
+### Versione 22: le sei conferme, il ramo, e i tre gesti del comporre (2026-09-08, sessione successiva)
+
+Il prompt chiedeva tre cose nell'ordine: **misurare** quanto costa un nodo in più (non è un dubbio progettuale),
+passare dal **consiglio** le due domande di forma del canvas componibile, e prendere sulle **sei conferme** la
+raccomandazione già scritta accanto a ognuna, senza richiederle.
+
+#### 1. La misura: quanto costa un nodo in più
+
+Misurata aprendo la pagina e aggiungendo davvero uno, due, tre e quattro nodi al modello, su **tutti** i workflow —
+6 a undici dipendenti e 26 a quaranta, 160 misure in tutto:
+
+| | |
+|---|---|
+| Un nodo in più costa | **0 px oppure 210**, mai altro: 210 solo quando apre una riga nuova |
+| Quanti stanno sul salto oggi | **4 workflow su 6** a undici, **20 su 26** a quaranta (hanno 4 o 8 nodi) |
+| Quattro nodi in più | **210 px in tutto**, cioè una riga sola: **52,5 px a nodo** |
+| La larghezza | **non cambia mai**: 1008 px, il nodo più a destra a 970, zero scorrimenti laterali in 160 misure |
+| Il soffitto | non c'è: 15 nodi → canvas 938 px, 19 → 1 148, 23 → 1 358, 31 → 1 778, 39 → 2 198. Lineare |
+| Il nodo aperto | **+168 px**, costante |
+| Inserire a metà catena | fa scorrere di **una casella** tutti i nodi dopo: 8 su 8 se in testa, solo il titolare se in coda |
+
+La pagina del workflow più alta con quattro nodi in più arriva a **2 313 px**: resta la più corta del prodotto (il
+Dipartimento sta a 3 130).
+
+#### 2. Il consiglio, e le tre cose che ha corretto la revisione incrociata
+
+Cinque pareri indipendenti, poi la revisione incrociata anonima. **Sulla domanda 1 il consiglio si è spaccato
+2–2–1**; sulla 2 ha votato 3–2. La revisione ha fatto quello che i pareri non avevano fatto: **ha controllato i
+fatti**, ed è di nuovo lì che sta il valore.
+
+- **«rt1 e rt2 hanno zero nodi»** — era *l'argomento decisivo* di chi sceglieva la barra (strada B). **Falso**: le
+  due routine hanno due passi dichiarati più il titolare, cioè **3 nodi**. Tolto quello, B perde il suo unico
+  sostegno, e tutti e cinque i revisori l'hanno indicata come il punto cieco più grave del consiglio.
+- **«il bersaglio del “+” è tutto l'arco, 242 px»** — era la difesa di chi sceglieva il connettore (strada C).
+  **Falso, e si misurava**: 242 è il *passo* della serpentina, il nodo ne occupa 208, quindi l'arco libero è di
+  **34 px** in orizzontale (123 solo nel salto di riga). Misurato: sette volte più corto della sua difesa. È la
+  terza volta in tre versioni che *una misura batte un parere*, e la seconda in cui il numero sbagliato stava in un
+  argomento che sembrava decisivo.
+- **«C apre 32 canvas invece di 2»** — tre pareri su cinque hanno sommato **6 + 26**. Sono la *stessa* azienda a due
+  scale (11 dipendenti **oppure** 40), non due insiemi.
+- **«l'ultimo nodo è il titolare»** — non l'ha detto **nessuno dei cinque**. L'ha trovato la revisione: così com'erano
+  proposte, tutte e tre le strade lasciavano **togliere o scavalcare la firma del titolare**, cioè rompere la spina
+  dorsale col gesto più ovvio dell'editor («aggiungi un passo dopo questo», sull'ultimo nodo). Adesso il divieto sta
+  nel **modello** e vale per qualunque gesto.
+- **Le parole**: il consiglio ha usato **cinque nomi** per la stessa cosa (routine, workflow, esecuzione, copia,
+  ramo) e uno solo dei cinque ha nominato la trappola, aggiungendone poi una sesta. È la terza volta che succede.
+
+#### 3. La decisione dell'utente sulla domanda 2: **il ramo**
+
+Non era fra le tre strade proposte: l'ha portata un consigliere come terza via e **tutti e cinque i revisori** l'hanno
+indicata come l'idea migliore emersa. Un canvas solo, due tempi, con la **tab a pillola** che il riferimento dà già:
+**«L'ultima volta»** (misurata, immutabile) e **«La prossima volta»** (dichiarata, componibile). Zero pagine nuove,
+zero parole nuove; i due numeri in cima restano dell'ultima volta e la parola lo dice.
+
+#### 4. Le tre strade del gesto, costruite tutte e tre
+
+Sulla domanda 1 l'utente ha chiesto di **vederle** invece di sceglierle sulla carta. Sono costruite nella pagina
+vera (`?ramo=1&gesto=a|b|c`), non disegnate, e la pagina di confronto le mette accanto con i numeri misurati:
+
+| | A · nel nodo aperto | B · nella barra | C · sul connettore |
+|---|---|---|---|
+| Altezza del nodo aperto | 311 px | 264 px | non serve aprirlo |
+| …contro il nodo aperto di oggi | **328**: meno di adesso | **328**: meno di adesso | — |
+| Distanza dal nodo che modifica | **149 px** | **497 px** | zero: nasce lì |
+| Bersaglio più piccolo | 28 × 28 px | 2 361 px² | 38 × 40 px |
+| Controlli sul canvas | 4, col nodo aperto | 4, sempre visibili | **7** su 8 nodi (n − 1) |
+| Pixel in più sulla pagina | nessuno | nessuno | nessuno |
+
+#### 5. Il difetto trovato costruendo le anteprime, e chiuso
+
+**Aprire un nodo ne copriva un altro per intero**: 18 096 px², cioè tutti i 208 × 87 del nodo sotto. È della
+versione 20 — il canvas aggiungeva 168 px **in fondo**, dove non servivano, invece di spostare in giù le righe
+seguenti. Adesso le righe scendono di quanto il nodo cresce. Perché il conto si potesse fare *prima* di stampare (la
+serpentina non misura niente dopo il disegno), le etichette e i valori dei campi hanno **altezza fissa e una riga
+sola**: prima «Regola che ferma qui la consegna» andava a capo e il nodo cresceva di un'altezza imprevedibile. Una
+prova confronta il conto con la resa su **792 stati** del canvas: zero nodi coperti, zero sotto la barra.
+
+#### 6. Le sei conferme, prese come raccomandato
+
+| | Cosa | Che cos'è stato fatto |
+|---|---|---|
+| a | Le due regole fantasma | **Lasciate come sono**: `r16` e `r17` puntano alla routine. Nessun codice |
+| b | «Approvata» falso su `r17` | Le tre uscite senza il titolare dicono **«Uscita»**, in pillola neutra: il lime resta la sua firma. Anche la pagina della consegna, che diceva «Approvata dal titolare» su 1 consegna a undici e 2 a quaranta |
+| c | La regola di precedenza | Scritta: **vince la regola d'azienda**, la clausola può solo stringere. `regolaPer` e `contrastoDi` nel modello; i contrasti sono **0 a undici e 2 a quaranta**, e la riga li segna |
+| d | `g4` spenta | **Accesa** — e la card stampa quante richieste governa: **zero**, perché la consegna più cara costa 33,80 € e la soglia sta a 50. Il numero dice che il problema è la soglia, non lo stato |
+| e | Dove vive la pagina delle routine | **Fuori dal rail** (sei cerchi, invariati): dal nome nello storico delle Richieste, che era testo morto, e da una pillola nel Dipartimento |
+| f | L'intestazione che non stava nella banda | **A capo sotto il titolo**: da 56 a 124 px, ogni pagina scende di **68** (la stima diceva 64). I numeri coperti dalla tendina passano da **4 a 0**, su 24 pagine per due taglie |
+
+#### 7. Il prezzo, misurato
+
+- Le sei prove: **478 verifiche, 0 ko** (erano 421 su cinque prove); la sesta è `routine.js`, 49 verifiche.
+- Le catture: **23 su 70 identiche byte per byte**, **47 cambiate** — e cambiano per una ragione sola, i 68 px
+  dell'intestazione — più **7 nuove** (i tre gesti, il ramo, le tre della pagina Routine).
+- Le pagine crescono tutte di 68 px: home 2 320 → 2 388, Dipartimento 3 130 → 3 198, Richieste 3 033 → 3 101.
+
 ## 5. File
 
 | File | Ruolo |
 |---|---|
+| `scelta-gesto.src.html` + `costruisci-gesto.js` (versione 22) | La pagina di confronto delle **tre strade del gesto** con cui si compone il canvas, con le catture incorporate come data URI (come `scelta-barra` per la barra della versione 16). Il sorgente non si apre da solo: porta i segnaposto `IMG:<nome>`; `scelta-gesto.html` si rifà col costruttore e non sta nel repository |
+| `prove/routine.js` (versione 22) | La sesta prova cliccata: le sei conferme — «Uscita» al posto di «Approvata», la precedenza fra routine e regola, `g4` accesa col suo conto, la pagina delle routine, l'intestazione a due righe |
 | `dati.js` | modello sintetico (11 e 40) condiviso; dalla versione 17 anche i gruppi del giorno (`gruppiOggi`), letti dalla barra della Console e dal quadro del telefono; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`), le richieste di tipo `revisione` e l'esecuzione (`esecuzioneDi`: sei scritte a mano, le altre generate); dal 2026-09-05 la decisione del titolare (`decidi`), condivisa fra Console e telefono; `azienda.scadenzaMese` per la linea del tempo del mobile; dalla versione 19 le **consegne del dipartimento** (`consegneDi(dip)`, `consegnaDi(id)`: gli `output` delle esecuzioni con il passo che li ha prodotti e le sue voci di log; l'aiutante che le *conta* per i costi si chiama adesso `contaConsegne`); dal 2026-09-06 l'aggregatore dei costi (`costi(periodo, dip)`, `spesaDi`) per la pagina Costi e la sezione «Spesa del mese», e (versione 15) l'agenda (`giornata`, `settimana`, `scadenze`) e i fili della chat (`filoDi`, `scrivi`, `fili`, `nonLetti`) per la Console e per il telefono |
 | `comune.js` | sprite di icone di DGT, prefisso CSS, utilità |
 | `../componenti.js` (`schermate/componenti.js`) | dal 2026-09-06 (versione 14) i componenti della Console condivisi con il telefono e con le pagine degli avatar: il CSS delle primitive (`.rb`, `.av`, `.pair`, `.pill`, `.chip`, `.dots`, `.badge`, `.ncard`/`.nt`, `.lead`, `.task`, `.crow`, `.hrow`, `.erow`, `.qrow`, `.dcard`, `.ripart`/`.leg`, e dalla versione 15 le bolle della chat `.msg`/`.bub`), `variabili`, e `av`, `pair`, `dots`, `chipStato`, `chipEsito`, `messaggio`, `iconaTipo`, `nomeTipo`, `eur`, `delta`, `differenze`; `window.DGT_COMPONENTI`, va caricato dopo `comune.js` e il suo CSS messo in pagina prima di quello della Console |

@@ -1012,6 +1012,16 @@ window.DGT_DATI = (function () {
     /* Le accensioni della firma anticipata, una per workflow. Stanno qui e non nel modello scritto, come `m.decidi`
        per le richieste: sono decisioni prese guardando la pagina, e si perdono ricaricando. Nascono tutte spente. */
     const firme = {};
+    /* ---- Il ramo (versione 22, scelta dell'utente sulla domanda 2 del consiglio) ----
+       «La prossima volta» non e' un oggetto nuovo: e' **la coda dello stesso workflow**, il suo tempo futuro.
+       Un canvas solo, due stati: «l'ultima volta» e' quello che e' successo (misurato, immutabile) e «la prossima
+       volta» e' quello che succedera' (dichiarato, componibile). Cosi' nessun numero misurato viene toccato da una
+       mano, non nasce una pagina nuova e non nasce una parola nuova — che era la trappola che il consiglio si era
+       gia' tirato addosso due volte (routine, workflow, esecuzione, copia, ramo: cinque nomi per una sequenza di
+       passi).
+       I rami stanno qui accanto a `firme` e per la stessa ragione: sono decisioni prese guardando la pagina, e si
+       perdono ricaricando, come `m.decidi` per le richieste. Il modello scritto non li conosce. */
+    const rami = {};
     const REGOLA_NODO = (cliente, tipo) => cliente && cliente !== azienda.nome
       ? 'Uscite verso i clienti' : tipo === 'lista' ? 'Liste di lead' : 'Report interni';
     function workflowDi(dip) {
@@ -1183,6 +1193,38 @@ window.DGT_DATI = (function () {
          prodotta la routine `rt1` ma l'ha decisa la regola `g2`. La regola permette, la routine agisce.
          Il rodaggio della decisione 53 ne vuole 3, e nel modello di oggi nessuna delle tre ci arriva. */
       rodaggioDi: rt => ({ fatte: (rt.decise || []).filter(id => m.richieste.some(r => r.id === id)).length, di: 3 }),
+      /* ---- La precedenza fra la clausola di una routine e una regola d'azienda (versione 22, conferma c) ----
+         Il consiglio della versione 21 l'aveva nominata e nessuno l'aveva scritta: quattro pareri su cinque
+         lasciavano vincere la routine **senza dirlo**. La regola, adesso scritta: **una routine esegue, non
+         decide** — vince la regola d'azienda attiva, e la clausola della routine puo' solo stringere, mai allargare.
+         Se la regola dice «Sempre da approvare», nemmeno il «fai pure» fa uscire la consegna.
+
+         `regolaPer(r)` e' la regola che governa una richiesta, e la sceglie con lo **stesso criterio** che il canvas
+         usa gia' per il nodo del titolare (`REGOLA_NODO`), piu' g4 in testa perche' e' la piu' stretta: una spesa
+         sopra la soglia si approva sempre, qualunque cosa sia. Solo le regole **attive** governano: una regola
+         spenta non e' una regola, e infatti g4 spenta non compariva da nessuna parte.
+         `contrastoDi(r)` e' il caso che la precedenza rende visibile: una richiesta uscita **senza** il titolare
+         mentre la regola che la governa dice «Sempre da approvare». Nel modello a undici non ne esiste nessuno;
+         a quaranta ne escono **due** (due liste e un post verso clienti veri, decisi da una routine). Non si
+         corregge il dato: la riga lo dice e una prova ne fissa il conto. */
+      regolaPer: r => {
+        if (!r) return null;
+        const att = out.regole.filter(g => g.attiva);
+        const g = id => att.find(x => x.id === id) || null;
+        return (r.costo > 50 && g('g4'))
+          || (r.cliente && r.cliente !== azienda.nome && g('g1'))
+          || (r.tipo === 'lista' && g('g3'))
+          || g('g2');
+      },
+      contrastoDi: r => {
+        if (!r || !r.deciso || r.stato !== 'approvata') return null;
+        const g = out.regolaPer(r);
+        return g && g.modo === 'Sempre da approvare' ? g : null;
+      },
+      /* Quante richieste governa ogni regola: il numero che toglie alla card il sapore di decorazione. Su g4 fa
+         **zero** ed e' proprio quello il punto — la consegna piu' cara del modello costa 33,80 €, la soglia sta a
+         50, e la regola non puo' scattare mai. Il conto lo dice invece di lasciarlo credere. */
+      contaRegola: g => m.richieste.filter(r => { const x = out.regolaPer(r); return x && x.id === g.id; }).length,
       /* I tetti di spesa (decisione 55, e le due conferme dell'utente dell'8 settembre 2026).
          **Soffitto, non ripartizione**: la quota di un dipartimento e' un limite a se' e le quote possono sommare
          oltre 100; il tetto d'azienda e' il fermo vero, primo arrivato primo servito. Con la ripartizione — che e'
@@ -1211,7 +1253,13 @@ window.DGT_DATI = (function () {
         { id: 'g1', nome: 'Uscite verso i clienti', desc: 'Post, proposte e documenti per i clienti', modo: 'Sempre da approvare', attiva: true, icona: 'i-mega' },
         { id: 'g2', nome: 'Report interni', desc: 'Report giornalieri e rendiconti', modo: 'Automatica', attiva: true, icona: 'i-doc' },
         { id: 'g3', nome: 'Liste di lead', desc: 'Liste e ricerche senza invio', modo: 'Automatica sotto 20 €', attiva: true, icona: 'i-list' },
-        { id: 'g4', nome: 'Spese sopra 50 €', desc: 'Qualsiasi consegna che costa più di 50 €', modo: 'Sempre da approvare', attiva: false, icona: 'i-euro' },
+        /* Accesa nella versione 22 (conferma d): una regola spenta che resta in pagina e' decorazione. Accenderla
+           non cambia pero' **niente** di quello che il prodotto fa, e il numero lo dice: la richiesta piu' cara del
+           modello costa 10 €, la consegna piu' cara 33,80 €, e sopra i 50 € non c'e' niente ne' a undici ne' a
+           quaranta. La regola adesso governa davvero — governa zero consegne — e la card stampa il suo conto
+           invece di lasciar credere che stia trattenendo qualcosa. La soglia e' dell'utente: se la vuole efficace
+           va abbassata, e allora il conto sulla card lo fara' vedere. */
+        { id: 'g4', nome: 'Spese sopra 50 €', desc: 'Qualsiasi consegna che costa più di 50 €', modo: 'Sempre da approvare', attiva: true, icona: 'i-euro' },
       ],
       alLavoro: [],
       conta, costoOggi, iniziali, dipDi,
@@ -1228,7 +1276,46 @@ window.DGT_DATI = (function () {
          un passo (43 a undici, 156 a quaranta: nel modello ci sono davvero); l'ultimo nodo è il titolare, con la
          regola di `regole` che ferma lì la consegna. Nasce da un'esecuzione con almeno due passi conclusi; costo e
          durata sono sommati dai passi. La firma anticipata nasce spenta. */
-      workflowDi, workflowIdDi, firme,
+      workflowDi, workflowIdDi, firme, rami,
+      /* Il ramo di un workflow: i nodi della **prossima volta**. Nasce come copia dei passi dell'ultima volta —
+         non si inventa una catena, si parte da quella che ha funzionato — con i numeri misurati **tolti**, perche'
+         di un passo che deve ancora succedere non si sa ne' il costo ne' la durata. L'ultimo nodo resta il
+         titolare e non si tocca: e' la spina dorsale, ed e' la cosa che nessuno dei cinque consiglieri aveva
+         detto (l'ha trovata la revisione incrociata: cosi' com'erano proposte, tutte e tre le strade lasciavano
+         cancellare o scavalcare il nodo del titolare). */
+      ramoDi: w => {
+        if (!rami[w.id]) rami[w.id] = w.nodi.slice(0, -1).map(nd => ({
+          n: nd.n, nome: nd.nome, chi: nd.chi, modello: nd.modello, strumenti: (nd.strumenti || []).slice(),
+          stato: 'da fare', costo: 0, durata: '', esito: '', nato: false,
+        })).concat([Object.assign({}, w.nodi[w.nodi.length - 1], { stato: 'da fare', quando: '' })]);
+        return rami[w.id];
+      },
+      /* Le tre azioni del comporre, tutte e tre **cieche al gesto**: la forma la sceglie la pagina, la regola sta
+         qui. Nessuna delle tre puo' toccare il nodo del titolare, che resta sempre l'ultimo. */
+      ramoAggiungi: (w, dopo) => {
+        const l = out.ramoDi(w);
+        const max = l.length - 1;                       /* mai dopo il titolare */
+        const at = Math.min(Math.max(dopo, 1), max);
+        l.splice(at, 0, { n: 0, nome: 'Passo nuovo', chi: w.chi, modello: 'standard', strumenti: [], stato: 'da fare', costo: 0, durata: '', esito: '', nato: true });
+        l.forEach((nd, i) => { nd.n = i + 1; });
+        return at + 1;                                  /* il numero del nodo appena nato */
+      },
+      ramoSposta: (w, n, verso) => {
+        const l = out.ramoDi(w), i = n - 1, j = i + verso;
+        if (i < 0 || i >= l.length - 1 || j < 0 || j >= l.length - 1) return n;   /* il titolare non si muove ne' si scavalca */
+        const t = l[i]; l[i] = l[j]; l[j] = t;
+        l.forEach((nd, k) => { nd.n = k + 1; });
+        return j + 1;
+      },
+      ramoTogli: (w, n) => {
+        const l = out.ramoDi(w), i = n - 1;
+        if (i < 0 || i >= l.length - 1) return 0;       /* il titolare non si toglie */
+        if (l.length <= 2) return 0;                    /* e un passo deve restare: una catena col solo titolare non e' un lavoro */
+        l.splice(i, 1);
+        l.forEach((nd, k) => { nd.n = k + 1; });
+        return 0;
+      },
+      ramoCampo: (w, n, k, v) => { const nd = out.ramoDi(w)[n - 1]; if (nd && !nd.titolare) nd[k] = v; },
       /* I fili della chat (versione 15): un filo per dipendente, una sola copia (i messaggi restano), condivisa fra Console e
          telefono; `scrivi` è la nota del titolare, dalla chat o dalla barra di scrittura dell'Esecuzione. */
       filoDi, ultimoDi: ultimo, nonLetti,
