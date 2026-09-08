@@ -6,6 +6,7 @@ const path = require('path'), fs = require('fs');
 // Font locali: LOCAL_FONT_CSS (vedi design-system/tools/fetch-fonts.py); Playwright globale: PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules
 const css = process.env.LOCAL_FONT_CSS ? fs.readFileSync(process.env.LOCAL_FONT_CSS, 'utf8') : '';
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const vis = require('./visibile.js');
 const file = q => 'file://' + path.resolve(__dirname, '../mobile.html') + (q ? '?' + q : '');
 let ok = 0, ko = 0;
 const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } else { ko++; console.log('  KO  ' + msg); } };
@@ -252,6 +253,18 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
     inertiM += r.i; viveM += r.v;
   }
   check(inertiM === 0, 'nessuna freccia inerte sulle otto schermate, a undici e a quaranta (' + viveM + ' vive)');
+
+  /* Che i controlli SI VEDANO (versione 21): sul telefono l'elemento che copre è la navigazione in basso, e uno
+     schermo è 300 × 620 px — un controllo sotto la barra non si raggiunge scorrendo, perché la barra scorre con lui. */
+  console.log('\nX. i controlli del telefono si vedono, non solo esistono (versione 21)');
+  let copM = 0;
+  for (const n of ['11', '40']) {
+    await page.goto('file://' + path.resolve(__dirname, '../mobile.html') + '?n=' + n); await page.waitForTimeout(500);
+    const c = await vis.copertiMobile(page);
+    copM += c.length;
+    if (c.length) console.log('    COPERTI @' + n + ': ' + c.join(' | '));
+  }
+  check(copM === 0, 'nessun controllo del telefono nasce sotto la navigazione in basso, sugli otto schermi per due taglie (' + copM + ')');
 
   check(errors.length === 0, 'nessun errore in console: ' + JSON.stringify(errors));
   console.log(`\n${ok} ok, ${ko} ko`);

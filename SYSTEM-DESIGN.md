@@ -431,7 +431,8 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
       esattamente com'è: **la spina dorsale non si riscrive per costruire il posto dove un giorno la si riscriverà.**
     - **un canvas dentro una cornice che si scala non si trascina: si stende.** Niente pan, niente zoom, niente
       mini-mappa (regola 17: due zoom annidati litigano). I nodi si dispongono su una **serpentina** calcolata nella
-      funzione che stampa — cinque per riga, la riga dispari all'indietro così i connettori non si incrociano — e gli
+      funzione che stampa — **quattro** per riga dalla versione 21 (erano cinque), la riga dispari all'indietro così i
+      connettori non si incrociano — e gli
       archi rileggono le stesse coordinate: nessuna misura presa dopo il disegno, quindi la pagina è identica a ogni
       giro. Su uno schermo stretto lo stesso oggetto **si gira di novanta gradi** e diventa una colonna: non un
       canvas rimpicciolito, la stessa cosa letta per lungo.
@@ -442,6 +443,41 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     Il perimetro dichiarato: la sezione dice «di oggi» e mostra le consegne delle esecuzioni correnti. Il modello non
     ha un orologio (`azienda.ora` è fisso), quindi il «tempo reale» che il prodotto può promettere è *lo stato al
     momento in cui si apre la pagina*, con i quattro stati che `giornata()` distingue — e va detto così, non di più.
+
+29. **Un controllo si asserisce visibile, non presente; e la colonna riserva la banda su cui la tendina galleggia**
+    (2026-09-08, versione 21). La tendina del titolare è `position:fixed` sui 330 px di destra e `.a-main` le passava
+    sotto per 304 px: contati su dieci pagine per due taglie e due stati della tendina, **66 controlli nascevano
+    coperti** e altri **40 stavano in una striscia che non scorreva**, cioè non li raggiungeva nessun gesto. Le 385
+    prove non ne avevano preso nemmeno uno, perché asserivano la presenza nel DOM e il clic — e **Playwright porta
+    l'elemento al centro del viewport prima di cliccarlo**, quindi lo scopre da solo. La colonna adesso finisce dove
+    comincia la tendina (**1008 px**, non 1312) e non dipende dallo stato del cassetto, così la pagina è la stessa
+    aperta e chiusa. Tre conseguenze che valgono oltre questo caso:
+    - **due difetti diversi, contati separatamente.** *Coperto* da un elemento fisso è sempre un difetto. *Tagliato*
+      dal proprio contenitore lo è **solo se quel contenitore non scorre**: le strisce di pillole e le file di card
+      sfumano con una maschera e si scorrono, ed è disegno, non difetto. La domanda giusta non è «è coperto adesso?»
+      ma «esiste **uno** scorrimento in cui non lo è?»: senza quella distinzione la verifica del telefono segnalava
+      tre righe che invece si raggiungono benissimo.
+    - **una maschera che sfuma non è un modo di nascondere un controllo.** `.shead .filters` e `.frow .pills` erano
+      `overflow:hidden`: quello che non ci stava spariva, ed erano 40 pillole di filtro già irraggiungibili prima
+      della banda. Adesso scorrono, con la stessa maschera e la barra nascosta — lo schema che `.cards.riga` usava
+      già nel repository.
+    - **quando lo spazio si stringe, la regola di condensazione che il componente ha già si stringe con lui.** La
+      pista della barra dei passi scende da ~990 a 670–760 px: restano per esteso il passo in corso e **il primo**
+      successivo (erano due), i conclusi lasciano il nome oltre i **tre** (erano quattro), i nomi si troncano a
+      140 px (erano 190). Sette esecuzioni su undici sforavano; zero adesso, a tutte e due le taglie.
+
+30. **Chi ha deciso al posto del titolare è un riferimento che deve risolvere, mai una stringa libera** (2026-09-08,
+    versione 21). Tre consegne del prodotto sono uscite senza la firma del titolare, e **due su tre erano firmate da
+    una regola che non esiste**: il campo diceva `regola: 'Follow-up'` e in `m.regole` non c'era niente con quel nome.
+    Un difetto vecchio che nessuna delle 385 prove poteva prendere, perché nessuna leggeva quel campo. Adesso è
+    `deciso: { tipo: 'regola' | 'routine', id }`, la riga stampa **la parola che corrisponde a quello che il
+    riferimento apre**, e se non risolve non stampa un nome inventato: dice che non si sa quale, e un'invariante nelle
+    prove lo prende a undici e a quaranta. Due conseguenze:
+    - **la regola permette, la routine agisce.** Sono due autori diversi e vanno distinti: `g2` «Report interni» non
+      ha *deciso* il report di ieri, ha reso lecito che la routine delle 18:00 lo mandasse. Perciò `r8` resta una
+      regola — è l'unico dei tre casi in cui il campo diceva il vero — e le altre due diventano routine.
+    - **si nomina, ma non si promette una porta che non c'è.** La riga dice il nome della routine e **non porta la
+      freccia**: la pagina delle routine non esiste, e la regola 26 vieta di promettere una destinazione che non c'è.
 
 Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in

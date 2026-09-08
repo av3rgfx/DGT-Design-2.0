@@ -111,7 +111,7 @@ window.DGT_DATI = (function () {
       testo: 'Respinte 22% (era 7%), tutte con più di 5 passi e con Standard. Le 4 consegne lunghe fatte con Esperto a luglio sono state approvate al primo colpo.',
       allegato: 'Dossier: Standard ed Esperto a confronto' },
     // storico: oggi presto, questa settimana, prima
-    { id: 'r8',  chi: 11, cosa: 'Report giornaliero di ieri', cliente: 'Nova Studio', ora: '08:15', tipo: 'documento', stato: 'approvata', decisa: '08:15', regola: 'Report interni', costo: 1, passi: ['Raccolta', 'Report'], nota: 'Approvato dalla regola «Report interni: automatica».', testo: 'Ieri: 6 esecuzioni, 4 consegne, 131 € di spesa.', allegato: 'Documento: 1 pagina' },
+    { id: 'r8',  chi: 11, cosa: 'Report giornaliero di ieri', cliente: 'Nova Studio', ora: '08:15', tipo: 'documento', stato: 'approvata', decisa: '08:15', deciso: { tipo: 'regola', id: 'g2' }, costo: 1, passi: ['Raccolta', 'Report'], nota: 'Approvato dalla regola «Report interni: automatica».', testo: 'Ieri: 6 esecuzioni, 4 consegne, 131 € di spesa.', allegato: 'Documento: 1 pagina' },
     { id: 'r9',  chi: 4, cosa: 'Post LinkedIn 3 di 12', cliente: 'Rossi Srl', ora: 'ieri 10:30', tipo: 'post', stato: 'approvata', decisa: 'ieri 11:02', costo: 3, passi: ['Brief letto', 'Bozza', 'Immagine'], nota: 'Terzo post della serie.', testo: 'Tre passaggi in meno nel checkout…', allegato: 'Immagine 1200×1200' },
     { id: 'r10', chi: 1, cosa: 'Preventivo hosting e dominio', cliente: 'Bianchi & Co.', ora: 'ieri 12:15', tipo: 'proposta', stato: 'approvata', decisa: 'ieri 16:40', costo: 2, passi: ['Confronto fornitori', 'Documento'], nota: 'Due opzioni, consigliata la seconda.', testo: 'Opzione A 38 €/mese · Opzione B 62 €/mese con backup.', allegato: 'Documento: 2 pagine' },
     { id: 'r11', chi: 7, cosa: 'Lista di 80 lead ristorazione', cliente: 'Nova Studio', ora: 'mar 2 set', tipo: 'lista', stato: 'approvata', decisa: 'mar 2 set 09:50', costo: 12, passi: ['Ricerca', 'Verifica'], nota: 'Ristoranti con sito ma senza prenotazione online.', testo: '80 righe', allegato: 'Foglio: 80 righe' },
@@ -119,8 +119,8 @@ window.DGT_DATI = (function () {
     { id: 'r13', chi: 5, cosa: 'Reel dietro le quinte', cliente: 'Madira Ink', ora: 'lun 1 set', tipo: 'post', stato: 'rifiutata', decisa: 'lun 1 set 17:05', costo: 6, passi: ['Sceneggiatura', 'Montaggio'], nota: 'Primo reel.', testo: 'Sceneggiatura 30 s', allegato: 'Video: 30 s', commento: 'Il cliente non vuole mostrare il laboratorio.' },
     { id: 'r14', chi: 8, cosa: 'Proposta sito vetrina', cliente: 'Summit Marketing', ora: 'mar 2 set', tipo: 'proposta', stato: 'approvata', decisa: 'mar 2 set 18:10', costo: 9, passi: ['Brief', 'Stima', 'Documento'], nota: 'Sito vetrina in 6 settimane.', testo: '6.500 € in due rate.', allegato: 'Documento: 5 pagine' },
     { id: 'r15', chi: 6, cosa: 'Audit SEO', cliente: 'Lumen Caffè', ora: '28 ago', tipo: 'documento', stato: 'approvata', decisa: '28 ago 12:30', costo: 8, passi: ['Scansione', 'Analisi', 'Report'], nota: '22 pagine analizzate.', testo: '22 pagine, 4 con problemi.', allegato: 'Documento: 6 pagine' },
-    { id: 'r16', chi: 10, cosa: 'Fatture di luglio', cliente: 'Nova Studio', ora: '1 ago', tipo: 'documento', stato: 'approvata', decisa: '1 ago 09:00', regola: 'Fatture ricorrenti', costo: 2, passi: ['Raccolta', 'Emissione'], nota: 'Approvate dalla regola «Fatture ricorrenti: automatica».', testo: '9 fatture, 14.200 €.', allegato: 'Foglio: 9 righe' },
-    { id: 'r17', chi: 9, cosa: 'Follow-up settimanale', cliente: 'Nova Studio', ora: '29 ago', tipo: 'lista', stato: 'approvata', decisa: '29 ago 17:00', regola: 'Follow-up', costo: 3, passi: ['Bozze', 'Invio'], nota: 'Approvato dalla regola «Follow-up: automatica».', testo: '14 e-mail di follow-up.', allegato: 'Testo: 14 e-mail' },
+    { id: 'r16', chi: 10, cosa: 'Fatture di luglio', cliente: 'Nova Studio', ora: '1 ago', tipo: 'documento', stato: 'approvata', decisa: '1 ago 09:00', deciso: { tipo: 'routine', id: 'rt3' }, costo: 2, passi: ['Raccolta', 'Emissione'], nota: 'Uscite dalla routine «Fatture ricorrenti», che il titolare ha confermato il 1º giugno.', testo: '9 fatture, 14.200 €.', allegato: 'Foglio: 9 righe' },
+    { id: 'r17', chi: 9, cosa: 'Follow-up settimanale', cliente: 'Nova Studio', ora: '29 ago', tipo: 'lista', stato: 'approvata', decisa: '29 ago 17:00', deciso: { tipo: 'routine', id: 'rt2' }, costo: 3, passi: ['Bozze', 'Invio'], nota: 'Uscito dalla routine «Follow-up settimanale ai clienti», che il titolare ha confermato il 1º agosto.', testo: '14 e-mail di follow-up.', allegato: 'Testo: 14 e-mail' },
     { id: 'r18', chi: 4, cosa: 'Post LinkedIn 1 di 12', cliente: 'Rossi Srl', ora: '26 ago', tipo: 'post', stato: 'approvata', decisa: '26 ago 10:40', costo: 3, passi: ['Brief letto', 'Bozza', 'Immagine'], nota: 'Primo post della serie.', testo: 'Perché il vostro e-commerce perde clienti…', allegato: 'Immagine 1200×1200' },
   ];
   // giorno (0 = oggi) e minuti del giorno per ordinare e raggruppare
@@ -131,6 +131,50 @@ window.DGT_DATI = (function () {
     const chiave = Object.keys(GIORNI11).find(k => r.ora.startsWith(k));
     r.giorno = chiave ? GIORNI11[chiave] : 0;
   });
+
+  /* ---- Le routine (versione 21, 2026-09-08) ----
+     Una routine e' un workflow con un innesco in testa (decisione 49): il lavoro **dichiarato**, contro il workflow
+     che e' il lavoro **avvenuto**. Non e' un concetto nuovo: il modello le aveva gia', senza il nome e senza un
+     record. L'analisi dell'8 settembre ne aveva censite «otto voci»; contandole, le otto voci sono **tre routine
+     viste da otto lati** piu' un lavoro una tantum che routine non e':
+
+       | routine                        | dip. | ogni quanto        | da quali lati si vedeva                  |
+       | Report giornaliero al titolare | amm  | ogni giorno 18:00  | obiettivo o11 + pianificato 11 + r8      |
+       | Follow-up settimanale          | ven  | ogni venerdi 17:00 | obiettivo o9  + pianificato 9  + r17     |
+       | Fatture ricorrenti             | amm  | ogni mese, il 1º   | **solo** r16                             |
+       | (Test di regressione, dip. 2)  | svi  | —                  | il diario dice che MR l'ha pianificato   |
+       |                                |      |                    | ieri alle 18:20 per oggi: una tantum     |
+
+     **Il legame che non esisteva.** `r16` e `r17` dicevano di essere state decise dalle regole «Fatture ricorrenti»
+     e «Follow-up», che in `regole` non ci sono (le due regole fantasma). Erano stringhe libere che non risolvevano
+     a niente, e nessuna delle 385 prove leggeva quel campo. Adesso l'autore di una decisione presa senza il
+     titolare e' un **riferimento** — `deciso: { tipo: 'regola' | 'routine', id }` — e una prova verifica che
+     risolva. Il campo `regola` resta per compatibilita' ed e' derivato dal riferimento.
+
+     **Che cosa dicono i numeri, e non e' una bella notizia**: `fatte` non e' inventato, e' quante decisioni la
+     routine ha davvero preso nel modello (`decise.length`). Fa **1** per tutte e tre. Il rodaggio della decisione
+     53 ne vuole **3**, e la prova della decisione 54 non e' mai stata fatta da nessuna: eppure tutte e tre girano
+     gia' con la clausola **libera** («fai pure»). Nel modello di oggi il «fai pure» non se l'e' guadagnato nessuno.
+
+     **E i nodi?** Delle tre, solo «Fatture ricorrenti» (dip. 10) ha un workflow: `workflowDi` nasce da
+     un'esecuzione con almeno due passi conclusi, e i dipendenti 9 e 11 sono `pianificato`, zero passi fatti. La
+     forma dichiarata quindi non viene dall'esecuzione ma dai `passi` della richiesta che la routine ha deciso
+     l'ultima volta: e' la stessa cosa vista dall'altro tempo, e non inventa un dato.
+
+     clausola: avvio = chiede prima di partire · uscita = chiede prima di consegnare · libera = fai pure
+     origine:  dichiarata = scritta dal titolare · derivata = promossa da un fatto gia' accaduto
+     innesco:  ora | evento | soglia | esterno (l'esterno vuole il rodaggio, decisione 53) */
+  const routine11 = [
+    { id: 'rt1', nome: 'Report giornaliero al titolare', chi: 11, innesco: { tipo: 'ora', ogni: 'giorno', ora: '18:00', testo: 'Ogni giorno alle 18:00' },
+      clausola: 'libera', origine: 'derivata', autore: 'titolare', dal: '1 lug', obiettivo: 'o11', regola: 'g2', decise: ['r8'],
+      passi: ['Raccolta', 'Report'], limiti: { giorno: 3, settimana: 15, mese: 60 }, stato: 'attiva' },
+    { id: 'rt2', nome: 'Follow-up settimanale ai clienti', chi: 9, innesco: { tipo: 'ora', ogni: 'venerdì', ora: '17:00', testo: 'Ogni venerdì alle 17:00' },
+      clausola: 'libera', origine: 'derivata', autore: 'titolare', dal: '1 ago', obiettivo: 'o9', regola: null, decise: ['r17'],
+      passi: ['Bozze', 'Invio'], limiti: { giorno: 5, settimana: 5, mese: 20 }, stato: 'attiva' },
+    { id: 'rt3', nome: 'Fatture ricorrenti', chi: 10, innesco: { tipo: 'ora', ogni: 'mese', ora: '09:00', testo: 'Ogni mese, il 1º alle 09:00' },
+      clausola: 'libera', origine: 'derivata', autore: 'titolare', dal: '1 giu', obiettivo: null, regola: null, decise: ['r16'],
+      passi: ['Raccolta', 'Emissione'], limiti: { giorno: 5, settimana: 5, mese: 5 }, stato: 'attiva' },
+  ];
 
   /* Obiettivi assegnati ai dipartimenti. stato: corso | ritardo | concluso | nuovo */
   const obiettivi11 = [
@@ -742,7 +786,7 @@ window.DGT_DATI = (function () {
         const hh = 8 + ((i * 3 + k * 5) % 10), mm = (i * 17 + k * 23) % 60;
         const hm = (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm;
         const eti = g === 0 ? hm : g === 1 ? 'ieri ' + hm : (ETI[Math.min(ETI.length - 1, j)] || 'ago');
-        richieste.push({ id: 'st' + i + k, chi: e.id, cosa: k ? e.att.titolo + ' (v' + (i % 3 + 1) + ')' : e.att.titolo, cliente: CLIENTI[(i + k * 3) % CLIENTI.length], ora: eti, giorno: g, min: hh * 60 + mm, tipo: TIPI[(i + k) % 4], stato: st, decisa: eti, regola: (i + k) % 6 === 0 ? 'Report interni' : '', costo: 2 + ((i + k) % 9), passi: ['Brief', 'Bozza', 'Revisione'], nota: NOTE[(i + k) % 3], testo: 'Contenuto della consegna «' + e.att.titolo + '».', allegato: ALLEGATO(TIPI[(i + k) % 4], 1), commento: st === 'modifiche' ? 'Aggiungi le priorità.' : st === 'rifiutata' ? 'Fuori brief, ripartire.' : '' });
+        richieste.push({ id: 'st' + i + k, chi: e.id, cosa: k ? e.att.titolo + ' (v' + (i % 3 + 1) + ')' : e.att.titolo, cliente: CLIENTI[(i + k * 3) % CLIENTI.length], ora: eti, giorno: g, min: hh * 60 + mm, tipo: TIPI[(i + k) % 4], stato: st, decisa: eti, senzaTitolare: (i + k) % 6 === 0, costo: 2 + ((i + k) % 9), passi: ['Brief', 'Bozza', 'Revisione'], nota: NOTE[(i + k) % 3], testo: 'Contenuto della consegna «' + e.att.titolo + '».', allegato: ALLEGATO(TIPI[(i + k) % 4], 1), commento: st === 'modifiche' ? 'Aggiungi le priorità.' : st === 'rifiutata' ? 'Fuori brief, ripartire.' : '' });
       }
     });
     const diario = [];
@@ -766,11 +810,30 @@ window.DGT_DATI = (function () {
         obiettivi.push({ id: 'o' + d.id + k, dip: d.id, titolo: TITOLI[d.id][k * 3], cliente: e.att.cliente, scadenza: ['15 set', '30 set', '15 ott'][k], avanz: av, consegne: [Math.round(tot * av / 100), tot], chi: lst.slice(k * 3, k * 3 + 3).map(x => x.id), stato: av >= 100 ? 'concluso' : (di + k) % 4 === 1 ? 'ritardo' : av < 20 ? 'nuovo' : 'corso', prossima: 'Prossima consegna · ' + ['8 set', '10 set', '12 set'][k] });
       });
     });
-    return { dipendenti, approvazioni, richieste, diario, agenda, obiettivi };
+    /* Le routine a quaranta si ricavano con lo **stesso criterio** delle tre scritte a mano a undici: una richiesta
+       decisa senza il titolare e' l'ombra di una routine, e il dipendente che l'ha fatta e' il suo. Il generatore non
+       produce obiettivi che si ripetono ne' pianificati ricorrenti, quindi qui le routine sono tante quante le
+       richieste con un riferimento a una regola: **cinque**. E' meno che a undici in proporzione, ed e' il numero
+       vero — il modello a quaranta prova la densita', non la fedelta' del governo. */
+    /* Solo le approvate: una richiesta **rifiutata** l'ha vista il titolare, quindi non e' uscita da una routine
+       con il «fai pure». Il generatore ne marcava cinque senza guardare lo stato, e due erano rifiutate. */
+    const routine = [];
+    richieste.forEach(r => { if (r.senzaTitolare && r.stato !== 'approvata') delete r.senzaTitolare; });
+    richieste.filter(r => r.senzaTitolare).forEach((r, i) => {
+      const e = dipendenti.find(x => x.id === r.chi); if (!e) return;
+      const ogni = ['giorno', 'settimana', 'mese'][i % 3];
+      routine.push({ id: 'rt' + (i + 1), nome: r.cosa, chi: e.id,
+        innesco: { tipo: 'ora', ogni, ora: ['18:00', '17:00', '09:00'][i % 3], testo: 'Ogni ' + ogni + ' alle ' + ['18:00', '17:00', '09:00'][i % 3] },
+        clausola: 'libera', origine: 'derivata', autore: 'titolare', dal: '1 giu', obiettivo: null, regola: null,
+        decise: [r.id], passi: r.passi.slice(), limiti: { giorno: 5, settimana: 20, mese: 60 }, stato: 'attiva' });
+      r.deciso = { tipo: 'routine', id: 'rt' + (i + 1) };
+      delete r.senzaTitolare;
+    });
+    return { dipendenti, approvazioni, richieste, diario, agenda, obiettivi, routine };
   }
 
   function modello(n) {
-    const m = n >= 40 ? modello40() : { dipendenti: base, approvazioni: approvazioni11, richieste: richieste11, diario: diario11, agenda: agenda11, obiettivi: obiettivi11 };
+    const m = n >= 40 ? modello40() : { dipendenti: base, approvazioni: approvazioni11, richieste: richieste11, diario: diario11, agenda: agenda11, obiettivi: obiettivi11, routine: routine11 };
     let byId = Object.fromEntries(m.dipendenti.map(e => [e.id, e]));
     const conta = s => m.dipendenti.filter(e => e.stato === s).length;
     const costoOggi = m.dipendenti.reduce((t, e) => t + (e.att.costo || 0), 0);
@@ -1102,6 +1165,48 @@ window.DGT_DATI = (function () {
           && (!f.chi || f.chi === 'tutti' || r.chi === +f.chi) && (!f.dip || f.dip === 'tutti' || byId[r.chi].dip === f.dip)
           && (!f.cliente || f.cliente === 'tutti' || r.cliente === f.cliente) && okPer && okQ;
       }),
+      /* Le routine (versione 21) e i modi di leggerle. `routineDi(e)` sono quelle di un dipendente, `routineIdDi`
+         quella di un id. `autoreDi(r)` e' chi ha deciso una richiesta al posto del titolare: risolve il riferimento
+         `deciso` a un record vero e ritorna `{ tipo, id, nome }`, oppure `null` se ha deciso il titolare. Se il
+         riferimento non risolve ritorna `{ …, nome: '' }`: la prova lo prende, la pagina non stampa un fantasma. */
+      routine: m.routine || [],
+      routineDi: e => (m.routine || []).filter(x => x.chi === (e && e.id)),
+      routineIdDi: id => (m.routine || []).find(x => x.id === id) || null,
+      autoreDi: r => {
+        if (!r || !r.deciso) return null;
+        const { tipo, id } = r.deciso;
+        const rec = tipo === 'routine' ? out.routineIdDi(id) : out.regole.find(g => g.id === id);
+        return { tipo, id, nome: rec ? rec.nome : '', rec };
+      },
+      /* Quante volte una routine e' davvero girata: non e' un numero inventato, sono le richieste che ha prodotto
+         (`decise`), risolte per essere sicuri che esistano. Attenzione: «prodotto» non e' «deciso» — `r8` l'ha
+         prodotta la routine `rt1` ma l'ha decisa la regola `g2`. La regola permette, la routine agisce.
+         Il rodaggio della decisione 53 ne vuole 3, e nel modello di oggi nessuna delle tre ci arriva. */
+      rodaggioDi: rt => ({ fatte: (rt.decise || []).filter(id => m.richieste.some(r => r.id === id)).length, di: 3 }),
+      /* I tetti di spesa (decisione 55, e le due conferme dell'utente dell'8 settembre 2026).
+         **Soffitto, non ripartizione**: la quota di un dipartimento e' un limite a se' e le quote possono sommare
+         oltre 100; il tetto d'azienda e' il fermo vero, primo arrivato primo servito. Con la ripartizione — che e'
+         quello che i budget di oggi sono, 30+35+30+20 = 115 = il tetto d'azienda — Vendite si sarebbe fermata a
+         30 € uccidendo a meta' l'esecuzione dei 200 lead mentre Amministrazione teneva fermi 20 € non spesi.
+         `avvisoSopra100`: quando le quote sommano oltre il 100 % la pagina lo dice, invece di far finta di niente.
+         Obbligatorio e' **solo** il tetto d'azienda: dipartimento, dipendente e routine sono facoltativi, cosi' chi
+         non tocca niente ha un numero solo da capire.
+         `fermaPrimaDelPasso`: il tetto si controlla **prima di ogni passo**, mai a meta'. I passi dei 200 lead
+         costano 0,5 · 6 · 22 · 9,5 · 23 · 4 €: un solo passo puo' costare 23 €, piu' del doppio dell'intero tetto
+         giornaliero di Nora (10 €). Il passo che sfonderebbe non parte e l'esecuzione va in «ferma per tetto». */
+      tetti: {
+        modo: 'soffitto', avvisoSopra100: true, fermaPrimaDelPasso: true,
+        dip: { ven: 60 },   /* in % del tetto d'azienda; gli altri non ne hanno (facoltativo) */
+      },
+      /* Il tetto d'azienda: oggi e' la somma dei budget dei dipendenti (115 €/giorno e 1 580 €/mese a undici,
+         400 e 5 120 a quaranta) — e a tutte e due le taglie e' **gia' sfondato**: 124 € spesi contro 115 a undici
+         (108 %), 427 contro 400 a quaranta (107 %). Si calcola qui e non nel letterale perche' i dossier nascono
+         dopo `out`. */
+      tettoAzienda: () => ({ giorno: sommaBudget('giorno'), mese: sommaBudget('mese') }),
+      /* Il soffitto di un dipartimento in euro, o null se non ne ha uno (e' facoltativo). */
+      soffittoDi: dip => { const q = out.tetti.dip[dip]; return q ? Math.round(out.tettoAzienda().giorno * q / 100) : null; },
+      /* La somma delle quote di dipartimento, in %: sopra 100 non e' un errore (e' un soffitto), ma va detto. */
+      sommaSoffitti: () => dipartimenti.reduce((t, d) => t + (out.tetti.dip[d.id] || 0), 0),
       regole: [
         { id: 'g1', nome: 'Uscite verso i clienti', desc: 'Post, proposte e documenti per i clienti', modo: 'Sempre da approvare', attiva: true, icona: 'i-mega' },
         { id: 'g2', nome: 'Report interni', desc: 'Report giornalieri e rendiconti', modo: 'Automatica', attiva: true, icona: 'i-doc' },
@@ -1160,6 +1265,7 @@ window.DGT_DATI = (function () {
         return r;
       },
     };
+    function sommaBudget(per) { return m.dipendenti.reduce((t, e) => t + ((out.dossierDi(e).budget || {})[per] || 0), 0); }
     const dossier = {}, esecuzioni = {};
     out.ricalcola();
     return out;
