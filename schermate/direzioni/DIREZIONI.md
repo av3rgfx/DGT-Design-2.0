@@ -2302,3 +2302,110 @@ Richieste ospita i guasti o ha una corsia separata; e la parola.
 decide la forma della procedura ha già in mano metà della domanda sugli accessi. E perché l'8, per come è uscito dal
 consiglio, non è più «dove metto i connettori» ma «spacco `strumenti` in due e invento come si disegna un servizio senza
 il suo marchio»: è il lavoro più lungo dei tre, ed è quello che cambia più righe di quelle già scritte.
+
+## 7. Workflow, routine e inneschi: ricerca e analisi (2026-09-08)
+
+Nasce da tre domande dell'utente, dopo che la pillola d'ingresso ai workflow della versione 20 si è
+rivelata invisibile: **(a)** ha senso tenere i workflow a destra, se aprono una pagina e non una tendina?
+**(b)** i workflow vanno tenuti per azienda o per dipartimento? **(c)** vuole aggiungere **routine e
+inneschi** — un modo più semplice e veloce dei workflow per dire «quando succede X, fai Y», creabile
+**anche dal telefono**, e poi visualizzabile in modalità workflow.
+
+### 7.1 Il difetto che ha aperto la discussione (misurato)
+
+`.a-main` è larga 1312 px e finisce a x 1414; la tendina del titolare è `position:fixed` sui 330 px di
+destra (x 1110–1440, `z-index:30`). **Gli ultimi ~304 px di ogni pagina stanno sotto la tendina.**
+
+| Pillola «Workflow · N», 1440 × 900 | scroll 0 | 100 | 200 | 300 |
+|---|---|---|---|---|
+| tendina aperta (predefinito) | coperta (`.appr`) | coperta (`.th`) | visibile | fuori schermo |
+| tendina chiusa | coperta (`.a-mini`) | visibile | visibile | fuori schermo |
+
+Chiusa, il badge lime `.a-mini` è fisso a `top:240px` e cade esattamente sulla pillola (y 233–277).
+Colpite anche le **pillole del periodo** di «Consegne di oggi» (visibili solo oltre scroll ~600) e la
+pre-esistente **«Tutti i costi dell'azienda»** di «Spesa del mese»: il difetto è del layout, ereditato,
+non introdotto dalla versione 20 — che però ci ha messo dentro due controlli nuovi.
+
+**Perché le prove non l'hanno preso**: asserivano la presenza nel DOM e il clic. Playwright, prima di
+cliccare, porta l'elemento al centro del viewport, e così esce da sotto il badge fisso. Nessuna delle
+385 verifiche controllava che si **vedesse** nello stato in cui la pagina si apre. Da qui in avanti ogni
+controllo nuovo vuole un'asserzione di visibilità (`elementFromPoint`), non solo di esistenza.
+
+### 7.2 Che cosa esiste già nel modello (misurato)
+
+Le routine **ci sono già**, in tre forme che non portano lo stesso nome:
+
+| Forma | Dove | Quante (a 11) |
+|---|---|---|
+| Obiettivi che si ripetono (`scadenza: 'ogni giorno'`, `'ogni venerdì'`) | `dati.js`, letti da `settimana()` | 2 |
+| Dipendenti `pianificato` a un'ora fissa (15:00, 17:00, 18:00) | `dati.js`, `e.att.quando` | 3 |
+| Regole di approvazione (evento → condizione → esito) | `m.regole` | 4 |
+| Richieste **già decise da una regola** e non dal titolare | `regola:` in `richieste11` | 3 (Report interni, Fatture ricorrenti, Follow-up) |
+
+Gli **inneschi** possibili sono anch'essi già nei dati: un'ora; un evento del diario (`inizio` 5,
+`errore` 5, `approvazione` 3, `passo` 20); una soglia di spesa (`budget.mese`, `budget.giorno`).
+Manca solo l'innesco «arriva qualcosa da fuori» (un lead, un'e-mail), che andrebbe inventato.
+
+**Conseguenza**: la proposta dell'utente non aggiunge un concetto nuovo — **dà un nome e una casa a una
+cosa che il prodotto fa già in tre posti diversi**. È l'argomento più forte a suo favore, ed è misurato.
+
+### 7.3 Ricerca sui prodotti che hanno affrontato lo stesso bivio
+
+1. **monday.com ha costruito tutti e due, e non si parlano.** Le *automations* («when this happens…»)
+   stanno a livello di board, i *Workflows* (rami, condizioni, approvazioni) a livello di workspace e su
+   piani più alti; **non sono convertibili l'uno nell'altro**, e l'articolo che analizza la tensione la
+   descrive come fonte di confusione, proponendo una via di mezzo. → *Se DGT costruisce la routine
+   semplice e il canvas, devono essere **lo stesso oggetto a due altezze**, mai due sistemi.* È
+   esattamente l'intuizione dell'utente («poi con la possibilità di visualizzarli in modalità workflow»).
+2. **Zapier sta chiudendo lo stesso divario dal lato opposto.** L'editor degli Zap è una lista lineare;
+   *Canvas* (2025, ampliato nel 2026) è la superficie visuale, con **conversione in un clic da diagramma
+   a Zap**. → Due viste di un oggetto solo è dove il settore sta convergendo.
+3. **IFTTT: un innesco e un'azione, per scelta — ed è per questo che funziona sul telefono.** È
+   dichiaratamente mobile-first; Zapier è multi-passo con filtri e rami, ed è un attrezzo da scrivania.
+   La rassegna sugli altri (Airtable, Notion, monday) conferma che **creare automatismi è un'attività da
+   desktop**. → *La «modalità più semplice e veloce, pure da mobile» è possibile **solo** se l'oggetto è
+   costretto a un innesco e un'azione. Appena si ammettono i rami si è ricostruito il canvas e si è perso
+   il telefono.* È il vincolo più duro di tutta l'analisi.
+4. **Lindy 2.0: costringere l'agente lo rende più affidabile *e* più comprensibile.** Sono passati da un
+   grande campo di prompt libero a un canvas con componenti espliciti (innesco, azioni obbligatorie), e
+   «il costruttore visuale ha migliorato molto l'ingresso dei nuovi utenti». L'adozione è arrivata da
+   **agenti specializzati già pronti**, non dalla libertà di comporre. → *Il canvas si guadagna il posto
+   come superficie di **lettura**. Non conviene scommettere che il titolare componga flussi complessi.*
+5. **Gli automatismi stanno dove stanno gli oggetti su cui agiscono**: board in monday, base in Airtable,
+   progetto in Asana (o workspace con una condizione che lo restringe), team in Linear. In DGT gli
+   oggetti (dipendenti, esecuzioni, consegne, richieste) stanno nei **dipartimenti**.
+
+Fonti: [monday: la tensione fra automations e workflows](https://dev.to/piotrdiuk/the-product-tension-between-automations-and-workflows-in-mondaycom-3if5) ·
+[monday: guida alle automations](https://support.monday.com/hc/en-us/articles/360001222900-Get-started-with-monday-automations) ·
+[Zapier Canvas](https://growwstacks.com/blog/zapier-canvas-review-2026) ·
+[Zapier vs IFTTT](https://www.cloudwards.net/zapier-vs-ifttt/) ·
+[IFTTT: un innesco, un'azione](https://www.lowcode.agency/blog/zapier-vs-ifttt) ·
+[Lindy: da agenti liberi a workflow guidati](https://www.zenml.io/llmops-database/evolution-from-open-ended-llm-agents-to-guided-workflows) ·
+[Lindy: struttura di un agente](https://docs.lindy.ai/fundamentals/lindy-101/introduction) ·
+[Airtable/Notion/monday: gli automatismi si creano da desktop](https://www.gapconsulting.io/blog/when-and-how-to-use-airtable-automation-vs-zapier-or-make)
+
+### 7.4 Le tre risposte che la ricerca rende difendibili
+
+- **(a) La destra è sbagliata, e non serve il consiglio per dirlo.** Un controllo che apre una *pagina* è
+  navigazione, non un filtro; tutto il resto in `.destra` è un filtro o un rimando. Che poi finisca nella
+  fascia morta è un difetto in più, non la ragione principale.
+- **(b) Non è «azienda o dipartimento», è «un oggetto, due indici».** L'atomo è già **per dipendente**
+  (un workflow della versione 20 nasce dai passi di *una* esecuzione: svi 1, mkt 2, ven 2, amm 1 = 6 a
+  undici, 26 a quaranta). Il dipartimento è dove si lavora, l'azienda è dove si governa — e le regole di
+  approvazione che il nodo del titolare mostra sono **già di azienda** (`m.regole`).
+- **(c) Routine e workflow devono essere lo stesso oggetto a due altezze.** La routine è ciò che si
+  **scrive** (un innesco, un dipendente, un compito, e la clausola di approvazione); il workflow è come
+  si **legge** (il canvas, coi nodi non ancora eseguiti «da fare»). La clausola di approvazione non è
+  facoltativa: la spina dorsale scritta in `CLAUDE.md` dice che il titolare approva ogni uscita, e una
+  routine senza quella clausola sarebbe il modo di aggirarla.
+
+### 7.5 Dove possono vivere (da pressare col consiglio)
+
+- **A · Un settimo cerchio nel rail.** Oggi sono sei: home, dipartimento, richieste, chat, agenda, costi.
+  Routine e workflow insieme sono un dominio («come lavora l'azienda») e un dominio merita una casa.
+- **B · Dentro Agenda.** È già la superficie del tempo, e mostra già «i pianificati che si ripetono».
+  Una routine è una voce d'agenda che torna. Zero cerchi nuovi.
+- **C · Per dipartimento, con un indice in azienda.** Segue la regola 5 della ricerca (gli automatismi
+  stanno dove stanno gli oggetti), ma sparpaglia il governo su quattro pagine.
+
+**Da confermare dall'utente** (il consiglio prepara la domanda, non la chiude).
