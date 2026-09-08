@@ -130,6 +130,10 @@ testo bianco non si legge, quindi il nodo selezionato porta il testo all'inchios
 
 ## Stato
 
+- **La sessione di analisi dell'8 settembre non ha toccato una riga di codice di prodotto.** Sette commit sul
+  branch: uno è la versione 20, sei sono documenti (`DIREZIONI.md` 7.1–7.10, `PROSSIMA-SESSIONE.md`,
+  `SYSTEM-DESIGN.md` sezione 9, `prove/README.md`). Le 385 verifiche e le 70 catture sono quelle della versione
+  20 e valgono ancora: nessuna è stata rifatta perché non c'era niente da rifare.
 - Branch: `claude/v19-console-direzione-a-b04bmi` (la **PR #16 era già unita** all'avvio, quindi si è ripartiti da
   `main` come chiedeva il prompt). A fine sessione la PR verso `main`: se all'avvio della prossima risulta unita,
   ripartire da `main` con un branch nuovo.

@@ -158,6 +158,16 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 
 ## 9. Verifiche fatte
 
+> **Lacuna del metodo, trovata l'8 settembre 2026 e da colmare.** Le 385 verifiche asserivano che un controllo
+> **esistesse nel DOM** e che il clic funzionasse, mai che si **vedesse**. Playwright, prima di cliccare, porta
+> l'elemento al centro del viewport: così un controllo coperto da un elemento `position:fixed` passa la prova e
+> resta invisibile all'utente. È successo davvero: la pillola d'ingresso ai workflow della versione 20 e le pillole
+> del periodo delle Consegne sono **invisibili allo stato predefinito**, coperte dalla tendina del titolare (330 px
+> fissi a destra contro una `.a-main` larga 1312 che finisce a x 1414: **gli ultimi ~304 px di ogni pagina le
+> stanno sotto**). Lo era anche un controllo precedente alla versione 20. **Da qui in avanti ogni controllo
+> cliccabile vuole un'asserzione di visibilità** (`document.elementFromPoint` sul centro del suo rettangolo, allo
+> scroll in cui la pagina si apre), non solo di esistenza. Vedi `DIREZIONI.md` 7.1.
+
 - Screenshot desktop (1440) e mobile (390) con Chromium: nessun overflow orizzontale, font Urbanist
   caricato (300–600), nessun errore in console.
 - Confronto visivo sezione per sezione con le immagini originali a 1920 px.

@@ -30,3 +30,27 @@ finisce con il conteggio; esce con codice 1 se una verifica fallisce.
 
 Attenzione: Playwright scorre da solo per cliccare un elemento fuori dallo schermo, quindi una verifica sullo scorrimento va fatta
 con l'elemento già visibile. Le prove girano con `reducedMotion: 'reduce'`, così gli avatar stanno fermi e il DOM è stabile.
+
+## Asserire che un controllo si veda, non solo che esista (2026-09-08)
+
+Le cinque suite asserivano la **presenza nel DOM** (`conta('…') === 1`) e il **clic**. Non basta: prima di
+cliccare, Playwright porta l'elemento al centro del viewport, quindi un controllo coperto da un elemento
+`position:fixed` **passa la prova e resta invisibile all'utente**. È successo con la pillola d'ingresso ai
+workflow della versione 20 e con le pillole del periodo delle Consegne, tutte e due sotto la tendina del titolare.
+
+Da qui in avanti, per ogni controllo cliccabile nuovo, accanto alla verifica di esistenza va questa:
+
+```js
+const visibile = await page.evaluate(sel => {
+  const el = document.querySelector(sel); if (!el) return 'assente';
+  const r = el.getBoundingClientRect();
+  if (r.bottom < 0 || r.top > innerHeight) return 'fuori schermo';
+  const sopra = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+  return sopra && el.contains(sopra) ? 'visibile' : 'coperto da .' + ((sopra && sopra.className) || '?');
+}, '.shead [data-pagina="workflow"]');
+check(visibile === 'visibile', 'la pillola si vede davvero, non solo esiste nel DOM');
+```
+
+Va eseguita **allo scroll in cui la pagina si apre** (0) e con la tendina nei suoi stati (`aperta`, `chiusa`):
+il badge lime della tendina chiusa è fisso a `top:240px` e copre esattamente la fascia dove cadono le
+intestazioni di sezione.
