@@ -2569,3 +2569,64 @@ Fonti: [n8n: i tipi di innesco](https://n8n.spot/n8n-trigger-types-webhook-sched
 
 **Da confermare dall'utente**: che il canvas diventi modificabile (e non solo una lente), e in quale
 ordine rispetto alla strada veloce.
+
+### 7.8 Decisioni dell'utente sul governo delle routine (2026-09-08)
+
+**Deciso — chi scrive.** Il dipendente **propone**, non crea. La proposta arriva al titolare come una
+richiesta (stesso schema delle revisioni di performance). Se il titolare conferma la creazione, decide
+in quel momento **come parte**: automatica, oppure con **richiesta di approvazione a ogni avvio**.
+
+**Deciso — i limiti.** Ogni routine può portare i suoi limiti, e l'utente li vuole personalizzabili per
+intero: **tetto di spesa giornaliero, settimanale o mensile**. «Voglio piena customizzabilità.»
+
+#### Domanda 1: quattro contraddizioni possibili fra clausola e regola (tutte dai dati veri)
+
+1. **La routine è più permissiva della regola** — il caso pericoloso. `g1` «Uscite verso i clienti:
+   sempre da approvare» è attiva. Una routine «ogni venerdì alle 17:00, Follow-up clienti manda le 14
+   e-mail, automatica sotto 20 €» costa 3 €: sotto soglia. Il follow-up **è** un'uscita verso i clienti.
+   Se vince la routine, `g1` è spenta per quel caso senza che nessuno l'abbia toccata, e la pagina Regole
+   continua a dire «sempre da approvare» — che è falso. *Nel modello questo caso esiste già*: la
+   richiesta `r17` risulta decisa dalla regola «Follow-up», che in `m.regole` **non esiste**.
+2. **La routine è più stretta della regola** — il caso facile. `g3` «Liste di lead: automatica sotto
+   20 €»; la lista di 120 lead costa 14 €, quindi uscirebbe da sola. La routine dice «voglio firmarla
+   sempre». Qui non c'è dubbio: vince la più stretta.
+3. **La regola cambia dopo che la routine è scritta.** Oggi `g4` «Spese sopra 50 €: sempre da approvare»
+   è **spenta** (`attiva: false`, misurato). Si scrivono dieci routine, tre automatiche con tetto 80 €.
+   Domani si accende `g4`: quelle tre continuano a girare com'erano, o si fermano e vanno riconfermate?
+   È il caso che decide se la pagina Regole governa davvero o è decorazione.
+4. **Il tetto contro il costo vero.** Una routine con tetto 10 €/giorno su «Ricerca lead»: l'esecuzione
+   vera «200 lead e-commerce in Lombardia» costa **61 €** (misurato). Non parte? Parte e si ferma a 10 €
+   lasciando mezza lista e 10 € spesi per niente? Parte e chiede? Il tetto va deciso **insieme a che cosa
+   fa quando lo tocca** — altrimenti è un numero che non promette niente.
+
+**Fatto misurato che indica la risposta.** Il modello ha **già** un posto dove una regola d'azienda si
+allenta: le **eccezioni** nel dossier del dipendente (`eccezione: true`), per esempio «Testi per il sito
+di Nova Studio: Automatica sotto 5 €, Eccezione di Nora». Quindi la proposta è: **la clausola della
+routine può solo stringere**, mai allentare; per allentare si aggiunge un'eccezione, che è il meccanismo
+che esiste già e che si legge in **un posto solo**. Così «piena customizzabilità» resta, ma la risposta
+alla domanda «che cosa può uscire senza di me?» non si sparpaglia su N routine.
+
+#### Domanda 4: perché l'innesco esterno è diverso dagli altri
+
+Oggi tutto quello che succede in DGT parte **da dentro**: o lo chiedi tu, o parte un lavoro che avevi
+pianificato. Ogni euro risale a una decisione presa da qualcuno dell'azienda.
+
+L'innesco esterno rovescia il verso: **qualcuno fuori dall'azienda fa lavorare e spendere la tua
+azienda**. Uno sconosciuto compila il modulo del sito alle 3 di notte, la routine sveglia un dipendente,
+il dipendente spende, e se la clausola dice «automatica» il risultato torna a quello sconosciuto senza
+che nessuno di Nova Studio l'abbia visto. Due conseguenze:
+
+- **La frequenza non è più tua.** «Ogni venerdì» sono al massimo 52 volte l'anno e le hai scelte tu.
+  «Quando arriva un lead» sono tante quante volte bussano: 200 moduli in una notte fanno 200 esecuzioni,
+  e col modello Esperto a 7 € sono 1 400 €. È qui che il tetto conta più che altrove, e serve **per
+  periodo e per singolo avvio**.
+- **Non puoi giudicare quello che non hai mai visto.** Scrivendo la clausola decidi su un tipo di evento
+  che non è ancora successo: non sai se il modulo riceve 2 richieste a settimana o 200 in una notte, né
+  che cosa il dipendente ne farà.
+
+**Proposta**: le prime N volte un innesco esterno produce una **richiesta**, non un'uscita. Vedi che cosa
+è arrivato e che cosa il dipendente ha fatto, e firmi. Dopo N volte che sei d'accordo, la clausola che
+avevi scritto entra in vigore e va da sola. È un **rodaggio dell'innesco**, non del dipendente.
+
+**Da confermare dall'utente**: la regola «la clausola può solo stringere», il rodaggio degli inneschi
+esterni (e con quale N), e che cosa fa una routine quando tocca il tetto.
