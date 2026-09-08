@@ -1,6 +1,6 @@
 # Prove cliccate
 
-**Sei** prove con Playwright che aprono le pagine da `file://`, cliccano e verificano il DOM, il modello e la console — **478
+**Sei** prove con Playwright che aprono le pagine da `file://`, cliccano e verificano il DOM, il modello e la console — **535
 verifiche in tutto** (Console 160, mobile 83, Costi 50, Agenda e Chat 56, Workflow 80, Routine 49). Tutte leggono
 le stesse variabili d'ambiente:
 

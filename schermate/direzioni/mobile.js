@@ -249,6 +249,21 @@ window.DGT_MOBILE = (function () {
 .m-wn .porte .chip{height:20px;font-size:10px;padding:0 8px}
 .m-warc{width:2px;height:16px;background:var(--lime);box-shadow:0 0 8px rgb(184 252 100/.55);margin:0 auto;display:block}
 .m-warc.off{background:rgb(255 255 255/.30);box-shadow:none}
+/* ---- Il grafo in colonna (versione 24) ----
+   Misurato: lo schermo e' largo **348 px** e la card .m-wn ne prende **348** — ce ne sta **una**, quindi due
+   rami non si affiancano mai, e un canvas a nodi qui non esiste. La colonna resta una colonna: i nodi in ordine
+   topologico, uno sopra l'altro. Quello che il grafo aggiunge — piu' di un collegamento in uscita, un
+   collegamento che non e' un semplice «poi», un passo che riceve da piu' parti — si dice **sul collegamento**,
+   con i chip che il telefono ha gia'. Nessun componente nuovo: il canvas girato di novanta gradi resta la forma
+   giusta di uno schermo alto e stretto. */
+.m-wgo{display:flex;flex-direction:column;align-items:center;gap:4px;padding:2px 0}
+.m-wgo .chip{height:20px;font-size:10px;padding:0 8px}
+.m-wgo .chip.lime{background:var(--lime);color:var(--ink);border-color:transparent}
+.m-wn.inn{border-radius:26px 18px 18px 26px}
+.m-wn.inn .av{background:var(--lime);color:var(--ink)}
+.m-wtabs{display:flex;gap:6px;margin:8px 0 2px}
+.m-wtabs .pill{height:32px;font-size:11px;padding:0 10px;gap:6px;flex:1 1 0;min-width:0;justify-content:center;white-space:nowrap}
+.m-wtabs .pill svg{width:13px;height:13px;flex:none}
 .m-azioni .pill{height:48px;flex:1;justify-content:center;cursor:pointer;min-width:0;padding:0 16px}
 .m-bar{position:absolute;left:14px;right:14px;bottom:14px;z-index:3;display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
 .m-bar>*{min-width:0}
@@ -844,25 +859,56 @@ window.DGT_MOBILE = (function () {
     if (!w) return dipartimento(m, tel, st);
     const e = m.byId[w.chi], d = m.dipDi(e);
     const ult = w.nodi[w.nodi.length - 1];
+    /* La prossima volta si guarda anche dal telefono (versione 24): il titolare firma da qui, e un flusso che non
+       si vede da dove si firma non esiste. La tab e' la stessa della Console, con le stesse due parole. */
+    const ramo = !!st.ramo;
+    const G = ramo ? m.ramoDi(w) : null;
+    /* L'ordine della colonna e' quello **topologico** (la distanza dall'inizio, che il modello calcola gia'), non
+       l'ordine dell'array: in un grafo l'array non e' un percorso. */
+    const lista = ramo ? G.nodi.slice().sort((a, b) => (a.n - b.n) || (a.y - b.y) || (a.x - b.x)) : w.nodi;
+    const usc = id => (ramo ? G.archi.filter(a => a.da === id) : []);
+    const ent = id => (ramo ? G.archi.filter(a => a.a === id) : []);
+    const TIPI = {}; (m.RAMO_TIPI || []).forEach(t => { TIPI[t.id] = t; });
     const nodo = (nd, i) => {
-      const ultimo = i === w.nodi.length - 1;
-      const cls = nd.titolare ? `m-wn tit${nd.stato === 'attesa' ? ' att' : ''}` : `m-wn${nd.stato === 'da fare' ? ' off' : ''}`;
-      const porte = nd.titolare ? [] : ['Modello: ' + ((m.MODELLI[nd.modello] || {}).nome || nd.modello), ...nd.strumenti.slice(0, 2)];
+      const ultimo = i === lista.length - 1;
+      const cls = (nd.innesco ? 'm-wn inn' : nd.titolare ? `m-wn tit${nd.stato === 'attesa' ? ' att' : ''}` : `m-wn${!ramo && nd.stato === 'da fare' ? ' off' : ''}`);
+      const porte = nd.titolare ? [] : nd.innesco ? [(m.RAMO_CLAUSOLE.find(c => c.id === nd.clausola) || {}).nome || ''] : ['Modello: ' + ((m.MODELLI[nd.modello] || {}).nome || nd.modello), ...nd.strumenti.slice(0, 2)];
+      /* Il piede della card. Lo zero non si stampa mai: un passo che deve ancora succedere non ha un costo, e
+         `eur(0)` scriveva «0 €» su quattro card su otto (versione 24, difetto trovato misurando). */
+      const coda = nd.innesco
+        ? `<span class="chip light">${ic('i-bolt')}</span>`
+        : nd.titolare
+          ? `<span class="chip${nd.stato === 'attesa' && !ramo ? ' lime' : ' light'}">${ic(nd.stato === 'attesa' && !ramo ? 'i-bell' : 'i-check')}${ramo ? 'aspetterà te' : nd.stato === 'attesa' ? 'aspetta te' : nd.stato === 'fatto' ? 'firmata' : 'non ancora'}</span>`
+          : ramo ? `<span class="chip light">${nd.nato ? 'passo nuovo' : "come l'ultima volta"}</span>`
+            : nd.stato === 'da fare' ? `<span class="chip light">non ancora</span>`
+              : `<span class="eur">${eur(nd.costo)}</span>`;
+      /* Quello che il grafo aggiunge, detto sul collegamento e non sul nodo (decisione 65). */
+      const dopo = ramo ? (() => {
+        const u = usc(nd.id);
+        if (!u.length) return `<div class="m-wgo"><span class="m-warc off"></span><span class="chip light">${ic('i-hand')}resta in azienda</span></div>`;
+        const succ = lista[i + 1];
+        const chip = [];
+        if (u.length > 1) chip.push(`<span class="chip lime">${u.length} rami</span>`);
+        u.forEach(a => { const t = TIPI[a.tipo || 'poi']; if (a.tipo && a.tipo !== 'poi') chip.push(`<span class="chip light">${esc(t.nome)}${a.se ? ' ' + esc(a.se) : ''} → ${esc(((G.nodi.find(x => x.id === a.a)) || {}).nome || '')}</span>`); });
+        const dritto = u.length === 1 && succ && u[0].a === succ.id;
+        return `<div class="m-wgo"><span class="m-warc"></span>${chip.join('')}${dritto || chip.length ? '' : `<span class="chip light">→ ${esc((G.nodi.find(x => x.id === u[0].a) || {}).nome || '')}</span>`}</div>`;
+      })() : (ultimo ? '' : `<span class="m-warc${nd.stato === 'da fare' ? ' off' : ''}"></span>`);
+      const arrivi = ramo && ent(nd.id).length > 1 ? `<span class="chip light">arriva da ${ent(nd.id).length}</span>` : '';
       return `<div class="${cls}">
-        <div class="tt"><b>${esc(nd.nome)}</b><span>${nd.titolare ? esc(nd.regola) : 'Passo ' + nd.n + (nd.durata ? ' · ' + esc(nd.durata) : '')}</span></div>
-        ${nd.titolare ? `<span class="chip${nd.stato === 'attesa' ? ' lime' : ' light'}">${ic(nd.stato === 'attesa' ? 'i-bell' : 'i-check')}${nd.stato === 'attesa' ? 'aspetta te' : nd.stato === 'fatto' ? 'firmata' : 'non ancora'}</span>`
-          : `<span class="eur">${eur(nd.costo)}</span>`}
-        ${porte.length ? `<div class="porte">${porte.map(x => `<span class="chip light">${esc(x)}</span>`).join('')}</div>` : ''}
-      </div>${ultimo ? '' : `<span class="m-warc${nd.stato === 'da fare' ? ' off' : ''}"></span>`}`;
+        <div class="tt"><b>${esc(nd.nome)}</b><span>${nd.innesco ? esc(nd.testo) : nd.titolare ? esc(nd.regola) : 'Passo ' + nd.n + (nd.durata ? ' · ' + esc(nd.durata) : '')}</span></div>
+        ${coda}
+        ${porte.length || arrivi ? `<div class="porte">${arrivi}${porte.map(x => `<span class="chip light">${esc(x)}</span>`).join('')}</div>` : ''}
+      </div>${ultimo && !ramo ? '' : dopo}`;
     };
     return `<div class="m-scr chiara rie" data-schermata="10">
       ${barraStato(m)}
       <div class="m-scroll">
-        <div class="m-nav"><span class="rb olight" data-az="indietro" data-s="8" title="${esc(d.nome)}">${ic('i-left')}</span><span class="chip light">${ic('i-rows')}${w.nodi.length} nodi</span></div>
+        <div class="m-nav"><span class="rb olight" data-az="indietro" data-s="8" title="${esc(d.nome)}">${ic('i-left')}</span><span class="chip light">${ic('i-rows')}${lista.length} nodi</span></div>
         <h3 class="m-h1${w.nome.length > 12 ? ' stretta' : ''}">${esc(w.nome.toUpperCase())}</h3>
         <div class="m-coda"><div class="qrow" data-az="filo" data-id="${e.id}">${av(m, e, 'xs')}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(w.perimetro)} · ${eur(w.costo)} · ${w.minuti} min</span></div><span class="rb xs">${ic('i-chevr')}</span></div></div>
-        <div class="m-sh"><h4>Il workflow</h4><span class="chip light">${w.passi} passi e la tua firma</span></div>
-        <div class="m-wf">${w.nodi.map(nodo).join('')}</div>
+        <div class="m-wtabs"><span class="pill${ramo ? ' olight' : ' lime'}" data-az="m-ramo" data-v="0">${ic('i-eye')}L'ultima volta</span><span class="pill${ramo ? ' lime' : ' olight'}" data-az="m-ramo" data-v="1">${ic('i-pen')}La prossima volta</span></div>
+        <div class="m-sh"><h4>Il workflow</h4><span class="chip light">${ramo ? `l'innesco e ${lista.length - 2} passi` : `${w.passi} passi e la tua firma`}</span></div>
+        <div class="m-wf">${lista.map(nodo).join('')}</div>
         <div class="m-sh"><h4>La firma anticipata</h4><span class="chip light">${w.firma ? 'accesa' : 'spenta'}</span></div>
         <div class="m-coda">
           <div class="qrow"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-euro')}</span><div class="tx"><b>Soglia ${eur(w.soglia)}</b><span>sopra la soglia torna in coda</span></div></div>
@@ -890,7 +936,7 @@ window.DGT_MOBILE = (function () {
      quello che si decide su uno si vede subito sugli altri (e nella Console, che legge lo stesso modello). */
   function monta(radice, m, opz) {
     opz = opz || {};
-    const st = { richiesta: opz.richiesta || 0, filo: opz.filo || ((m.fili()[0] || {}).e || m.dipendenti[0]).id, quadro: opz.quadro === undefined ? QUADRO : opz.quadro, conta: opz.conta === undefined ? CONTA : opz.conta, dip: opz.dip || m.dipartimenti[0].id, consegna: opz.consegna || '', workflow: opz.workflow || '', cerca: undefined };
+    const st = { richiesta: opz.richiesta || 0, filo: opz.filo || ((m.fili()[0] || {}).e || m.dipendenti[0]).id, quadro: opz.quadro === undefined ? QUADRO : opz.quadro, conta: opz.conta === undefined ? CONTA : opz.conta, dip: opz.dip || m.dipartimenti[0].id, consegna: opz.consegna || '', workflow: opz.workflow || '', ramo: opz.ramo === '1' || opz.ramo === 1 ? 1 : 0, cerca: undefined };
     const tels = (opz.schermate && opz.schermate.length ? opz.schermate : [1, 2, 3, 4, 5, 6, 7, 8]).map((s, i) => ({ n: i + 1, schermata: s >= 2 && s <= 10 ? s : 1, motivo: false }));
     const n = () => coda(m).length;
     radice.innerHTML = `<div class="m-page">
@@ -942,6 +988,8 @@ window.DGT_MOBILE = (function () {
       /* i workflow (versione 20): la schermata 10, e la firma anticipata che si accende dal telefono come dalla
          Console — e' lo stesso `m.firme`, quindi quello che si accende qui si vede subito anche li' */
       else if (az === 'workflow') { ev.stopPropagation(); st.workflow = el.dataset.id; tel.schermata = 10; tel.motivo = false; tutto(); }
+      /* Le due tab della schermata 10 (versione 24): le stesse due parole della Console. */
+      else if (az === 'm-ramo') { ev.stopPropagation(); st.ramo = el.dataset.v === '1' ? 1 : 0; tutto(); }
       else if (az === 'firma') { ev.stopPropagation(); m.firme[el.dataset.id] = !m.firme[el.dataset.id]; tutto(); }
       /* la chat (versione 15): la riga apre il filo, la barra di scrittura ci scrive dentro (`m.scrivi`, lo stesso filo della Console) */
       else if (az === 'filo') { ev.stopPropagation(); st.filo = +el.dataset.id; tel.schermata = 5; tel.motivo = false; tutto(); }

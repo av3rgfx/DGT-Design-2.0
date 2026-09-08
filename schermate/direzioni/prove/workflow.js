@@ -81,7 +81,7 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(await titolo().then(t => t.length > 0), 'si apre il workflow: ' + await titolo());
   const nodi = await conta('.wnode'), archi = await conta('.edges path.arc'), porte = await conta('.wport');
   check(nodi >= 4, nodi + ' nodi sul canvas');
-  check(archi === nodi - 1, 'i connettori sono uno in meno dei nodi: ' + archi);
+  check(archi === nodi - 1, "nell'ultima volta i connettori sono uno in meno dei nodi: è una catena avvenuta (" + archi + ')');
   check(porte > 0, porte + ' porte sotto i nodi (modello e strumenti)');
   check(await conta('.wnode.tit') === 1, 'un nodo solo è il titolare, ed è l\'ultimo della catena');
   check(await txt('.wnode.tit .tt b') === 'Firma del titolare', 'e si chiama «Firma del titolare»');
@@ -226,9 +226,11 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
     await page.goto(file('n=' + n + '&pagina=workflow&dip=svi&tendina=chiusa')); await page.waitForTimeout(200);
     const wids = await page.evaluate(() => [...document.querySelectorAll('[data-az="workflow"]')].map(e => e.dataset.id));
     for (const id of wids.slice(0, 3)) {
-      for (const modo of ['', '&ramo=1&gesto=a', '&ramo=1&gesto=b']) {
+      for (const modo of ['', '&ramo=1', '&ramo=1&zoom=0.8']) {
         for (let k = 0; k <= 9; k++) {
-          await page.goto(file('n=' + n + '&pagina=workflow&workflow=' + id + '&nodo=' + k + modo + '&tendina=chiusa'));
+          /* nel grafo il nodo si sceglie dall'id (due rami portano lo stesso numero), nell'ultima volta dal numero */
+          const scelto = modo ? (k === 0 ? 'inn' : k === 9 ? 'tit' : 'p' + k) : k;
+          await page.goto(file('n=' + n + '&pagina=workflow&workflow=' + id + '&nodo=' + scelto + modo + '&tendina=chiusa'));
           await page.waitForTimeout(45);
           const r = await page.evaluate(() => {
             /* Versione 23: nel **ramo** le posizioni sono libere, quindi niente puo' spingere in giu' quello che
@@ -251,9 +253,248 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
       }
     }
   }
-  check(stati >= 120, 'provati ' + stati + ' stati del canvas: ogni nodo aperto e chiuso, nei tre modi, a due taglie');
+  check(stati >= 120, 'provati ' + stati + ' stati del canvas: ogni nodo aperto e chiuso, nei tre modi (ultima volta, grafo, grafo ingrandito), a due taglie');
   check(copertiN === 0, 'due nodi chiusi non si coprono mai: la disposizione resta leggibile (' + copertiN + ')');
   check(sottoBarra === 0, 'e nessun nodo finisce sotto la barra in fondo al canvas (' + sottoBarra + ')');
+
+
+  /* ================= 12. Il grafo e i suoi gesti (versione 24) =================
+     La versione 23 aveva costruito il **modello** del grafo e lasciato il disegno. Qui si verifica il disegno: che
+     gli archi vengano da `G.archi` e non dall'ordine dell'array, che i gesti chiesti dall'utente («spostare
+     liberamente ogni card, collegare e biforcare piu' connettori anche su un singolo task») facciano davvero
+     quello che dicono, e che i quattro acceleratori di n8n ci siano. Ogni verifica e' una **misura**: si legge il
+     DOM, non il modello — `DGT_DATI.modello()` costruisce un modello nuovo a ogni chiamata, quindi interrogarlo da
+     fuori direbbe sempre lo stato di partenza (lezione di questa sessione, presa sbattendoci la testa). */
+  console.log('\n12. il grafo: gli archi vengono dagli archi, non dall\'ordine dell\'array');
+  const grafo = () => page.evaluate(() => {
+    const pos = {}, arc = [];
+    document.querySelectorAll('.wcanvas .wnode').forEach(n => { pos[n.dataset.id] = [parseFloat(n.style.left), parseFloat(n.style.top)]; });
+    document.querySelectorAll('.wcanvas path.arc').forEach(a => arc.push({ da: a.dataset.da, a: a.dataset.a, tipo: (a.getAttribute('class') || '').replace('arc', '').trim() }));
+    const seg = arc.filter(x => pos[x.da] && pos[x.a]).map(x => ({ x1: pos[x.da][0] + 208, y1: pos[x.da][1] + 43.5, x2: pos[x.a][0], y2: pos[x.a][1] + 43.5 }));
+    const sg = (a, b, c) => Math.sign((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x));
+    let k = 0;
+    for (let i = 0; i < seg.length; i++) for (let j = i + 1; j < seg.length; j++) {
+      const P = { x: seg[i].x1, y: seg[i].y1 }, Q = { x: seg[i].x2, y: seg[i].y2 }, U = { x: seg[j].x1, y: seg[j].y1 }, V = { x: seg[j].x2, y: seg[j].y2 };
+      if (sg(P, Q, U) * sg(P, Q, V) < 0 && sg(U, V, P) * sg(U, V, Q) < 0) k++;
+    }
+    /* i due capi di ogni filo devono cadere sulle prese dei due nodi: e' la prova che archi e nodi leggono la
+       stessa posizione — nella versione 23 i nodi la leggevano dal nodo e gli archi dalla serpentina */
+    let scollati = 0;
+    document.querySelectorAll('.wcanvas path.arc').forEach(a => {
+      const L = a.getTotalLength(), p0 = a.getPointAtLength(0), p1 = a.getPointAtLength(L);
+      const d = pos[a.dataset.da], b = pos[a.dataset.a];
+      if (!d || !b) { scollati++; return; }
+      if (Math.abs(p0.x - (d[0] + 208)) > 1 || Math.abs(p0.y - (d[1] + 43.5)) > 1) scollati++;
+      else if (Math.abs(p1.x - b[0]) > 1 || Math.abs(p1.y - (b[1] + 43.5)) > 1) scollati++;
+    });
+    /* nessun filo esce dalla colonna: il canvas non scorre di lato */
+    let fuori = 0;
+    document.querySelectorAll('.wcanvas path.arc').forEach(a => {
+      const L = a.getTotalLength();
+      for (let i = 0; i <= 60; i++) { const q = a.getPointAtLength(L * i / 60); if (q.x < 0 || q.x > 1008) { fuori++; break; } }
+    });
+    return { nodi: Object.keys(pos).length, archi: arc.length, pos, tipi: arc.map(x => x.tipo), incroci: k, scollati, fuori,
+      etichette: [...document.querySelectorAll('.warcl')].map(e => e.textContent.trim()),
+      piu: document.querySelectorAll('.warcz .wplus').length, ics: document.querySelectorAll('.warcz .wdel').length,
+      prese: document.querySelectorAll('.wio').length, usc: document.querySelectorAll('.wio.usc').length,
+      ent: document.querySelectorAll('.wio.ent').length, mappa: document.querySelectorAll('.wmini').length };
+  });
+  await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&tendina=chiusa')); await page.waitForTimeout(400);
+  let g = await grafo();
+  check(g.nodi === 9 && g.archi === 8, 'il grafo di partenza: 9 nodi (l\'innesco, 7 passi e la firma) e 8 collegamenti (' + g.nodi + '/' + g.archi + ')');
+  check(g.scollati === 0, 'ogni filo parte dalla presa del nodo che parte e arriva a quella del nodo che arriva: zero capi scollati (' + g.scollati + ')');
+  check(g.fuori === 0, 'e nessun filo esce dalla colonna da 1008 px (' + g.fuori + ')');
+  check(await conta('.wnode.inn') === 1, 'il nodo d\'innesco c\'è, ed è uno solo');
+  check(await txt('.wnode.inn .tt b') === 'Quando parte', 'e si chiama «Quando parte»');
+  check(g.usc === 8 && g.ent === 8, 'le prese: 8 uscite (tutti tranne il titolare) e 8 entrate (tutti tranne l\'innesco) — sono i due divieti del modello, disegnati (' + g.usc + '/' + g.ent + ')');
+  check(g.piu === 8 && g.ics === 8, 'ogni collegamento porta il suo «+» e la sua «×»: ' + g.piu + ' e ' + g.ics);
+  check(g.etichette.length === 0, '«poi» non si stampa: gli 8 archi di partenza sono tutti «poi», e scriverlo otto volte sarebbe rumore');
+  check(g.incroci === 0, 'la disposizione di partenza non ha nessun incrocio (' + g.incroci + ')');
+  check(g.mappa === 0, 'e la mini-mappa non c\'è: il grafo si vede tutto, non c\'è niente da non vedere');
+  const raggio = await page.evaluate(() => getComputedStyle(document.querySelector('.wnode.inn')).borderTopLeftRadius);
+  check(parseInt(raggio, 10) >= 36, 'il nodo d\'innesco ha il fianco arrotondato, come il trigger di n8n (' + raggio + ')');
+
+  console.log('\n13. il trascinamento: 1 px del canvas = zoom px di schermo, a ogni larghezza');
+  const scatolaDi = sel => page.locator(sel).first().boundingBox();
+  let esatti = 0, agganci = 0;
+  for (const [W, zo] of [[1440, '1'], [1920, '1'], [1024, '1'], [1440, '1.5'], [1440, '0.6']]) {
+    await page.setViewportSize({ width: W, height: 1100 });
+    await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&zoom=' + zo + '&tendina=chiusa')); await page.waitForTimeout(300);
+    const prima = (await grafo()).pos.p2;
+    const b1 = await scatolaDi('.wnode[data-id="p2"]');
+    /* il fattore composto si **misura**, non si indovina: e' il rapporto fra il rettangolo sullo schermo e la
+       larghezza dichiarata della cornice che si scala */
+    const f = await page.evaluate(() => { const z = document.querySelector('.wzoom'); return z.getBoundingClientRect().width / z.offsetWidth; });
+    const dxS = 180, dyS = 90;            /* pixel di schermo */
+    await page.mouse.move(b1.x + b1.width / 2, b1.y + 20);
+    await page.mouse.down();
+    await page.mouse.move(b1.x + b1.width / 2 + dxS, b1.y + 20 + dyS, { steps: 10 });
+    await page.mouse.up(); await page.waitForTimeout(250);
+    const dopo = (await grafo()).pos.p2;
+    /* la stessa formula del modello, clamp compreso: la colonna e' larga 1008 e un nodo non ne esce */
+    const atteso = [Math.max(0, Math.min(1008 - 208 - 8, Math.round((prima[0] + dxS / f) / 18) * 18)), Math.max(0, Math.round((prima[1] + dyS / f) / 18) * 18)];
+    if (dopo[0] === atteso[0] && dopo[1] === atteso[1]) esatti++;
+    if (dopo[0] % 18 === 0 && dopo[1] % 18 === 0) agganci++;
+  }
+  await page.setViewportSize({ width: 1440, height: 1100 });
+  check(esatti === 5, 'il nodo finisce esattamente dove lo si è lasciato, a 1440, 1920 e 1024 px e con lo zoom a 1,5 e 0,6: ' + esatti + ' su 5');
+  check(agganci === 5, 'e sempre agganciato ai 18 px della griglia, cioè ai punti che il canvas disegna: ' + agganci + ' su 5');
+
+  console.log('\n14. «Riordina»: la misura per cui viene subito dopo il trascinamento, non alla fine');
+  await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&tendina=chiusa')); await page.waitForTimeout(300);
+  /* si scompiglia il disegno come lo scompiglia l'uso: tre nodi trascinati a caso */
+  for (const [id, dx, dy] of [['p2', 240, 250], ['p5', -300, -190], ['p7', -420, 120]]) {
+    const b1 = await scatolaDi('.wnode[data-id="' + id + '"]');
+    await page.mouse.move(b1.x + b1.width / 2, b1.y + 20); await page.mouse.down();
+    await page.mouse.move(b1.x + b1.width / 2 + dx, b1.y + 20 + dy, { steps: 8 }); await page.mouse.up();
+    await page.waitForTimeout(150);
+  }
+  const sporco = await grafo();
+  await page.click('[data-az="ramo-riordina"]'); await page.waitForTimeout(300);
+  const pulito = await grafo();
+  check(sporco.incroci > 0, 'trascinando tre nodi il canvas accumula ' + sporco.incroci + ' incroci di collegamenti: è la misura che dice perché «Riordina» non può aspettare');
+  check(pulito.incroci < sporco.incroci, 'e «Riordina» li porta a ' + pulito.incroci);
+  check(Object.values(pulito.pos).every(p => p[0] % 18 === 0 && p[1] % 18 === 0), 'il riordino lascia ogni nodo sulla griglia');
+  check(Object.values(pulito.pos).every(p => p[0] >= 0 && p[0] <= 1008 - 208), 'e nessun nodo fuori dalla colonna');
+
+  console.log('\n15. collegare: dalla presa, e il rilascio nel vuoto che crea il passo già collegato');
+  await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&tendina=chiusa')); await page.waitForTimeout(300);
+  const tira = async (daId, dove) => {
+    const pu = await scatolaDi('.wio.usc[data-id="' + daId + '"]');
+    await page.mouse.move(pu.x + pu.width / 2, pu.y + pu.height / 2); await page.mouse.down();
+    await page.mouse.move(dove.x, dove.y, { steps: 12 }); await page.mouse.up(); await page.waitForTimeout(250);
+  };
+  const n4 = await scatolaDi('.wnode[data-id="p4"]');
+  await tira('p1', { x: n4.x + 60, y: n4.y + 30 });
+  let g2 = await grafo();
+  check(g2.archi === 9, 'tirando dalla presa di un passo a un altro nasce un collegamento: 8 → ' + g2.archi);
+  check(g2.pos.p1 && g2.archi === 9 && g2.scollati === 0, 'e il filo nuovo è attaccato alle prese come gli altri');
+  const cvBox = await scatolaDi('.wcanvas');
+  await tira('p3', { x: cvBox.x + 700, y: cvBox.y + cvBox.height - 170 });
+  let g3 = await grafo();
+  check(g3.nodi === 10 && g3.archi === 10, 'lasciando il filo nel vuoto nasce un passo **già collegato** (l\'idea di UX migliore di n8n): ' + g3.nodi + ' nodi, ' + g3.archi + ' collegamenti');
+  check(await conta('.wnode') === 10, 'e il passo nuovo è sul canvas');
+
+  console.log('\n16. il significato sta sul collegamento, non sulle porte del nodo (decisione 65)');
+  const arcoNuovo = await page.evaluate(() => { const a = [...document.querySelectorAll('path.presa')].find(x => x.dataset.da === 'p1' && x.dataset.a === 'p4'); return a ? a.dataset.arco : ''; });
+  const clicSulFilo = async (id, frazione) => {
+    const pt = await page.evaluate(([i, fr]) => {
+      const e = document.querySelector('path.presa[data-arco="' + i + '"]'); const q = e.getPointAtLength(e.getTotalLength() * fr);
+      const r = document.querySelector('.wzoom').getBoundingClientRect(); const f = r.width / 1008;
+      return { x: r.left + q.x * f, y: r.top + q.y * f };
+    }, [id, frazione]);
+    await page.mouse.click(pt.x, pt.y); await page.waitForTimeout(220);
+  };
+  const giro = [];
+  for (let i = 0; i < 4; i++) { await clicSulFilo(arcoNuovo, 0.25); giro.push((await grafo()).etichette.join('|')); }
+  check(giro[0] === 'se…' && giro[1] === 'insieme' && giro[2] === 'se si ferma' && giro[3] === '', 'il clic sul filo gira fra i quattro significati e torna a «poi», che non si stampa: ' + JSON.stringify(giro));
+  const conteggio = await page.evaluate(() => document.querySelectorAll('.wnode .porta-tipo, .wnode [data-porta-tipo]').length);
+  check(conteggio === 0, 'e il nodo non guadagna nessuna porta nuova: il fan-out illimitato resta gratis');
+  await clicSulFilo(arcoNuovo, 0.25);
+  const etic = await page.locator('.warcl').first().boundingBox();
+  check(etic.width <= 150 * 1.01, 'l\'etichetta sul filo sta nei 150 px che si è dichiarata (' + Math.round(etic.width) + ')');
+
+  console.log('\n17. il «+» e la «×» sul collegamento');
+  await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&tendina=chiusa')); await page.waitForTimeout(300);
+  await page.locator('.warcz .wplus').first().click({ force: true }); await page.waitForTimeout(280);
+  let g4 = await grafo();
+  check(g4.nodi === 10 && g4.archi === 9, 'il «+» infila un passo **in mezzo** al collegamento: 9 nodi/8 archi → ' + g4.nodi + '/' + g4.archi);
+  await page.locator('.warcz .wdel').first().click({ force: true }); await page.waitForTimeout(280);
+  let g5 = await grafo();
+  check(g5.archi === 8, 'la «×» toglie il collegamento: ' + g4.archi + ' → ' + g5.archi);
+
+  console.log('\n18. lo zoom interno e la mini-mappa: transform, non zoom (misurato)');
+  const zoomMisure = [];
+  for (const W of [1440, 1920, 1024]) {
+    await page.setViewportSize({ width: W, height: 1100 });
+    for (const z of ['1', '1.5', '0.6']) {
+      await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&zoom=' + z + '&tendina=chiusa')); await page.waitForTimeout(220);
+      const r = await page.evaluate(() => { const n = document.querySelector('.wnode'), c = document.querySelector('.a-main');
+        return { nodo: n.getBoundingClientRect().width, main: c.getBoundingClientRect().width, mappa: !!document.querySelector('.wmini') }; });
+      zoomMisure.push({ W, z, atteso: Math.round(208 * (W / 1440) * parseFloat(z) * 10) / 10, avuto: Math.round(r.nodo * 10) / 10, mappa: r.mappa });
+    }
+  }
+  await page.setViewportSize({ width: 1440, height: 1100 });
+  check(zoomMisure.every(x => Math.abs(x.atteso - x.avuto) < 0.6), 'lo zoom interno compone esattamente con quello della cornice: ' + zoomMisure.map(x => x.W + '@' + x.z + '→' + x.avuto).join(' · '));
+  check(zoomMisure.filter(x => x.z !== '1').every(x => x.mappa), 'e la mini-mappa compare quando si ingrandisce o si rimpicciolisce, cioè quando c\'è qualcosa che non si vede');
+  await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&zoom=1.5&tendina=chiusa')); await page.waitForTimeout(250);
+  const tend = await page.evaluate(() => { const t = document.querySelector('#a-tendina .a-tend, #a-tendina > *'); return t ? Math.round(t.getBoundingClientRect().right) : 0; });
+  check(tend > 0 && tend <= 1441, 'e la tendina resta al bordo dello schermo anche con il canvas ingrandito: la regola 17 valeva per «zoom», non per «transform» (' + tend + ')');
+
+  console.log('\n19. la selezione multipla e le scorciatoie');
+  await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&tendina=chiusa')); await page.waitForTimeout(300);
+  await page.click('.wnode[data-id="p1"]');
+  await page.click('.wnode[data-id="p2"]', { modifiers: ['Shift'] }); await page.waitForTimeout(250);
+  check(await conta('.wnode.mult') === 2, 'col maiuscolo si scelgono due passi (' + await conta('.wnode.mult') + ')');
+  check(await conta('.wnode.on') === 0, 'e nessuno dei due si apre: con più di un passo scelto l\'editor non ha senso');
+  const p1a = (await grafo()).pos.p1, p2a = (await grafo()).pos.p2;
+  const bb = await scatolaDi('.wnode[data-id="p1"]');
+  await page.mouse.move(bb.x + 100, bb.y + 20); await page.mouse.down();
+  await page.mouse.move(bb.x + 100, bb.y + 20 + 108, { steps: 8 }); await page.mouse.up(); await page.waitForTimeout(280);
+  const gg = await grafo();
+  check(gg.pos.p1[1] === p1a[1] + 108 && gg.pos.p2[1] === p2a[1] + 108, 'e si trascinano insieme, dello stesso spostamento (' + (gg.pos.p1[1] - p1a[1]) + '/' + (gg.pos.p2[1] - p2a[1]) + ' px)');
+  await page.keyboard.press('Escape'); await page.waitForTimeout(200);
+  check(await conta('.wnode.mult') === 0, '«Esc» lascia andare la scelta');
+  await page.click('.wnode[data-id="p2"]'); await page.waitForTimeout(200);
+  await page.keyboard.press('Delete'); await page.waitForTimeout(250);
+  check((await grafo()).nodi === 8, '«Canc» toglie il passo scelto e ricuce la catena (9 → ' + (await grafo()).nodi + ')');
+  await page.keyboard.press('r'); await page.waitForTimeout(250);
+  check(Object.values((await grafo()).pos).every(p => p[0] % 18 === 0), '«R» rimette in ordine');
+  await page.keyboard.press('+'); await page.waitForTimeout(250);
+  check(await page.evaluate(() => document.querySelector('.wcanvas').dataset.zoom) === '1.25', '«+» ingrandisce');
+  await page.keyboard.press('0'); await page.waitForTimeout(250);
+  check(await page.evaluate(() => document.querySelector('.wcanvas').dataset.zoom) === '1', 'e «0» torna al 100 %');
+
+  console.log('\n20. il titolare e l\'innesco: i due divieti restano dove stanno, nel modello');
+  await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&nodo=tit&tendina=chiusa')); await page.waitForTimeout(300);
+  check(await conta('.wnode.tit .azioni-n') === 0, 'il nodo del titolare non ha le azioni del comporre: non si toglie e non si scavalca');
+  check(await conta('.wio.usc[data-id="tit"]') === 0, 'e non ha la presa d\'uscita: dopo la firma non c\'è altro lavoro');
+  check(await conta('.wio.ent[data-id="inn"]') === 0, 'l\'innesco non ha la presa d\'entrata: prima di lui non c\'è lavoro');
+  await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&nodo=inn&tendina=chiusa')); await page.waitForTimeout(300);
+  check((await txt('.wnode.inn .campi')).includes('Chiedi prima di'), 'l\'innesco aperto porta il **permesso** (la clausola della decisione 66): ' + await txt('.wnode.inn .campi'));
+  await page.click('[data-az="ramo-clausola"]'); await page.waitForTimeout(250);
+  check((await txt('.wnode.inn .campi')).includes('Fai pure') || (await txt('.wnode.inn .campi')).includes('Chiedi prima di partire'), 'e il permesso si cambia dal canvas');
+
+  console.log('\n21. i rami che non escono dall\'azienda si dicono, non si vietano');
+  await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&tendina=chiusa')); await page.waitForTimeout(300);
+  check(await conta('.wcanvas .wtag') === 0, 'con la catena di partenza tutto arriva alla firma: nessun avviso');
+  const arcoUlt = await page.evaluate(() => { const a = [...document.querySelectorAll('path.presa')].find(x => x.dataset.a === 'tit'); return a ? a.dataset.arco : ''; });
+  await page.evaluate(id => document.querySelector('.warcz .wdel[data-arco="' + id + '"]').click(), arcoUlt); await page.waitForTimeout(280);
+  check(await conta('.wcanvas .wtag') === 1, 'staccando l\'ultimo collegamento il ramo non arriva più alla firma, e la pagina lo **dice**: ' + await txt('.wcanvas .wtag'));
+  check((await txt('.wsc')).includes('resta in azienda'), 'e il conto in cima lo ripete: ' + await txt('.wsc'));
+
+  console.log('\n22. i numeri dell\'ultima volta sono avvenuti, non previsti (difetto della versione 20)');
+  await page.goto(file('pagina=workflow&dip=svi&workflow=w1&tendina=chiusa')); await page.waitForTimeout(300);
+  const piedi = await page.evaluate(() => [...document.querySelectorAll('.wnode .ft')].map(e => e.textContent.replace(/\\s+/g, ' ').trim()));
+  check(!piedi.some(t => /0 €/.test(t)), 'nessun nodo stampa «0 €»: uno zero su un passo che non è successo sarebbe inventato (' + piedi.filter(t => /€/.test(t)).join(' · ') + ')');
+  check(piedi.filter(t => /non ancora/.test(t)).length >= 4, 'i passi ancora da fare dicono «non ancora» e la stima con il ≈, non un costo misurato');
+  const numeri = await page.evaluate(() => {
+    const m = DGT_DATI.modello(11);
+    return m.workflowDi(null).map(w => ({ id: w.id, costo: w.costo, minuti: w.minuti, previsto: w.previsto,
+      somma: Math.round(10 * w.nodi.filter(n => n.stato !== 'da fare' && !n.titolare).reduce((t, n) => t + n.costo, 0)) / 10,
+      zeri: w.nodi.filter(n => n.stato === 'da fare' && n.costo !== 0).length }));
+  });
+  check(numeri.every(w => w.costo === w.somma), 'il costo di un workflow è la somma dei soli passi **avvenuti**');
+  check(numeri.every(w => w.zeri === 0), 'e un passo da fare non porta più il costo stimato dentro il nodo');
+  check(numeri.some(w => w.previsto > 0), 'la stima non è sparita: sta in un campo suo (`previsto`), separata dal misurato — ' + numeri.map(w => w.id + ': ' + w.costo + ' € avvenuti, ' + w.previsto + ' € previsti').slice(0, 3).join(' · '));
+
+  console.log('\n23. il telefono: la colonna legge il grafo, e i rami non si affiancano');
+  await page.goto(tel('schermata=10&dip=svi&workflow=w1')); await page.waitForTimeout(400);
+  const larghezze = await page.evaluate(() => ({
+    colonna: Math.round(document.querySelector('.m-wf').getBoundingClientRect().width),
+    card: Math.round(document.querySelector('.m-wn').getBoundingClientRect().width),
+    perRiga: (() => { const c = [...document.querySelectorAll('.m-wn')].map(e => Math.round(e.getBoundingClientRect().top)); return Math.max(...Object.values(c.reduce((o, y) => { o[y] = (o[y] || 0) + 1; return o; }, {}))); })(),
+  }));
+  check(larghezze.card >= larghezze.colonna - 2, 'una card prende tutta la colonna (' + larghezze.card + ' su ' + larghezze.colonna + '): due rami non si affiancano, mai');
+  check(larghezze.perRiga === 1, 'e infatti c\'è una card per riga (' + larghezze.perRiga + ')');
+  const euri = await page.evaluate(() => [...document.querySelectorAll('.m-wn .eur')].map(e => e.textContent.trim()));
+  check(!euri.includes('0 €'), 'e nessuna card stampa «0 €»: era lo zero inventato del telefono (' + euri.join(' · ') + ')');
+  check(await conta('.m-wtabs .pill') === 2, 'la schermata 10 ha le due tab della Console: le stesse due parole');
+  await page.click('.m-wtabs .pill[data-v="1"]'); await page.waitForTimeout(350);
+  check(await conta('.m-wn.inn') === 1, 'la prossima volta si guarda anche dal telefono, e comincia dall\'innesco');
+  check(await conta('.m-wn') === 9, 'nove card: l\'innesco, i sette passi e la firma (' + await conta('.m-wn') + ')');
+  const latoTel = await page.evaluate(() => [...document.querySelectorAll('.m-scroll')].every(s => s.scrollWidth <= s.clientWidth));
+  check(latoTel, 'e nessuno schermo scorre di lato');
 
   if (!errors.length) ok++; else ko++;
   console.log('\n' + ok + ' ok, ' + ko + ' ko');

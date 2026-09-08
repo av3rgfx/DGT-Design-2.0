@@ -33,7 +33,9 @@
   DIREZIONE_A.monta(root, modello, {
     pagina: q.get('pagina') || 'home', dip: q.get('dip') || 'svi', id: +(q.get('id') || 4), richiesta: +(q.get('richiesta') || 0),
     pannello: q.get('pannello') || 'richieste', editor: q.get('editor'), confronto: q.get('confronto'), filo: +(q.get('filo') || 0), barra: q.get('barra') || '',
-    consegna: q.get('consegna') || '', workflow: q.get('workflow') || '', nodo: +(q.get('nodo') || 0), routine: q.get('routine') || '', ramo: q.get('ramo') || 0, gesto: q.get('gesto') || 'a', tendina: q.get('tendina') || 'aperta' });
+    consegna: q.get('consegna') || '', workflow: q.get('workflow') || '', nodo: q.get('nodo') || 0, routine: q.get('routine') || '', ramo: q.get('ramo') || 0,
+    // il grafo (versione 24): ?nodo=<id> sceglie un nodo del ramo (p3, inn, tit), ?zoom=0.6..1.5 lo zoom interno
+    zoom: +(q.get('zoom') || 1), tendina: q.get('tendina') || 'aperta' });
   // La Console è progettata a 1440 px e riempie sempre la larghezza dello schermo: sopra i 1440 si ingrandisce, sotto si riduce
   // (richiesta dell'utente, 2026-09-04). Si usa `zoom`, non `transform`: così le tendine e le pillole fisse restano al bordo dello
   // schermo e non scorrono con la pagina; i 100vh delle tendine si dividono per --z (vedi il CSS in direzione-a.js).

@@ -1043,12 +1043,24 @@ window.DGT_DATI = (function () {
         const oApp = outs.find(z => z.stato === 'approvata') || null;
         const o = oAtt || oApp || outs[0] || {};
         const cliente = (e.att || {}).cliente || '';
-        const costo = Math.round(10 * passi.reduce((t, p) => t + (p.costo || 0), 0)) / 10;
-        const minuti = passi.reduce((t, p) => t + (parseInt(p.durata || p.stima || '', 10) || 0), 0);
+        /* ---- I numeri del workflow sono **avvenuti**, non previsti (versione 24) ----
+           Difetto della versione 20, trovato dal consiglio e verificato contando: il costo del workflow sommava
+           **anche i passi `da fare`**, e il costo di un passo da fare e' una **stima** — lo dice il codice che la
+           genera (`stimaPasso`: «i passi da fare: una stima dal costo medio dei passi fatti»). La pagina stampava
+           quella somma sotto la parola «misurati»: sul primo workflow **33,20 € su 71,20 erano stimati (47 %)**, e
+           **83 minuti su 121**; su tutti e sei, 83,80 € su 168. La spina dorsale dice che ogni euro risale a
+           un'esecuzione: un euro che deve ancora essere speso non ci risale.
+           Adesso costo e minuti sommano **solo quello che e' successo** (fatto, in corso, rotto), e il nodo di un
+           passo da fare non porta numeri — come il ramo, e per la stessa ragione. */
+        const avvenuto = p => p.stato !== 'da fare';
+        const costo = Math.round(10 * passi.filter(avvenuto).reduce((t, p) => t + (p.costo || 0), 0)) / 10;
+        const minuti = passi.filter(avvenuto).reduce((t, p) => t + (parseInt(p.durata || '', 10) || 0), 0);
+        const previsto = Math.round(10 * passi.filter(p => !avvenuto(p)).reduce((t, p) => t + (p.costo || 0), 0)) / 10;
         const nodi = passi.map(p => ({
           n: p.n, nome: p.nome, stato: p.stato, chi: e.id,
           modello: p.modello || 'standard', strumenti: (p.strumenti || []).slice(),
-          costo: p.costo || 0, durata: p.durata || p.stima || '', esito: p.esito || '',
+          costo: avvenuto(p) ? (p.costo || 0) : 0, durata: avvenuto(p) ? (p.durata || '') : '',
+          stima: avvenuto(p) ? '' : (p.stima || ''), esito: p.esito || '',
         }));
         /* il nodo del titolare: non è un dipendente in più, è dove la consegna si ferma davvero. Lo stato viene
            dalla consegna dell'esecuzione, non da un campo nuovo. */
@@ -1060,7 +1072,7 @@ window.DGT_DATI = (function () {
         });
         wf.push({
           id: 'w' + e.id, nome: (e.att || {}).titolo || o.nome || 'Lavoro', dip: e.dip, chi: e.id,
-          cliente, nodi, costo, minuti, passi: passi.length,
+          cliente, nodi, costo, minuti, previsto, passi: passi.length,
           conclusi: fatti.length, consegna: o.nome || '',
           /* la delega nasce spenta (scelta del titolare) e i tre freni sono misurati, non inventati */
           firma: !!firme['w' + e.id],
@@ -1328,9 +1340,14 @@ window.DGT_DATI = (function () {
         }
         return rami[w.id];
       },
-      /* La posa di partenza di un nodo: la serpentina di prima, che adesso e' solo il **punto di partenza** di una
-         posizione libera. Le costanti sono quelle del canvas (le rilegge `direzione-a.js`). */
-      ramoPosa: i => { const C = 4, PX = 242, PY = 210, PAD = 36; const r = Math.floor(i / C), c = r % 2 ? C - 1 - (i % C) : i % C; return { x: PAD + c * PX, y: PAD + r * PY }; },
+      /* ---- La posa di partenza di un nodo (versione 24: non piu' la serpentina) ----
+         «L'ultima volta» resta una **serpentina**: e' una catena, gli archi si disegnano da un nodo al seguente e
+         la riga dispari che torna indietro tiene i connettori corti senza incroci. Nel **grafo** no: le prese
+         stanno sui fianchi del nodo (a destra si esce, a sinistra si entra), quindi una riga che va da destra a
+         sinistra rende **ogni** suo arco un ritorno — misurato disegnandolo: 9 nodi, 8 collegamenti, di cui 4
+         all'indietro, e il canvas diventa illeggibile. Qui le righe vanno tutte da sinistra a destra, come le
+         righe di un testo, e l'unico ritorno e' quello che va a capo. Le costanti sono quelle del canvas. */
+      ramoPosa: i => { const C = 4, PX = 234, PY = 216, PAD = 36; return { x: PAD + (i % C) * PX, y: PAD + Math.floor(i / C) * PY }; },
       /* La griglia dell'aggancio: **18 px**, cioe' i punti che il canvas gia' disegna (`background-size:18px`).
          n8n aggancia a 16, ma la sua griglia e' invisibile: qui i nodi cadono sui punti che si vedono. */
       RAMO_GRIGLIA: 18,
@@ -1372,6 +1389,75 @@ window.DGT_DATI = (function () {
         return true;
       },
       ramoScollega: (w, arcoId) => { const r = out.ramoDi(w); const i = r.archi.findIndex(a => a.id === arcoId); if (i >= 0) r.archi.splice(i, 1); out.ramoNumera(r); },
+      /* ---- «Riordina» (versione 24, acceleratore 1 dei quattro chiesti dall'utente) ----
+         n8n lo chiama «Tidy up» e lo fa con **dagre** (rankdir LR, nodesep 96, ranksep 128). Qui la direzione non
+         puo' essere «da sinistra a destra» e non e' un'opinione: la colonna riservata e' larga **1008 px** e non
+         scorre di lato, mentre un flusso da 9 nodi in fila ne vorrebbe 36 + 9·242 = **2 214**. Quindi il riordino
+         e' la **serpentina che il canvas ha gia'** (`ramoPosa`, quattro colonne), applicata all'ordine topologico:
+         prima il livello (`ramoNumera`, la distanza dall'inizio), poi la posizione di adesso — cosi' il riordino
+         **raddrizza** il disegno dell'utente invece di ribaltarlo, e due nodi che stanno sullo stesso livello
+         finiscono vicini. Il titolare resta l'ultimo: e' la spina dorsale, non una coordinata.
+         La ragione per cui e' il **secondo** lavoro e non l'ultimo l'ha misurata la revisione incrociata: il
+         trascinamento libero **senza** un riordino rende il canvas piu' lento, non piu' veloce. */
+      ramoRiordina: w => {
+        const r = out.ramoDi(w);
+        out.ramoNumera(r);
+        const ordine = r.nodi.slice().sort((a, b) => (a.n - b.n) || (a.y - b.y) || (a.x - b.x) || String(a.id).localeCompare(String(b.id)));
+        const tit = ordine.filter(n => n.titolare), altri = ordine.filter(n => !n.titolare);
+        altri.concat(tit).forEach((nd, i) => { const q = out.ramoPosa(i); nd.x = q.x; nd.y = q.y; });
+        return r;
+      },
+      /* Quanti connettori si incrociano: e' il numero con cui si misura se «Riordina» serve davvero, invece di
+         dirlo. Due segmenti (dal fianco destro del nodo che parte al fianco sinistro di quello che arriva) si
+         incrociano se le due coppie di estremi si separano. E' un conto, non una stima. */
+      ramoIncroci: w => {
+        const r = out.ramoDi(w), n = {}; r.nodi.forEach(x => { n[x.id] = x; });
+        const seg = r.archi.map(a => ({ x1: n[a.da].x + 208, y1: n[a.da].y + 43.5, x2: n[a.a].x, y2: n[a.a].y + 43.5 }));
+        const s = (a, b, c) => Math.sign((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x));
+        let k = 0;
+        for (let i = 0; i < seg.length; i++) for (let j = i + 1; j < seg.length; j++) {
+          const p = { x: seg[i].x1, y: seg[i].y1 }, q = { x: seg[i].x2, y: seg[i].y2 };
+          const u = { x: seg[j].x1, y: seg[j].y1 }, v = { x: seg[j].x2, y: seg[j].y2 };
+          if (s(p, q, u) * s(p, q, v) < 0 && s(u, v, p) * s(u, v, q) < 0) k++;
+        }
+        return k;
+      },
+      /* Il «+» sul connettore (acceleratore 3): un passo si infila **in mezzo a un collegamento**. Il primo tratto
+         tiene il suo significato (se era un «se…», la condizione resta prima del passo nuovo) e il secondo nasce
+         `poi`. n8n sposta i nodi a valle **solo se non c'e' spazio**: qui il passo nuovo nasce a meta' strada e, se
+         quel posto e' occupato, scende di una riga finche' non e' libero. */
+      ramoInserisci: (w, arcoId) => {
+        const r = out.ramoDi(w), a = r.archi.find(x => x.id === arcoId);
+        if (!a) return '';
+        const da = r.nodi.find(n => n.id === a.da), ab = r.nodi.find(n => n.id === a.a);
+        if (!da || !ab) return '';
+        const g = out.RAMO_GRIGLIA;
+        let x = Math.round(((da.x + ab.x) / 2) / g) * g, y = Math.round(((da.y + ab.y) / 2) / g) * g;
+        x = Math.max(0, Math.min(1008 - 208 - 8, x)); y = Math.max(0, y);
+        let guardia = 0;
+        while (out.ramoOccupato(r, x, y, null) && guardia++ < 40) y += g * 2;
+        const id = 'p' + (++r.seq);
+        r.nodi.splice(r.nodi.length - 1, 0, { id, n: 0, nome: 'Passo nuovo', chi: w.chi, modello: 'standard', strumenti: [], stato: 'da fare', costo: 0, durata: '', esito: '', nato: true, x, y });
+        r.archi.push({ id: 'a' + (++r.seq), da: id, a: ab.id, tipo: 'poi', se: '' });
+        a.a = id;
+        out.ramoNumera(r);
+        return id;
+      },
+      /* Il rilascio del connettore **nel vuoto** (acceleratore 2, «la loro idea di UX migliore»): il passo nasce
+         dove si e' lasciato il filo, ed e' **gia' collegato**. Senza questo, creare un passo sono tre gesti. */
+      ramoNuovo: (w, daId, x, y) => {
+        const r = out.ramoDi(w), da = r.nodi.find(n => n.id === daId);
+        if (!da || da.titolare) return '';
+        const g = out.RAMO_GRIGLIA;
+        const id = 'p' + (++r.seq);
+        r.nodi.splice(r.nodi.length - 1, 0, { id, n: 0, nome: 'Passo nuovo', chi: w.chi, modello: 'standard', strumenti: [], stato: 'da fare', costo: 0, durata: '', esito: '', nato: true,
+          x: Math.max(0, Math.min(1008 - 208 - 8, Math.round(x / g) * g)), y: Math.max(0, Math.round(y / g) * g) });
+        r.archi.push({ id: 'a' + (++r.seq), da: daId, a: id, tipo: 'poi', se: '' });
+        out.ramoNumera(r);
+        return id;
+      },
+      /* Un posto e' occupato se ci sta sopra un nodo chiuso (208x87, piu' i 18 px della griglia di respiro). */
+      ramoOccupato: (r, x, y, escludi) => r.nodi.some(n => n.id !== escludi && Math.abs(n.x - x) < 208 + 18 && Math.abs(n.y - y) < 87 + 18),
       /* Togliere un passo ricuce la catena: i suoi entranti si attaccano ai suoi uscenti, cosi' non restano monconi. */
       ramoTogli: (w, id) => {
         const r = out.ramoDi(w), nd = r.nodi.find(n => n.id === id);

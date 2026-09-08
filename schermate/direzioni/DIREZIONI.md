@@ -2272,6 +2272,138 @@ sta sotto** senza spostare il disegno dell'utente, quindi il nodo aperto **galle
 selezionata di qualunque canvas. La regola che resta, e che la prova verifica, è che **due nodi chiusi non si
 coprono mai**.
 
+### Versione 24: il grafo disegnato (2026-09-08, sessione successiva)
+
+La versione 23 aveva costruito il **modello** del grafo e si era fermata lì. Questa sessione fa il **disegno**,
+nell'ordine che il passaggio di consegne aveva fissato, e lungo la strada chiude due difetti che nessuno aveva
+visto perché nessuno aveva ancora disegnato niente.
+
+#### 1. Il grafo, e la disposizione che ha dovuto cambiare
+
+Il primo disegno ha riusato la **serpentina** di «l'ultima volta» — quattro nodi per riga, la riga dispari
+all'indietro — ed era illeggibile. La ragione è geometrica e si conta: nel grafo le prese stanno **sui fianchi**
+del nodo (a destra si esce, a sinistra si entra), quindi **una riga che torna indietro rende ogni suo arco un
+ritorno**: 9 nodi, 8 collegamenti, **4 all'indietro**, e il canvas diventa un intreccio.
+
+Nel grafo le righe vanno quindi **tutte da sinistra a destra**, come le righe di un testo, e l'unico ritorno è
+quello che va a capo. La serpentina resta dov'era giusta: nell'**ultima volta**, che è una catena avvenuta.
+
+| | prima (v23) | adesso (v24) |
+|---|---|---|
+| disposizione del grafo | serpentina, riga dispari all'indietro | righe tutte da sinistra a destra |
+| passo | 242×210 | **234×216** (13×18 e 12×18: multipli dell'aggancio) |
+| larghezza usata | 1006 px | **982 px** dentro i 1008 |
+| archi | dall'**ordine dell'array** (`w.nodi[i] → w.nodi[i+1]`) | da **`G.archi`** |
+| capi del filo | dalla serpentina, i nodi dalla posizione libera | tutti e due dalla posizione del nodo |
+
+L'ultima riga era il difetto vero: nodi e archi leggevano **due posizioni diverse** e coincidevano solo perché la
+posa di partenza era la stessa. **Al primo trascinamento il connettore restava indietro.** Adesso una prova
+verifica su ogni arco che i due capi cadano sulle prese dei due nodi, a meno di 1 px.
+
+Il **ritorno di riga** è una S sola con la maniglia a 150 px: misurato, il punto più a destra della curva è
+**981 px** e il più a sinistra **25**, cioè dentro la colonna da 1008. Con la maniglia corta (30 px, il primo
+tentativo, tenuta lì per non sforare) veniva una diagonale dritta, che di una curva non ha niente.
+
+Il **nodo d'innesco** ha il fianco sinistro arrotondato a **44 px** — n8n dà al suo trigger lo stesso angolo — e
+non ha la presa d'entrata: prima di lui non c'è lavoro. Il titolare non ha la presa d'uscita: dopo la firma non
+c'è altro lavoro. **I due divieti del modello, disegnati.**
+
+#### 2. Il significato sta sul connettore, e «poi» non si stampa
+
+Sul filo stanno tre cose, e nessuna sul nodo (decisione 65):
+- l'**etichetta** del significato — `se…`, `insieme`, `se si ferma`. **`poi` non si stampa**: è il caso di tutti e
+  8 gli archi di partenza, e scriverlo otto volte sarebbe rumore. Il clic sul filo (16 px di presa invisibile)
+  gira fra i quattro e torna a `poi`;
+- il **«+»**, che infila un passo **in mezzo** al collegamento (acceleratore 3 di n8n);
+- la **«×»**, che toglie il collegamento — e senza di lei `ramoScollega` non aveva **nessun gesto** che la
+  chiamasse. Si vede solo passando sopra il filo: se no ogni connettore porterebbe due cerchi, sedici pastiglie su
+  un disegno che deve restare quello del riferimento.
+
+**L'errore non cambia colore.** Il primo giro l'aveva fatto rosa (`--hangup`), ed è un secondo accento sul canvas:
+esattamente quello che l'emendamento dell'8 settembre aveva appena tolto portando il verde al lime. Il tratteggio
+fine dice che è una strada d'eccezione, la parola dice quale.
+
+#### 3. I sette gesti, misurati
+
+| gesto | com'è fatto | la misura |
+|---|---|---|
+| **trascinare** | mousedown sul nodo, il disegno si rifà tutto a ogni fotogramma | il nodo finisce **esattamente** dove lo si lascia a 1440, 1920 e 1024 px e con lo zoom a 1,5 e 0,6 — 5 su 5 — e sempre agganciato ai 18 px |
+| **«Riordina»** | la serpentina diventa il pulsante: ordine topologico, poi la posa | trascinando tre nodi il canvas accumula **5 incroci** di collegamenti; «Riordina» li porta a **0** |
+| **collegare** | si tira dalla presa di destra | 8 → 9 collegamenti, e il filo nuovo è attaccato come gli altri |
+| **rilascio nel vuoto** | nasce un passo **già collegato** | 9 nodi/9 archi → **10 e 10** |
+| **«+» sul filo** | infila un passo in mezzo | 9/8 → **10/9** |
+| **zoom e mini-mappa** | `transform: scale()` dentro la cornice | 208 px → **312** a 1,5× e **124,8** a 0,6×, a 1440, 1920 e 1024; e la tendina `position:fixed` resta al bordo dello schermo |
+| **selezione multipla** | maiuscolo per scegliere, riquadro sul fondo, e si trascinano insieme | due nodi scelti si spostano **dello stesso spostamento** (108/108 px) |
+
+Le scorciatoie sono **sei**, non le quaranta di n8n, e sono quelle dei gesti che esistono davvero (regola 25):
+`R` riordina, `+`/`−` e `0` per lo zoom, `Canc` toglie, `Esc` lascia andare, `Ctrl/Cmd+A` sceglie tutto.
+
+**La matematica del trascinamento**, che era la misura presa nella versione 23: la Console si scala con `zoom` sulla
+radice e il canvas con `transform: scale()` al suo interno, quindi un pixel del disegno vale `s × z` pixel di
+schermo. I due fattori **non si indovinano, si misurano** dal rapporto fra il rettangolo sullo schermo e la
+larghezza dichiarata della cornice. Il primo giro di prove ha trovato il difetto che nasce dal non farlo: dopo il
+primo fotogramma la cornice viene **sostituita** dal ridisegno, e quella di partenza resta staccata dal documento —
+un rettangolo largo 0, cioè un fattore 0 e posizioni `NaN`.
+
+#### 4. Il difetto che il consiglio ha trovato: 47 % di numeri stimati sotto la parola «misurati»
+
+Il costo di un workflow sommava **anche i passi ancora da fare**, e il costo di un passo da fare è una **stima** —
+lo dice il codice che la genera (`stimaPasso`: «i passi da fare: una stima dal costo medio dei passi fatti»).
+
+| | prima | adesso |
+|---|---|---|
+| w1, «costo misurato» | **71,20 €** (33,20 stimati, **47 %**) | **38 €** avvenuti, 33,20 in un campo suo (`previsto`) |
+| w1, minuti | 121 (83 stimati) | **38** |
+| tutti e sei | 168 € (83,80 stimati) | 84,20 € avvenuti |
+| piede di un nodo da fare | «40 min · 21 €» | «non ancora · ≈ 40 min» |
+| piede sul telefono | **«0 €»** su 4 card su 8 | il chip «non ancora» |
+
+Lo zero era il corollario: `eur(0)` stampa «0 €», quindi un passo che non è successo stampava uno zero inventato —
+sul canvas e, ancora dopo la correzione della Console, **sul telefono**. Adesso in nessuno dei due.
+
+#### 5. Il telefono (punto 7 dell'ordine)
+
+Misurato di nuovo, perché il numero del passaggio di consegne era sbagliato: la colonna è **348 px** e una card ne
+prende **348** (non 318 — quello è la card *consegna* del desktop). Ce ne sta **una**: due rami non si affiancano
+mai, e un canvas a nodi lì non esiste.
+
+Quindi la colonna **resta una colonna**, e prende due cose:
+- **le due tab della Console**, con le stesse due parole. Il titolare firma dal telefono: un flusso che non si vede
+  da dove si firma non esiste. «La prossima volta» comincia dall'innesco, con il suo permesso;
+- **quello che il grafo aggiunge, detto sul collegamento**: i nodi vanno in ordine topologico (in un grafo l'ordine
+  dell'array non è un percorso), e fra una card e l'altra i chip dicono «2 rami», «se… → *nome del passo*», «arriva
+  da 2», «resta in azienda». Nessun componente nuovo: sono i chip che il telefono ha già.
+
+#### 6. Che cosa ha detto il consiglio, e che cosa la revisione incrociata gli ha demolito
+
+Tre domande (il ramo mai percorso nell'ultima volta, una voce o *n* nella coda, le parole). Cinque pareri, cinque
+revisioni. **Il verdetto sta in `PROSSIMA-SESSIONE.md`, marcato «da confermare».** Qui resta quello che la
+revisione ha corretto, perché è la parte che vale:
+
+1. **Una premessa del contesto era falsa, e l'avevo scritta io.** «La coda mostra già più voci per la stessa
+   esecuzione» — verificato: le consegne **in attesa** per esecuzione sono **una**, a undici e a quaranta. Le tre
+   uscite di un'esecuzione stanno in `bozza`/`da fare`/`fatto`/`errore` e **non entrano mai in coda**. Tutti e
+   cinque i consiglieri ci hanno costruito sopra. È la terza volta che succede, ed è la lezione della versione 21
+   scritta un'altra volta: *il contesto va verificato nel codice prima di scriverlo, non solo scritto per esteso*.
+2. **Un numero l'ho sbagliato io e tre consiglieri l'hanno ripetuto**: «49 nodi spenti a quaranta». Sono **40**;
+   49 è 9+40, cioè le due caselle della tabella sommate.
+3. **Il difetto dei numeri stimati era vero** (parere del Contrario e dell'Esecutore, verificato riga per riga) ed
+   è stato corretto **durante** la sessione: due revisori l'hanno poi segnalato come «premessa falsa» perché
+   avevano letto il file già corretto. Va tenuto a mente per la prossima volta: **se il codice cambia mentre il
+   consiglio gira, la revisione giudica un albero diverso da quello che i consiglieri hanno letto.**
+4. **Le parole collidono**, e solo la revisione l'ha contato: «freccia» è già la *freccia di riga* (regole 25-26,
+   22 occorrenze); «ramo» è già **tutto il grafo** della prossima volta (207 occorrenze); «collegamento» è già il
+   nome di una **consegna** dentro w1, cioè il workflow che tutti usavano come esempio; `Uscita` è già un chip di
+   `chipEsito` col significato **opposto** (già uscita, senza la tua firma). Cinque consiglieri su cinque hanno
+   usato «uscita» per l'oggetto che *aspetta* la firma.
+5. **La misura ha battuto un'obiezione strutturale.** Il Contrario chiedeva di portare il canvas da quattro
+   colonne a tre perché «se si ferma» non ci sta nei 34 px liberi. Misurato davvero, in Urbanist a 10 px dentro il
+   canvas: la pillola `se si ferma` è **65,67 px** (non ~95), `insieme` 51,25, `se…` 32,89. Sborda sui nodi
+   vicini, non sulla colonna — e il canvas stampa già una `.wtag` da **131,28 px** («aspetta la tua firma»).
+   Niente ristrutturazione.
+6. **Il vincolo dei 56 px non si applicava.** Due consiglieri ci hanno appeso la risposta: 56 px è il budget
+   dell'etichetta di una **porta**, non di un'etichetta sul filo. Uno solo l'ha visto, e aveva ragione.
+
 ## 5. File
 
 | File | Ruolo |

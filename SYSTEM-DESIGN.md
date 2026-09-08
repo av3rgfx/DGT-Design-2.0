@@ -125,7 +125,7 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 | Card sfida | `#4D4D4D` r30, icona in cerchio contornato 80 (lime), testo 14/20 centrato; una lime |
 | Passo del processo | cerchio contornato 64 con icona + pillola `#4D4D4D` 64; il primo lime; frecce tratteggiate |
 | Editor a nodi (specimen, sezione 07) | rail di tessere 44 r14 (attiva lime luminosa), titolo 26 con percorso e tag rosso, tab a pillola, canvas puntinato 18, nodi 96 r18 con riflesso, nodo agente 208×100, nodo selezionato lime con i campi e il testo all'inchiostro, nodo disattivato con cestino, connettori `#B8FC64` con bagliore, mini-mappa, zoom, pillole in basso a destra, barra chat con ID monospazio |
-| **Canvas del workflow** (prodotto, versione 20) | il precedente portato dentro la Console, **senza pan, zoom e mini-mappa** (regola 17: la cornice si scala già con `zoom`). Griglia puntinata 18 su `--dots-box`; nodi 208×96 r18 su `--card` con riflesso; serpentina di **quattro** nodi per riga, passo **242**×210, la riga dispari all'indietro (erano cinque e 248 fino alla versione 20: la banda riservata della 21 ha stretto il passo di 6 px invece di togliere due colonne); connettori lime con bagliore, tratteggiati verso il titolare, punteggiati e chiari per i passi da fare; porte 10 px con l'etichetta 10/14 sotto il nodo (spente se il passo non è ancora stato fatto); nodo aperto con l'orlo lime e i suoi campi — altezza **calcolata**, e le righe sotto scendono di quanto lui cresce (versione 22); ultimo nodo **il titolare**, orlo tratteggiato, e lime pieno quando aspetta; sopra il canvas la **tab a pillola dei due tempi** («L'ultima volta» misurata, «La prossima volta» dichiarata e componibile); barra in fondo con il conto e l'uscita all'esecuzione. Sul telefono la stessa cosa **in colonna**, con il connettore a barretta |
+| **Canvas del workflow** (prodotto, versioni 20 e 24) | il precedente portato dentro la Console. Griglia puntinata 18 su `--dots-box`; nodi 208×96 r18 su `--card` con riflesso; porte 10 px con l'etichetta 10/14 sotto il nodo (spente se il passo non è ancora stato fatto); nodo aperto con l'orlo lime e i suoi campi — altezza **calcolata**; ultimo nodo **il titolare**, orlo tratteggiato, lime pieno quando aspetta; sopra il canvas la **tab a pillola dei due tempi**; barra in fondo con il conto e l'uscita all'esecuzione. **Due forme, un canvas**: «l'ultima volta» è una catena avvenuta, disposta da sola su una **serpentina** di quattro nodi per riga (la riga dispari all'indietro), connettori da un nodo al seguente, punteggiati e chiari per i passi da fare, tratteggiati verso il titolare. «La prossima volta» è un **grafo** (versione 24): **posizioni libere** agganciate a 18 px, righe tutte da sinistra a destra (passo **234**×216, multipli dei 18 px della griglia), **nodo d'innesco** in testa col fianco arrotondato a 44 e senza presa d'entrata, **prese sui fianchi** (a destra si esce, a sinistra si entra; il titolare non ha uscita), archi da `G.archi` con l'etichetta **sul connettore** e i due comandi «+» e «×» sul punto di mezzo, chip del conto in alto a sinistra, **zoom interno** (0,6–1,5 con `transform`) e **mini-mappa** 200×120 che compare quando serve. Sul telefono la stessa cosa **in colonna**, con le due tab e i chip del grafo sul connettore: misurato, la colonna è 348 px e una card ne prende 348, quindi due rami non si affiancano mai |
 
 ## 7. Schermate
 
@@ -598,6 +598,42 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     mini-mappa **rientrano**, e con loro il riferimento torna copiato com'è. Resta vero che **1 px del canvas vale
     esattamente `zoom` px di schermo**, ed è la ragione per cui il trascinamento è possibile: uno spostamento del
     mouse diviso per `zoom` dà lo spostamento nel canvas, esatto a ogni taglia.
+
+39. **Il grafo disegnato: le prese stanno sui fianchi, quindi le righe vanno tutte da sinistra a destra**
+    (2026-09-08, versione 24). Il primo disegno del grafo ha riusato la **serpentina** che «l'ultima volta» usa da
+    sempre — quattro nodi per riga, la riga dispari all'indietro — e il risultato è illeggibile: con le prese sui
+    fianchi del nodo (a destra si esce, a sinistra si entra), una riga che torna indietro rende **ogni suo arco un
+    ritorno**. Misurato: 9 nodi, 8 collegamenti, **4 all'indietro**. Nel grafo le righe vanno quindi tutte da
+    sinistra a destra, come le righe di un testo, e l'unico ritorno è quello che va a capo. La serpentina resta
+    dov'era giusta: nell'**ultima volta**, che è una catena avvenuta e disegna gli archi da un nodo al seguente.
+    Tre conseguenze misurate:
+    - **il passo della disposizione è diventato un multiplo dell'aggancio**: era 242×210, l'aggancio è a 18 px, e
+      così un nodo appena disposto stava **fra** i punti mentre uno trascinato ci cadeva sopra — due regole per la
+      stessa cosa. Ora 234 = 13×18 e 216 = 12×18, e la colonna riservata regge lo stesso: 36×2 + 3×234 + 208 =
+      **982 px** dentro i 1008 (erano 1006);
+    - **i due capi di ogni filo si calcolano dalla posizione del nodo**, all'altezza del nodo **chiuso** (43,5 px):
+      un nodo che si apre non fa saltare i suoi collegamenti, e una prova verifica su ogni arco che i due capi
+      cadano sulle prese (nella versione 23 i nodi leggevano la posizione libera e gli archi la serpentina:
+      coincidevano solo perché la posa di partenza era la stessa, e al primo trascinamento si staccavano);
+    - **il ritorno di riga è una S sola** con la maniglia a 150 px: misurato, il punto più a destra della curva è
+      **981 px** e il più a sinistra **25**, cioè dentro la colonna. Con la maniglia corta diventava una diagonale
+      dritta, che di una curva non ha niente.
+    Sul **connettore** stanno tre cose e nessuna sul nodo (decisione 65): l'**etichetta** del significato — e «poi»
+    **non si stampa**, perché è il caso di tutti gli 8 archi di partenza e scriverlo otto volte è rumore — il
+    **«+»** che infila un passo in mezzo e la **«×»** che lo toglie, che si vede solo passandoci sopra. Il clic sul
+    filo (16 px di presa invisibile) gira fra i quattro significati. **L'errore non cambia colore**: il rosa
+    sarebbe un secondo accento, e l'emendamento dell'8 settembre aveva appena tolto l'ultimo che restava; il
+    tratteggio fine dice che è una strada d'eccezione, la parola dice quale.
+
+40. **Un numero previsto non si stampa dove è scritto «misurato»** (2026-09-08, versione 24). Difetto della
+    versione 20, trovato dal consiglio e verificato contando: il costo di un workflow sommava **anche i passi
+    ancora da fare**, e il costo di un passo da fare è una **stima** — lo dice il codice che la genera. Sul primo
+    workflow **33,20 € su 71,20 erano stimati (47 %)** e **83 minuti su 121**; su tutti e sei, 83,80 € su 168. La
+    pagina stampava quella somma sotto la parola «misurati». Adesso costo e minuti sommano solo quello che è
+    avvenuto (fatto, in corso, rotto), il nodo di un passo da fare dice **«non ancora»** con la stima marcata dal
+    `≈`, e la previsione vive in un campo suo (`previsto`), separata. Il corollario vale ovunque: `eur(0)` stampa
+    «0 €», quindi **uno zero non si stampa mai** su una cosa che non è successa — sul canvas come sul telefono,
+    dove lo stesso zero era rimasto vivo.
 
 Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in
