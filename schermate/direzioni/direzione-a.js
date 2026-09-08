@@ -115,6 +115,14 @@ window.DIREZIONE_A = (function () {
 .tl .qua.poi{margin-left:auto}
 .a-tr{position:absolute;right:26px;top:36px;display:flex;gap:10px;align-items:center}
 .a-back{position:absolute;left:26px;top:128px}
+/* L'intestazione sta a y 112, cioe' esattamente dove comincia la tendina, e arriva a x 1414: il suo ultimo numero
+   (che e' cliccabile — «spesi oggi» apre i Costi) nasce sotto la tendina aperta. E' un difetto **preesistente**,
+   non della banda riservata, e NON e' stato corretto: riservare la banda anche qui non basta, perche' i numeri non
+   ci stanno. Misurato a colonna 1008: le intestazioni sforano su 13 pagine su 18, da 143 px (Dipartimento) a 351
+   (Richieste), e le sole tre statistiche delle Richieste ne vogliono 733 in 526 disponibili. Stringere la
+   tipografia dei numeri non basta (provate quattro varianti, la migliore resta a 351 px di sforo): per chiuderlo
+   servirebbe rifare l'intestazione, ed e' una scelta di progetto che spetta all'utente. Scritto in
+   PROSSIMA-SESSIONE.md con i numeri. */
 .a-head{position:absolute;left:102px;top:112px;right:26px;display:flex;align-items:center;gap:40px}
 .a-title{font-size:46px;line-height:56px;letter-spacing:.02em;white-space:nowrap}
 .a-new{height:52px;padding:0 24px 0 6px;border-radius:var(--r-pill);background:var(--white);color:var(--ink);display:flex;align-items:center;gap:14px;font-size:14px;white-space:nowrap;flex:none}
@@ -126,14 +134,22 @@ window.DIREZIONE_A = (function () {
 .stat span{font-size:19px;color:var(--t2);line-height:32px}
 .stat .badge{position:absolute;right:0;top:4px}
 .a-rail{position:absolute;left:26px;top:260px;display:grid;gap:12px}
-.a-main{position:relative;margin:232px 0 0 102px;width:1312px;display:grid;grid-template-columns:minmax(0,1fr);gap:40px}
+/* La banda riservata (versione 21). La tendina del titolare e' fissa sui 330 px di destra (x 1110-1440): tutto
+   quello che .a-main stampava oltre x 1110 nasceva coperto — 33 controlli allo scroll 0 con la tendina aperta,
+   9 con la tendina chiusa sotto il badge lime, e 3 che nessuno scorrimento riusciva a scoprire. La colonna adesso
+   finisce dove la tendina comincia: 1008 px = 1110 meno i 102 del margine. Non dipende dallo stato della tendina,
+   cosi' la pagina e' la stessa aperta e chiusa e un controllo non compare e sparisce con il cassetto.
+   Nessuna eccezione: il canvas dei workflow ci sta anche lui, a quattro colonne invece di cinque (vedi W_COL). */
+.a-main{position:relative;margin:232px 0 0 102px;width:1008px;display:grid;grid-template-columns:minmax(0,1fr);gap:40px}
+
 .a-main>section{min-width:0}
 .shead{display:flex;align-items:center;gap:14px;white-space:nowrap;height:46px}
 .shead h3{font-size:28px;line-height:34px;margin-right:22px}
 .shead .cnt{display:inline-flex;align-items:baseline;gap:5px;border-bottom:1px solid var(--white);padding-bottom:2px;margin-right:24px}
 .shead .cnt b{font-weight:400;font-size:20px}.shead .cnt span{font-size:13px;color:#DADADA}
 .shead .rb.sm{width:46px;height:46px}
-.shead .filters{display:flex;gap:8px;margin-left:8px;overflow:hidden;mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);flex:1;min-width:0}
+.shead .filters{display:flex;gap:8px;margin-left:8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);flex:1;min-width:0}
+.shead .filters::-webkit-scrollbar{display:none}
 .shead .destra{margin-left:auto;display:flex;gap:8px;flex:none}
 /* il campo di ricerca di una sezione (versione 17): prende il posto del cerchio «cerca» quando si apre, con il conto «N di M» */
 .shead .scerca{display:inline-flex;align-items:center;gap:10px;height:46px;padding:0 6px 0 18px;border-radius:var(--r-pill);background:rgb(255 255 255/.07);box-shadow:inset 0 0 0 1px rgb(255 255 255/.18);flex:none}
@@ -153,8 +169,8 @@ window.DIREZIONE_A = (function () {
 .fbar{display:grid;gap:10px;margin-top:-8px;padding-right:220px}
 .frow{display:flex;align-items:center;gap:8px;min-width:0}
 .frow .k{width:92px;flex:none;font-size:11px;color:var(--t2);text-transform:uppercase;letter-spacing:.06em}
-.frow .pills{display:flex;gap:8px;overflow:hidden;mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);min-width:0;flex:1}
-.frow .pills.due{flex:none;mask-image:none;overflow:visible}
+.frow .pills{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);min-width:0;flex:1}
+.frow .pills::-webkit-scrollbar{display:none}
 .frow .sep{width:1px;height:28px;background:rgb(255 255 255/.16);margin:0 8px;flex:none}
 .fsum{display:flex;align-items:center;gap:12px;font-size:14px;color:var(--t2);margin-top:4px}
 .fsum b{color:var(--white);font-weight:400}
@@ -435,7 +451,7 @@ window.DIREZIONE_A = (function () {
 .etesta .tl .ev.plan .n{background:transparent;border:1px solid rgb(0 0 0/.3);color:var(--ink)}
 .etesta .tl .ev.err{background:var(--badge-red);color:var(--badge-red-ink)}
 .etesta .tl .ev.err .n{background:var(--badge-red-ink);color:var(--white)}
-.etesta .tl .ev .nm{max-width:190px;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+.etesta .tl .ev .nm{max-width:140px;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
 .etesta .tl .ev.plan .nm{color:rgb(0 0 0/.55)}
 .etesta .tl .ev b{font-weight:500;color:var(--ink)}
 .etesta .tl .live .lbl{overflow:hidden;text-overflow:ellipsis;margin-right:8px}
@@ -478,6 +494,8 @@ window.DIREZIONE_A = (function () {
 .lead.out .ft>div{min-width:0}
 .lead.out .ft .v{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .costo{display:grid;grid-template-columns:517px minmax(0,1fr);gap:16px;margin-top:24px;align-items:start}
+.costo .crow{grid-template-columns:40px minmax(0,1fr) 120px 120px 100px 32px}
+.costo .crow.nofr{grid-template-columns:40px minmax(0,1fr) 120px 120px 100px}
 .task.spesa .body{padding-top:16px}
 .task.spesa .tt small{font-size:14px}
 .task.spesa .ripart{margin-top:14px}
@@ -986,7 +1004,16 @@ window.DIREZIONE_A = (function () {
   const soloDecise = lst => !lst.some(r => r.stato === 'attesa');
   function rigaStorico(m, r, sola) {
     const chi = m.byId[r.chi];
-    const decisa = r.stato === 'attesa' ? `in attesa da ${esc(r.ora)}` : r.regola ? `regola · <b>${esc(r.regola)}</b>` : `<b>${esc(m.azienda.titolare.iniziali)}</b> · ${esc(r.decisa)}${r.commento ? ' · «' + esc(r.commento) + '»' : ''}`;
+    /* Chi ha deciso (versione 21). Prima era una stringa libera — `regola: 'Follow-up'` — che non risolveva a
+       nessun record: due richieste su tre citavano regole che in `m.regole` non esistono. Adesso e' un riferimento,
+       e la riga stampa la parola che corrisponde a quello che il riferimento apre: «regola» se e' una regola
+       d'azienda, «routine» se e' una routine. Se non risolve non si stampa un nome fantasma: si dice che non si sa,
+       e la prova lo prende. Niente freccia: la pagina delle routine non esiste ancora e la regola 26 vieta di
+       promettere una destinazione che non c'e'. */
+    const aut = m.autoreDi(r);
+    const decisa = r.stato === 'attesa' ? `in attesa da ${esc(r.ora)}`
+      : aut ? (aut.nome ? `${aut.tipo} · <b>${esc(aut.nome)}</b>` : `${aut.tipo} · <b>non si sa quale</b>`)
+      : `<b>${esc(m.azienda.titolare.iniziali)}</b> · ${esc(r.decisa)}${r.commento ? ' · «' + esc(r.commento) + '»' : ''}`;
     const idx = r.stato === 'attesa' ? inAttesa(m).indexOf(r) : -1;
     return `<div class="hrow ${r.stato}${sola ? ' nofr' : ''}" ${idx >= 0 ? `data-az="richiesta" data-idx="${idx}"` : ''}><span class="ora">${esc(r.ora)}</span>${av(m, chi)}<div class="tx"><b>${esc(r.cosa)}</b><span>${esc(m.etichetta(chi))} · ${esc(r.cliente)}</span></div><span class="chip light">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]}</span>${chipEsito(r)}<span class="chi">${decisa}</span><span class="eur">${r.costo} €</span>${idx >= 0 ? `<span class="rb xs">${ic('i-ne')}</span>` : ''}</div>`;
   }
@@ -1237,10 +1264,16 @@ window.DIREZIONE_A = (function () {
      il nodo e' un **passo** (43 a undici, 156 a quaranta, veri) e non un dipendente (passaggi di mano nel modello:
      **zero**), e l'ultimo nodo e' il **titolare**, che nei dati c'e' — l'ultimo passo di ogni dipartimento e' gia'
      «Consegna al titolare».
-     Il canvas si dispone da solo su una griglia a serpentina: cinque nodi per riga, e la riga dispari va all'indietro
+     Il canvas si dispone da solo su una griglia a serpentina: quattro nodi per riga, e la riga dispari va all'indietro
      cosi' i connettori non si incrociano mai. Le posizioni si calcolano **qui**, nella funzione che stampa, e gli
      archi le rileggono: nessuna misura presa dopo il disegno, quindi la pagina e' la stessa a ogni giro. */
-  const W_COL = 5, W_PX = 248, W_PY = 210, W_PAD = 36, W_W = 208, W_H = 96;
+  /* Quattro colonne, non cinque (versione 21). Il consiglio aveva concesso al canvas l'eccezione alla banda
+     riservata perche' la stima diceva «togliendo la banda si passa da 5 colonne a 3, e il workflow di Sviluppo
+     cresce del 41 %». La stima toglieva 354 px; la banda vera ne toglie 304, e il passo fra i nodi bastava
+     stringerlo di 6 px: 36·2 + 3·242 + 208 = **1006 px**, dentro i 1008 della colonna. Misurato il prezzo vero:
+     **un workflow su sei cresce di 210 px a undici, due su ventisei a quaranta**. Niente eccezione, quindi:
+     nessuna pagina larga, nessun nodo che nasce sotto la tendina, e il prodotto resta uno. */
+  const W_COL = 4, W_PX = 242, W_PY = 210, W_PAD = 36, W_W = 208, W_H = 96;
   const wpos = i => { const r = Math.floor(i / W_COL); const c = r % 2 ? W_COL - 1 - (i % W_COL) : i % W_COL; return { x: W_PAD + c * W_PX, y: W_PAD + r * W_PY, r, c }; };
   const ICONA_NODO = { rapido: 'i-bolt', standard: 'i-bot', esperto: 'i-star' };
   function nodoWorkflow(m, w, nd, i, sel) {
@@ -1641,21 +1674,23 @@ window.DIREZIONE_A = (function () {
     return { fatti, cur, prossimo, costo, stima, durata, n: x.passi.length };
   }
   /* La barra dei passi: eventi bianchi = fatti, segmento «adesso» = in corso, rosa = errore, traslucidi = da fare. */
-  /* La barra dei passi non scorre: la pista è larga circa 990 px e sette passi per esteso ne chiedono 1600. I passi già
-     conclusi di un'esecuzione lunga (oltre quattro passi) tengono la spunta e la durata e lasciano il nome, che sta nella
-     lista dei Passi qui sotto, e i passi da fare oltre i due successivi si contano in una pillola sola. Il passo in corso e
-     quello in errore restano sempre per esteso. */
+  /* La barra dei passi non scorre. Con la banda riservata (versione 21) la pista scende da circa 990 a 670-760 px, e una
+     pillola «da fare» per esteso ne chiede 220-246: tre non ci stanno più. La regola si stringe di un passo. Restano per
+     esteso il passo in corso (o quello in errore) e il primo successivo; i conclusi tengono la spunta e la durata e
+     lasciano il nome, che sta nella lista dei Passi qui sotto; tutti gli altri si contano in una pillola sola. Se un passo
+     in corso non c'è (esecuzione pianificata), per esteso resta solo il primo: il blocco di chiusura «parte alle …» ne
+     occupa da solo 241 px. */
   function barraPassi(m, e, x, r) {
     const a = e.att;
     const vivo = x.passi.findIndex(p => p.stato === 'corso' || p.stato === 'errore');
-    const ultimoDaFare = vivo >= 0 ? vivo + 2 : 2;
+    const ultimoDaFare = vivo >= 0 ? vivo + 1 : 0;
     const nascosti = x.passi.filter((p, i) => p.stato === 'da fare' && i > ultimoDaFare).length;
     const fine = e.stato === 'attesa' ? `<span class="fine"><span class="rb">${ic('i-bell')}</span><b>consegnato alle ${esc(a.fine)}</b>aspetta il titolare</span>`
       : e.stato === 'libero' ? `<span class="fine"><span class="rb">${ic('i-check')}</span><b>concluso ${esc(a.fine || '')}</b></span>`
       : e.stato === 'pianificato' ? `<span class="fine"><span class="rb">${ic('i-clock')}</span><b>parte alle ${esc(a.quando)}</b>${r.n} passi · circa ${eur(r.stima)}</span>` : '';
-    const stretti = x.passi.length + (fine ? 1 : 0) > 4;   /* finché le pillole sono quattro i nomi ci stanno tutti; oltre, i passi conclusi lasciano il nome */
+    const stretti = x.passi.length + (fine ? 1 : 0) > 3;   /* finché le pillole sono tre i nomi ci stanno tutti; oltre, i passi conclusi lasciano il nome */
     const fatti = x.passi.filter(p => p.stato === 'fatto');
-    const primoFatto = fatti.length > 3 ? x.passi.indexOf(fatti[fatti.length - 2]) : -1;   /* con più di tre passi conclusi restano gli ultimi due, gli altri si contano */
+    const primoFatto = fatti.length > 2 ? x.passi.indexOf(fatti[fatti.length - 2]) : -1;   /* con più di due passi conclusi restano gli ultimi due, gli altri si contano */
     const ev = x.passi.map((p, i) => {
       const num = p.stato === 'fatto' ? `<i class="n">${ic('i-check')}</i>` : `<i class="n">${p.n}</i>`;
       if (p.stato === 'corso') return `<div class="live"><span class="now"><b>${esc(m.azienda.ora)}</b><i></i></span><span class="lbl"><b>passo ${p.n}</b> · ${esc(p.nome)} · ${durataFra(p.inizio, m.azienda.ora)}</span><span class="rb">${ic('i-play')}</span></div>`;

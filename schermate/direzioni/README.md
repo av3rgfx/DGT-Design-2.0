@@ -67,11 +67,15 @@ faceva, e le altre consegne intorno. Studio e misure in `DIREZIONI.md`, «Versio
   il CSS delle primitive, le variabili e le funzioni che le stampano (`av`, `pair`, `chipStato`, `iconaTipo`, `eur`,
   `differenze`…). Ogni pagina lo carica subito dopo `comune.js` e mette in pagina `DGT_COMPONENTI.css` prima del CSS della
   Console (`direzione-a.js`, che tiene la cornice, le pagine, le tendine e `monta`).
-- **Cinque** prove cliccate in `prove/` (con il `README.md` che dice il comando), **385 verifiche in tutto**: la quinta è `workflow.js` (60: il perimetro delle consegne, il canvas dei workflow, la firma anticipata, la schermata 10 del telefono), e sta in un file suo perché `console.js` sceglie tre sezioni con `nth-of-type`. `console.js` (141 verifiche: tendine, Richieste, editor del
-  dipendente, esecuzione, 40, la barra «Oggi in azienda», la barra dei passi, i controlli delle intestazioni e le frecce di
-  riga), `mobile.js` (82: le otto schermate, la revisione, il rifiuto con motivo, la prova, lo stato vuoto,
-  40, il quadro del giorno, i Dipartimenti e il conto delle frecce), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le due pagine nuove, da dove ci si arriva, i filtri, la
-  scrittura nel filo e le due tab del telefono):
+- **Cinque** prove cliccate in `prove/` (con il `README.md` che dice il comando), **420 verifiche in tutto** (dalla versione 21; erano 385): la quinta è `workflow.js` (77: il perimetro delle consegne, il canvas dei workflow, la firma anticipata, la schermata 10 del telefono), e sta in un file suo perché `console.js` sceglie tre sezioni con `nth-of-type`. `console.js` (154 verifiche: tendine, Richieste, editor del
+  dipendente, esecuzione, 40, la barra «Oggi in azienda», la barra dei passi, i controlli delle intestazioni, le frecce di
+  riga e — dalla versione 21 — le **asserzioni di visibilità** su nove pagine per due taglie e due stati della tendina,
+  più l'invariante «chi ha deciso al posto del titolare risolve a un record che esiste»), `mobile.js` (83: le otto
+  schermate, la revisione, il rifiuto con motivo, la prova, lo stato vuoto, 40, il quadro del giorno, i Dipartimenti, il
+  conto delle frecce e i controlli sotto la navigazione in basso), `costi.js` (50: la pagina dei Costi) e
+  `agenda-chat.js` (56: le due pagine nuove, da dove ci si arriva, i filtri, la
+  scrittura nel filo e le due tab del telefono). Le asserzioni di visibilità stanno in `prove/visibile.js`, condiviso
+  dalle cinque suite:
   `PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css node schermate/direzioni/prove/console.js`
   (e così `mobile.js`, `costi.js`, `agenda-chat.js`).
 - File unico per l'artefatto: `node build-unico.js /percorso/confronto-unico.html`.

@@ -1941,6 +1941,154 @@ vero: tenerli sbagliati sarebbe stato peggio che tenerli inutili.
 - **«Da rifare»** come sesta pillola delle consegne;
 - sul telefono il workflow è **una colonna**, non un canvas stretto.
 
+### Versione 21: il record della routine, e la banda riservata (2026-09-08, sessione successiva)
+
+Il primo giro deciso dall'analisi (sezione 7), nell'ordine votato all'unanimità dal consiglio: **il record della
+routine**, **la fascia morta dei 304 px**, **le asserzioni di visibilità**, **le due regole fantasma**. Nessuna
+interfaccia nuova: si tocca il modello, il CSS di due colonne e le prove.
+
+#### 1. Le otto routine erano tre
+
+L'analisi aveva censito «otto voci» di routine preesistenti. Etichettandole — che era il punto del giro: *se la
+lista sta in piedi la funzione ha contenuto* — le otto voci si sono rivelate **tre routine viste da otto lati**:
+
+| routine | dip. | innesco | da quali lati si vedeva |
+|---|---|---|---|
+| Report giornaliero al titolare | amm | ogni giorno alle 18:00 | obiettivo `o11` + dipendente 11 pianificato + richiesta `r8` |
+| Follow-up settimanale ai clienti | ven | ogni venerdì alle 17:00 | obiettivo `o9` + dipendente 9 pianificato + richiesta `r17` |
+| Fatture ricorrenti | amm | ogni mese, il 1º alle 09:00 | **solo** la richiesta `r16` |
+
+La quarta voce — il Tester QA pianificato alle 15:00 — **non è una routine**: il diario dice che «MR ha pianificato
+"Test di regressione" per le 15:00 di oggi» ieri alle 18:20. È un lavoro una tantum, e il record lo lascia fuori.
+
+**La lista sta in piedi, ed è corta: tre righe.** È l'informazione che il giro doveva produrre, e dice due cose. La
+prima è che una pagina delle routine, oggi, mostrerebbe tre voci — sotto la soglia che il consiglio stesso aveva
+proposto per meritare un cerchio nel rail. La seconda la dicono i numeri del record:
+
+- `fatte` non è inventato, sono le richieste che ogni routine ha davvero prodotto: fa **1** per tutte e tre. Il
+  rodaggio della decisione 53 ne vuole **3**, la prova della decisione 54 non l'ha fatta nessuna, e **tutte e tre
+  girano già con la clausola libera, il «fai pure»**. Nel modello di oggi il «fai pure» non se l'è guadagnato nessuno:
+  è la decisione 54 che trova, nei dati, esattamente il caso che era stata scritta per impedire.
+- Delle tre, **solo «Fatture ricorrenti» ha un workflow**: `workflowDi` nasce da un'esecuzione con almeno due passi
+  conclusi, e i dipendenti 9 e 11 sono `pianificato`, zero passi fatti. La forma dichiarata viene quindi dai `passi`
+  della richiesta che la routine ha deciso l'ultima volta — la stessa cosa vista dall'altro tempo, senza inventare
+  un dato. Ma va detto: **«un oggetto, due tempi» oggi ha due facce solo in un caso su tre.**
+
+A quaranta il generatore ne ricava **tre** con lo stesso criterio (le richieste approvate senza il titolare). Erano
+cinque finché il criterio non guardava lo stato: due erano **rifiutate**, e una richiesta rifiutata il titolare l'ha
+vista, quindi non è uscita da una routine con il «fai pure».
+
+#### 2. Le due regole fantasma: il consiglio, e la misura che ha spostato la domanda
+
+`r16` e `r17` dicevano di essere state decise dalle regole «Fatture ricorrenti» e «Follow-up», che in `m.regole` non
+esistono. Tre strade difendibili — due regole nuove (+220 px misurati sulla pagina Richieste), due eccezioni nei
+dossier (+56 px l'una), o il campo che dice la routine (zero px) — quindi **è passata dal consiglio**.
+
+**Il verdetto.** Primo giro 3–2 per la terza strada; la revisione incrociata ha ribaltato: **4 revisori su 5** hanno
+indicato come più forte il parere che sposta la domanda dal lessico all'autorità — *una routine esegue, non decide;
+un mestiere non è un'autorità* — e propone che `g1` conti dentro di sé le proprie eccezioni.
+
+**Ma la revisione incrociata ha trovato la cosa che ha spostato davvero la domanda**, e non era in nessuno dei
+cinque pareri: *«i due nomi fantasma sono i nomi delle due routine» è una **deduzione, non una misura**: nel modello
+nessun campo lega `r17` alla routine del follow-up, se non il nome e il dipendente. Il campo che lega la richiesta
+alla routine va creato prima di stamparne il nome.»* Due revisori su cinque, indipendentemente, hanno aggiunto la
+stessa cosa: la causa non è la parola, è che **il campo era una stringa libera che non risolveva a nessun oggetto**,
+e nessuna delle 385 prove lo leggeva.
+
+Quindi il giro fa la parte che nessuno contesta e che era comunque il suo primo lavoro: **il riferimento**.
+`regola: 'Follow-up'` diventa `deciso: { tipo: 'routine' | 'regola', id }`, che deve risolvere a un record che
+esiste; `r8` resta una **regola**, perché `g2` «Report interni» esiste davvero ed è l'unico dei tre casi in cui il
+campo diceva il vero. La riga stampa la parola che corrisponde a quello che il riferimento apre, e se non risolve
+non stampa un nome fantasma: dice «non si sa quale», e **la prova lo prende**. Niente freccia: la pagina delle
+routine non esiste e la regola 26 vieta di promettere una destinazione che non c'è.
+
+**Resta da confermare all'utente** se `r16` e `r17` debbano diventare eccezioni nei dossier dei dipendenti 9 e 10
+con il contatore dentro `g1` (la strada che la revisione incrociata preferisce, e che costa una riga-contatore da
+costruire), oppure restare attribuite alla routine come sono adesso. E due difetti che il consiglio ha nominato
+senza che fossero la domanda: la colonna **Stato dice «Approvata» per `r17`, e nessuno l'ha approvata**; e `g4`
+«Spese sopra 50 €» è **spenta** mentre `r16` fa uscire 14.200 € di fatture.
+
+#### 3. La banda riservata: 106 controlli irraggiungibili, e la stima che era sbagliata
+
+La tendina del titolare è `position:fixed` sui 330 px di destra (x 1110–1440) e `.a-main` arrivava a x 1414.
+Misurato prima della cura, su dieci pagine per due taglie e due stati della tendina:
+
+| | prima | dopo |
+|---|---|---|
+| Controlli **coperti** dalla tendina o dal badge lime, allo scroll 0 | **66** | **0** |
+| Controlli **tagliati** da un contenitore che non scorreva (irraggiungibili in ogni caso) | **40** | **0** |
+| Controlli tagliati ma raggiungibili scorrendo la striscia | 108 | 192 |
+
+`.a-main` passa da **1312 a 1008 px** (1110 meno i 102 del margine), e non dipende dallo stato della tendina, così
+la pagina è la stessa aperta e chiusa e un controllo non compare e sparisce con il cassetto. Il prezzo, misurato:
+le pagine si allungano dallo 0 al 26 % (home 1 844 → 2 320, Richieste 2 503 → 3 033, Dipartimento 2 594 → 3 130;
+Esecuzione, Costi e Chat invariate). **1008 px batte i 958 della stima**: a 958 il Dipartimento arriva a 3 786 px
+invece di 3 130, perché una griglia perde una colonna.
+
+Tre cose che la colonna più stretta ha rotto, e come:
+- **le strisce di pillole** (`.shead .filters`, `.frow .pills`) erano `overflow:hidden` con una maschera sfumata:
+  quello che non ci stava spariva e basta. Erano **40 pillole già irraggiungibili prima di questa versione**.
+  Adesso scorrono (`overflow-x:auto`, barra nascosta, stessa maschera) — lo stesso schema che `.cards.riga` usa
+  già nel repository. `.pills.due` perde `flex:none`, che con la colonna stretta sfondava.
+- **la barra dei passi** dell'Esecuzione: la pista scende da ~990 a 670–760 px, e una pillola «da fare» per esteso
+  ne chiede 220–246. La regola che la barra già aveva si stringe di un passo — restano per esteso il passo in corso
+  e **il primo** successivo (erano due), i conclusi lasciano il nome oltre i **tre** (erano quattro), e i nomi si
+  troncano a 140 px (erano 190). Sette esecuzioni su undici sforavano; adesso **zero**, a tutte e due le taglie.
+- **la colonna di destra della pagina Costi** scendeva a 475 px e una `.crow.nofr` ne vuole 536: le tre colonne di
+  valore si stringono di 30 px l'una.
+
+#### 4. Il canvas non ha avuto l'eccezione: una misura ha battuto il consiglio, di nuovo
+
+Il consiglio aveva concesso al canvas dei workflow di restare a 1312 px, perché la stima diceva «togliendo la banda
+si passa da cinque colonne a tre, e il workflow di Sviluppo cresce del 41 %». **La stima toglieva 354 px; la banda
+vera ne toglie 304**, e bastava stringere il passo fra i nodi di 6 px — da 248 a 242 — perché quattro colonne
+stessero in 1006 px. Il prezzo vero, misurato su tutti i workflow: **un workflow su sei cresce di 210 px a undici,
+due su ventisei a quaranta**. Niente eccezione, quindi: nessuna pagina larga, nessun nodo che nasce sotto la
+tendina, e il prodotto resta uno. È la seconda volta in due sessioni che una misura corregge il consiglio, e la
+terza in tre che una stima fatta a memoria finisce sbagliata in un documento.
+
+#### 5. Le asserzioni di visibilità, e i due difetti che hanno trovato
+
+`prove/visibile.js` è condiviso dalle cinque suite. Distingue due cose che non sono la stessa:
+- **coperto**: il centro del controllo cade sotto un elemento fisso. È sempre un difetto.
+- **tagliato**: il controllo esce dal proprio contenitore. È un difetto **solo se quel contenitore non scorre**.
+
+Senza quella distinzione la verifica segnalava difetti che non c'erano: sul telefono ne ha nominati tre (due righe
+della chat e un evento dell'agenda sotto la navigazione in basso) che invece si raggiungono, perché `.m-scroll`
+scorre e ha 96 px di spazio in fondo contro i 78 di banda della barra. La verifica corretta chiede «esiste **uno**
+scorrimento in cui non è coperto?», non «è coperto adesso?».
+
+E `console.js` porta adesso **l'invariante che avrebbe preso le due regole fantasma**: ogni riferimento a chi ha
+deciso al posto del titolare deve risolvere a un record che esiste, a undici e a quaranta.
+
+#### 6. I tetti (decisione 55, e le due conferme dell'utente)
+
+- **Soffitto, non ripartizione**, con l'avviso quando le quote sommano oltre il 100 %. Nel modello: `m.tetti.modo`,
+  `tettoAzienda()` (115 €/giorno e 1 580 €/mese a undici, la somma dei budget), `soffittoDi(dip)` e
+  `sommaSoffitti()`. Obbligatorio è **solo** il tetto d'azienda: nel modello solo Vendite ha un soffitto (60 %,
+  cioè 69 €), gli altri no — così chi non tocca niente ha un numero solo da capire.
+- **Ferma prima del passo** (`fermaPrimaDelPasso`): i passi dei 200 lead costano 0,5 · 6 · 22 · 9,5 · 23 · 4 €, e
+  un solo passo può costare 23 €, più del doppio dell'intero tetto giornaliero di Nora.
+
+Nessuna pagina li disegna ancora: il record viene prima dell'interfaccia, ed è il punto del giro.
+
+#### 7. Verifica
+
+Le cinque prove: **421 verifiche, 0 ko** (erano 385) — `console.js` 155, `mobile.js` 83, `costi.js` 50,
+`agenda-chat.js` 56, `workflow.js` 77. Le trentasei nuove sono le asserzioni di visibilità nelle cinque suite,
+l'invariante dei riferimenti, il record della routine e i tetti.
+
+#### 8. Il difetto che la verifica nuova ha trovato, e che non è stato corretto
+
+Allargando le asserzioni di visibilità da `.a-main` a tutta la cornice salta fuori un difetto **preesistente**:
+`.a-head` sta a y 112 — dove comincia la tendina — e arriva a x 1414, quindi il suo **ultimo numero, che è
+cliccabile** («spesi oggi» apre i Costi), nasce sotto la tendina aperta. Quattro controlli, su home e Dipartimento
+alle due taglie. **La banda non lo chiude**: misurato, riservarla anche sull'intestazione la farebbe sforare su
+**13 pagine su 18**, da 143 px a **351**, e le sole tre statistiche delle Richieste ne vogliono **733 in 526
+disponibili**; quattro varianti di tipografia più stretta non bastano. Serve rifare l'intestazione — una scelta di
+progetto dell'utente, con le tre strade scritte in `PROSSIMA-SESSIONE.md`. Nel frattempo la prova **ne fissa il
+conto a 4** invece di far finta che non esista: se cresce, se ne accorge.
+
 ## 5. File
 
 | File | Ruolo |

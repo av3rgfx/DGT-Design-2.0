@@ -4,6 +4,7 @@ const path = require('path'), fs = require('fs');
 
 const css = process.env.LOCAL_FONT_CSS ? fs.readFileSync(process.env.LOCAL_FONT_CSS, 'utf8') : '';
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const vis = require('./visibile.js');
 const file = q => 'file://' + path.resolve(__dirname, '../direzione-a.html') + (q ? '?' + q : '');
 const fileM = q => 'file://' + path.resolve(__dirname, '../mobile.html') + (q ? '?' + q : '');
 let ok = 0, ko = 0;
@@ -131,6 +132,24 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   await clic(tel(1) + '.m-bnav .tabs .rb >> nth=3');
   check(await page.getAttribute(tel(1) + '.m-scr', 'data-schermata') === '6', 'la tab Agenda apre l\'agenda');
   check(await sfori() === 0, 'nessuno schermo del telefono scorre di lato');
+  /* Che i controlli SI VEDANO, non solo che esistano (versione 21): nessuno deve nascere sotto la tendina del
+     titolare o sotto il badge lime, e nessuno deve stare in un contenitore che non scorre. */
+  console.log('\nX. i controlli di Agenda e Chat si vedono, non solo esistono (versione 21)');
+  let copX = 0, mutiX = 0;
+  for (const stato of ['aperta', 'chiusa']) {
+    for (const q of ['pagina=agenda', 'pagina=chat']) {
+      for (const n of ['11', '40']) {
+        await page.goto(file(q + (q ? '&' : '') + 'n=' + n + '&tendina=' + stato)); await page.waitForTimeout(150);
+        const cop = await vis.coperti(page), mu = await vis.muti(page);
+        copX += cop.length; mutiX += mu.length;
+        if (cop.length) console.log('    COPERTI ' + q + '@' + n + '/' + stato + ': ' + cop.join(' | '));
+        if (mu.length) console.log('    MUTI ' + q + '@' + n + '/' + stato + ': ' + mu.join(' | '));
+      }
+    }
+  }
+  check(copX === 0, 'nessun controllo nasce sotto la tendina o sotto il badge (' + copX + ')');
+  check(mutiX === 0, 'nessun controllo sta in un contenitore che non scorre (' + mutiX + ')');
+
   check(errors.length === 0, 'nessun errore in console: ' + JSON.stringify(errors));
   console.log(`\n${ok} ok, ${ko} ko`);
   await browser.close(); process.exit(ko ? 1 : 0);

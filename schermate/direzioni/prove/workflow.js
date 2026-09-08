@@ -8,6 +8,7 @@ const path = require('path'), fs = require('fs');
 
 const css = process.env.LOCAL_FONT_CSS ? fs.readFileSync(process.env.LOCAL_FONT_CSS, 'utf8') : '';
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const vis = require('./visibile.js');
 const file = q => 'file://' + path.resolve(__dirname, '../direzione-a.html') + (q ? '?' + q : '');
 const tel = q => 'file://' + path.resolve(__dirname, '../mobile.html') + (q ? '?' + q : '');
 let ok = 0, ko = 0;
@@ -30,7 +31,10 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(await conta('.a-main > section') === 6, 'la pagina Dipartimento resta a sei sezioni: il perimetro non ne aggiunge');
   check(await txt(sez('^Consegne') + ' h3') === 'Consegne di oggi', 'il titolo dice il perimetro: «Consegne di oggi»');
   const altOggi = await page.evaluate(() => document.documentElement.scrollHeight);
-  check(altOggi === 2594, 'Sviluppo a «oggi» è alta 2 594 px, esattamente come nella versione 19: la pagina ferma non cambia (' + altOggi + ')');
+  /* Il numero era 2 594 px fino alla versione 20. La banda riservata della versione 21 stringe la colonna da 1312 a
+     1008 px e la pagina si allunga: il prezzo misurato del non avere più controlli sotto la tendina. Resta il senso
+     dell'asserzione — a «oggi» la pagina non si muove — e infatti la si rilegge sotto, dopo le pillole del periodo. */
+  check(altOggi === 3130, 'Sviluppo a «oggi» è alta 3 130 px: la banda riservata la allunga di 536 px, e da lì non si muove (' + altOggi + ')');
   check(await conta(sez('^Consegne') + ' .ncard.task') === 7, 'sette consegne di oggi in Sviluppo, come prima');
   check(await conta(sez('^Consegne') + ' [data-az="cerca"]') === 0, 'niente cerchio «cerca» a «oggi»: sette righe stanno in una schermata');
 
@@ -62,7 +66,9 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   console.log('4. dal Dipartimento ai workflow: una pillola, zero sezioni nuove');
   await page.goto(file('pagina=dipartimento&dip=mkt&tendina=chiusa')); await page.waitForTimeout(400);
   const alt = await page.evaluate(() => document.documentElement.scrollHeight);
-  check(alt === 2960, 'Marketing resta alta 2 960 px: l\'ingresso ai workflow non costa un pixel (' + alt + ')');
+  /* 2 960 px fino alla versione 20; 3 526 con la banda riservata. L'ingresso ai workflow continua a non costare un
+     pixel: la differenza è tutta della colonna più stretta, non della pillola. */
+  check(alt === 3526, 'Marketing è alta 3 526 px: l\'ingresso ai workflow non costa un pixel, la banda riservata sì (' + alt + ')');
   check(await conta('.shead [data-pagina="workflow"]') === 1, 'la pillola «Workflow» sta nell\'intestazione di «Oggi in Marketing»');
   check((await txt('.shead [data-pagina="workflow"]')).includes('2'), 'e dice quanti sono: due');
   check(await conta('.a-rail .rb') === 6, 'il rail resta a sei cerchi');
@@ -145,6 +151,70 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check((await txt('.m-scr[data-schermata="10"] .m-azioni .pill')).includes('Spegni'), 'la firma si accende anche dal telefono, ed è lo stesso stato della Console');
 
   console.log('\n' + (errors.length ? 'errori in console: ' + errors.join(' | ') : '  ok  nessun errore in console: []'));
+  /* ---- 8. le routine: il record che prima non c'era (versione 21) ----
+     Il primo giro non costruisce nessuna interfaccia: si etichettano le routine che il modello ha già e si guarda
+     se la lista sta in piedi. Le «otto voci» censite dall'analisi sono, contate, **tre routine viste da otto lati**
+     più un lavoro una tantum che routine non è. */
+  console.log('\n8. il record della routine (versione 21): tre, non otto');
+  await page.goto(file('tendina=chiusa')); await page.waitForTimeout(300);
+  const rt11 = await page.evaluate(() => {
+    const m = DGT_DATI.modello(11);
+    return {
+      n: m.routine.length,
+      nomi: m.routine.map(r => r.nome),
+      inneschi: m.routine.map(r => r.innesco.testo),
+      clausole: m.routine.map(r => r.clausola),
+      rodaggi: m.routine.map(r => m.rodaggioDi(r)),
+      /* i lati da cui le tre si vedevano prima di avere un record */
+      obiettiviRicorrenti: m.obiettivi.filter(o => /^ogni /.test(o.scadenza || '')).length,
+      pianificati: m.dipendenti.filter(e => e.stato === 'pianificato').length,
+      decise: m.richieste.filter(r => r.deciso).length,
+      /* il Tester QA delle 15:00 non è una routine: il diario dice che l'ha pianificato MR, ieri, per oggi */
+      testerHaRoutine: m.routineDi(m.byId[2]).length,
+      tetto: m.tettoAzienda(), soffittoVen: m.soffittoDi('ven'), soffittoSvi: m.soffittoDi('svi'),
+      modo: m.tetti.modo, ferma: m.tetti.fermaPrimaDelPasso, somma: m.sommaSoffitti(),
+    };
+  });
+  check(rt11.n === 3, 'le routine di undici sono tre, non otto: le otto voci erano tre routine viste da otto lati (' + rt11.n + ')');
+  check(rt11.obiettiviRicorrenti + rt11.pianificati + rt11.decise === 8, 'e gli otto lati ci sono ancora tutti: ' + rt11.obiettiviRicorrenti + ' obiettivi che si ripetono + ' + rt11.pianificati + ' pianificati + ' + rt11.decise + ' richieste decise senza il titolare');
+  check(rt11.testerHaRoutine === 0, 'il Tester QA delle 15:00 non è una routine: MR l\'ha pianificato ieri alle 18:20 per oggi');
+  check(rt11.inneschi.every(t => /^Ogni /.test(t)), 'ognuna porta il suo innesco: ' + rt11.inneschi.join(' · '));
+  check(rt11.clausole.every(c => c === 'libera'), 'tutte e tre girano già con il «fai pure»');
+  check(rt11.rodaggi.every(r => r.fatte < r.di), 'e nessuna ha finito il rodaggio di tre giri: ' + rt11.rodaggi.map(r => r.fatte + '/' + r.di).join(' · ') + ' — nel modello di oggi il «fai pure» non se l\'è guadagnato nessuno');
+  const rt40 = await page.evaluate(() => { const m = DGT_DATI.modello(40); return { n: m.routine.length, tutteApprovate: m.routine.every(r => r.decise.every(id => (m.richieste.find(x => x.id === id) || {}).stato === 'approvata')) }; });
+  check(rt40.n === 3, 'a quaranta il generatore ne ricava tre con lo stesso criterio (' + rt40.n + ')');
+  check(rt40.tutteApprovate, 'e nessuna nasce da una richiesta rifiutata: quella il titolare l\'ha vista');
+
+  console.log('\n9. i tetti di spesa (decisione 55 e le due conferme dell\'8 settembre)');
+  check(rt11.modo === 'soffitto', 'il tetto di dipartimento è un soffitto, non una ripartizione: le quote possono sommare oltre 100');
+  check(rt11.ferma === true, 'e il tetto si controlla prima di ogni passo, mai a metà');
+  check(rt11.tetto.giorno === 115 && rt11.tetto.mese === 1580, 'il tetto d\'azienda a undici: 115 €/giorno e 1 580 €/mese, la somma dei budget (' + rt11.tetto.giorno + '/' + rt11.tetto.mese + ')');
+  check(rt11.soffittoVen === 69 && rt11.soffittoSvi === null, 'Vendite ha un soffitto del 60 % (69 €), gli altri no: obbligatorio è solo il tetto d\'azienda');
+  check(rt11.somma === 60, 'e la somma delle quote è 60 %: sotto il 100, nessun avviso da dare (' + rt11.somma + ')');
+
+  /* ---- 10. che i controlli SI VEDANO (versione 21) ---- */
+  console.log('\n10. i controlli dei workflow si vedono, non solo esistono');
+  await page.goto(file('pagina=workflow&dip=svi&tendina=chiusa')); await page.waitForTimeout(200);
+  const wid = await page.evaluate(() => { const c = document.querySelector('[data-az="workflow"]'); return c ? c.dataset.id : ''; });
+  let copW = 0, mutiW = 0;
+  for (const stato of ['aperta', 'chiusa']) {
+    for (const q of ['pagina=workflow&dip=svi', 'pagina=workflow&dip=svi&workflow=' + wid, 'pagina=dipartimento&dip=svi']) {
+      for (const n of ['11', '40']) {
+        await page.goto(file(q + '&n=' + n + '&tendina=' + stato)); await page.waitForTimeout(150);
+        const cop = await vis.coperti(page), mu = await vis.muti(page);
+        copW += cop.length; mutiW += mu.length;
+        if (cop.length) console.log('    COPERTI ' + q + '@' + n + '/' + stato + ': ' + cop.join(' | '));
+        if (mu.length) console.log('    MUTI ' + q + '@' + n + '/' + stato + ': ' + mu.join(' | '));
+      }
+    }
+  }
+  check(copW === 0, 'nessun nodo e nessuna pillola nascono sotto la tendina: era il difetto che ha aperto la sessione (' + copW + ')');
+  check(mutiW === 0, 'e nessun controllo sta in un contenitore che non scorre (' + mutiW + ')');
+  await page.goto(file('pagina=workflow&dip=svi&workflow=' + wid + '&tendina=aperta')); await page.waitForTimeout(300);
+  const cw = await page.evaluate(() => ({ main: Math.round(document.querySelector('.a-main').getBoundingClientRect().width), canvas: Math.round(document.querySelector('.wcanvas').getBoundingClientRect().width), col: [...document.querySelectorAll('.wnode')].map(n => Math.round(n.getBoundingClientRect().x)).filter((v, i, a) => a.indexOf(v) === i).length }));
+  check(cw.main === 1008 && cw.canvas <= 1008, 'il canvas sta nella colonna riservata senza eccezioni (' + cw.canvas + ' px in ' + cw.main + ')');
+  check(cw.col <= 4, 'su quattro colonne invece di cinque: 6 px di passo in meno, non le due colonne che la stima prometteva (' + cw.col + ')');
+
   if (!errors.length) ok++; else ko++;
   console.log('\n' + ok + ' ok, ' + ko + ' ko');
   await browser.close();

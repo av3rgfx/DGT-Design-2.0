@@ -5,6 +5,7 @@ const path = require('path'), fs = require('fs');
 // Font locali: LOCAL_FONT_CSS (vedi design-system/tools/fetch-fonts.py); Playwright globale: PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules
 const css = process.env.LOCAL_FONT_CSS ? fs.readFileSync(process.env.LOCAL_FONT_CSS, 'utf8') : '';
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const vis = require('./visibile.js');
 const file = q => 'file://' + path.resolve(__dirname, '../direzione-a.html') + (q ? '?' + q : '');
 let ok = 0, ko = 0;
 const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } else { ko++; console.log('  KO  ' + msg); } };
@@ -388,6 +389,67 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   const sezCnA = await sez('^Consegne di oggi');
   await clic(sezCnA + ' .pill[data-v="attesa"]');
   check((await txt(sezCnA)).includes('Nessuna consegna'), 'e con un filtro che non pesca niente la sezione lo dice invece di restare vuota');
+
+  /* ---- 12. che i controlli SI VEDANO, non solo che esistano (versione 21) ----
+     Le nove pagine, le due taglie, la tendina aperta (lo stato predefinito) e chiusa: nessun controllo deve
+     nascere sotto la tendina o sotto il badge lime, e nessuno deve stare in un contenitore che non scorre.
+     Prima della banda riservata questa verifica trovava 66 controlli coperti e 40 muti. */
+  console.log('\n12. i controlli si vedono, non solo esistono (versione 21)');
+  const PAGINE_VIS = [['home', ''], ['richieste', 'pagina=richieste'], ['dipartimento', 'pagina=dipartimento&dip=svi'],
+    ['dipendente', 'pagina=dipendente&id=4'], ['esecuzione', 'pagina=esecuzione&id=4'], ['costi', 'pagina=costi'],
+    ['agenda', 'pagina=agenda'], ['chat', 'pagina=chat'], ['workflow', 'pagina=workflow&dip=svi']];
+  let copTot = 0, mutiTot = 0;
+  for (const stato of ['aperta', 'chiusa']) {
+    for (const [nome, q] of PAGINE_VIS) {
+      for (const n of ['11', '40']) {
+        await page.goto(file(q + (q ? '&' : '') + 'n=' + n + '&tendina=' + stato)); await page.waitForTimeout(120);
+        const cop = await vis.coperti(page), mu = await vis.muti(page);
+        copTot += cop.length; mutiTot += mu.length;
+        if (cop.length) console.log('    COPERTI ' + nome + '@' + n + '/' + stato + ': ' + cop.join(' | '));
+        if (mu.length) console.log('    MUTI ' + nome + '@' + n + '/' + stato + ': ' + mu.join(' | '));
+      }
+    }
+  }
+  check(copTot === 0, 'nessun controllo della colonna nasce sotto la tendina o sotto il badge, su nove pagine per due taglie e due stati (' + copTot + ')');
+  check(mutiTot === 0, 'nessun controllo sta in un contenitore che non scorre: quello che si taglia si raggiunge scorrendo (' + mutiTot + ')');
+  /* Il difetto preesistente dell'intestazione, contato e dichiarato invece che nascosto: `.a-head` arriva a x 1414
+     e il suo ultimo numero è cliccabile, quindi sotto la tendina aperta ci finisce. Non si chiude riservando la
+     banda anche lì (le intestazioni sforerebbero su 13 pagine su 18, fino a 351 px): serve rifare l'intestazione,
+     ed è una scelta dell'utente. La prova ne fissa il conto, così se cresce ce ne accorgiamo. */
+  let copHead = 0;
+  for (const [nome, q] of PAGINE_VIS) {
+    for (const n of ['11', '40']) {
+      await page.goto(file(q + (q ? '&' : '') + 'n=' + n + '&tendina=aperta')); await page.waitForTimeout(120);
+      const c = await vis.copertiIntestazione(page);
+      copHead += c.length;
+    }
+  }
+  check(copHead === 4, 'difetto preesistente, dichiarato: 4 numeri dell\'intestazione stanno sotto la tendina aperta (home e Dipartimento, due taglie) — si chiude solo rifacendo l\'intestazione (' + copHead + ')');
+
+  /* Nessuna eccezione, nemmeno il canvas: ci sta anche lui, a quattro colonne invece di cinque. */
+  await page.goto(file('pagina=workflow&dip=svi&tendina=chiusa')); await page.waitForTimeout(200);
+  const idW = await page.evaluate(() => { const c = document.querySelector('[data-az="workflow"]'); return c ? c.dataset.id : ''; });
+  await page.goto(file('pagina=workflow&dip=svi&workflow=' + idW + '&tendina=aperta')); await page.waitForTimeout(300);
+  const cv = await page.evaluate(() => ({ main: Math.round(document.querySelector('.a-main').getBoundingClientRect().width), canvas: Math.round(document.querySelector('.wcanvas').getBoundingClientRect().width), larghe: document.querySelectorAll('.a-main.larga').length }));
+  check(cv.larghe === 0 && cv.main === 1008, 'il canvas non ha nessuna eccezione: sta nei 1008 px come tutte le altre pagine (' + cv.main + ')');
+  check(cv.canvas <= 1008, 'e il canvas ci sta dentro: quattro colonne a 242 px di passo (' + cv.canvas + ')');
+  check((await vis.coperti(page)).length === 0, 'con la tendina aperta nessun nodo nasce coperto, che era il motivo dell\'eccezione');
+  await page.goto(file('pagina=richieste&tendina=chiusa')); await page.waitForTimeout(200);
+  check(await page.evaluate(() => Math.round(document.querySelector('.a-main').getBoundingClientRect().width)) === 1008, 'la colonna finisce dove comincia la tendina, su ogni pagina');
+
+  /* ---- 13. l'invariante che avrebbe preso le due regole fantasma (versione 21) ---- */
+  console.log('\n13. chi ha deciso al posto del titolare risolve a un record che esiste');
+  for (const n of [11, 40]) {
+    const rotti = await vis.riferimentiRotti(page, n);
+    if (rotti.length) console.log('    ROTTI a ' + n + ': ' + rotti.join(' | '));
+    check(rotti.length === 0, 'a ' + n + ' nessun riferimento rotto: prima «Fatture ricorrenti» e «Follow-up» non esistevano in m.regole (' + rotti.length + ')');
+  }
+  const rDecise = await page.evaluate(() => [...document.querySelectorAll('.hrow')].filter(el => /(regola|routine) ·/.test(el.textContent)).map(el => el.textContent.replace(/\s+/g, ' ').trim()));
+  check(rDecise.length === 3, 'tre consegne sono uscite senza la firma del titolare, e lo dicono nella riga (' + rDecise.length + ')');
+  check(rDecise.filter(t => /routine ·/.test(t)).length === 2, 'due le ha decise una routine');
+  check(rDecise.filter(t => /regola ·/.test(t)).length === 1, 'una la regola «Report interni», che esiste davvero');
+  check(rDecise.every(t => !/non si sa quale/.test(t)), 'e nessuna dice «non si sa quale»');
+  check(await conta('.hrow [data-az="routine"]') === 0, 'nessuna freccia verso le routine: la pagina non esiste ancora e la regola 26 vieta di prometterla');
 
   check(errors.length === 0, 'nessun errore in console: ' + JSON.stringify(errors));
   console.log(`\n${ok} ok, ${ko} ko`);

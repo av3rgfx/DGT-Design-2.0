@@ -17,6 +17,9 @@ node schermate/direzioni/prove/agenda-chat.js
 node schermate/direzioni/prove/workflow.js
 ```
 
+`visibile.js` non è una prova: è il modulo che le cinque condividono per asserire che un controllo **si veda**
+(`coperti`, `muti`, `copertiMobile`, `riferimentiRotti`).
+
 Si lanciano da qualunque cartella (i percorsi sono relativi al file della prova). Ogni prova stampa `ok` / `KO` per verifica e
 finisce con il conteggio; esce con codice 1 se una verifica fallisce.
 
@@ -31,7 +34,7 @@ finisce con il conteggio; esce con codice 1 se una verifica fallisce.
 Attenzione: Playwright scorre da solo per cliccare un elemento fuori dallo schermo, quindi una verifica sullo scorrimento va fatta
 con l'elemento già visibile. Le prove girano con `reducedMotion: 'reduce'`, così gli avatar stanno fermi e il DOM è stabile.
 
-## Asserire che un controllo si veda, non solo che esista (2026-09-08)
+## Asserire che un controllo si veda, non solo che esista (2026-09-08, fatto nella versione 21)
 
 Le cinque suite asserivano la **presenza nel DOM** (`conta('…') === 1`) e il **clic**. Non basta: prima di
 cliccare, Playwright porta l'elemento al centro del viewport, quindi un controllo coperto da un elemento
@@ -54,3 +57,17 @@ check(visibile === 'visibile', 'la pillola si vede davvero, non solo esiste nel 
 Va eseguita **allo scroll in cui la pagina si apre** (0) e con la tendina nei suoi stati (`aperta`, `chiusa`):
 il badge lime della tendina chiusa è fisso a `top:240px` e copre esattamente la fascia dove cadono le
 intestazioni di sezione.
+
+**Come è stato fatto davvero (versione 21).** Lo schizzo qui sopra è il punto di partenza, e nell'uso ha mostrato
+due limiti che vale la pena conoscere prima di riscriverlo:
+
+1. **`elementFromPoint` da solo non basta**: ritorna il figlio più profondo, che quasi sempre è l'`svg` dentro il
+   controllo, e allora `el.contains(sopra)` è vero anche quando il controllo sta sotto la tendina. `visibile.js`
+   confronta invece la **geometria** degli elementi fissi (`.a-tend`, `.a-mini`), che è la domanda vera.
+2. **«coperto» e «tagliato» non sono la stessa cosa.** Un controllo che esce dal proprio contenitore è un difetto
+   *solo se quel contenitore non scorre*: le strisce di pillole e le file di card sfumano con una maschera e si
+   scorrono, ed è disegno. La domanda giusta è «esiste **uno** scorrimento in cui non è coperto?». Senza questa
+   distinzione la verifica del telefono ha segnalato tre righe che invece si raggiungono benissimo.
+
+Il conto, prima della cura, su dieci pagine per due taglie e due stati della tendina: **66 controlli coperti** e
+**40 in una striscia che non scorreva**. Adesso zero e zero, e le cinque suite lo rifanno a ogni giro.
