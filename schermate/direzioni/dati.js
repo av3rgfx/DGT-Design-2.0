@@ -860,7 +860,18 @@ window.DGT_DATI = (function () {
        modello aveva e non collegava: il **passo** che l'ha prodotta (letto da `quando`, «passo 2 · 10:18») con il suo
        esito, i suoi strumenti e il suo costo, e la **richiesta** al titolare quando la consegna è già uscita.
        L'id è stabile (`c<idDipendente>-<indice>`) perché una consegna si deve poter aprire. ---- */
-    function consegneDi(dip) {
+    /* ---- Il perimetro (versione 20, 2026-09-08) ----
+       La sezione diceva «di oggi» e mostrava soltanto le esecuzioni correnti. Le tre pillole del periodo
+       (`oggi` · `settimana` · `mese`, le stesse della Spesa) **non hanno richiesto di inventare dati storici**:
+       le consegne passate ci sono già ed erano le **richieste decise**, che portano `giorno`, `tipo`, `costo`,
+       `testo`, `allegato` e la data della decisione. Contate: 18 → 30 → 31 in tutta l'azienda a undici
+       dipendenti, 40 → 55 → 61 a quaranta.
+       Il filtro parte da `giorno >= 1`, cioè da ieri: le decise di **oggi** sono già nella lista corrente (r3,
+       «Lista di 120 lead verificati», è puntata da una consegna in corso) e contarle due volte le raddoppierebbe
+       nella pillola «oggi». Conseguenza voluta: **con `oggi` la funzione ritorna esattamente quello che ritornava
+       prima della versione 20**, quindi la pagina ferma non cambia di un pixel. */
+    const PER_CONSEGNE = { oggi: 0, settimana: 7, mese: 31 };
+    function consegneDi(dip, periodo) {
       const lst = dip ? (out.perDip[dip] || []) : m.dipendenti;   /* perDip sta su `out`, lo rifà `ricalcola()` */
       const out2 = [];
       lst.forEach(e => {
@@ -882,12 +893,112 @@ window.DGT_DATI = (function () {
           });
         });
       });
-      /* le fatte prima, poi quelle che aspettano il titolare, poi quelle in corso, poi le da fare; l'errore in fondo */
-      const ord = { fatto: 0, approvata: 0, attesa: 1, bozza: 2, 'da fare': 3, errore: 4 };
-      return out2.sort((a, b) => (ord[a.stato] - ord[b.stato]) || (a.chi - b.chi));
+      /* Le consegne dei giorni scorsi: le richieste già decise, che sono le consegne uscite dal titolare. Non
+         portano il passo strutturato (la richiesta ha solo i nomi dei suoi passi), quindi `passo` resta nullo e la
+         pagina della consegna mostra la sezione «La richiesta al titolare» al posto di «Il passo che l'ha
+         prodotta» — le due sezioni erano già condizionali dalla versione 19. */
+      const gg = PER_CONSEGNE[periodo] || 0;
+      if (gg) {
+        const chiOk = dip ? lst.map(e => e.id) : null;
+        m.richieste.filter(r => r.stato !== 'attesa' && r.giorno >= 1 && r.giorno <= gg
+          && (!chiOk || chiOk.includes(r.chi))).forEach(r => {
+          const e = byId[r.chi];
+          if (!e) return;
+          out2.push({
+            id: 'cr-' + r.id, nome: r.cosa, tipo: r.tipo, stato: r.stato, quando: r.decisa || r.ora,
+            desc: r.testo || '', chi: e.id, dip: e.dip, cliente: r.cliente || '',
+            richiesta: r.id, passo: null, esecuzione: '', voci: [], giorno: r.giorno, passata: true,
+          });
+        });
+      }
+      /* le fatte prima, poi quelle che aspettano il titolare, poi quelle in corso, poi le da fare; l'errore in fondo.
+         Le passate (versione 20) vanno dopo quelle di oggi a parità di stato: `passata` pesa prima del dipendente. */
+      const ord = { fatto: 0, approvata: 0, attesa: 1, bozza: 2, 'da fare': 3, errore: 4, modifiche: 5, rifiutata: 5 };
+      return out2.sort((a, b) => (ord[a.stato] - ord[b.stato]) || ((a.passata ? 1 : 0) - (b.passata ? 1 : 0))
+        || ((a.giorno || 0) - (b.giorno || 0)) || (a.chi - b.chi));
     }
-    /* Una consegna dal suo id, in tutta l'azienda: la usa la tendina che la apre per intero. */
-    const consegnaDi = id => consegneDi(null).find(c => c.id === id) || null;
+    /* Una consegna dal suo id, in tutta l'azienda: la usa la pagina che la apre per intero. Cerca nel perimetro più
+       largo, se no una consegna dei giorni scorsi non si aprirebbe (versione 20). */
+    const consegnaDi = id => consegneDi(null, 'mese').find(c => c.id === id) || null;
+
+    /* ---- I workflow (versione 20, 2026-09-08) ----
+       Scelta del titolare: l'**editor a nodi vero**, come il secondo riferimento, contro il verdetto 5-0 di un
+       consiglio precedente. La parola è **workflow**, sua: «è un termine informatico e non credo abbia una vera
+       traduzione».
+
+       Che cos'è un nodo, e perché non è un dipendente. Il consiglio ha risposto 5 su 5 «un dipendente», e tutti e
+       cinque hanno poi nominato la stessa obiezione contro sé stessi: il passaggio di mano fra due dipendenti non
+       sta nei dati. **Misurato: zero casi, in tutte e due le taglie** — quello che esiste sono quattro riferimenti
+       alla *propria* consegna passata e undici `serie`, tutte dello stesso dipendente. Un canvas di nodi-dipendente
+       chiederebbe di inventare la relazione che lo regge, nella pagina che dovrebbe dimostrare che i numeri sono
+       veri. Quindi **il nodo è un passo**, che nel modello c'è per davvero: 43 passi a undici, 156 a quaranta, con
+       modello, strumenti, costo, durata ed esito.
+
+       L'attesa che il canvas era stato scelto per mostrare c'è lo stesso, e senza inventare niente: **l'ultimo nodo
+       è il titolare**. Non è un dipendente in più — l'ultimo passo di ogni dipartimento è già «Consegna al titolare»
+       (`PASSI_DIP`), e la consegna lì si ferma davvero. Il nodo del titolare porta la **regola** che l'ha fermata,
+       cioè una delle quattro di `m.regole`: il workflow non le sostituisce, le fa vedere.
+
+       Un workflow nasce **da un'esecuzione riuscita** (5 su 5, e qui i numeri ci sono): serve almeno che due passi
+       siano conclusi, se no non è ancora un lavoro andato bene. Costo e durata sono **sommati dai passi**, non
+       stimati.
+
+       La **firma anticipata nasce spenta**, per scelta del titolare: `firma: false`. I tre freni sono dichiarati e
+       misurati — la soglia dal costo vero del workflow, il perimetro dal cliente dell'esecuzione, la scadenza dal
+       numero di esecuzioni. Finché la pillola è spenta ogni uscita passa dalla coda, come oggi. ---- */
+    /* Le accensioni della firma anticipata, una per workflow. Stanno qui e non nel modello scritto, come `m.decidi`
+       per le richieste: sono decisioni prese guardando la pagina, e si perdono ricaricando. Nascono tutte spente. */
+    const firme = {};
+    const REGOLA_NODO = (cliente, tipo) => cliente && cliente !== azienda.nome
+      ? 'Uscite verso i clienti' : tipo === 'lista' ? 'Liste di lead' : 'Report interni';
+    function workflowDi(dip) {
+      const lst = dip ? (out.perDip[dip] || []) : m.dipendenti;
+      const wf = [];
+      lst.forEach(e => {
+        const x = out.esecuzioneDi(e);
+        const passi = x.passi || [];
+        const fatti = passi.filter(p => p.stato === 'fatto');
+        /* «riuscita» vuol dire due cose, e servono tutte e due: almeno due passi conclusi, e nessun passo rotto.
+           Senza la seconda, l'esecuzione ferma di Kim («Chiavi di accesso scadute») diventerebbe un modo di lavorare
+           da ripetere — ed è esattamente il contrario. */
+        if (fatti.length < 2 || passi.some(p => p.stato === 'errore')) return;
+        /* La consegna che riguarda il titolare non è la prima della lista: è quella che lo aspetta, se c'è, se no
+           quella che ha già firmato. Prendere `output[0]` faceva dire al nodo del titolare «fatto» leggendo una
+           consegna intermedia che il titolare non ha mai visto. */
+        const outs = x.output || [];
+        const oAtt = outs.find(z => z.stato === 'attesa') || null;
+        const oApp = outs.find(z => z.stato === 'approvata') || null;
+        const o = oAtt || oApp || outs[0] || {};
+        const cliente = (e.att || {}).cliente || '';
+        const costo = Math.round(10 * passi.reduce((t, p) => t + (p.costo || 0), 0)) / 10;
+        const minuti = passi.reduce((t, p) => t + (parseInt(p.durata || p.stima || '', 10) || 0), 0);
+        const nodi = passi.map(p => ({
+          n: p.n, nome: p.nome, stato: p.stato, chi: e.id,
+          modello: p.modello || 'standard', strumenti: (p.strumenti || []).slice(),
+          costo: p.costo || 0, durata: p.durata || p.stima || '', esito: p.esito || '',
+        }));
+        /* il nodo del titolare: non è un dipendente in più, è dove la consegna si ferma davvero. Lo stato viene
+           dalla consegna dell'esecuzione, non da un campo nuovo. */
+        nodi.push({
+          n: passi.length + 1, titolare: true, nome: 'Firma del titolare',
+          stato: oAtt ? 'attesa' : oApp ? 'fatto' : 'da fare',
+          regola: REGOLA_NODO(cliente, o.tipo), quando: (oAtt || oApp || {}).quando || '',
+          costo: 0, durata: '', strumenti: [],
+        });
+        wf.push({
+          id: 'w' + e.id, nome: (e.att || {}).titolo || o.nome || 'Lavoro', dip: e.dip, chi: e.id,
+          cliente, nodi, costo, minuti, passi: passi.length,
+          conclusi: fatti.length, consegna: o.nome || '',
+          /* la delega nasce spenta (scelta del titolare) e i tre freni sono misurati, non inventati */
+          firma: !!firme['w' + e.id],
+          soglia: Math.max(5, Math.ceil(costo / 5) * 5),
+          perimetro: cliente || azienda.nome,
+          scadenza: 10,
+        });
+      });
+      return wf;
+    }
+    const workflowIdDi = id => workflowDi(null).find(w => w.id === id) || null;
     /* ---- L'agenda dell'azienda (versione 15, 2026-09-06): un solo aggregatore per la pagina Agenda della Console e per la
        tab Agenda del telefono. `giornata()` costruisce gli eventi di oggi dall'attività corrente di ogni dipendente: le ore,
        i titoli e i costi sono quelli di `e.att` (nessun numero nuovo), le durate mancanti vengono dai passi dell'esecuzione
@@ -1008,6 +1119,11 @@ window.DGT_DATI = (function () {
          prodotte e la richiesta al titolare quando sono già uscite. Nessun numero nuovo: sono gli `output` che la pagina
          Esecuzione disegna già. `consegneDi(null)` sono quelle di tutta l'azienda. */
       consegneDi, consegnaDi,
+      /* I workflow (versione 20, 2026-09-08): il lavoro dichiarato di un dipartimento, disegnato a nodi. Un nodo è
+         un passo (43 a undici, 156 a quaranta: nel modello ci sono davvero); l'ultimo nodo è il titolare, con la
+         regola di `regole` che ferma lì la consegna. Nasce da un'esecuzione con almeno due passi conclusi; costo e
+         durata sono sommati dai passi. La firma anticipata nasce spenta. */
+      workflowDi, workflowIdDi, firme,
       /* I fili della chat (versione 15): un filo per dipendente, una sola copia (i messaggi restano), condivisa fra Console e
          telefono; `scrivi` è la nota del titolare, dalla chat o dalla barra di scrittura dell'Esecuzione. */
       filoDi, ultimoDi: ultimo, nonLetti,

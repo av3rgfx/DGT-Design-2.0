@@ -96,7 +96,7 @@
 :root {
   --dgt-ed-black-0: #0A0A0A; --dgt-ed-black-1: #0F0F0F; --dgt-ed-black-2: #151515; --dgt-ed-black-3: #1A1A1A;
   --dgt-ed-gray-1: #3A3A3A; --dgt-ed-gray-2: #6B6B6B; --dgt-ed-gray-3: #8E8E8E; --dgt-ed-gray-4: #B5B5B5; --dgt-ed-white: #F5F5F5;
-  --dgt-ed-green: #4FCB58; --dgt-ed-green-2: #2F8F3E; --dgt-ed-green-3: #1C5A22; --dgt-ed-red: #F05A50;
-  --dgt-ed-glow: rgb(79 203 88 / .55);
+  --dgt-ed-green: #B8FC64; --dgt-ed-green-2: #9AD84B; --dgt-ed-green-3: #5F8A2E; --dgt-ed-red: #F04848;
+  --dgt-ed-glow: rgb(184 252 100 / .55);
   --dgt-ed-r-tile: 18px; --dgt-ed-r-panel: 24px; --dgt-ed-r-button: 12px; --dgt-ed-grid: 18px;
 }

@@ -48,7 +48,7 @@ le catture `a-frecce-*.png` della versione 18.
 
 ## Le prove cliccate delle schermate
 
-Stanno in `schermate/direzioni/prove/` (`console.js`, `mobile.js`, `costi.js`), con il loro `README.md` che dice il comando; usano il CSS
+Stanno in `schermate/direzioni/prove/` (`console.js`, `mobile.js`, `costi.js`, `agenda-chat.js`, `workflow.js`), con il loro `README.md` che dice il comando; usano il CSS
 locale di `fetch-fonts.py` e le stesse variabili di `screenshot-page.js` (`LOCAL_FONT_CSS`, `PLAYWRIGHT_MODULE`, `NODE_PATH`,
 `CHROME_PATH`). Per la manutenzione del 2026-09-06 il confronto prima/dopo è stato fatto con `screenshot-page.js` (stesse pagine e
 parametri, confronto byte per byte dei PNG) e con un'impronta degli stili calcolati di ogni elemento (`DIREZIONI.md`, «Versione 14»).

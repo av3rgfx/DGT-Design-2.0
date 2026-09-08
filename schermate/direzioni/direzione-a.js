@@ -215,6 +215,53 @@ window.DIREZIONE_A = (function () {
 .cdoc .tx.mono{font-size:15px;line-height:23px}
 .cdoc .img{height:170px;border-radius:14px;background:#E4E4E4;display:grid;place-items:center;color:#8A8A8A;font-size:12px;gap:6px}
 .cdoc .img svg{width:22px;height:22px;color:#8A8A8A}
+/* ---- Il canvas del workflow (versione 20) ----
+   Il secondo riferimento portato dentro il prodotto: griglia puntinata, nodi con riflesso, connettori luminosi,
+   nodo selezionato acceso, porte con l'etichetta. Due cose cambiano rispetto alla figura, e sono tutte e due
+   regole gia' scritte: il verde luminoso diventa il **lime** (regola 4, un solo accento — la figura aveva sei
+   verdi che non erano il lime), e **non c'e' pan ne' zoom** (regola 17: la Console si scala gia' con zoom alla
+   larghezza della finestra, e due zoom annidati litigano). Il canvas non si trascina: si stende, e cresce in
+   basso come tutte le altre sezioni. */
+.wcanvas{position:relative;margin-top:24px;border-radius:var(--r-inner);background:var(--dots-box);overflow:hidden}
+.wcanvas .grid{position:absolute;inset:0;background-image:radial-gradient(rgb(255 255 255/.14) 1px,transparent 1.4px);background-size:18px 18px;background-position:9px 9px;pointer-events:none;mask-image:radial-gradient(ellipse at 45% 35%,#000 55%,transparent 100%)}
+.wcanvas svg.edges{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.wcanvas .edges path.arc{fill:none;stroke:var(--lime);stroke-width:2.2;filter:drop-shadow(0 0 6px rgb(184 252 100/.55))}
+.wcanvas .edges path.arc.att{stroke-dasharray:7 6}
+.wcanvas .edges path.arc.off{stroke:rgb(255 255 255/.38);stroke-dasharray:3 5;filter:none}
+.wnode{position:absolute;width:208px;box-sizing:border-box;padding:12px 14px;border-radius:18px;background:var(--card);border:1px solid rgb(255 255 255/.10);box-shadow:inset 0 1px 0 rgb(255 255 255/.07),0 10px 30px rgb(0 0 0/.35);display:grid;gap:8px;align-content:start;cursor:pointer}
+.wnode .hd{display:flex;align-items:center;gap:10px;min-width:0}
+.wnode .nic{width:32px;height:32px;border-radius:11px;background:rgb(255 255 255/.07);display:grid;place-items:center;flex:none}
+.wnode .nic svg{width:16px;height:16px;color:var(--white)}
+.wnode .tt{min-width:0}
+.wnode .tt b{display:block;font-weight:400;font-size:14px;line-height:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wnode .tt span{display:block;font-size:11px;line-height:15px;color:var(--t2)}
+.wnode .ft{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--t2)}
+.wnode .ft .eur{margin-left:auto;color:var(--white)}
+.wnode.on{border-color:var(--lime);box-shadow:0 0 0 1px var(--lime),0 0 44px rgb(184 252 100/.28),inset 0 1px 0 rgb(255 255 255/.18);z-index:3}
+.wnode.on .nic{background:var(--lime)}.wnode.on .nic svg{color:var(--ink)}
+.wnode.tit{border-style:dashed}
+.wnode.tit.att{border-color:var(--lime);border-style:solid;box-shadow:0 0 0 1px var(--lime),0 0 40px rgb(184 252 100/.22)}
+.wnode .campi{display:grid;gap:6px;border-top:1px solid rgb(255 255 255/.08);padding-top:8px}
+.wnode .campi .fl{font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--t2)}
+.wnode .campi .fv{display:flex;align-items:center;gap:6px;font-size:12px;background:rgb(255 255 255/.06);border-radius:9px;padding:6px 9px}
+.wnode .campi .fv svg{width:12px;height:12px;margin-left:auto;color:var(--t2)}
+.wport{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px rgb(184 252 100/.55);transform:translate(-50%,-50%);pointer-events:none}
+.wport.off{background:rgb(255 255 255/.28);box-shadow:none}
+.wplab{position:absolute;transform:translateX(-50%);font-size:10px;line-height:14px;color:var(--t2);white-space:nowrap;pointer-events:none}
+.wtag{position:absolute;transform:translate(-50%,-50%);height:22px;display:inline-flex;align-items:center;gap:5px;padding:0 9px;border-radius:9999px;background:var(--round);border:1px solid rgb(255 255 255/.14);font-size:11px;color:var(--t2);white-space:nowrap;pointer-events:none}
+.wtag svg{width:11px;height:11px}
+.wtag.lime{border-color:var(--lime);color:var(--lime)}
+/* la barra sotto il canvas: la stessa della figura (chat a sinistra, azioni a destra), ma i suoi controlli fanno
+   davvero quello che dicono — regola 25 */
+.wbar{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:16px;padding:14px 20px;border-top:1px solid rgb(255 255 255/.08);background:rgb(10 10 10/.72);backdrop-filter:blur(10px);z-index:4}
+.wbar .tx{flex:1;min-width:0}
+.wbar .tx b{display:block;font-weight:400;font-size:14px}
+.wbar .tx span{display:block;font-size:11px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wfirma{display:grid;gap:14px;margin-top:24px;grid-template-columns:repeat(3,1fr)}
+.wfirma .fcard{background:var(--card);border-radius:var(--r-inner);padding:18px 20px;display:grid;gap:6px;align-content:start}
+.wfirma .fcard .k{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--t2)}
+.wfirma .fcard b{font-weight:400;font-size:24px;line-height:30px}
+.wfirma .fcard span.d{font-size:12px;line-height:17px;color:var(--t2)}
 .rx .det{display:grid;gap:10px;align-content:start}
 .rx .det .dcard{padding:14px 16px}
 .rx .det .dcard h5{font-size:15px;line-height:20px;padding-right:0;color:var(--t2-light)}
@@ -927,7 +974,11 @@ window.DIREZIONE_A = (function () {
   }
   /* Le pillole della sezione: le stesse quattro che la pagina Esecuzione ha gia' per gli output, cosi' la stessa cosa
      si filtra con le stesse parole nei due posti. */
-  const PILLE_CONSEGNE = [['tutte', 'Tutte', null], ['attesa', 'Da approvare', c => c.stato === 'attesa', ic('i-fire')], ['corso', 'In corso', c => c.stato === 'bozza'], ['fatte', 'Fatte', c => c.stato === 'fatto' || c.stato === 'approvata'], ['dafare', 'Da fare', c => c.stato === 'da fare' || c.stato === 'errore']];
+  const PILLE_CONSEGNE = [['tutte', 'Tutte', null], ['attesa', 'Da approvare', c => c.stato === 'attesa', ic('i-fire')], ['corso', 'In corso', c => c.stato === 'bozza'], ['fatte', 'Fatte', c => c.stato === 'fatto' || c.stato === 'approvata'], ['dafare', 'Da fare', c => c.stato === 'da fare' || c.stato === 'errore'],
+    /* la sesta arriva con il perimetro (versione 20): le consegne che il titolare ha rimandato indietro esistono solo
+       nei giorni scorsi, e senza questa pillola sarebbero raggiungibili solo da «Tutte». «Da rifare» e' la parola che
+       la pagina Richieste usa gia' nel suo terzo numero (`daRifare` = modifiche + rifiutata). */
+    ['rifare', 'Da rifare', c => c.stato === 'modifiche' || c.stato === 'rifiutata', ic('i-fire')]];
 
   /* La riga dello storico. Regola 25: la freccia sta solo dove la riga ha una destinazione — qui il pannello della
      richiesta, che si apre solo per le richieste ancora in attesa. Una richiesta già decisa non ha una pagina dove
@@ -1000,6 +1051,9 @@ window.DIREZIONE_A = (function () {
   const PILLE_ESEC = [['tutte', 'Tutte', null], ['lavoro', 'In corso', e => e.stato === 'lavoro'], ['pianificato', 'Pianificate', e => e.stato === 'pianificato'], ['errore', 'Errori', e => e.stato === 'errore', ic('i-fire')]];
   const PILLE_STATO_DIP = [['tutti', 'Tutti', null], ['lavoro', 'Al lavoro', e => e.stato === 'lavoro'], ['libero', 'Liberi', e => e.stato === 'libero'], ['errore', 'Con errori', e => e.stato === 'errore', ic('i-fire')]];
   const TITOLO_SPESA = { mese: 'Spesa del mese', oggi: 'Spesa di oggi', anno: "Spesa dall'inizio dell'anno" };
+  /* Il titolo dice il perimetro, come fa gia' la Spesa: e' l'unico modo che il prodotto ha di dire «di quando sono
+     queste cose» senza una riga in piu' (versione 20). */
+  const TITOLO_CONSEGNE = { oggi: 'Consegne di oggi', settimana: 'Consegne dei sette giorni', mese: 'Consegne dei trenta giorni' };
   const PILLE_OBIETTIVI = [['tutti', 'Tutti', null], ['ritardo', 'In ritardo', o => o.stato === 'ritardo', ic('i-fire')], ['corso', 'In corso', o => o.stato === 'corso'], ['nuovo', 'Da iniziare', o => o.stato === 'nuovo'], ['concluso', 'Conclusi', o => o.stato === 'concluso']];
   function dipartimento(m, opz) {
     const d = m.dipartimenti.find(x => x.id === opz.dip) || m.dipartimenti[0];
@@ -1015,15 +1069,25 @@ window.DIREZIONE_A = (function () {
       <div class="stat"><b>${att.length}</b><span>da approvare</span>${att.length ? `<span class="badge down">${ic('i-bell')}${att.length}</span>` : ''}</div>
       <div class="stat" data-az="pagina" data-pagina="costi" title="I costi dell'azienda"><b>${costoOggi} €</b><span>spesi oggi</span></div>`;
     const esecF = filtraSez(opz, 'dip.oggi', esec, PILLE_ESEC);
+    /* L'ingresso ai workflow e' una pillola nell'intestazione della prima sezione, non una settima sezione: una
+       sezione in piu' costerebbe ~700 px misurati e sposterebbe gli indici `nth-of-type` su cui si reggono tre
+       prove e due catture. Zero pixel, zero sezioni, zero voci nuove nel rail (resta a sei). */
+    const wf = m.workflowDi(d.id);
     /* Le consegne del dipartimento (versione 19): le cose create dalle sue esecuzioni. Sta subito sotto «Oggi in ‹dip›»
        perche' e' il suo risultato — la pagina si legge adesso -> uscito -> chi -> obiettivi -> da approvare -> spesa —
        e perche' regola 2 dice che il «adesso» apre la pagina. Nessuna pillola «tutte le consegne» in fondo: non esiste
        una pagina dove andare, e regola 25 dice che un controllo si vede solo se fa quello che promette. */
-    const cn = m.consegneDi(d.id);
-    /* niente cerchio «cerca»: la soglia del prodotto e' dodici righe (`SOGLIA_CERCA`) e le consegne di un dipartimento
-       arrivano a **dieci** a quaranta dipendenti (sette a undici) — una lista che sta in una schermata si legge, non si
-       cerca. Ce l'avevo messo lo stesso ed e' stata la prova delle intestazioni a cogliermi in fallo. */
-    const cnF = filtraSez(opz, 'dip.consegne', cn, PILLE_CONSEGNE);
+    /* Il perimetro (versione 20): tre pillole come la Spesa. Le consegne dei giorni scorsi non sono dati inventati —
+       sono le richieste gia' decise, che il modello ha sempre avuto. Il titolo dice il periodo. */
+    const perCons = ['oggi', 'settimana', 'mese'].includes(opz.periodo && opz.periodo['dip.consegne']) ? opz.periodo['dip.consegne'] : 'oggi';
+    const cn = m.consegneDi(d.id, perCons);
+    /* Il cerchio «cerca» compare solo oltre la soglia del prodotto (`SOGLIA_CERCA`, dodici righe), e qui per la prima
+       volta la soglia e' *contata* invece che decisa a mano: a «oggi» le consegne di un dipartimento arrivano a dieci
+       e la lista sta in una schermata — quindi la pagina ferma non cambia — ma allargando il perimetro passano le
+       dodici e allora la ricerca serve davvero. Nella versione 19 il cerchio l'avevo messo lo stesso ed e' stata la
+       prova delle intestazioni a cogliermi in fallo: adesso e' il numero a decidere, a ogni giro. */
+    const cnC = filtraCerca(opz, 'dip.consegne', cn, c => c.nome + ' ' + c.cliente + ' ' + m.etichetta(m.byId[c.chi]));
+    const cnF = filtraSez(opz, 'dip.consegne', cnC, PILLE_CONSEGNE);
     const cnFatte = cn.filter(c => c.stato === 'fatto' || c.stato === 'approvata').length;
     const lstF = filtraSez(opz, 'dip.dipendenti', lst, PILLE_STATO_DIP);
     const obF = filtraSez(opz, 'dip.obiettivi', ob, PILLE_OBIETTIVI);
@@ -1034,12 +1098,14 @@ window.DIREZIONE_A = (function () {
     const corpo = `
       <section>
         <div class="shead"><h3>Oggi in ${esc(d.nome)}</h3>${contoSez(esecF.length, esec.length, 'Esecuzioni')}
-          ${pilleSez(opz, 'dip.oggi', PILLE_ESEC)}</div>
+          ${pilleSez(opz, 'dip.oggi', PILLE_ESEC)}
+          ${wf.length ? `<div class="destra"><span class="pill" data-az="pagina" data-pagina="workflow" data-dip="${d.id}" title="Il lavoro dichiarato di ${esc(d.nome)}">${ic('i-rows')}Workflow · ${wf.length}</span></div>` : ''}</div>
         ${esecF.length ? `<div class="cards riga">${esecF.map((e, i) => cardEsecuzione(m, e, i)).join('')}</div>` : `<div class="vuoto">Nessuna esecuzione oggi in ${esc(d.nome)} con questo filtro</div>`}
       </section>
       <section>
-        <div class="shead"><h3>Consegne di oggi</h3>${contoSez(cnF.length, cn.length, 'Consegne · ' + cnFatte + (cnFatte === 1 ? ' fatta' : ' fatte'))}
-          ${pilleSez(opz, 'dip.consegne', PILLE_CONSEGNE)}</div>
+        <div class="shead"><h3>${esc(TITOLO_CONSEGNE[perCons])}</h3>${contoSez(cnF.length, cn.length, 'Consegne · ' + cnFatte + (cnFatte === 1 ? ' fatta' : ' fatte'))}${cn.length > SOGLIA_CERCA ? cercaSez(opz, 'dip.consegne', cn.length, 'consegne') : ''}
+          ${pilleSez(opz, 'dip.consegne', PILLE_CONSEGNE)}
+          <div class="destra">${pillePeriodo('dip.consegne', perCons, ['oggi', 'settimana', 'mese'])}</div></div>
         ${cnF.length ? `<div class="cards">${cnF.map((c, i) => cardConsegna(m, c, i)).join('')}</div>` : `<div class="vuoto">Nessuna consegna di ${esc(d.nome)} con questo filtro</div>`}
       </section>
       <section>
@@ -1164,6 +1230,161 @@ window.DIREZIONE_A = (function () {
     return cornice(m, opz, c.nome.toUpperCase(), stats, 'org', corpo, '');
   }
   const chipPassoStato = p => p.stato === 'fatto' ? `<span class="chip lime">${ic('i-check')}Fatto</span>` : p.stato === 'errore' ? `<span class="chip rosa">${ic('i-warn')}Errore</span>` : p.stato === 'corso' ? `<span class="chip lime">${ic('i-play')}In corso</span>` : `<span class="chip">${ic('i-clock')}Da fare</span>`;
+
+  /* ---------- pagina Workflow (versione 20, 2026-09-08) ----------
+     Scelta del titolare, contro il verdetto 5-0 di un consiglio: **l'editor a nodi vero**, come il secondo
+     riferimento. Quello che il consiglio ha aggiunto, e la misura ha corretto, sta in `dati.js` sopra `workflowDi`:
+     il nodo e' un **passo** (43 a undici, 156 a quaranta, veri) e non un dipendente (passaggi di mano nel modello:
+     **zero**), e l'ultimo nodo e' il **titolare**, che nei dati c'e' — l'ultimo passo di ogni dipartimento e' gia'
+     «Consegna al titolare».
+     Il canvas si dispone da solo su una griglia a serpentina: cinque nodi per riga, e la riga dispari va all'indietro
+     cosi' i connettori non si incrociano mai. Le posizioni si calcolano **qui**, nella funzione che stampa, e gli
+     archi le rileggono: nessuna misura presa dopo il disegno, quindi la pagina e' la stessa a ogni giro. */
+  const W_COL = 5, W_PX = 248, W_PY = 210, W_PAD = 36, W_W = 208, W_H = 96;
+  const wpos = i => { const r = Math.floor(i / W_COL); const c = r % 2 ? W_COL - 1 - (i % W_COL) : i % W_COL; return { x: W_PAD + c * W_PX, y: W_PAD + r * W_PY, r, c }; };
+  const ICONA_NODO = { rapido: 'i-bolt', standard: 'i-bot', esperto: 'i-star' };
+  function nodoWorkflow(m, w, nd, i, sel) {
+    const p = wpos(i);
+    const on = sel === nd.n;
+    const cls = nd.titolare ? `wnode tit${nd.stato === 'attesa' ? ' att' : ''}${on ? ' on' : ''}` : `wnode${on ? ' on' : ''}`;
+    const icona = nd.titolare ? 'i-hand' : ICONA_NODO[nd.modello] || 'i-bot';
+    const sotto = nd.titolare ? esc(nd.regola) : `Passo ${nd.n} · ${esc(nd.modello)}`;
+    /* il nodo selezionato apre i suoi campi, come il nodo verde della figura: e' il gesto con cui si modifica il
+       workflow — si sceglie il modello di un passo e gli strumenti che puo' toccare */
+    const campi = on && !nd.titolare ? `<div class="campi">
+        <span class="fl">Modello</span><span class="fv"><span>${esc((m.MODELLI[nd.modello] || {}).nome || nd.modello)}</span>${ic('i-chev')}</span>
+        <span class="fl">Strumenti</span>${(nd.strumenti.length ? nd.strumenti : ['Nessuno']).map(s => `<span class="fv"><span>${esc(s)}</span>${ic('i-chev')}</span>`).join('')}
+        ${nd.esito ? `<span class="fl">Esito dell'ultima volta</span><span class="fv"><span>${esc(nd.esito)}</span></span>` : ''}
+      </div>` : '';
+    const campiTit = on && nd.titolare ? `<div class="campi">
+        <span class="fl">Regola che ferma qui la consegna</span><span class="fv"><span>${esc(nd.regola)}</span>${ic('i-chev')}</span>
+        <span class="fl">Firma anticipata</span><span class="fv"><span>${w.firma ? 'Accesa' : 'Spenta — ogni uscita passa da te'}</span>${ic('i-chev')}</span>
+      </div>` : '';
+    return `<div class="${cls}" style="left:${p.x}px;top:${p.y}px" data-az="nodo" data-n="${nd.n}" title="${esc(nd.nome)}">
+      <div class="hd"><span class="nic">${ic(icona)}</span><div class="tt"><b>${esc(nd.nome)}</b><span>${sotto}</span></div></div>
+      <div class="ft">${nd.titolare ? `<span>${esc(nd.quando || 'non ancora consegnata')}</span>` : `<span>${esc(nd.durata || '—')}</span><span class="eur">${eur(nd.costo)}</span>`}</div>
+      ${campi}${campiTit}</div>`;
+  }
+  function canvasWorkflow(m, w, sel) {
+    const n = w.nodi.length;
+    const righe = Math.ceil(n / W_COL);
+    /* 78: le porte sotto l'ultima riga; 62: la barra in fondo; 168: i campi del nodo aperto, che crescono in basso e
+       senza questo finirebbero tagliati dalla barra */
+    const alt = W_PAD * 2 + (righe - 1) * W_PY + W_H + 78 + 62 + (sel ? 168 : 0);
+    const nodi = w.nodi.map((nd, i) => nodoWorkflow(m, w, nd, i, sel)).join('');
+    /* Le porte: sotto ogni nodo che non e' il titolare, una per il modello e una per ogni strumento — le stesse tre
+       del riferimento (Modello, Memoria, Strumento), che nel prodotto esistono gia'. Spente quando il passo non e'
+       ancora stato fatto: una porta accesa dice che quello strumento e' stato davvero usato. */
+    const porte = w.nodi.map((nd, i) => {
+      if (nd.titolare) return '';
+      const p = wpos(i);
+      /* l'etichetta della porta deve stare in 56 px: si prende la **prima parola** del nome dello strumento invece di
+         tagliarlo a meta' («Archivio del» non e' un nome, «Archivio» si') */
+      const corta = t => { const w0 = String(t).split(/[ ·]/)[0]; return w0.length > 11 ? w0.slice(0, 10) + '…' : w0; };
+      const voci = [['Modello', true], ...nd.strumenti.slice(0, 2).map(s => [corta(s), true])];
+      const spenta = nd.stato === 'da fare';
+      return voci.map((v, k) => {
+        const x = p.x + 34 + k * 62, y = p.y + W_H;
+        return `<span class="wport${spenta ? ' off' : ''}" style="left:${x}px;top:${y}px"></span><span class="wplab" style="left:${x}px;top:${y + 8}px">${esc(v[0])}</span>`;
+      }).join('');
+    }).join('');
+    /* Gli archi: da un nodo al seguente. Sulla stessa riga una curva orizzontale; a fine riga la serpentina scende
+       dal basso del nodo e rientra dal basso del successivo, che nella riga dispari sta dall'altra parte. */
+    const archi = w.nodi.slice(0, -1).map((nd, i) => {
+      const a = wpos(i), b = wpos(i + 1);
+      const suc = w.nodi[i + 1];
+      const cls = suc.titolare && suc.stato === 'attesa' ? 'arc att' : nd.stato === 'da fare' ? 'arc off' : 'arc';
+      if (a.r === b.r) {
+        const x1 = a.x + W_W, y1 = a.y + W_H / 2, x2 = b.x, y2 = b.y + W_H / 2;
+        return `<path class="${cls}" d="M${x1} ${y1} C ${x1 + 22} ${y1}, ${x2 - 22} ${y2}, ${x2} ${y2}"/>`;
+      }
+      const x1 = a.x + W_W / 2, y1 = a.y + W_H, x2 = b.x + W_W / 2, y2 = b.y;
+      return `<path class="${cls}" d="M${x1} ${y1} C ${x1} ${y1 + 74}, ${x2} ${y2 - 74}, ${x2} ${y2}"/>`;
+    }).join('');
+    /* L'etichetta sull'arco che entra nel titolare: e' il numero che il canvas era stato scelto per far vedere —
+       dove il lavoro si ferma ad aspettare una firma. Nelle righe della pagina Esecuzione non c'e' posto, perche'
+       li' la sequenza e' gia' finita quando l'attesa comincia. */
+    const ult = w.nodi[w.nodi.length - 1];
+    const ia = w.nodi.length - 2, pa = wpos(ia), pb = wpos(w.nodi.length - 1);
+    const tag = ult.stato === 'attesa'
+      ? `<span class="wtag lime" style="left:${pb.x + W_W / 2}px;top:${pb.y - 15}px">${ic('i-bell')}aspetta la tua firma</span>` : '';
+    return `<div class="wcanvas" style="height:${alt}px">
+      <div class="grid" aria-hidden="true"></div>
+      <svg class="edges" viewBox="0 0 ${W_PAD * 2 + W_COL * W_PX} ${alt}" preserveAspectRatio="none" aria-hidden="true">${archi}</svg>
+      ${porte}${nodi}${tag}
+      <div class="wbar"><div class="tx"><b>${w.nodi.length} nodi · ${w.passi} passi e la tua firma</b><span>${esc(w.nome)} · ${esc(w.perimetro)} · ${eur(w.costo)} · ${w.minuti} min, misurati sull'esecuzione da cui è nato</span></div>
+        <span class="pill" data-az="pagina" data-pagina="esecuzione" data-id="${w.chi}">Vedi l'esecuzione ${ic('i-ne')}</span></div>
+    </div>`;
+  }
+  function elencoWorkflow(m, opz) {
+    const d = m.dipartimenti.find(x => x.id === opz.dip) || m.dipartimenti[0];
+    const wf = m.workflowDi(d.id);
+    const stats = `<div class="stat"><b>${wf.length}</b><span>workflow</span></div>
+      <div class="stat"><b>${wf.filter(w => w.firma).length}</b><span>con la firma anticipata</span></div>`;
+    const corpo = `
+      <section>
+        <div class="shead"><h3>I workflow di ${esc(d.nome)}</h3>${contoSez(wf.length, wf.length, 'Workflow')}
+          <div class="destra"><span class="pill" data-az="pagina" data-pagina="dipartimento" data-dip="${d.id}">Torna a ${esc(d.nome)} ${ic('i-ne')}</span></div></div>
+        ${wf.length ? `<div class="cards">${wf.map((w, i) => {
+          const e = m.byId[w.chi], ult = w.nodi[w.nodi.length - 1];
+          return `<div class="ncard task ${ult.stato === 'attesa' ? 'lime' : i % 2 ? 'dark' : 'gray'}" data-az="workflow" data-id="${esc(w.id)}" title="Apri il workflow">
+            <div class="who">${av(m, e)}<div><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div></div>
+            <div class="nt"><span class="rb ghost">${ic('i-ne')}</span></div>
+            <div class="body"><span class="ico">${ic('i-rows')}</span><div><div class="tt">${esc(w.nome)}</div><div class="meta"><b>${esc(w.perimetro)}</b><span>·</span><b>${w.nodi.length} nodi</b></div></div></div>
+            <div class="st"><span class="k">Costo misurato</span><div class="row"><span class="sel">${eur(w.costo)} · ${w.minuti} min${ic('i-chev')}</span><span class="rb ${w.firma ? 'lime' : 'ghost'}">${ic(w.firma ? 'i-check' : 'i-bell')}</span></div></div>
+          </div>`;
+        }).join('')}</div>` : `<div class="vuoto">Nessun workflow in ${esc(d.nome)}: un workflow nasce da un'esecuzione riuscita, con almeno due passi conclusi e nessuno rotto</div>`}
+      </section>`;
+    return cornice(m, opz, ('Workflow · ' + d.nome).toUpperCase(), stats, 'org', corpo, '');
+  }
+  function paginaWorkflow(m, opz) {
+    if (!opz.workflow) return elencoWorkflow(m, opz);
+    const w = m.workflowIdDi(opz.workflow);
+    if (!w) return elencoWorkflow(m, opz);
+    const e = m.byId[w.chi], d = m.dipDi(e);
+    const sel = +opz.nodo || 0;
+    const ult = w.nodi[w.nodi.length - 1];
+    const altri = m.workflowDi(w.dip).filter(x => x.id !== w.id);
+    /* La firma anticipata e i suoi tre freni. Scelta del titolare: **nasce spenta**, quindi la pagina la mostra
+       come una cosa che si puo' accendere, non come una cosa gia' accesa da spegnere. I tre numeri sono misurati:
+       la soglia viene dal costo vero del workflow, il perimetro dal cliente dell'esecuzione, la scadenza e' un
+       conto di esecuzioni. Finche' e' spenta, la coda resta esattamente com'e' oggi. */
+    const corpo = `
+      <section class="etesta">
+        <div class="ident">${av(m, e, 'lg', null, 'data-anima="1"')}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div>
+          <div class="chips"><span class="chip">${ic('i-org')}${esc(d.nome)}</span><span class="chip">${ic('i-hand')}${esc(w.perimetro)}</span>${w.firma ? `<span class="chip lime">${ic('i-check')}Firma anticipata</span>` : `<span class="chip">${ic('i-bell')}Ogni uscita passa da te</span>`}<span class="chip" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="L'esecuzione da cui è nato">${ic('i-rows')}${esc(w.nome)}</span></div>
+        </div>
+        <p class="adesso">Nato da un'esecuzione riuscita di ${esc(m.etichetta(e))}: ${w.conclusi} passi conclusi su ${w.passi}, ${eur(w.costo)} e ${w.minuti} minuti <b>misurati</b>, non stimati. ${ult.stato === 'attesa' ? 'In fondo alla catena una consegna <b>aspetta la tua firma</b>.' : ult.stato === 'fatto' ? 'L\'ultima consegna di questa catena l\'hai già firmata.' : 'La catena non è ancora arrivata alla tua firma.'}</p>
+        <div class="azioni"><span class="pill lime" data-az="pagina" data-pagina="dipartimento" data-dip="${w.dip}">${ic('i-org')}Torna a ${esc(d.nome)}</span><span class="pill" data-az="pagina" data-pagina="workflow" data-dip="${w.dip}">${ic('i-rows')}Tutti i workflow di ${esc(d.nome)}</span></div>
+      </section>
+      <section>
+        <div class="shead"><h3>Il workflow</h3><span class="cnt"><b>${w.nodi.length}</b><span>Nodi · ${w.passi} passi e la tua firma</span></span>
+          <div class="destra"><span class="pill${sel ? '' : ' on'}" data-az="nodo" data-n="0">Tutto il disegno</span></div></div>
+        ${canvasWorkflow(m, w, sel)}
+      </section>
+      <section>
+        <div class="shead"><h3>La firma anticipata</h3><span class="cnt"><b>${w.firma ? 'Accesa' : 'Spenta'}</b><span>${w.firma ? 'le uscite a norma escono da sole' : 'ogni uscita passa dalla coda'}</span></span>
+          <div class="destra"><span class="pill${w.firma ? ' lime' : ''}" data-az="firma" data-id="${esc(w.id)}">${ic(w.firma ? 'i-check' : 'i-bell')}${w.firma ? 'Spegni la firma anticipata' : 'Accendi la firma anticipata'}</span></div></div>
+        <p class="adesso" style="max-width:900px">Accenderla vuol dire <b>firmare in anticipo le uscite che rispettano questo workflow</b>: stessi passi, stesso modello, strumenti dichiarati, entro la soglia. Tutto il resto continua a passare dalla coda. Oggi è spenta, e finché lo è la regola che vale è «${esc(ult.regola)}».</p>
+        <div class="wfirma">
+          <div class="fcard"><span class="k">Soglia di costo</span><b>${eur(w.soglia)}</b><span class="d">Questo workflow è costato ${eur(w.costo)} l'ultima volta. Sopra la soglia l'uscita torna in coda anche con la firma accesa.</span></div>
+          <div class="fcard"><span class="k">Perimetro</span><b>${esc(w.perimetro)}</b><span class="d">Vale solo per questo cliente. Per un altro cliente la firma non si applica e la consegna aspetta te.</span></div>
+          <div class="fcard"><span class="k">Scadenza</span><b>${w.scadenza} esecuzioni</b><span class="d">Poi torna in coda da sola, e anche prima se cambia il soul prompt del dipendente o il modello di un passo.</span></div>
+        </div>
+      </section>
+      ${altri.length ? `
+      <section>
+        <div class="shead"><h3>Gli altri workflow di ${esc(d.nome)}</h3>${contoSez(altri.length, altri.length, 'Workflow')}
+          <div class="destra"><span class="pill" data-az="pagina" data-pagina="workflow" data-dip="${w.dip}">Tutti ${ic('i-ne')}</span></div></div>
+        <div class="hlist">${altri.map(x => {
+          const xe = m.byId[x.chi], xu = x.nodi[x.nodi.length - 1];
+          return `<div class="crow" data-az="workflow" data-id="${esc(x.id)}"><span class="ico">${ic('i-rows')}</span><div class="tx"><b>${esc(x.nome)}</b><span>${esc(m.etichetta(xe))} · ${x.nodi.length} nodi · ${esc(x.perimetro)}</span></div><span class="v">${xu.stato === 'attesa' ? `<span class="chip lime">${ic('i-bell')}Aspetta te</span>` : `<span class="chip">${ic('i-clock')}In corso</span>`}</span><span class="v">${x.minuti} min<small>durata</small></span><span class="eur">${eur(x.costo)}</span><span class="rb xs">${ic('i-ne')}</span></div>`;
+        }).join('')}</div>
+      </section>` : ''}`;
+    const stats = `<div class="stat"><b>${eur(w.costo)}</b><span>costo misurato</span></div>
+      <div class="stat"><b>${w.nodi.length}</b><span>nodi</span></div>`;
+    return cornice(m, opz, w.nome.toUpperCase(), stats, 'org', corpo, '');
+  }
 
   /* ---------- pagina Dipendente (versione 6, 2026-09-04) ----------
      Si apre dalla freccia nell'intaglio della card e della riga compatta. Un solo ordine per i due
@@ -1404,7 +1625,10 @@ window.DIREZIONE_A = (function () {
   const TIPO_LOG = { passo: ['i-check', 'Passo'], strumento: ['i-bolt', 'Strumento'], modello: ['i-bot', 'Modello'], nota: ['i-doc', 'Nota'], richiesta: ['i-bell', 'Richiesta'], errore: ['i-warn', 'Errore'], titolare: ['i-hand', 'Titolare'] };
   const ICONA_OUT = { post: 'i-mega', documento: 'i-doc', lista: 'i-list', immagine: 'i-grid', codice: 'i-code', proposta: 'i-receipt' };
   const chipPasso = p => p.stato === 'fatto' ? `<span class="chip">${ic('i-check')}Fatto</span>` : p.stato === 'corso' ? `<span class="chip ink">${ic('i-play')}In corso</span>` : p.stato === 'errore' ? `<span class="chip rosa">${ic('i-warn')}Errore</span>` : `<span class="chip">${ic('i-clock')}Da fare</span>`;
-  const chipOut = o => ({ attesa: `<span class="chip ink">${ic('i-bell')}Da approvare</span>`, approvata: `<span class="chip lime">${ic('i-check')}Approvata</span>`, fatto: `<span class="chip lime">${ic('i-check')}Fatto</span>`, bozza: `<span class="chip lime">${ic('i-play')}In corso</span>`, errore: `<span class="chip rosa">${ic('i-warn')}Non fatto</span>` })[o.stato] || `<span class="chip">${ic('i-clock')}Da fare</span>`;
+  /* Gli ultimi due stati arrivano con le consegne dei giorni scorsi (versione 20), che sono le richieste decise: le
+     parole e i colori sono quelli che `chipEsito` usa gia' per la stessa richiesta nello storico, perche' lo stesso
+     stato non puo' chiamarsi in due modi in due pagine. */
+  const chipOut = o => ({ attesa: `<span class="chip ink">${ic('i-bell')}Da approvare</span>`, approvata: `<span class="chip lime">${ic('i-check')}Approvata</span>`, fatto: `<span class="chip lime">${ic('i-check')}Fatto</span>`, bozza: `<span class="chip lime">${ic('i-play')}In corso</span>`, errore: `<span class="chip rosa">${ic('i-warn')}Non fatto</span>`, modifiche: `<span class="chip">${ic('i-pen')}Modifiche</span>`, rifiutata: `<span class="chip rosa">${ic('i-x')}Rifiutata</span>` })[o.stato] || `<span class="chip">${ic('i-clock')}Da fare</span>`;
   /* Riepilogo dell'esecuzione: passi fatti, il passo corrente (in corso o in errore), il prossimo, costo finora e stima a fine. */
   function riepilogoEsecuzione(m, e, x) {
     const a = e.att;
@@ -1575,7 +1799,7 @@ window.DIREZIONE_A = (function () {
      pillole dei periodi che i suoi dati reggono (oggi · ultimi 30 giorni · da inizio anno; per modello senza l'anno; per
      strumento solo oggi). Dati in m.costi(periodo) (dati.js); riusa la card costo dell'esecuzione (.task.spesa), le
      righe della spesa del mese (.crow) e i badge del confronto (delta). */
-  const PERIODO_COSTI = { oggi: 'Oggi', mese: 'Ultimi 30 giorni', anno: 'Da inizio anno' };
+  const PERIODO_COSTI = { oggi: 'Oggi', settimana: 'Ultimi 7 giorni', mese: 'Ultimi 30 giorni', anno: 'Da inizio anno' };
   const PERIODO_LB = { oggi: 'oggi', mese: 'in 30 giorni', anno: 'da inizio anno' };
   const pillePeriodo = (sez, cur, lista) => `<div class="filters">${lista.map(p => `<span class="pill${cur === p ? ' on' : ''}" data-az="periodo" data-sez="${sez}" data-v="${p}">${PERIODO_COSTI[p]}</span>`).join('')}</div>`;
   const plurale = (n, uno, piu) => n === 1 ? uno : piu;
@@ -1886,13 +2110,13 @@ window.DIREZIONE_A = (function () {
   }
 
   function render(m, opz) {
-    opz = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, confronto: null, motivo: false, periodo: {}, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '', cerca: {}, sez: {}, forma: '', consegna: '' }, opz || {});
-    return opz.pagina === 'consegna' ? paginaConsegna(m, opz) : opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : opz.pagina === 'dipendente' ? dipendente(m, opz) : opz.pagina === 'esecuzione' ? esecuzione(m, opz) : opz.pagina === 'costi' ? paginaCosti(m, opz) : opz.pagina === 'agenda' ? agenda(m, opz) : opz.pagina === 'chat' ? chat(m, opz) : home(m, opz);
+    opz = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, confronto: null, motivo: false, periodo: {}, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '', cerca: {}, sez: {}, forma: '', consegna: '', workflow: '', nodo: 0 }, opz || {});
+    return opz.pagina === 'workflow' ? paginaWorkflow(m, opz) : opz.pagina === 'consegna' ? paginaConsegna(m, opz) : opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : opz.pagina === 'dipendente' ? dipendente(m, opz) : opz.pagina === 'esecuzione' ? esecuzione(m, opz) : opz.pagina === 'costi' ? paginaCosti(m, opz) : opz.pagina === 'agenda' ? agenda(m, opz) : opz.pagina === 'chat' ? chat(m, opz) : home(m, opz);
   }
 
   /* Disegna e collega i clic: tendina, cambio pagina, filtri, decisioni. Ritorna lo stato. */
   function monta(radice, m, opz) {
-    const st = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, editor: null, confronto: null, motivo: false, log: 'tutto', periodo: { dipartimenti: 'mese', dipendenti: 'mese', clienti: 'mese', modelli: 'mese' }, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '', cerca: {}, sez: {}, forma: '' }, opz || {});
+    const st = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, editor: null, confronto: null, motivo: false, log: 'tutto', periodo: { dipartimenti: 'mese', dipendenti: 'mese', clienti: 'mese', modelli: 'mese' }, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '', cerca: {}, sez: {}, forma: '', workflow: '', nodo: 0 }, opz || {});
     const n = () => m.richiesteDi('attesa').length;
     /* parametri di avvio della pagina del dipendente: ?tendina=dossier (la revisione in sospeso del dipendente, estesa) e ?confronto=a,b (due versioni del prompt) */
     const idxRevisione = id => inAttesa(m).findIndex(r => r.tipo === 'revisione' && r.chi === id);
@@ -1993,6 +2217,12 @@ window.DIREZIONE_A = (function () {
       /* «Aprire una consegna» vuol dire la **sua pagina** (versione 19, scelta dell'utente): la tendina e' l'anteprima
          delle approvazioni, e serve a decidere in fretta senza perdere la coda. Una consegna si legge, e una cosa che
          si legge ha una pagina. Si torna al dipartimento con la freccia della cornice. */
+      /* i workflow (versione 20): si apre uno dal suo id, si sceglie un nodo dentro il canvas, si accende o si spegne
+         la firma anticipata di quel workflow — che nasce spenta e resta una decisione per workflow, non una regola
+         di sistema. `firme` tiene le accensioni della sessione: il modello non le scrive, come per `m.decidi`. */
+      else if (az === 'workflow') { ev.stopPropagation(); st.workflow = el.dataset.id; st.pagina = 'workflow'; st.nodo = 0; if (st.tendina === 'estesa') st.tendina = 'aperta'; tutto(); window.scrollTo(0, 0); }
+      else if (az === 'nodo') { ev.stopPropagation(); const v = +el.dataset.n || 0; st.nodo = st.nodo === v ? 0 : v; tutto(); }
+      else if (az === 'firma') { ev.stopPropagation(); const id = el.dataset.id; m.firme[id] = !m.firme[id]; tutto(); }
       else if (az === 'consegna') { ev.stopPropagation(); st.consegna = el.dataset.id; st.pagina = 'consegna'; if (st.tendina === 'estesa') st.tendina = 'aperta'; st.motivo = false; tutto(); window.scrollTo(0, 0); }
       else if (az === 'pagina') { ev.stopPropagation(); st.pagina = el.dataset.pagina; if (el.dataset.dip) { st.dip = el.dataset.dip; if (st.pagina === 'richieste') st.filtri = { dip: el.dataset.dip }; } if (el.dataset.id) { if (st.pagina === 'chat') st.filo = +el.dataset.id; else st.id = +el.dataset.id; } if (el.dataset.chi) st.filtri = { chi: el.dataset.chi }; if (el.dataset.cliente) st.filtri = Object.assign(st.pagina === 'richieste' && el.dataset.dip ? { dip: el.dataset.dip } : {}, { cliente: el.dataset.cliente }); if (st.tendina === 'confronto' || st.tendina === 'estesa') st.tendina = 'aperta'; st.motivo = false; tutto(); window.scrollTo(0, 0); }
       else if (az === 'filtro') { const k = el.dataset.k, v = el.dataset.v; st.filtri[k] = (st.filtri[k] === v || v === 'tutti') ? undefined : v; tutto(); }

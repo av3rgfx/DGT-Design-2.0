@@ -1785,6 +1785,162 @@ apre la pagina con le sue tre sezioni, il telefono con nove schermate — e **ri
 pubblicata è costata **13 letture e circa 200 000 token**: con il CSS e le funzioni della Console i blocchi non
 possono superare le 400–450 righe.
 
+### Versione 20: i workflow e il perimetro delle consegne (2026-09-08, sessione successiva)
+
+**Le scelte dell'utente**, prese prima di scrivere una riga di codice (il prompt diceva di chiederle): la consegna in
+attesa **resta due volte e lime tutte e due**; il perimetro della sezione prende le **pillole del periodo**; si
+costruisce il **candidato 7**; la forma è **l'editor a nodi vero**, contro il 5-0 di un consiglio precedente; la delega
+**nasce spenta**; la sezione 07 dello specimen **si ripunta con la palette del sistema**; e la parola è **workflow**
+(«è un termine informatico e non credo abbia una vera traduzione»).
+
+#### 1. Il perimetro: le consegne passate esistevano già
+
+La domanda l'aveva posta il passaggio di consegne come «pillole del periodo = inventare dati storici». **Non era
+vero, e bastava guardare**: le richieste **decise** sono le consegne uscite in passato, e portano già `giorno`,
+`tipo`, `costo`, `testo`, `allegato` e la data della decisione. Il filtro per periodo (`giorno <= 7`, `<= 31`) era
+scritto da tre versioni. Zero dati inventati.
+
+| Consegne | oggi | sette giorni | trenta giorni |
+|---|---|---|---|
+| Tutta l'azienda, a undici | **18** | **30** | **31** |
+| Sviluppo · Marketing · Vendite · Amministrazione | 7 · 5 · 4 · 2 | 9 · 11 · 8 · 2 | 9 · 12 · 8 · 2 |
+| Marketing a quaranta | 10 | 13 | 17 |
+
+Tre cose decise dalla misura, non da un'opinione:
+
+1. **Il filtro parte da ieri (`giorno >= 1`), non da oggi.** Le decise di oggi sono già nella lista corrente — `r3`,
+   «Lista di 120 lead verificati», è puntata da una consegna in corso — e contarle due volte le raddoppierebbe.
+   Conseguenza voluta e verificata: **con «oggi» la pagina è identica alla versione 19**, 7 card e 2 594 px su
+   Sviluppo, 2 960 su Marketing. Il perimetro non costa niente a chi non lo tocca.
+2. **Il cerchio «cerca» lo decide il numero, non io.** `SOGLIA_CERCA` era una costante che nessuno leggeva: adesso la
+   ricerca compare quando la lista passa davvero le dodici righe. A «oggi» non compare mai (dieci al massimo); a
+   quaranta e trenta giorni Marketing arriva a diciassette e compare da sola. Nella versione 19 il cerchio ce l'avevo
+   messo a mano ed era stata una prova a cogliermi in fallo: adesso non può più succedere.
+3. **Una pillola in più, «Da rifare».** Le consegne che il titolare ha rimandato indietro (`modifiche`, `rifiutata`)
+   esistono solo nei giorni scorsi e nessuna delle cinque pillole le prendeva: sarebbero state raggiungibili solo da
+   «Tutte». La parola è quella che la pagina Richieste usa già nel suo terzo numero. E i due stati nuovi dicono
+   «Modifiche» e «Rifiutata» come nello storico: `chipOut` prende le parole di `chipEsito`, non ne inventa altre.
+
+#### 2. Il workflow: che cosa il consiglio ha detto, e che cosa la misura ha corretto
+
+Le tre domande residue — che cos'è un nodo, dove vive il canvas, da dove nasce un workflow — sono passate dal
+consiglio (regola fondamentale). **Cinque pareri su cinque hanno risposto «il nodo è un dipendente»**, e tutti e
+cinque hanno poi scritto, come obiezione a sé stessi, che il passaggio di mano fra due dipendenti non sta nei dati.
+
+**L'ho misurato: zero casi, in tutte e due le taglie.** Non «pochi»: zero. Quello che esiste sono **4 riferimenti alla
+propria consegna passata** (a undici; zero a quaranta) e **11 `serie`**, tutte dello stesso dipendente. Un canvas di
+nodi-dipendente avrebbe chiesto di inventare la relazione che lo regge, nella pagina che deve dimostrare che i numeri
+sono veri. **Quello che si misura si misura, non si vota** — e qui la misura ha battuto un 5-0.
+
+Quindi: **il nodo è un passo**, che nel modello c'è davvero (43 a undici, 156 a quaranta, con modello, strumenti,
+costo, durata ed esito), e **l'ultimo nodo è il titolare**, che nei dati c'è pure — l'ultimo passo di ogni
+dipartimento è già «Consegna al titolare» (`PASSI_DIP`), e la consegna lì si ferma per davvero. Il nodo del titolare
+porta la **regola** di `m.regole` che l'ha fermata: il workflow non sostituisce le quattro regole, **le fa vedere**.
+
+L'attesa che il canvas era stato scelto per mostrare c'è, e senza inventare un secondo dipendente.
+
+#### 3. Che cosa ha trovato la revisione incrociata (ed è di nuovo la parte che ha cambiato la risposta)
+
+| Trovato | Verificato nel codice |
+|---|---|
+| **La premessa del contesto era sbagliata, ed era mia**: avevo scritto che le 4 regole di approvazione stanno nella pagina Dipendente | **Vero, sbagliavo io**: stanno in **Richieste**, terza sezione (`direzione-a.js:989`), e sono **card** `ncard lead`, non righe. Tutti e cinque i consiglieri hanno costruito sulla pagina sbagliata |
+| La Console ha **nove** pagine, non sette: il canvas è la **decima** superficie | Vero, `render()` ne smista nove |
+| **Due regole fantasma**: `r16` «Fatture ricorrenti» e `r17` «Follow-up» sono citate su richieste decise ma non esistono in `m.regole` | Vero. Difetto del modello, **preesistente e non corretto qui**: sta nei punti aperti |
+| `scatta.js` inchioda `section:nth-of-type(2)` sul Dipartimento: una settima sezione romperebbe **le catture**, non solo le prove | Vero |
+| Rendere cliccabili le 4 card delle regole **riaprirebbe la regola 26** (hanno perso freccia e intaglio nella versione 18 proprio perché non avevano destinazione) | Vero |
+| Un nodo-titolare col disco in tinta **violerebbe la regola 19** (il disco in tinta è un dipendente AI) | Vero: il nodo del titolare non porta avatar, e una prova lo controlla |
+| «Il titolare non compare mai nelle righe dell'Esecuzione» (detto da tre pareri) | **Falso**: `tipo: 'titolare'` e `.lrow.titolare` esistono |
+| «Il passaggio di mano esiste, `dati.js:482`» (detto da una revisione) | **Falso**: quella riga sta nell'esecuzione del dipendente 1 e `r5` ha `chi: 1` — è la stessa mano che rilegge sé stessa |
+| **Il telefono: zero menzioni** in cinque pareri su cinque | Vero, e da lì è nata la schermata 10 |
+
+Due delle otto sono affermazioni **sbagliate dei revisori**, trovate controllandole: è la quarta volta in questo
+repository che un conto fatto senza aprire il codice finisce in un documento. La regola tiene: si guarda, non si crede.
+
+#### 4. Che cosa è stato costruito, e a che prezzo
+
+**La pagina Workflow** (`?pagina=workflow&dip=…` per l'elenco, `&workflow=w1&nodo=n` per il canvas), decima superficie
+della Console. Tre sezioni: il canvas, la firma anticipata con i suoi tre freni, gli altri workflow del dipartimento.
+
+| | Numero |
+|---|---|
+| Workflow a undici (Sviluppo · Marketing · Vendite · Amministrazione) | **6** (1 · 2 · 2 · 1) |
+| Workflow a quaranta | **26** (6 · 7 · 7 · 6) |
+| Nodi per workflow | da **4** a **8** a undici, da 4 a **11** a quaranta |
+| Elementi sul canvas (nodi + porte) | fino a **24** a undici, **36** a quaranta — la figura di riferimento ne ha **17** |
+| Sezioni aggiunte alla pagina Dipartimento | **zero** |
+| Voci aggiunte al rail | **zero** (resta a sei) |
+| Altezza della pagina Dipartimento | **2 594 / 2 960 px, invariata** |
+
+**L'ingresso è una pillola nell'intestazione di «Oggi in ‹dip›»**, non una settima sezione: una sezione sarebbe
+costata ~700 px misurati e avrebbe spostato gli indici `nth-of-type` su cui si reggono tre prove e due catture. È la
+quarta strada proposta da un consigliere, e l'unica delle cinque che teneva conto dell'impianto di prova.
+
+**Il canvas si dispone da solo**: cinque nodi per riga su una griglia a serpentina (la riga dispari va all'indietro,
+così i connettori non si incrociano mai), passo 248×210 px, nodi 208×96. Le posizioni si calcolano nella funzione che
+stampa e gli archi le rileggono: **nessuna misura presa dopo il disegno**, quindi la pagina è identica a ogni giro.
+
+**Due cose della figura non ci sono, e sono due regole già scritte, non due rinunce:**
+- **niente pan e niente zoom** (regola 17: la Console si scala già con `zoom` alla larghezza della finestra, e due
+  zoom annidati litigano). Il canvas non si trascina: si stende, e cresce in basso come ogni altra sezione;
+- **il verde diventa lime** (regola 4, un solo accento). È l'emendamento a `CLAUDE.md` deciso dall'utente.
+
+**Il nodo si apre** e mostra i suoi campi — modello, strumenti, esito dell'ultima volta — come il nodo selezionato
+della figura: è il gesto con cui si modifica il workflow. Il canvas cresce di 168 px quando un nodo è aperto, se no i
+campi finirebbero sotto la barra.
+
+**La firma anticipata nasce spenta**, e i suoi tre freni portano numeri misurati: la soglia dal costo vero del
+workflow (arrotondato ai 5 € sopra), il perimetro dal cliente dell'esecuzione, la scadenza in esecuzioni. Finché è
+spenta la coda resta esattamente com'è: la spina dorsale non si riscrive in questa versione.
+
+**Un workflow nasce da un'esecuzione riuscita**, e «riuscita» vuol dire due cose insieme: almeno due passi conclusi
+**e nessun passo rotto**. Senza la seconda, l'esecuzione ferma di Kim («Chiavi di accesso scadute») sarebbe diventata
+un modo di lavorare da ripetere. Costo e durata sono **sommati dai passi**, e una prova lo verifica su tutti e sei.
+
+**Sul telefono la schermata 10**: il canvas **girato di novanta gradi**. Lo schermo è 300×620 px dentro `zoom:1.25` e
+la regola del telefono dice che non deve poter scorrere di lato: quindi gli stessi nodi, uno sopra l'altro, con lo
+stesso connettore lime, le porte come chip e in fondo il nodo del titolare. Non è un canvas ridotto, è lo stesso
+oggetto letto in colonna. La firma si accende anche da lì, ed è lo stesso stato della Console.
+
+#### 5. La sezione 07 dello specimen, ripuntata
+
+Dodici occorrenze dei sei verdi che non erano il lime → **zero**. `--egreen` diventa `#B8FC64`, le due tinte del nodo
+selezionato `#9AD84B` e `#5F8A2E`, il bagliore `rgb(184 252 100/.55)`, la tessera attiva del rail `#C8FF7E→#A2E052`,
+il rosso del tag passa da `#F05A50` al `#F04848` del sistema. Notte, tessere, griglia puntinata, forma dei nodi e
+porte con l'etichetta restano quelli del riferimento: **cambia solo la tinta**.
+
+**Una cosa che il verde nascondeva**: sul lime il testo bianco non si legge. Il nodo selezionato porta adesso il testo
+all'inchiostro e i suoi campi su bianco al 72 % — è la stessa regola delle pillole lime del prodotto.
+
+I **18 token `--dgt-ed-*`** di `tokens.css` erano morti (nessun file li importa) e restano morti, ma adesso dicono il
+vero: tenerli sbagliati sarebbe stato peggio che tenerli inutili.
+
+#### 6. Verifica
+
+- **Le cinque prove cliccate passano: 141 + 82 + 48 + 54 + 60 = 385 verifiche, 0 ko** (erano 325). La quinta,
+  `prove/workflow.js`, sta in un file suo apposta: `console.js` sceglie tre sezioni con `nth-of-type` e ogni prova
+  nuova che ne aggiungesse una li sposterebbe.
+- **Le catture: 52 su 70 identiche byte per byte**, 8 cambiano e 10 nascono. Le 8 sono tutte e sole le pagine
+  Dipartimento (Console e telefono). `a-dipartimento.png` cambia in **5 196 px su 3 735 360 (lo 0,14 %)**, nel
+  riquadro **`x 986–1412, y 233–680`** — le due intestazioni di sezione — e **l'altezza non si muove** (2 594 →
+  2 594). Sul telefono il riquadro è più grande perché le righe dei workflow spingono giù quello che segue.
+- **`a-costi.png` è stata riportata com'era**: cambiava di 13 px nel riquadro `x 1136–1425, y 136–175`, cioè
+  esattamente la zona che le due sessioni precedenti avevano già segnalato come instabile fra sessioni. La pagina dei
+  Costi non è stata toccata.
+- Zero errori in console su tutte le pagine nuove, a undici e a quaranta; nessuna scorre di lato; zero controlli
+  inerti nella pagina del workflow.
+
+#### 7. Scelte fatte in costruzione, da confermare
+
+- **il nodo è un passo e non un dipendente** (contro il 5-0 del consiglio, per una misura: zero passaggi di mano nei
+  dati). Se l'utente vuole il nodo-dipendente, va prima inventato il passaggio di mano nel modello;
+- **l'ultimo nodo è il titolare**, e porta la regola che ferma lì la consegna;
+- **l'ingresso è una pillola**, non una settima sezione;
+- **niente pan, zoom e minimappa** (regola 17), e il canvas che cresce invece di scorrere;
+- **la soglia dei 5 €** per arrotondare la soglia di costo, e la **scadenza a 10 esecuzioni**: sono due numeri scelti
+  da me, gli unici due della versione che non vengono da una misura;
+- **«Da rifare»** come sesta pillola delle consegne;
+- sul telefono il workflow è **una colonna**, non un canvas stretto.
+
 ## 5. File
 
 | File | Ruolo |
@@ -2146,3 +2302,477 @@ Richieste ospita i guasti o ha una corsia separata; e la parola.
 decide la forma della procedura ha già in mano metà della domanda sugli accessi. E perché l'8, per come è uscito dal
 consiglio, non è più «dove metto i connettori» ma «spacco `strumenti` in due e invento come si disegna un servizio senza
 il suo marchio»: è il lavoro più lungo dei tre, ed è quello che cambia più righe di quelle già scritte.
+
+## 7. Workflow, routine e inneschi: ricerca e analisi (2026-09-08)
+
+Nasce da tre domande dell'utente, dopo che la pillola d'ingresso ai workflow della versione 20 si è
+rivelata invisibile: **(a)** ha senso tenere i workflow a destra, se aprono una pagina e non una tendina?
+**(b)** i workflow vanno tenuti per azienda o per dipartimento? **(c)** vuole aggiungere **routine e
+inneschi** — un modo più semplice e veloce dei workflow per dire «quando succede X, fai Y», creabile
+**anche dal telefono**, e poi visualizzabile in modalità workflow.
+
+### 7.1 Il difetto che ha aperto la discussione (misurato)
+
+`.a-main` è larga 1312 px e finisce a x 1414; la tendina del titolare è `position:fixed` sui 330 px di
+destra (x 1110–1440, `z-index:30`). **Gli ultimi ~304 px di ogni pagina stanno sotto la tendina.**
+
+| Pillola «Workflow · N», 1440 × 900 | scroll 0 | 100 | 200 | 300 |
+|---|---|---|---|---|
+| tendina aperta (predefinito) | coperta (`.appr`) | coperta (`.th`) | visibile | fuori schermo |
+| tendina chiusa | coperta (`.a-mini`) | visibile | visibile | fuori schermo |
+
+Chiusa, il badge lime `.a-mini` è fisso a `top:240px` e cade esattamente sulla pillola (y 233–277).
+Colpite anche le **pillole del periodo** di «Consegne di oggi» (visibili solo oltre scroll ~600) e la
+pre-esistente **«Tutti i costi dell'azienda»** di «Spesa del mese»: il difetto è del layout, ereditato,
+non introdotto dalla versione 20 — che però ci ha messo dentro due controlli nuovi.
+
+**Perché le prove non l'hanno preso**: asserivano la presenza nel DOM e il clic. Playwright, prima di
+cliccare, porta l'elemento al centro del viewport, e così esce da sotto il badge fisso. Nessuna delle
+385 verifiche controllava che si **vedesse** nello stato in cui la pagina si apre. Da qui in avanti ogni
+controllo nuovo vuole un'asserzione di visibilità (`elementFromPoint`), non solo di esistenza.
+
+### 7.2 Che cosa esiste già nel modello (misurato)
+
+Le routine **ci sono già**, in tre forme che non portano lo stesso nome:
+
+| Forma | Dove | Quante (a 11) |
+|---|---|---|
+| Obiettivi che si ripetono (`scadenza: 'ogni giorno'`, `'ogni venerdì'`) | `dati.js`, letti da `settimana()` | 2 |
+| Dipendenti `pianificato` a un'ora fissa (15:00, 17:00, 18:00) | `dati.js`, `e.att.quando` | 3 |
+| Regole di approvazione (evento → condizione → esito) | `m.regole` | 4 |
+| Richieste **già decise da una regola** e non dal titolare | `regola:` in `richieste11` | 3 (Report interni, Fatture ricorrenti, Follow-up) |
+
+Gli **inneschi** possibili sono anch'essi già nei dati: un'ora; un evento del diario (`inizio` 5,
+`errore` 5, `approvazione` 3, `passo` 20); una soglia di spesa (`budget.mese`, `budget.giorno`).
+Manca solo l'innesco «arriva qualcosa da fuori» (un lead, un'e-mail), che andrebbe inventato.
+
+**Conseguenza**: la proposta dell'utente non aggiunge un concetto nuovo — **dà un nome e una casa a una
+cosa che il prodotto fa già in tre posti diversi**. È l'argomento più forte a suo favore, ed è misurato.
+
+### 7.3 Ricerca sui prodotti che hanno affrontato lo stesso bivio
+
+1. **monday.com ha costruito tutti e due, e non si parlano.** Le *automations* («when this happens…»)
+   stanno a livello di board, i *Workflows* (rami, condizioni, approvazioni) a livello di workspace e su
+   piani più alti; **non sono convertibili l'uno nell'altro**, e l'articolo che analizza la tensione la
+   descrive come fonte di confusione, proponendo una via di mezzo. → *Se DGT costruisce la routine
+   semplice e il canvas, devono essere **lo stesso oggetto a due altezze**, mai due sistemi.* È
+   esattamente l'intuizione dell'utente («poi con la possibilità di visualizzarli in modalità workflow»).
+2. **Zapier sta chiudendo lo stesso divario dal lato opposto.** L'editor degli Zap è una lista lineare;
+   *Canvas* (2025, ampliato nel 2026) è la superficie visuale, con **conversione in un clic da diagramma
+   a Zap**. → Due viste di un oggetto solo è dove il settore sta convergendo.
+3. **IFTTT: un innesco e un'azione, per scelta — ed è per questo che funziona sul telefono.** È
+   dichiaratamente mobile-first; Zapier è multi-passo con filtri e rami, ed è un attrezzo da scrivania.
+   La rassegna sugli altri (Airtable, Notion, monday) conferma che **creare automatismi è un'attività da
+   desktop**. → *La «modalità più semplice e veloce, pure da mobile» è possibile **solo** se l'oggetto è
+   costretto a un innesco e un'azione. Appena si ammettono i rami si è ricostruito il canvas e si è perso
+   il telefono.* È il vincolo più duro di tutta l'analisi.
+4. **Lindy 2.0: costringere l'agente lo rende più affidabile *e* più comprensibile.** Sono passati da un
+   grande campo di prompt libero a un canvas con componenti espliciti (innesco, azioni obbligatorie), e
+   «il costruttore visuale ha migliorato molto l'ingresso dei nuovi utenti». L'adozione è arrivata da
+   **agenti specializzati già pronti**, non dalla libertà di comporre. → *Il canvas si guadagna il posto
+   come superficie di **lettura**. Non conviene scommettere che il titolare componga flussi complessi.*
+5. **Gli automatismi stanno dove stanno gli oggetti su cui agiscono**: board in monday, base in Airtable,
+   progetto in Asana (o workspace con una condizione che lo restringe), team in Linear. In DGT gli
+   oggetti (dipendenti, esecuzioni, consegne, richieste) stanno nei **dipartimenti**.
+
+Fonti: [monday: la tensione fra automations e workflows](https://dev.to/piotrdiuk/the-product-tension-between-automations-and-workflows-in-mondaycom-3if5) ·
+[monday: guida alle automations](https://support.monday.com/hc/en-us/articles/360001222900-Get-started-with-monday-automations) ·
+[Zapier Canvas](https://growwstacks.com/blog/zapier-canvas-review-2026) ·
+[Zapier vs IFTTT](https://www.cloudwards.net/zapier-vs-ifttt/) ·
+[IFTTT: un innesco, un'azione](https://www.lowcode.agency/blog/zapier-vs-ifttt) ·
+[Lindy: da agenti liberi a workflow guidati](https://www.zenml.io/llmops-database/evolution-from-open-ended-llm-agents-to-guided-workflows) ·
+[Lindy: struttura di un agente](https://docs.lindy.ai/fundamentals/lindy-101/introduction) ·
+[Airtable/Notion/monday: gli automatismi si creano da desktop](https://www.gapconsulting.io/blog/when-and-how-to-use-airtable-automation-vs-zapier-or-make)
+
+### 7.4 Le tre risposte che la ricerca rende difendibili
+
+- **(a) La destra è sbagliata, e non serve il consiglio per dirlo.** Un controllo che apre una *pagina* è
+  navigazione, non un filtro; tutto il resto in `.destra` è un filtro o un rimando. Che poi finisca nella
+  fascia morta è un difetto in più, non la ragione principale.
+- **(b) Non è «azienda o dipartimento», è «un oggetto, due indici».** L'atomo è già **per dipendente**
+  (un workflow della versione 20 nasce dai passi di *una* esecuzione: svi 1, mkt 2, ven 2, amm 1 = 6 a
+  undici, 26 a quaranta). Il dipartimento è dove si lavora, l'azienda è dove si governa — e le regole di
+  approvazione che il nodo del titolare mostra sono **già di azienda** (`m.regole`).
+- **(c) Routine e workflow devono essere lo stesso oggetto a due altezze.** La routine è ciò che si
+  **scrive** (un innesco, un dipendente, un compito, e la clausola di approvazione); il workflow è come
+  si **legge** (il canvas, coi nodi non ancora eseguiti «da fare»). La clausola di approvazione non è
+  facoltativa: la spina dorsale scritta in `CLAUDE.md` dice che il titolare approva ogni uscita, e una
+  routine senza quella clausola sarebbe il modo di aggirarla.
+
+### 7.5 Dove possono vivere (da pressare col consiglio)
+
+- **A · Un settimo cerchio nel rail.** Oggi sono sei: home, dipartimento, richieste, chat, agenda, costi.
+  Routine e workflow insieme sono un dominio («come lavora l'azienda») e un dominio merita una casa.
+- **B · Dentro Agenda.** È già la superficie del tempo, e mostra già «i pianificati che si ripetono».
+  Una routine è una voce d'agenda che torna. Zero cerchi nuovi.
+- **C · Per dipartimento, con un indice in azienda.** Segue la regola 5 della ricerca (gli automatismi
+  stanno dove stanno gli oggetti), ma sparpaglia il governo su quattro pagine.
+
+**Da confermare dall'utente** (il consiglio prepara la domanda, non la chiude).
+
+### 7.6 Il verdetto del consiglio (2026-09-08)
+
+Cinque pareri indipendenti, revisione incrociata anonima, e **verifica nel codice di ogni affermazione
+verificabile** — perché nella prima applicazione del metodo due affermazioni dei revisori erano false.
+
+#### Dove il consiglio converge (e la convergenza è il verdetto vero)
+
+- **La pillola a destra è sbagliata**: 5 su 5. Un controllo che apre una pagina non è un filtro.
+- **Un oggetto solo, mai due sistemi**: 5 su 5 scartano la strada di monday.
+- **Il canvas è una lente, non un editor**: 4 su 5, e il quinto lo concede da sé. La ragione è tecnica e
+  non estetica: il canvas legge un **consuntivo** (costo, durata, esito per passo), e una routine mai
+  eseguita ha quei campi vuoti — nodi coi trattini violerebbero la regola «un controllo si mostra solo se
+  fa quello che promette».
+- **Non si crea da un modulo vuoto: si promuove un fatto già accaduto**: **5 su 5**, con cinque nomi
+  diversi per lo stesso gesto («Ripeti questo», «Fallo sempre», «rendila una regola», «d'ora in poi fai
+  così», «promuovi»). È la convergenza più forte del consiglio ed è ciò che rende possibili i tre tocchi
+  sul telefono: chi, che cosa, quanto costa e quale clausola si applica sono **già noti dal fatto**.
+- **La fascia morta si cura riservando lo spazio, non spostando i controlli**: 5 su 5.
+- Nella revisione incrociata, **5 revisori su 5** hanno indicato lo stesso parere come il più forte:
+  quello che ordina i lavori e dichiara che cosa misurare invece di discuterne.
+
+#### Dove il consiglio si spacca
+
+- **Dove vive**: quattro dicono una pagina d'azienda (settimo cerchio del rail), uno dice «sul
+  dipendente». Ma chi sceglie il rail lo smonta da sé: «il rail sono i sei posti dove Marco va ogni
+  giorno; le routine si aprono due volte l'anno».
+- **Il titolare continua a VEDERE le uscite automatiche?** Due dicono sì («smette di firmare, non di
+  vedere, o la spina dorsale si rompe in silenzio»), uno dice che escono dalla coda. **Si compongono**:
+  escono dalla *coda delle firme* (che promette «da fare») ed entrano in una striscia «fatto senza di
+  te». Vedere sì, firmare no.
+
+#### Le cose che solo la revisione incrociata ha trovato — verificate nel codice
+
+| Affermazione | Verifica | Esito |
+|---|---|---|
+| «Mansione» è già occupata | 16 occorrenze: è la **mansione del dossier** del dipendente, stampata come `<p class="mans">`, più «Richiesta fuori mansione» nel colloquio | **VERA** — e 3 consiglieri su 5 proponevano quella parola |
+| «Regola» è occupata | 4 record in `m.regole` | **VERA** |
+| «Routine» è libera | 0 occorrenze in tutto il repository | **VERA** |
+| Solo 3 delle 4 regole sono attive | `g4` «Spese sopra 50 €» ha `attiva: false` — ed è proprio quella a soglia in euro | **VERA** — 3 consiglieri fondavano una strada su «le 4 regole» |
+| La tendina estesa è larga 840 px | `.a-tend.estesa{width:840px}` | **VERA**: farla colonna della griglia rifluirebbe la pagina di 510 px a ogni apertura |
+| Due regole fantasma | le richieste citano `Fatture ricorrenti` e `Follow-up`, che **non esistono** in `m.regole` | **VERA**: 2 delle 3 richieste «già automatiche» puntano al nulla |
+| Non esiste un record su cui scrivere | `workflowDi()` è una **derivazione** su `esecuzioneDi(e)`; `firme` è un oggetto in memoria che si perde ricaricando | **VERA**: tutti e cinque promettono «tre tocchi» su un modello in cui non si può scrivere niente |
+| Le 8 routine preesistenti sono un conto gonfiato | 2 ricorrenze distinte, 3 ore distinte, 3 nomi di regola distinti | **FALSA**: sono otto voci diverse |
+
+**La misura che cambia la correzione.** Riservare la banda costa più di quanto il consiglio credesse:
+il canvas è largo **1272 px** su una serpentina a 5 colonne (`W_PAD·2 + 4·W_PX + W_W`), e `.a-main` ne ha
+1312. Togliendo 354 px restano 958 px utili e **ci stanno solo 3 colonne**: il workflow di Sviluppo
+passerebbe da 518 a **728 px di altezza, +41 %**. Nessun consigliere l'aveva contato.
+
+#### Che cosa nessuno ha detto, e va deciso
+
+1. **Chi vince** quando la clausola della routine contraddice la regola d'azienda.
+2. **Un dipendente può scriversi una routine che salta l'approvazione?** Se sì, la spina dorsale la
+   scavalca l'autore, non l'innesco.
+3. **Chi paga e chi ferma.** Una routine spende senza gesto umano: serve un **tetto di spesa per
+   routine** (la clausola vista dal lato dei soldi) e uno stato di guasto con quarantena.
+4. **L'innesco esterno inverte la direzione**: crea un'esecuzione che nessuno ha chiesto. Minimo: la
+   prima volta produce una **richiesta**, non un'uscita.
+
+#### La raccomandazione
+
+1. **La parola è «routine»** (libera, e già dell'utente), l'innesco si chiama **«innesco»**. Non
+   «mansione» (occupata), non «regola» (occupata). «Workflow» resta, ma smette di essere una *modalità*:
+   diventa una **vista** — «vedi a nodi».
+2. **Un oggetto, due tempi**: routine = esecuzione *dichiarata*; workflow = esecuzione *avvenuta*.
+   Nel codice è un record solo con `innesco`, `clausola`, `autore` e `origine: dichiarata | derivata`.
+3. **Si promuove, non si compone.** «Ripeti questo» su una consegna approvata o su un'esecuzione.
+4. **Dove vive**: pagina di **azienda** con filtro per dipartimento, raggiunta dalle Richieste (dove le
+   clausole già vivono) e dal Dipartimento. Il settimo cerchio del rail **solo se** la pagina lo
+   giustifica — la soglia proposta dal consiglio è misurabile: sotto ~900 px di pagina non lo merita.
+5. **La fascia morta**: riservare la banda su tutte le pagine **tranne il canvas**, dove la tendina si
+   richiude da sola — su quella pagina non si firma, si legge. Più asserzioni **geometriche**
+   (`elementFromPoint`) su ogni controllo cliccabile nelle cinque suite.
+
+**Il primo lavoro**: non l'interfaccia, il **record**. Dare alla routine un record vero in `dati.js`
+(`id`, `autore`, `innesco`, `clausola`, `origine`) ed etichettarci dentro le 8 che esistono già; nello
+stesso giro, la fascia morta, le asserzioni geometriche e le 2 regole fantasma. Se etichettando le 8 la
+lista sta in piedi, la funzione ha contenuto; se non sta in piedi, lo si scopre prima di costruire una
+pagina.
+
+**Da confermare dall'utente**: i 4 punti aperti qui sopra e la scelta 4 (dove vive).
+
+### 7.7 Correzione: il riferimento è n8n, non Zapier (2026-09-08)
+
+L'utente ha chiarito: «per la mia idea io mi ispiravo a **n8n**, che permette di creare automazioni di
+ogni tipo anche di livello complesso». Il consiglio aveva ricevuto un contesto costruito su Zapier e
+IFTTT, e su quel contesto **una delle sue conclusioni cade**. Le altre reggono.
+
+#### Che cosa fa n8n, verificato
+
+1. **L'innesco è un NODO, il primo del grafo.** Ogni workflow di n8n comincia con un nodo di innesco:
+   Schedule (a intervalli o cron), Webhook (il workflow diventa un indirizzo HTTP che chiunque può
+   chiamare), Form, Manual, o un evento di un'applicazione. I nodi di innesco hanno un'uscita e
+   **nessuna entrata**. → In n8n **non esiste un oggetto «routine»**: una routine è semplicemente un
+   workflow che ha uno Schedule Trigger in testa. È esattamente la **strada Z**, e non come compromesso
+   di implementazione: come modello.
+2. **È lo STESSO canvas a fare l'editor e il consuntivo.** Si apre il workflow nell'editor e si passa
+   alla linguetta *Executions* in cima al canvas: la stessa figura mostra, nodo per nodo, i dati entrati
+   e usciti, con il **contorno verde** se è andata e **rosso** dove si è rotta; cliccando il nodo rotto
+   si leggono errore e dati che l'hanno causato.
+3. **Nessun editor ufficiale sul telefono.** L'app mobile ufficiale **tiene l'editor nel browser**: mostra
+   salute delle esecuzioni, attività recente e grafici. Sono nate app di terzi che provano il canvas a
+   dita — segno che la domanda esiste, e che il prodotto ufficiale si rifiuta di rispondere così.
+4. **La composizione si fa con i sotto-workflow** (nodo *Execute Workflow*): un workflow autonomo che un
+   altro chiama, con ingressi e uscite. La regola pratica: se ricopi la stessa sequenza in più workflow,
+   quella sequenza è un sotto-workflow.
+5. **2 709 modelli pronti** nella libreria. È la lezione di Lindy una seconda volta.
+6. **L'organizzazione è per cartelle e progetti**, piatta con raggruppamento — non per «reparto».
+
+#### Che cosa cade del verdetto
+
+**«Il canvas è una lente, non un editor» (4 consiglieri su 5) cade.** Era fondata su un'osservazione
+giusta — una routine mai eseguita ha costo, durata ed esito vuoti — ma con una conclusione sbagliata:
+quei campi vuoti non sono «nodi coi trattini» su un diagramma di sola lettura, sono **lo stato di
+modifica**. n8n lo dimostra: una figura, due stati.
+
+> **Il canvas della versione 20 è già la vista *Executions* di n8n** — disegna costo, durata, esito e
+> strumenti per passo. Quello che manca non è una pagina diversa: è **l'altro stato della stessa
+> figura**, quello in cui si scrive.
+
+Quindi la coppia non è «routine (frase) ↔ workflow (canvas)», è:
+
+| | Stato | Che cosa mostra |
+|---|---|---|
+| **Come lavora** | dichiarato, modificabile | i nodi, l'innesco in testa, la clausola sul nodo del titolare |
+| **Com'è andata** | eseguito | la stessa figura con costo, durata, esito, verde e rosso |
+
+#### Che cosa regge
+
+- **Si promuove un fatto invece di comporre da vuoto** (5 su 5) **regge, e diventa più importante**: è
+  la *strada veloce*, quella che n8n non ha e che l'utente ha chiesto per nome («una modalità più
+  semplice e veloce»). Non sostituisce il canvas: è l'altra estremità dello stesso oggetto.
+- **Il telefono non compone** regge, e n8n lo conferma dal lato più forte: il prodotto più capace del
+  campo **non ci prova nemmeno**. Il telefono di DGT deve fare quello che fa l'app di n8n — guardare,
+  far partire, decidere — più l'unico gesto di scrittura che il telefono regge davvero: promuovere.
+- **La parola** regge: «routine» è libera, «mansione» e «regola» sono occupate.
+- **Un oggetto solo** regge, e n8n lo rende letterale: la routine **è** un workflow con un innesco in
+  testa. Non due altezze di un oggetto: un oggetto.
+- **La fascia morta** e le sue misure non c'entrano con n8n: restano com'erano.
+
+#### Che cosa n8n aggiunge, che nessun consigliere aveva sul tavolo
+
+- **Il sotto-workflow è il posto dove nascerà il passaggio di mano.** Oggi nei dati i passaggi fra due
+  dipendenti sono **zero**, ed è per questo che il nodo è un passo e non un dipendente. Il giorno in cui
+  un dipendente ne chiama un altro, quella è la chiamata a un sotto-workflow — non un nodo-dipendente
+  dentro lo stesso grafo. La versione 20 non va rifatta per farcelo stare.
+- **I modelli pronti**: se n8n ne ha 2 709 e l'adozione di Lindy è venuta dagli agenti già pronti,
+  DGT deve spedire routine già scritte, non un foglio bianco.
+- **Le cartelle** confermano la pagina di azienda con filtro, contro i silos per dipartimento.
+
+Fonti: [n8n: i tipi di innesco](https://n8n.spot/n8n-trigger-types-webhook-schedule-app-event-manual-explained/) ·
+[n8n: Schedule Trigger](https://madebyaime.com/blog/n8n-schedule-trigger/) ·
+[n8n docs: vedere le esecuzioni di un workflow](https://docs.n8n.io/build/understand-workflows/understand-executions/view-executions-for-a-single-workflow) ·
+[n8n: canvas, nodi ed esecuzioni](https://aiworkflowsautomation.com/understanding-the-n8n-interface-canvas-nodes-and-executions/) ·
+[n8n: il nodo Execute Workflow](https://synta.io/blog/n8n-execute-workflow-node-guide-2026) ·
+[n8n: l'app mobile tiene l'editor nel browser](https://www.n8n-hub.site/)
+
+**Da confermare dall'utente**: che il canvas diventi modificabile (e non solo una lente), e in quale
+ordine rispetto alla strada veloce.
+
+### 7.8 Decisioni dell'utente sul governo delle routine (2026-09-08)
+
+**Deciso — chi scrive.** Il dipendente **propone**, non crea. La proposta arriva al titolare come una
+richiesta (stesso schema delle revisioni di performance). Se il titolare conferma la creazione, decide
+in quel momento **come parte**: automatica, oppure con **richiesta di approvazione a ogni avvio**.
+
+**Deciso — i limiti.** Ogni routine può portare i suoi limiti, e l'utente li vuole personalizzabili per
+intero: **tetto di spesa giornaliero, settimanale o mensile**. «Voglio piena customizzabilità.»
+
+#### Domanda 1: quattro contraddizioni possibili fra clausola e regola (tutte dai dati veri)
+
+1. **La routine è più permissiva della regola** — il caso pericoloso. `g1` «Uscite verso i clienti:
+   sempre da approvare» è attiva. Una routine «ogni venerdì alle 17:00, Follow-up clienti manda le 14
+   e-mail, automatica sotto 20 €» costa 3 €: sotto soglia. Il follow-up **è** un'uscita verso i clienti.
+   Se vince la routine, `g1` è spenta per quel caso senza che nessuno l'abbia toccata, e la pagina Regole
+   continua a dire «sempre da approvare» — che è falso. *Nel modello questo caso esiste già*: la
+   richiesta `r17` risulta decisa dalla regola «Follow-up», che in `m.regole` **non esiste**.
+2. **La routine è più stretta della regola** — il caso facile. `g3` «Liste di lead: automatica sotto
+   20 €»; la lista di 120 lead costa 14 €, quindi uscirebbe da sola. La routine dice «voglio firmarla
+   sempre». Qui non c'è dubbio: vince la più stretta.
+3. **La regola cambia dopo che la routine è scritta.** Oggi `g4` «Spese sopra 50 €: sempre da approvare»
+   è **spenta** (`attiva: false`, misurato). Si scrivono dieci routine, tre automatiche con tetto 80 €.
+   Domani si accende `g4`: quelle tre continuano a girare com'erano, o si fermano e vanno riconfermate?
+   È il caso che decide se la pagina Regole governa davvero o è decorazione.
+4. **Il tetto contro il costo vero.** Una routine con tetto 10 €/giorno su «Ricerca lead»: l'esecuzione
+   vera «200 lead e-commerce in Lombardia» costa **61 €** (misurato). Non parte? Parte e si ferma a 10 €
+   lasciando mezza lista e 10 € spesi per niente? Parte e chiede? Il tetto va deciso **insieme a che cosa
+   fa quando lo tocca** — altrimenti è un numero che non promette niente.
+
+**Fatto misurato che indica la risposta.** Il modello ha **già** un posto dove una regola d'azienda si
+allenta: le **eccezioni** nel dossier del dipendente (`eccezione: true`), per esempio «Testi per il sito
+di Nova Studio: Automatica sotto 5 €, Eccezione di Nora». Quindi la proposta è: **la clausola della
+routine può solo stringere**, mai allentare; per allentare si aggiunge un'eccezione, che è il meccanismo
+che esiste già e che si legge in **un posto solo**. Così «piena customizzabilità» resta, ma la risposta
+alla domanda «che cosa può uscire senza di me?» non si sparpaglia su N routine.
+
+#### Domanda 4: perché l'innesco esterno è diverso dagli altri
+
+Oggi tutto quello che succede in DGT parte **da dentro**: o lo chiedi tu, o parte un lavoro che avevi
+pianificato. Ogni euro risale a una decisione presa da qualcuno dell'azienda.
+
+L'innesco esterno rovescia il verso: **qualcuno fuori dall'azienda fa lavorare e spendere la tua
+azienda**. Uno sconosciuto compila il modulo del sito alle 3 di notte, la routine sveglia un dipendente,
+il dipendente spende, e se la clausola dice «automatica» il risultato torna a quello sconosciuto senza
+che nessuno di Nova Studio l'abbia visto. Due conseguenze:
+
+- **La frequenza non è più tua.** «Ogni venerdì» sono al massimo 52 volte l'anno e le hai scelte tu.
+  «Quando arriva un lead» sono tante quante volte bussano: 200 moduli in una notte fanno 200 esecuzioni,
+  e col modello Esperto a 7 € sono 1 400 €. È qui che il tetto conta più che altrove, e serve **per
+  periodo e per singolo avvio**.
+- **Non puoi giudicare quello che non hai mai visto.** Scrivendo la clausola decidi su un tipo di evento
+  che non è ancora successo: non sai se il modulo riceve 2 richieste a settimana o 200 in una notte, né
+  che cosa il dipendente ne farà.
+
+**Proposta**: le prime N volte un innesco esterno produce una **richiesta**, non un'uscita. Vedi che cosa
+è arrivato e che cosa il dipendente ha fatto, e firmi. Dopo N volte che sei d'accordo, la clausola che
+avevi scritto entra in vigore e va da sola. È un **rodaggio dell'innesco**, non del dipendente.
+
+**Da confermare dall'utente**: la regola «la clausola può solo stringere», il rodaggio degli inneschi
+esterni (e con quale N), e che cosa fa una routine quando tocca il tetto.
+
+### 7.9 Le tre risposte dell'utente, verificate (2026-09-08)
+
+#### 1 · «Fai pure» con una sezione dove provare la routine — l'idea è giusta, e il prodotto la fa già due volte
+
+L'utente scarta (correttamente) la proposta «la clausola può solo stringere»: bloccherebbe proprio ciò
+per cui le routine esistono. Accetta il rischio delle uscite non controllate e chiede in cambio **un
+posto dove provare la routine prima di darle il «fai pure»**, e lo stesso per i workflow.
+
+**Misurato: non è un meccanismo nuovo, è il terzo uso di uno schema che c'è già.**
+
+| Meccanismo | Che cosa mette alla prova | Numeri veri nel modello |
+|---|---|---|
+| **Colloquio** | un dipendente, prima che lavori | Nora: **12 casi** con l'esito atteso, punteggio **91** su **soglia 85**, **4 €**, 18 min. Social media manager: 10 casi, 88 su 85, 5 €, 24 min |
+| **Prova** (di una revisione) | un cambiamento, prima che si applichi | **20 esecuzioni, 30 €, 5 giorni** (rv1) e **20 esecuzioni, 60 €, 10 giorni** (rv2); una revisione è **già** in `stato: 'prova'` |
+| **Prova della routine** (da fare) | una routine, prima del «fai pure» | — |
+
+Quindi la sezione non va inventata: si applica a un terzo oggetto la forma che il prodotto usa già per i
+dipendenti e per i cambiamenti, con lo stesso vocabolario (casi, soglia, esito, costo, durata).
+
+**Proposta che affina l'idea: il «fai pure» non si sceglie, si guadagna.** La routine nasce «chiedi
+prima»; la pillola «fai pure» si accende solo dopo che la routine ha passato la sua prova — N avvii che
+il titolare ha firmato senza cambiare niente. È esattamente la forma della revisione (`prova` →
+`applicata`), ed è coerente con la decisione della versione 20, dove **la delega nasce spenta**.
+Chi vuole il «fai pure» subito lo può ancora forzare, ma è una scelta esplicita e non il valore di
+partenza.
+
+#### 2 · «Più stretta» e «più permissiva», in parole semplici
+
+La regola d'azienda dice **quanto controllo serve**. Una routine può chiederne **di più** (stretta) o
+**di meno** (permissiva).
+
+- **Più stretta = chiedi più controllo di quanto la regola pretenda.** `g3` dice «le liste di lead
+  escono da sole sotto i 20 €»; la lista dei 120 lead costa **14 €**, quindi uscirebbe da sola. Se la
+  routine dice «questa voglio vederla sempre», stai chiedendo *più* firme del minimo. Non fa danni:
+  al massimo firmi una cosa che potevi non firmare.
+- **Più permissiva = chiedi meno controllo di quanto la regola pretenda.** `g1` dice «uscite verso i
+  clienti: sempre da approvare»; se la routine del follow-up dice «esce da sola», stai togliendo una
+  firma che la regola pretendeva. Qui il danno è possibile, ed è il caso che l'utente ha deciso di
+  accettare — in cambio della prova.
+
+#### 3 · Il tetto e l'avviso: l'idea regge, ma va corretta su due punti misurati
+
+**Il buco.** L'avviso proposto confronta la routine nuova con *un'altra* routine che ha un tetto più
+alto. Ma il rischio vero è la **somma**: tre routine da 30 € al giorno sullo stesso dipendente non
+scattano in nessun confronto a due a due, e insieme espongono **90 € al giorno**.
+
+**Il tetto esiste già, ed è per dipendente.** Nel dossier: `budget: { mese: 120, speso: 72, giorno: 10,
+oggi: 12 }` per Nora, `{ mese: 300, …, giorno: 15, oggi: 9 }` per il Social media manager. Quindi la
+domanda giusta non è «c'è un'altra routine con un tetto più alto?» ma **«i tetti delle routine di questo
+dipendente, sommati, sfondano il suo budget del giorno o del mese?»**.
+
+**Un difetto che salta fuori da questa verifica**: il `oggi` di Nora è **12 €** contro un `giorno` di
+**10 €**. È già oltre il suo tetto giornaliero, e in tutta la Console non c'è un posto che lo dica.
+
+**Tetto e soglia non sono la stessa cosa.** `g4` «Spese sopra 50 €: sempre da approvare» **non è un
+tetto**: è una soglia di approvazione, e per giunta oggi è **spenta** (`attiva: false`). Un tetto
+*ferma*, una soglia *chiede*. Da qui tre livelli distinti:
+
+| Livello | Che cos'è | Che cosa fa |
+|---|---|---|
+| Azienda · `g4` | soglia | sopra 50 € **chiede** al titolare |
+| Dipendente · `budget.giorno` / `.mese` | tetto | **ferma** il dipendente |
+| Routine · il suo tetto | tetto | **ferma** quella routine, prima degli altri due |
+
+L'avviso allora dice una cosa vera e utile: «questa routine porta Nora a 45 € al giorno, ma il suo tetto
+è 10 € — sospendo, abbasso, o alzo il tetto di Nora?».
+
+#### 4 · Rodaggio approvato
+
+Le prime N volte un innesco esterno produce una richiesta. Proposta: **N = 3**, e il conto è lo stesso
+della prova del punto 1 — non due meccanismi, uno solo.
+
+#### Nuova pagina in arretrato: **Impostazioni**
+
+L'utente vuole sia «approvazione a ogni avvio» sia «approvazione dell'uscita», con la preferenza
+modificabile in una schermata Impostazioni **che non esiste ancora**. Sono due porte diverse: la prima
+sta *prima* che i soldi si spendano, la seconda *dopo*. Oggi DGT ha solo la seconda.
+
+**Da confermare dall'utente**: il «fai pure» che si guadagna invece di sceglierlo, N = 3, e l'avviso
+sulla somma invece che sul confronto a due a due.
+
+### 7.10 Il tetto a cascata: misurato sui budget veri (2026-09-08)
+
+Proposta dell'utente: **un tetto di azienda**, e in modo **facoltativo** un tetto di dipartimento
+espresso **in percentuale** di quello aziendale, «così il dipartimento si gestisce il suo budget, il
+tetto diventa dinamico e non si creano contrasti».
+
+#### I numeri di oggi
+
+| | 11 dipendenti | 40 dipendenti |
+|---|---|---|
+| Tetto del mese (somma dei budget) | **1 580 €** — spesi 613 € (39 %) | **5 120 €** — spesi 2 154 € (42 %) |
+| Tetto del giorno | **115 €** — spesi oggi **124 €** → **108 %** | **400 €** — spesi oggi **427 €** → **107 %** |
+| Dipendenti già oltre il proprio tetto del giorno | **3 su 11** | **12 su 40** |
+
+Quote per dipartimento (mese): a undici svi 20 %, mkt 32 %, ven 23 %, amm 25 %; a quaranta
+svi 22 %, mkt 23 %, ven 22 %, amm 33 %.
+
+**Difetto misurato, e non piccolo**: il tetto giornaliero è **già sfondato a tutte e due le taglie**, e
+in nessuna pagina della Console c'è qualcosa che lo dica. Il caso peggiore è Vendite a undici: **61 €
+spesi oggi contro un tetto di dipartimento di 30 €, il 203 %** — un solo dipendente («Ricerca lead»,
+l'esecuzione dei 200 lead) si mangia la giornata di tutto il dipartimento.
+
+#### Che cosa regge dell'idea, e la correzione che la fa funzionare
+
+L'idea è buona e la percentuale è il modo giusto di renderla dinamica: si alza il tetto di azienda e
+tutto sale con lui, senza rifare N numeri. Ma **«non si creano contrasti» dipende da una scelta che la
+proposta non fa**, e le due strade si comportano in modo opposto:
+
+- **Ripartizione** (le percentuali **devono sommare a 100**): i contrasti li crea eccome. Per dare 5
+  punti a Sviluppo bisogna toglierli a qualcuno. E i numeri di oggi lo mostrano: le quote sommano a 100
+  solo perché sono calcolate come quote; scelte a mano non ci arriveranno quasi mai.
+- **Soffitto** (ogni percentuale è **un limite a sé**, e possono sommare oltre 100): nessun contrasto.
+  Sviluppo 50 %, Marketing 50 % e Vendite 50 % convivono: ciascuno è limitato, e **il tetto di azienda è
+  il fermo vero**, primo arrivato primo servito.
+
+**La misura sceglie il soffitto.** Oggi i tetti di dipartimento sommano esattamente al tetto di azienda
+(30+35+30+20 = 115): è una ripartizione. Con quella, Vendite si sarebbe fermata a 30 € e l'esecuzione
+dei 200 lead sarebbe morta a metà, **mentre Amministrazione teneva fermi 20 € non spesi** (oggi spende
+0 €). È esattamente lo spreco che l'utente vuole evitare. Col soffitto, Vendite arriva a 61 € finché
+l'azienda ha capienza.
+
+#### Quattro livelli, ma **uno solo obbligatorio**
+
+| Livello | Obbligatorio | Che cos'è |
+|---|---|---|
+| **Azienda** | **sì** | il tetto vero: quando è pieno, si ferma tutto |
+| Dipartimento (% del tetto d'azienda) | no | quanto può concentrare un dipartimento da solo |
+| Dipendente | no | oggi ce l'hanno tutti; diventa l'eccezione, per chi va tenuto a freno |
+| Routine | no | ferma quella routine prima di tutti gli altri |
+
+Così «piena customizzabilità» resta, ma chi non tocca niente ha **un numero solo** da capire.
+
+#### Che cosa fa il tetto quando lo si tocca: **ferma prima di partire, mai a metà**
+
+I passi dell'esecuzione dei 200 lead costano **0,5 · 6 · 22 · 9,5 · 23 · 4 €**: **un singolo passo può
+costare 23 €, più del doppio dell'intero tetto giornaliero di Nora (10 €)**. Quindi il tetto va
+controllato **prima di ogni passo**, non alla fine: il passo che sfonderebbe non parte, e l'esecuzione
+va in uno stato **«ferma per tetto»** — la stessa forma dello stato `errore` che esiste già («Esecuzione
+ferma, serve un intervento», il deploy di Kim) — e compare nella coda come richiesta: «Nora ha finito il
+budget di oggi: alzo, aspetto domani, o la lascio ferma?».
+
+Fermarsi a metà sarebbe il peggio dei due mondi: soldi spesi e niente consegnato.
+
+**Da confermare dall'utente**: soffitto invece di ripartizione, e «ferma prima del passo».

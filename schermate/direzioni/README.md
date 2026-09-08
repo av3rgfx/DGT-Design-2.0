@@ -67,7 +67,7 @@ faceva, e le altre consegne intorno. Studio e misure in `DIREZIONI.md`, «Versio
   il CSS delle primitive, le variabili e le funzioni che le stampano (`av`, `pair`, `chipStato`, `iconaTipo`, `eur`,
   `differenze`…). Ogni pagina lo carica subito dopo `comune.js` e mette in pagina `DGT_COMPONENTI.css` prima del CSS della
   Console (`direzione-a.js`, che tiene la cornice, le pagine, le tendine e `monta`).
-- Prove cliccate in `prove/` (con il `README.md` che dice il comando): `console.js` (141 verifiche: tendine, Richieste, editor del
+- **Cinque** prove cliccate in `prove/` (con il `README.md` che dice il comando), **385 verifiche in tutto**: la quinta è `workflow.js` (60: il perimetro delle consegne, il canvas dei workflow, la firma anticipata, la schermata 10 del telefono), e sta in un file suo perché `console.js` sceglie tre sezioni con `nth-of-type`. `console.js` (141 verifiche: tendine, Richieste, editor del
   dipendente, esecuzione, 40, la barra «Oggi in azienda», la barra dei passi, i controlli delle intestazioni e le frecce di
   riga), `mobile.js` (82: le otto schermate, la revisione, il rifiuto con motivo, la prova, lo stato vuoto,
   40, il quadro del giorno, i Dipartimenti e il conto delle frecce), `costi.js` (48: la pagina dei Costi) e `agenda-chat.js` (54: le due pagine nuove, da dove ci si arriva, i filtri, la

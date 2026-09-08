@@ -234,6 +234,21 @@ window.DGT_MOBILE = (function () {
 /* le azioni in fondo alla schermata della consegna (versione 19): in linea con lo scorrimento, non la barra fissa
    della decisione — qui non si decide sempre, si decide solo quando la consegna aspetta il titolare */
 .m-azioni{display:flex;gap:8px;margin-top:4px}
+/* Il workflow in colonna (versione 20): gli stessi nodi del canvas della Console, girati di novanta gradi. Il
+   connettore fra due nodi e' una barretta lime, non una curva: a 268 px di larghezza una curva non si vede. */
+.m-wf{display:grid;justify-items:stretch;gap:0}
+.m-wn{background:var(--card);color:var(--white);border-radius:18px;border:1px solid rgb(255 255 255/.10);padding:12px 14px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:4px 10px}
+.m-wn .tt{min-width:0}
+.m-wn .tt b{display:block;font-weight:400;font-size:14px;line-height:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.m-wn .tt span{display:block;font-size:11px;line-height:15px;color:var(--t2)}
+.m-wn .eur{font-size:12px;color:var(--white)}
+.m-wn.off{opacity:.6}
+.m-wn.tit{border-style:dashed}
+.m-wn.tit.att{border-style:solid;border-color:var(--lime);box-shadow:0 0 0 1px var(--lime),0 0 26px rgb(184 252 100/.22)}
+.m-wn .porte{grid-column:1/3;display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
+.m-wn .porte .chip{height:20px;font-size:10px;padding:0 8px}
+.m-warc{width:2px;height:16px;background:var(--lime);box-shadow:0 0 8px rgb(184 252 100/.55);margin:0 auto;display:block}
+.m-warc.off{background:rgb(255 255 255/.30);box-shadow:none}
 .m-azioni .pill{height:48px;flex:1;justify-content:center;cursor:pointer;min-width:0;padding:0 16px}
 .m-bar{position:absolute;left:14px;right:14px;bottom:14px;z-index:3;display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
 .m-bar>*{min-width:0}
@@ -755,6 +770,9 @@ window.DGT_MOBILE = (function () {
     const ob = m.obiettiviDi(d.id);
     const cm = m.costi('mese', d.id);
     const cn = m.consegneDi(d.id);   /* le consegne del dipartimento, lo stesso aggregatore della Console (versione 19) */
+    /* i workflow del dipartimento (versione 20): righe dentro «Oggi in <dip>», non una sezione in piu' — la
+       schermata del dipartimento ne ha gia' sei e il telefono non ha spazio da regalare */
+    const wf = m.workflowDi(d.id);
     const STATO_EV = { lavoro: 'corso', errore: 'errore', pianificato: 'pianificato' };
     const cardEsec = e => `<div class="m-ev ${STATO_EV[e.stato]}" data-az="filo" data-id="${e.id}" title="Scrivi a ${esc(m.etichetta(e))}">${av(m, e, 's')}<div class="tx"><b>${esc(e.att.titolo)}</b><span>${esc(m.etichetta(e))} · ${esc(e.stato === 'lavoro' ? 'da ' + e.att.da : e.stato === 'errore' ? 'ferma dalle ' + e.att.da : 'alle ' + e.att.quando)}</span></div></div>`;
     const rigaOb = o => `<div class="qrow ob ${esc(o.stato)}"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-target')}</span><div class="tx"><b>${esc(o.titolo)}</b><span>${esc(o.cliente)} · ${o.consegne[0]} di ${o.consegne[1]} consegne</span><span class="barra"><i style="width:${Math.max(2, Math.min(100, o.avanz))}%"></i></span></div><span class="chip${o.stato === 'ritardo' ? ' rosa' : o.stato === 'concluso' ? ' lime' : ' light'}">${o.stato === 'ritardo' ? ic('i-fire') : ''}${esc(o.scadenza)}</span></div>`;
@@ -771,6 +789,7 @@ window.DGT_MOBILE = (function () {
           <div class="m-stat"><span class="num">${oggi} €</span><span>spesi oggi</span></div>
         </div>
         ${sez('Oggi in ' + d.nome, esec.length, `<div class="m-lista">${esec.map(cardEsec).join('')}</div>`, 'Nessuna esecuzione oggi')}
+        ${wf.length ? `<div class="m-coda" style="margin-top:10px">${wf.map(w => { const ult = w.nodi[w.nodi.length - 1]; return `<div class="qrow${ult.stato === 'attesa' ? ' on' : ''}" data-az="workflow" data-id="${esc(w.id)}"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-rows')}</span><div class="tx"><b>${esc(w.nome)}</b><span>workflow · ${w.nodi.length} nodi · ${eur(w.costo)}</span></div><span class="rb xs">${ic('i-chevr')}</span></div>`; }).join('')}</div>` : ''}
         ${sez('Consegne di oggi', cn.length, `<div class="m-coda">${cn.map(c => rigaConsegna(m, c)).join('')}</div>`, 'Nessuna consegna oggi')}
         ${sez('Da approvare', att.length, `<div class="m-coda">${att.map(r => rigaRichiesta(m, r)).join('')}</div>`, 'Niente da approvare da ' + d.nome)}
         ${sez('Dipendenti', lst.length, `<div class="m-coda">${lst.map(e => `<div class="qrow" data-az="filo" data-id="${e.id}">${av(m, e, 'xs')}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div>${chipStato(m, e)}</div>`).join('')}</div>`, 'Nessun dipendente')}
@@ -813,12 +832,56 @@ window.DGT_MOBILE = (function () {
     </div>`;
   }
 
-  const NOMI = { 1: 'Da approvare', 2: 'Richiesta', 3: 'Riepilogo di oggi', 4: 'Chat', 5: 'Conversazione', 6: 'Agenda', 7: 'Dipartimenti', 8: 'Dipartimento', 9: 'Consegna' };
+  /* ---------- schermata 10: il workflow (versione 20, 2026-09-08) ----------
+     Il canvas della Console non puo' esistere qui: lo schermo e' 300x620 px dentro `zoom:1.25`, il canvas e' largo
+     1 312 px, e la regola del telefono dice che lo schermo non deve poter scorrere di lato. Quindi il workflow **si
+     gira di novanta gradi**: gli stessi nodi, uno sopra l'altro, con lo stesso connettore lime fra l'uno e l'altro,
+     le stesse porte come chip sotto il nodo, e in fondo il nodo del titolare. Non e' un canvas ridotto: e' lo stesso
+     oggetto letto in colonna, che su uno schermo alto e stretto e' la forma giusta.
+     Nessuno dei cinque consiglieri aveva nominato il telefono: se l'e' ricordato la revisione incrociata. */
+  function workflow(m, tel, st) {
+    const w = m.workflowIdDi(st.workflow) || (m.workflowDi(st.dip) || [])[0];
+    if (!w) return dipartimento(m, tel, st);
+    const e = m.byId[w.chi], d = m.dipDi(e);
+    const ult = w.nodi[w.nodi.length - 1];
+    const nodo = (nd, i) => {
+      const ultimo = i === w.nodi.length - 1;
+      const cls = nd.titolare ? `m-wn tit${nd.stato === 'attesa' ? ' att' : ''}` : `m-wn${nd.stato === 'da fare' ? ' off' : ''}`;
+      const porte = nd.titolare ? [] : ['Modello: ' + ((m.MODELLI[nd.modello] || {}).nome || nd.modello), ...nd.strumenti.slice(0, 2)];
+      return `<div class="${cls}">
+        <div class="tt"><b>${esc(nd.nome)}</b><span>${nd.titolare ? esc(nd.regola) : 'Passo ' + nd.n + (nd.durata ? ' · ' + esc(nd.durata) : '')}</span></div>
+        ${nd.titolare ? `<span class="chip${nd.stato === 'attesa' ? ' lime' : ' light'}">${ic(nd.stato === 'attesa' ? 'i-bell' : 'i-check')}${nd.stato === 'attesa' ? 'aspetta te' : nd.stato === 'fatto' ? 'firmata' : 'non ancora'}</span>`
+          : `<span class="eur">${eur(nd.costo)}</span>`}
+        ${porte.length ? `<div class="porte">${porte.map(x => `<span class="chip light">${esc(x)}</span>`).join('')}</div>` : ''}
+      </div>${ultimo ? '' : `<span class="m-warc${nd.stato === 'da fare' ? ' off' : ''}"></span>`}`;
+    };
+    return `<div class="m-scr chiara rie" data-schermata="10">
+      ${barraStato(m)}
+      <div class="m-scroll">
+        <div class="m-nav"><span class="rb olight" data-az="indietro" data-s="8" title="${esc(d.nome)}">${ic('i-left')}</span><span class="chip light">${ic('i-rows')}${w.nodi.length} nodi</span></div>
+        <h3 class="m-h1${w.nome.length > 12 ? ' stretta' : ''}">${esc(w.nome.toUpperCase())}</h3>
+        <div class="m-coda"><div class="qrow" data-az="filo" data-id="${e.id}">${av(m, e, 'xs')}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(w.perimetro)} · ${eur(w.costo)} · ${w.minuti} min</span></div><span class="rb xs">${ic('i-chevr')}</span></div></div>
+        <div class="m-sh"><h4>Il workflow</h4><span class="chip light">${w.passi} passi e la tua firma</span></div>
+        <div class="m-wf">${w.nodi.map(nodo).join('')}</div>
+        <div class="m-sh"><h4>La firma anticipata</h4><span class="chip light">${w.firma ? 'accesa' : 'spenta'}</span></div>
+        <div class="m-coda">
+          <div class="qrow"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-euro')}</span><div class="tx"><b>Soglia ${eur(w.soglia)}</b><span>sopra la soglia torna in coda</span></div></div>
+          <div class="qrow"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-hand')}</span><div class="tx"><b>${esc(w.perimetro)}</b><span>vale solo per questo cliente</span></div></div>
+          <div class="qrow"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-clock')}</span><div class="tx"><b>${w.scadenza} esecuzioni</b><span>poi torna in coda da sola</span></div></div>
+        </div>
+        <div class="m-azioni"><span class="pill${w.firma ? ' lime' : ''}" data-az="firma" data-id="${esc(w.id)}">${ic(w.firma ? 'i-check' : 'i-bell')}${w.firma ? 'Spegni la firma anticipata' : 'Accendi la firma anticipata'}</span></div>
+      </div>
+      ${navigazione(m, coda(m).length, 7)}
+    </div>`;
+  }
+
+  const NOMI = { 1: 'Da approvare', 2: 'Richiesta', 3: 'Riepilogo di oggi', 4: 'Chat', 5: 'Conversazione', 6: 'Agenda', 7: 'Dipartimenti', 8: 'Dipartimento', 9: 'Consegna', 10: 'Workflow' };
   /* Un telefono: tel = { n, schermata, motivo }; st = { richiesta } condiviso fra i telefoni. */
   function render(m, tel, st) {
     const scr = tel.schermata === 2 ? richiesta(m, tel, st) : tel.schermata === 3 ? riepilogo(m, tel, st)
       : tel.schermata === 4 ? chatElenco(m, tel, st) : tel.schermata === 5 ? filo(m, tel, st) : tel.schermata === 6 ? agenda(m, tel, st)
       : tel.schermata === 7 ? dipartimenti(m, tel, st) : tel.schermata === 8 ? dipartimento(m, tel, st) : tel.schermata === 9 ? consegna(m, tel, st)
+      : tel.schermata === 10 ? workflow(m, tel, st)
       : daApprovare(m, tel, st);
     return `<div class="m-tel" data-n="${tel.n}" role="figure" aria-label="Telefono ${tel.n} — ${NOMI[tel.schermata] || NOMI[1]} (contenuto sintetico)">${scr}</div>`;
   }
@@ -827,8 +890,8 @@ window.DGT_MOBILE = (function () {
      quello che si decide su uno si vede subito sugli altri (e nella Console, che legge lo stesso modello). */
   function monta(radice, m, opz) {
     opz = opz || {};
-    const st = { richiesta: opz.richiesta || 0, filo: opz.filo || ((m.fili()[0] || {}).e || m.dipendenti[0]).id, quadro: opz.quadro === undefined ? QUADRO : opz.quadro, conta: opz.conta === undefined ? CONTA : opz.conta, dip: opz.dip || m.dipartimenti[0].id, consegna: opz.consegna || '', cerca: undefined };
-    const tels = (opz.schermate && opz.schermate.length ? opz.schermate : [1, 2, 3, 4, 5, 6, 7, 8]).map((s, i) => ({ n: i + 1, schermata: s >= 2 && s <= 9 ? s : 1, motivo: false }));
+    const st = { richiesta: opz.richiesta || 0, filo: opz.filo || ((m.fili()[0] || {}).e || m.dipendenti[0]).id, quadro: opz.quadro === undefined ? QUADRO : opz.quadro, conta: opz.conta === undefined ? CONTA : opz.conta, dip: opz.dip || m.dipartimenti[0].id, consegna: opz.consegna || '', workflow: opz.workflow || '', cerca: undefined };
+    const tels = (opz.schermate && opz.schermate.length ? opz.schermate : [1, 2, 3, 4, 5, 6, 7, 8]).map((s, i) => ({ n: i + 1, schermata: s >= 2 && s <= 10 ? s : 1, motivo: false }));
     const n = () => coda(m).length;
     radice.innerHTML = `<div class="m-page">
       <div class="m-hd"><h1>Il telefono del titolare</h1><p><b>Da approvare</b>, <b>Richiesta</b> e <b>Riepilogo di oggi</b>: post, documenti, liste, proposte e le revisioni di performance (le due versioni a confronto e le quattro decisioni), il rifiuto con motivo, il riepilogo che a coda finita prende il posto della coda. Poi le due tab della navigazione in basso: <b>Chat</b> (l'elenco dei fili e la conversazione con un dipendente, con la barra di scrittura) e <b>Agenda</b> (la giornata sulla linea del tempo, i prossimi giorni, le scadenze). I telefoni condividono il modello della Console: la richiesta scelta su uno si apre sull'altro, e quello che si decide o si scrive qui vale anche lì.</p></div>
@@ -876,6 +939,10 @@ window.DGT_MOBILE = (function () {
       else if (az === 'indietro') { tel.schermata = +(el.dataset.s || 1); tel.motivo = false; tutto(); }
       /* la consegna apre la sua schermata, come nella Console apre la sua pagina (versione 19) */
       else if (az === 'consegna') { ev.stopPropagation(); st.consegna = el.dataset.id; tel.schermata = 9; tel.motivo = false; tutto(); }
+      /* i workflow (versione 20): la schermata 10, e la firma anticipata che si accende dal telefono come dalla
+         Console — e' lo stesso `m.firme`, quindi quello che si accende qui si vede subito anche li' */
+      else if (az === 'workflow') { ev.stopPropagation(); st.workflow = el.dataset.id; tel.schermata = 10; tel.motivo = false; tutto(); }
+      else if (az === 'firma') { ev.stopPropagation(); m.firme[el.dataset.id] = !m.firme[el.dataset.id]; tutto(); }
       /* la chat (versione 15): la riga apre il filo, la barra di scrittura ci scrive dentro (`m.scrivi`, lo stesso filo della Console) */
       else if (az === 'filo') { ev.stopPropagation(); st.filo = +el.dataset.id; tel.schermata = 5; tel.motivo = false; tutto(); }
       else if (az === 'mchat-invia') {
