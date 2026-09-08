@@ -1012,6 +1012,16 @@ window.DGT_DATI = (function () {
     /* Le accensioni della firma anticipata, una per workflow. Stanno qui e non nel modello scritto, come `m.decidi`
        per le richieste: sono decisioni prese guardando la pagina, e si perdono ricaricando. Nascono tutte spente. */
     const firme = {};
+    /* ---- Il ramo (versione 22, scelta dell'utente sulla domanda 2 del consiglio) ----
+       «La prossima volta» non e' un oggetto nuovo: e' **la coda dello stesso workflow**, il suo tempo futuro.
+       Un canvas solo, due stati: «l'ultima volta» e' quello che e' successo (misurato, immutabile) e «la prossima
+       volta» e' quello che succedera' (dichiarato, componibile). Cosi' nessun numero misurato viene toccato da una
+       mano, non nasce una pagina nuova e non nasce una parola nuova — che era la trappola che il consiglio si era
+       gia' tirato addosso due volte (routine, workflow, esecuzione, copia, ramo: cinque nomi per una sequenza di
+       passi).
+       I rami stanno qui accanto a `firme` e per la stessa ragione: sono decisioni prese guardando la pagina, e si
+       perdono ricaricando, come `m.decidi` per le richieste. Il modello scritto non li conosce. */
+    const rami = {};
     const REGOLA_NODO = (cliente, tipo) => cliente && cliente !== azienda.nome
       ? 'Uscite verso i clienti' : tipo === 'lista' ? 'Liste di lead' : 'Report interni';
     function workflowDi(dip) {
@@ -1183,6 +1193,38 @@ window.DGT_DATI = (function () {
          prodotta la routine `rt1` ma l'ha decisa la regola `g2`. La regola permette, la routine agisce.
          Il rodaggio della decisione 53 ne vuole 3, e nel modello di oggi nessuna delle tre ci arriva. */
       rodaggioDi: rt => ({ fatte: (rt.decise || []).filter(id => m.richieste.some(r => r.id === id)).length, di: 3 }),
+      /* ---- La precedenza fra la clausola di una routine e una regola d'azienda (versione 22, conferma c) ----
+         Il consiglio della versione 21 l'aveva nominata e nessuno l'aveva scritta: quattro pareri su cinque
+         lasciavano vincere la routine **senza dirlo**. La regola, adesso scritta: **una routine esegue, non
+         decide** — vince la regola d'azienda attiva, e la clausola della routine puo' solo stringere, mai allargare.
+         Se la regola dice «Sempre da approvare», nemmeno il «fai pure» fa uscire la consegna.
+
+         `regolaPer(r)` e' la regola che governa una richiesta, e la sceglie con lo **stesso criterio** che il canvas
+         usa gia' per il nodo del titolare (`REGOLA_NODO`), piu' g4 in testa perche' e' la piu' stretta: una spesa
+         sopra la soglia si approva sempre, qualunque cosa sia. Solo le regole **attive** governano: una regola
+         spenta non e' una regola, e infatti g4 spenta non compariva da nessuna parte.
+         `contrastoDi(r)` e' il caso che la precedenza rende visibile: una richiesta uscita **senza** il titolare
+         mentre la regola che la governa dice «Sempre da approvare». Nel modello a undici non ne esiste nessuno;
+         a quaranta ne escono **due** (due liste e un post verso clienti veri, decisi da una routine). Non si
+         corregge il dato: la riga lo dice e una prova ne fissa il conto. */
+      regolaPer: r => {
+        if (!r) return null;
+        const att = out.regole.filter(g => g.attiva);
+        const g = id => att.find(x => x.id === id) || null;
+        return (r.costo > 50 && g('g4'))
+          || (r.cliente && r.cliente !== azienda.nome && g('g1'))
+          || (r.tipo === 'lista' && g('g3'))
+          || g('g2');
+      },
+      contrastoDi: r => {
+        if (!r || !r.deciso || r.stato !== 'approvata') return null;
+        const g = out.regolaPer(r);
+        return g && g.modo === 'Sempre da approvare' ? g : null;
+      },
+      /* Quante richieste governa ogni regola: il numero che toglie alla card il sapore di decorazione. Su g4 fa
+         **zero** ed e' proprio quello il punto — la consegna piu' cara del modello costa 33,80 €, la soglia sta a
+         50, e la regola non puo' scattare mai. Il conto lo dice invece di lasciarlo credere. */
+      contaRegola: g => m.richieste.filter(r => { const x = out.regolaPer(r); return x && x.id === g.id; }).length,
       /* I tetti di spesa (decisione 55, e le due conferme dell'utente dell'8 settembre 2026).
          **Soffitto, non ripartizione**: la quota di un dipartimento e' un limite a se' e le quote possono sommare
          oltre 100; il tetto d'azienda e' il fermo vero, primo arrivato primo servito. Con la ripartizione — che e'
@@ -1211,7 +1253,13 @@ window.DGT_DATI = (function () {
         { id: 'g1', nome: 'Uscite verso i clienti', desc: 'Post, proposte e documenti per i clienti', modo: 'Sempre da approvare', attiva: true, icona: 'i-mega' },
         { id: 'g2', nome: 'Report interni', desc: 'Report giornalieri e rendiconti', modo: 'Automatica', attiva: true, icona: 'i-doc' },
         { id: 'g3', nome: 'Liste di lead', desc: 'Liste e ricerche senza invio', modo: 'Automatica sotto 20 €', attiva: true, icona: 'i-list' },
-        { id: 'g4', nome: 'Spese sopra 50 €', desc: 'Qualsiasi consegna che costa più di 50 €', modo: 'Sempre da approvare', attiva: false, icona: 'i-euro' },
+        /* Accesa nella versione 22 (conferma d): una regola spenta che resta in pagina e' decorazione. Accenderla
+           non cambia pero' **niente** di quello che il prodotto fa, e il numero lo dice: la richiesta piu' cara del
+           modello costa 10 €, la consegna piu' cara 33,80 €, e sopra i 50 € non c'e' niente ne' a undici ne' a
+           quaranta. La regola adesso governa davvero — governa zero consegne — e la card stampa il suo conto
+           invece di lasciar credere che stia trattenendo qualcosa. La soglia e' dell'utente: se la vuole efficace
+           va abbassata, e allora il conto sulla card lo fara' vedere. */
+        { id: 'g4', nome: 'Spese sopra 50 €', desc: 'Qualsiasi consegna che costa più di 50 €', modo: 'Sempre da approvare', attiva: true, icona: 'i-euro' },
       ],
       alLavoro: [],
       conta, costoOggi, iniziali, dipDi,
@@ -1228,7 +1276,172 @@ window.DGT_DATI = (function () {
          un passo (43 a undici, 156 a quaranta: nel modello ci sono davvero); l'ultimo nodo è il titolare, con la
          regola di `regole` che ferma lì la consegna. Nasce da un'esecuzione con almeno due passi conclusi; costo e
          durata sono sommati dai passi. La firma anticipata nasce spenta. */
-      workflowDi, workflowIdDi, firme,
+      workflowDi, workflowIdDi, firme, rami,
+      /* Il ramo di un workflow: i nodi della **prossima volta**. Nasce come copia dei passi dell'ultima volta —
+         non si inventa una catena, si parte da quella che ha funzionato — con i numeri misurati **tolti**, perche'
+         di un passo che deve ancora succedere non si sa ne' il costo ne' la durata. L'ultimo nodo resta il
+         titolare e non si tocca: e' la spina dorsale, ed e' la cosa che nessuno dei cinque consiglieri aveva
+         detto (l'ha trovata la revisione incrociata: cosi' com'erano proposte, tutte e tre le strade lasciavano
+         cancellare o scavalcare il nodo del titolare). */
+      /* ---- Il ramo come **grafo** (versione 23) ----
+         Fino alla versione 22 il ramo era una **catena**: un array, e l'arco da i a i+1 era implicito. L'utente ha
+         chiesto «la complessita' di n8n»: spostare liberamente ogni card, e collegare e biforcare piu' connettori
+         anche su un singolo task. Una catena non lo regge, quindi il ramo diventa **nodi + archi**.
+         La forma e' quella di n8n semplificata: n8n indicizza `connections[nomeSorgente][tipo][indiceUscita]` —
+         tre livelli, perche' ha 13 tipi di connessione e porte multiple per lato. DGT ne ha **uno** (il lavoro
+         passa), quindi l'arco e' una riga piatta `{ id, da, a }` e l'indice di porta non serve. La differenza non
+         e' pigrizia: e' che l'indice di n8n serve a distinguere `true` da `false` sull'IF, e in DGT quella
+         distinzione — se ci sara' — sta **sull'arco**, non sulla porta (quattro consiglieri su cinque sono
+         arrivati alla stessa terza strada, e la parola la decide l'utente: qui c'e' solo il campo `se`).
+
+         **Le posizioni sono libere** (`x`, `y` sul nodo) e nascono dalla serpentina, cosi' il ramo si apre come
+         stava prima e non si deve ridisegnare niente a mano per cominciare. Il titolare resta l'ultimo: non si
+         toglie, non ha archi in uscita, e nessun arco puo' scavalcarlo — sta nel modello, non nel gesto.
+         Fan-out e fan-in sono **illimitati** come in n8n: e' esattamente quello che l'utente ha chiesto con
+         «piu' connettori anche a un singolo task». */
+      ramoDi: w => {
+        const W_PAD_D = 36;
+        if (!rami[w.id]) {
+          const passi = w.nodi.slice(0, -1), tit = w.nodi[w.nodi.length - 1];
+          const nodi = passi.map((nd, i) => Object.assign({
+            id: 'p' + (i + 1), n: nd.n, nome: nd.nome, chi: nd.chi, modello: nd.modello,
+            strumenti: (nd.strumenti || []).slice(), stato: 'da fare', costo: 0, durata: '', esito: '', nato: false,
+          }, out.ramoPosa(i)));
+          nodi.push(Object.assign({}, tit, { id: 'tit', stato: 'da fare', quando: '' }, out.ramoPosa(passi.length)));
+          /* ---- Il nodo d'innesco, in testa (versione 23, idea dell'utente) ----
+             L'utente ha chiesto: «mettere la richiesta del titolare all'inizio, cosi' viene chiesta ancor prima di
+             far partire il flusso e non lo si limita nella creazione di biforcazioni ampie senza l'obbligo di
+             farle convergere su un nodo finale». L'idea **ha gia' un nome nel prodotto**: e' la `clausola` della
+             routine (`avvio` = chiede prima di partire) e la **firma anticipata** del workflow, decise nella
+             versione 20 e oggi spente. Qui diventano la **forma del canvas**: un nodo in testa, come il trigger
+             che n8n mette all'inizio di ogni flusso.
+             E risolve davvero il timore: **la convergenza non e' obbligatoria.** Il vincolo non e' «tutto finisce
+             sul nodo firma», e' «tutto cio' che **esce** passa dalla firma». Un ramo che resta dentro l'azienda
+             finisce dove vuole. Con la clausola `avvio` il titolare autorizza in testa, e in coda la firma serve
+             solo ai rami che consegnano davvero fuori. */
+          nodi.unshift({ id: 'inn', innesco: true, n: 0, nome: 'Quando parte', chi: w.chi,
+            testo: (w.innesco && w.innesco.testo) || 'Ogni volta che serve', clausola: 'uscita',
+            strumenti: [], stato: 'da fare', costo: 0, durata: '', x: W_PAD_D, y: W_PAD_D });
+          nodi.forEach((nd, i) => { if (!nd.innesco) { const q = out.ramoPosa(i); nd.x = q.x; nd.y = q.y; } });
+          const archi = nodi.slice(0, -1).map((nd, i) => ({ id: 'a' + i, da: nd.id, a: nodi[i + 1].id, tipo: 'poi', se: '' }));
+          rami[w.id] = { nodi, archi, seq: nodi.length };
+        }
+        return rami[w.id];
+      },
+      /* La posa di partenza di un nodo: la serpentina di prima, che adesso e' solo il **punto di partenza** di una
+         posizione libera. Le costanti sono quelle del canvas (le rilegge `direzione-a.js`). */
+      ramoPosa: i => { const C = 4, PX = 242, PY = 210, PAD = 36; const r = Math.floor(i / C), c = r % 2 ? C - 1 - (i % C) : i % C; return { x: PAD + c * PX, y: PAD + r * PY }; },
+      /* La griglia dell'aggancio: **18 px**, cioe' i punti che il canvas gia' disegna (`background-size:18px`).
+         n8n aggancia a 16, ma la sua griglia e' invisibile: qui i nodi cadono sui punti che si vedono. */
+      RAMO_GRIGLIA: 18,
+      /* Sposta un nodo dove lo si e' lasciato: agganciato alla griglia e **tenuto dentro la banda** — la colonna e'
+         larga 1008 px e non scorre di lato, quindi un nodo non puo' uscirne. In basso invece non c'e' limite: il
+         canvas cresce, come cresce ogni altra sezione della pagina. */
+      ramoPosiziona: (w, id, x, y) => {
+        const g = out.RAMO_GRIGLIA, r = out.ramoDi(w), nd = r.nodi.find(n => n.id === id);
+        if (!nd) return;
+        nd.x = Math.max(0, Math.min(1008 - 208 - 8, Math.round(x / g) * g));
+        nd.y = Math.max(0, Math.round(y / g) * g);
+      },
+      /* Un passo nuovo dopo `dopoId`: eredita la posizione un passo piu' in la' e si infila fra il nodo e i suoi
+         successori, cosi' la catena non si spezza. Se `dopoId` e' il titolare il passo nasce **prima** di lui. */
+      ramoAggiungi: (w, dopoId) => {
+        const r = out.ramoDi(w);
+        const dopo = r.nodi.find(n => n.id === dopoId) || r.nodi[0];
+        const prima = dopo.titolare;
+        const rif = prima ? (r.archi.find(a => a.a === dopo.id) || {}).da : dopo.id;
+        const base = r.nodi.find(n => n.id === rif) || dopo;
+        const id = 'p' + (++r.seq);
+        r.nodi.splice(r.nodi.length - 1, 0, { id, n: 0, nome: 'Passo nuovo', chi: w.chi, modello: 'standard', strumenti: [], stato: 'da fare', costo: 0, durata: '', esito: '', nato: true, x: base.x, y: base.y + 210 });
+        /* i successori del nodo di riferimento passano dal nuovo */
+        r.archi.filter(a => a.da === base.id).forEach(a => { a.da = id; });
+        r.archi.push({ id: 'a' + (++r.seq), da: base.id, a: id, se: '' });
+        out.ramoNumera(r);
+        return id;
+      },
+      /* Collega due nodi. Illimitato in uscita e in entrata (la richiesta dell'utente), ma **mai verso se stessi,
+         mai in doppio, e mai in uscita dal titolare**: dopo la firma non c'e' altro lavoro. */
+      ramoCollega: (w, da, a) => {
+        const r = out.ramoDi(w);
+        if (!da || !a || da === a) return false;
+        const nda = r.nodi.find(n => n.id === da), nab = r.nodi.find(n => n.id === a);
+        if (!nda || !nab || nda.titolare) return false;
+        if (r.archi.some(x => x.da === da && x.a === a)) return false;
+        r.archi.push({ id: 'a' + (++r.seq), da, a, se: '' });
+        out.ramoNumera(r);
+        return true;
+      },
+      ramoScollega: (w, arcoId) => { const r = out.ramoDi(w); const i = r.archi.findIndex(a => a.id === arcoId); if (i >= 0) r.archi.splice(i, 1); out.ramoNumera(r); },
+      /* Togliere un passo ricuce la catena: i suoi entranti si attaccano ai suoi uscenti, cosi' non restano monconi. */
+      ramoTogli: (w, id) => {
+        const r = out.ramoDi(w), nd = r.nodi.find(n => n.id === id);
+        if (!nd || nd.titolare) return '';
+        if (r.nodi.length <= 2) return '';   /* un passo deve restare: il solo titolare non e' un lavoro */
+        const entranti = r.archi.filter(a => a.a === id).map(a => a.da);
+        const uscenti = r.archi.filter(a => a.da === id).map(a => a.a);
+        r.archi = r.archi.filter(a => a.da !== id && a.a !== id);
+        entranti.forEach(p => uscenti.forEach(s => { if (p !== s && !r.archi.some(a => a.da === p && a.a === s)) r.archi.push({ id: 'a' + (++r.seq), da: p, a: s, se: '' }); }));
+        r.nodi.splice(r.nodi.indexOf(nd), 1);
+        out.ramoNumera(r);
+        return '';
+      },
+      ramoCampo: (w, id, k, v) => { const nd = out.ramoDi(w).nodi.find(n => n.id === id); if (nd && !nd.titolare) nd[k] = v; },
+      /* ---- I tre significati di un connettore (versione 23, scelta C dell'utente: «tutte e tre come n8n») ----
+         n8n le tiene su tre nodi diversi (IF, Merge, la porta d'errore). In DGT stanno tutti e tre **sul
+         connettore**, che e' la forma su cui quattro consiglieri su cinque erano arrivati da soli: il nodo non
+         cresce di porte, e il fan-out illimitato che l'utente ha chiesto resta gratis.
+           `poi`     il lavoro prosegue di li' (il caso di oggi, e l'unico che i dati contengono);
+           `se`      alternativa: parte solo se la condizione e' vera, e l'etichetta la scrive il titolare;
+           `insieme` parallelo: parte **con** gli altri `insieme` che escono dallo stesso nodo;
+           `errore`  parte solo se il passo si e' fermato.
+         **L'errore non e' una verita' nuova**: e' lo stato `errore` che la pagina Esecuzione mostra gia', a cui
+         qui si da' una strada. Una sola fonte, due letture — la ragione per cui il consiglio lo scartava era
+         proprio il rischio di due verita' sullo stesso fatto, e cosi' non si corre. */
+      RAMO_TIPI: [
+        { id: 'poi', nome: 'poi', desc: 'Il lavoro prosegue di qui' },
+        { id: 'se', nome: 'se…', desc: 'Parte solo se la condizione è vera' },
+        { id: 'insieme', nome: 'insieme', desc: 'Parte insieme agli altri rami «insieme» dello stesso passo' },
+        { id: 'errore', nome: 'se si ferma', desc: 'Parte solo se il passo si è fermato in errore' },
+      ],
+      ramoArco: (w, arcoId, k, v) => { const a = out.ramoDi(w).archi.find(x => x.id === arcoId); if (a) a[k] = v; },
+      /* La clausola dell'innesco: `avvio` la chiede prima di partire (l'idea dell'utente), `uscita` prima di
+         consegnare, `libera` e' il «fai pure» della firma anticipata. Chi autorizza in testa non deve far
+         convergere i rami in coda: e' la stessa decisione, vista dall'altro capo del flusso. */
+      RAMO_CLAUSOLE: [
+        { id: 'avvio', nome: 'Chiedi prima di partire', desc: 'Il titolare autorizza il flusso prima che cominci: i rami non devono convergere su una firma finale' },
+        { id: 'uscita', nome: 'Chiedi prima di consegnare', desc: 'Ogni ramo che esce dall\'azienda passa dalla firma in coda' },
+        { id: 'libera', nome: 'Fai pure', desc: 'Firma anticipata: esce da solo entro i tre freni (soglia, perimetro, scadenza)' },
+      ],
+      /* Che cosa esce davvero: i nodi da cui non parte nessun arco. Se la clausola e' `uscita`, quelli che non
+         arrivano al titolare **non escono dall'azienda** — e questo si dice, invece di vietarlo. */
+      ramoTerminali: w => { const r = out.ramoDi(w); return r.nodi.filter(n => !n.innesco && !r.archi.some(a => a.da === n.id)); },
+      ramoEsce: w => { const r = out.ramoDi(w), inn = r.nodi.find(n => n.innesco); const cl = inn ? inn.clausola : 'uscita';
+        if (cl !== 'uscita') return { tutti: true, fuori: [] };
+        const tit = r.nodi.find(n => n.titolare);
+        const arriva = {}; if (tit) { const coda = [tit.id]; arriva[tit.id] = 1; let g = 0;
+          while (coda.length && g++ < 999) { const id = coda.shift(); r.archi.filter(a => a.a === id).forEach(a => { if (!arriva[a.da]) { arriva[a.da] = 1; coda.push(a.da); } }); } }
+        return { tutti: false, fuori: out.ramoTerminali(w).filter(n => !n.titolare && !arriva[n.id]) };
+      },
+      /* Il numero del passo non e' piu' la posizione nell'array: in un grafo e' **la distanza dall'inizio**, cioe'
+         quanti passi al massimo si attraversano per arrivarci. Su una catena da' 1, 2, 3… come prima; su una
+         biforcazione i due rami portano lo stesso numero, ed e' giusto: sono lo stesso momento del lavoro. */
+      ramoNumera: r => {
+        const dentro = {}; r.nodi.forEach(n => { dentro[n.id] = 0; });
+        r.archi.forEach(a => { dentro[a.a] = (dentro[a.a] || 0) + 1; });
+        const liv = {}; const coda = r.nodi.filter(n => !dentro[n.id]).map(n => n.id);
+        coda.forEach(id => { liv[id] = 1; });
+        const g = {}; r.archi.forEach(a => { (g[a.da] = g[a.da] || []).push(a.a); });
+        const resta = Object.assign({}, dentro);
+        let guardia = 0;
+        while (coda.length && guardia++ < 999) {
+          const id = coda.shift();
+          (g[id] || []).forEach(v => { liv[v] = Math.max(liv[v] || 1, (liv[id] || 1) + 1); if (--resta[v] === 0) coda.push(v); });
+        }
+        r.nodi.forEach(n => { n.n = liv[n.id] || 1; });
+        r.ciclo = Object.keys(resta).some(k => resta[k] > 0);   /* un ciclo si vede: n8n li ammette, qui si dice */
+      },
+      /* Quanti nodi entrano e quanti escono da un nodo: serve alle porte e a dire quando una porta si sdoppia. */
+      ramoGradi: (w, id) => { const r = out.ramoDi(w); return { dentro: r.archi.filter(a => a.a === id).length, fuori: r.archi.filter(a => a.da === id).length }; },
       /* I fili della chat (versione 15): un filo per dipendente, una sola copia (i messaggi restano), condivisa fra Console e
          telefono; `scrivi` è la nota del titolare, dalla chat o dalla barra di scrittura dell'Esecuzione. */
       filoDi, ultimoDi: ultimo, nonLetti,

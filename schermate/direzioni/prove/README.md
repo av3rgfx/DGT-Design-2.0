@@ -1,6 +1,7 @@
 # Prove cliccate
 
-Quattro prove con Playwright che aprono le pagine da `file://`, cliccano e verificano il DOM, il modello e la console. Tutte leggono
+**Sei** prove con Playwright che aprono le pagine da `file://`, cliccano e verificano il DOM, il modello e la console — **478
+verifiche in tutto** (Console 160, mobile 83, Costi 50, Agenda e Chat 56, Workflow 80, Routine 49). Tutte leggono
 le stesse variabili d'ambiente:
 
 - `LOCAL_FONT_CSS` — il CSS con Urbanist incorporata (`design-system/tools/fetch-fonts.py`), servito al posto di Google Fonts;
@@ -15,9 +16,10 @@ node schermate/direzioni/prove/mobile.js
 node schermate/direzioni/prove/costi.js
 node schermate/direzioni/prove/agenda-chat.js
 node schermate/direzioni/prove/workflow.js
+node schermate/direzioni/prove/routine.js
 ```
 
-`visibile.js` non è una prova: è il modulo che le cinque condividono per asserire che un controllo **si veda**
+`visibile.js` non è una prova: è il modulo che le sei condividono per asserire che un controllo **si veda**
 (`coperti`, `muti`, `copertiMobile`, `riferimentiRotti`).
 
 Si lanciano da qualunque cartella (i percorsi sono relativi al file della prova). Ogni prova stampa `ok` / `KO` per verifica e
@@ -30,6 +32,7 @@ finisce con il conteggio; esce con codice 1 se una verifica fallisce.
 | `costi.js` | `direzione-a.html?pagina=costi` | il sesto cerchio del rail; i tre numeri; le quattro sezioni allo stesso totale; le pillole del periodo per sezione (lo scorrimento resta dov'era, i periodi sono indipendenti); i collegamenti da e verso Dipartimento, Dipendente, Richieste, home, Esecuzione; approvare dalla tendina; la vista compatta a 40; gli otto telefoni che caricano |
 | `agenda-chat.js` | `direzione-a.html?pagina=agenda`, `?pagina=chat`, `mobile.html` | l'agenda: il quinto cerchio del rail, il cerchio della barra «Oggi in azienda» e la pillola «Sposta»; la barra del giorno (i blocchi in ordine, l'errore rosa, «adesso»), i filtri del giorno, il blocco che apre l'Esecuzione, la settimana e le scadenze. La chat: il quarto cerchio del rail, i cerchi «commenta» delle card, «Commenta» nelle due tendine, la pillola «Scrivi a …» dell'Esecuzione; i fili (non letti prima), il filtro, il filo aperto in fondo, scrivere (il messaggio in fondo al filo e il filo in cima all'elenco), approvare dal filo; la nota scritta nell'Esecuzione che finisce nel log **e** nel filo. Quaranta: le due pagine. Il telefono: le tab Chat e Agenda, il filo che si apre dall'elenco e la scrittura, senza scorrimento laterale |
 | `workflow.js` | `direzione-a.html?pagina=workflow`, `?pagina=dipartimento`, `mobile.html?schermata=10` | **versione 20**. Il perimetro delle consegne: le tre pillole del periodo, il titolo che cambia, «oggi» che ritorna esattamente la pagina della versione 19 (2 594 px su Sviluppo), le consegne dei giorni scorsi che sono richieste decise, la pillola «Da rifare», e il cerchio «cerca» che compare da solo quando la lista passa le dodici righe. I workflow: la pillola d'ingresso nell'intestazione (con la pagina Dipartimento che resta a 2 960 px e il rail a sei), l'elenco del dipartimento, il canvas (nodi, connettori, porte, il nodo del titolare senza avatar in tinta), il nodo che si apre con i suoi campi e il canvas che cresce, la firma anticipata che nasce spenta e si accende un workflow alla volta, i tre freni con i loro numeri, zero controlli inerti, quaranta, e la schermata 10 del telefono (i nodi in colonna, nessuno scorrimento laterale, la firma condivisa con la Console). Legge anche il modello: costo uguale alla somma dei passi, nessun passo rotto, almeno due conclusi, nodi = passi + 1 |
+| `routine.js` | `direzione-a.html?pagina=routine`, `?pagina=richieste`, `?pagina=consegna` | **versione 22**, le sei conferme. La pillola **«Uscita»** al posto di «Approvata» sulle tre richieste uscite senza il titolare (e il lime che resta la sua firma, mai altro), più la stessa correzione nella pagina della consegna. La **precedenza** fra la clausola di una routine e una regola d'azienda: `contrastoDi` fa 0 a undici e **2 a quaranta**, la pagina li segna in rosa, e ogni richiesta è governata da una regola e una sola (la somma dei quattro conti fa il totale). `g4` **accesa** e il suo conto a zero sulla card. La **pagina delle routine**: l'elenco a tre righe, il rail che resta a sei cerchi, le due strade che ci portano (il nome nello storico e la pillola del Dipartimento), i tre passi dichiarati che dicono di non essere misurati, e la routine senza workflow che dice perché non ce l'ha. L'**intestazione a due righe**: su 24 pagine per due taglie non esce mai dai 1008 px, nessun numero nasce sotto la tendina (erano 4), l'aria resta 64 px e le pagine crescono di 68 |
 
 Attenzione: Playwright scorre da solo per cliccare un elemento fuori dallo schermo, quindi una verifica sullo scorrimento va fatta
 con l'elemento già visibile. Le prove girano con `reducedMotion: 'reduce'`, così gli avatar stanno fermi e il DOM è stabile.

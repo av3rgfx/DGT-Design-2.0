@@ -125,7 +125,7 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 | Card sfida | `#4D4D4D` r30, icona in cerchio contornato 80 (lime), testo 14/20 centrato; una lime |
 | Passo del processo | cerchio contornato 64 con icona + pillola `#4D4D4D` 64; il primo lime; frecce tratteggiate |
 | Editor a nodi (specimen, sezione 07) | rail di tessere 44 r14 (attiva lime luminosa), titolo 26 con percorso e tag rosso, tab a pillola, canvas puntinato 18, nodi 96 r18 con riflesso, nodo agente 208×100, nodo selezionato lime con i campi e il testo all'inchiostro, nodo disattivato con cestino, connettori `#B8FC64` con bagliore, mini-mappa, zoom, pillole in basso a destra, barra chat con ID monospazio |
-| **Canvas del workflow** (prodotto, versione 20) | il precedente portato dentro la Console, **senza pan, zoom e mini-mappa** (regola 17: la cornice si scala già con `zoom`). Griglia puntinata 18 su `--dots-box`; nodi 208×96 r18 su `--card` con riflesso; serpentina di cinque nodi per riga, passo 248×210, la riga dispari all'indietro; connettori lime con bagliore, tratteggiati verso il titolare, punteggiati e chiari per i passi da fare; porte 10 px con l'etichetta 10/14 sotto il nodo (spente se il passo non è ancora stato fatto); nodo aperto con l'orlo lime e i suoi campi (il canvas cresce di 168 px); ultimo nodo **il titolare**, orlo tratteggiato, e lime pieno quando aspetta; barra in fondo con il conto e l'uscita all'esecuzione. Sul telefono la stessa cosa **in colonna**, con il connettore a barretta |
+| **Canvas del workflow** (prodotto, versione 20) | il precedente portato dentro la Console, **senza pan, zoom e mini-mappa** (regola 17: la cornice si scala già con `zoom`). Griglia puntinata 18 su `--dots-box`; nodi 208×96 r18 su `--card` con riflesso; serpentina di **quattro** nodi per riga, passo **242**×210, la riga dispari all'indietro (erano cinque e 248 fino alla versione 20: la banda riservata della 21 ha stretto il passo di 6 px invece di togliere due colonne); connettori lime con bagliore, tratteggiati verso il titolare, punteggiati e chiari per i passi da fare; porte 10 px con l'etichetta 10/14 sotto il nodo (spente se il passo non è ancora stato fatto); nodo aperto con l'orlo lime e i suoi campi — altezza **calcolata**, e le righe sotto scendono di quanto lui cresce (versione 22); ultimo nodo **il titolare**, orlo tratteggiato, e lime pieno quando aspetta; sopra il canvas la **tab a pillola dei due tempi** («L'ultima volta» misurata, «La prossima volta» dichiarata e componibile); barra in fondo con il conto e l'uscita all'esecuzione. Sul telefono la stessa cosa **in colonna**, con il connettore a barretta |
 
 ## 7. Schermate
 
@@ -173,10 +173,11 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 - Confronto visivo sezione per sezione con le immagini originali a 1920 px.
 - Differenza voluta: le card delle sfide sono su una griglia regolare invece che sparse attorno al
   titolo, per restare leggibili su mobile.
-- Le schermate del prodotto hanno **cinque** prove cliccate con Playwright in `schermate/direzioni/prove/` (Console
-  141, mobile 82, Costi 48, Agenda e Chat 54, **Workflow 60**; **385 verifiche** in tutto) e gli screenshot in
-  `schermate/direzioni/screenshot/` (**70 catture**). La quinta prova sta in un file suo perché `console.js` sceglie
-  tre sezioni con `nth-of-type`: aggiungerle una prova che ne aggiunge una li sposterebbe. La manutenzione del
+- Le schermate del prodotto hanno **sei** prove cliccate con Playwright in `schermate/direzioni/prove/` (Console
+  160, mobile 83, Costi 50, Agenda e Chat 56, Workflow 80, **Routine 49**; **478 verifiche** in tutto — erano 385 alla
+  versione 20 e 421 alla 21) e gli screenshot in `schermate/direzioni/screenshot/` (**77 catture**). La quinta e la
+  sesta stanno in un file loro perché `console.js` sceglie tre sezioni con `nth-of-type`: aggiungerle una prova che ne
+  aggiunge una li sposterebbe. La manutenzione del
   2026-09-06 (versione 14) è stata verificata con trentuno catture identiche byte per byte prima e dopo e con le impronte
   degli stili calcolati di ogni elemento (`DIREZIONI.md`, «Versione 14»); le pagine Agenda e Chat (versione 15) con
   venticinque catture identiche byte per byte e le cornici del telefono confrontate con l'albero precedente. La
@@ -479,6 +480,125 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     - **si nomina, ma non si promette una porta che non c'è.** La riga dice il nome della routine e **non porta la
       freccia**: la pagina delle routine non esiste, e la regola 26 vieta di promettere una destinazione che non c'è.
 
+31. **Una routine esegue, non decide: vince la regola d'azienda, e la clausola può solo stringere** (2026-09-08,
+    versione 22, conferma c). Il consiglio della versione 21 aveva nominato la precedenza e **nessuno l'aveva
+    scritta**: quattro pareri su cinque lasciavano vincere la routine senza accorgersene. Scritta, la precedenza
+    trova nel modello i casi che nega: `regolaPer(r)` dice quale regola **attiva** governa una richiesta (la più
+    stretta prima: sopra la soglia si approva sempre, poi le uscite verso i clienti, poi le liste, poi i report), e
+    `contrastoDi(r)` è una richiesta uscita **senza** il titolare mentre la sua regola dice «Sempre da approvare». A
+    undici non ne esiste nessuno; **a quaranta ne escono due** — un post e una lista verso clienti veri, decisi da una
+    routine. Il dato non si corregge di nascosto: la riga porta una pillola rosa che dice contro quale regola, e una
+    prova ne fissa il conto a 0 e a 2. Due conseguenze:
+    - **una regola spenta che resta in pagina è decorazione** (conferma d). `g4` «Spese sopra 50 €» era spenta.
+      Accesa, la card adesso stampa quante richieste governa — e sono **zero**, perché la richiesta più cara del
+      modello costa 10 € e la consegna più cara 33,80. Il numero dice la verità che l'accensione da sola nascondeva:
+      la soglia, non lo stato, è la cosa da sistemare. Ogni richiesta è governata da **una regola e una sola**, e la
+      somma dei quattro conti fa il totale: 20 su 20 a undici, 35 su 35 a quaranta.
+    - **«Approvata» si dice solo se l'ha approvata il titolare** (conferma b). Tre richieste erano uscite senza di lui
+      e la riga diceva lo stesso «Approvata», in lime: l'autore vero stava in fondo in grigio, e il participio era
+      l'affermazione principale. Adesso dicono **«Uscita»**, in pillola neutra con l'icona dell'invio, e la pagina
+      della consegna dice «Uscita senza la tua firma» invece di «Approvata dal titolare». **Il lime resta la firma del
+      titolare e non si presta a nient'altro.**
+
+32. **Il lavoro dichiarato e il lavoro avvenuto sono un oggetto solo visto in due tempi** (2026-09-08, versione 22,
+    scelta dell'utente sulla domanda 2 del consiglio). Comporre vuol dire scrivere passi non ancora eseguiti, e la
+    domanda era su quale oggetto scriverli. La risposta non era fra le tre strade proposte: l'ha portata la revisione
+    incrociata, e tutti e cinque i revisori l'hanno indicata come l'idea migliore emersa. **Il ramo**: stesso canvas,
+    una tab a pillola sopra, due tempi — «L'ultima volta» (misurata, immutabile) e «La prossima volta» (dichiarata,
+    componibile). Zero pagine nuove, zero parole nuove — e la parola nuova era il pericolo vero, perché il consiglio
+    aveva già usato **cinque nomi** (routine, workflow, esecuzione, copia, ramo) per una sequenza di passi. Tre
+    conseguenze:
+    - **i due numeri in cima alla pagina restano dell'ultima volta, sempre**, e nella prossima volta la parola lo
+      dice. Un passo che deve ancora succedere non ha costo né durata, e il suo piede dice «passo nuovo» o «come
+      l'ultima volta» invece di uno zero inventato: è così che comporre non sporca «misurati, non stimati».
+    - **il nodo del titolare non si toglie, non si sposta e non si scavalca.** Nessuno dei cinque consiglieri
+      l'aveva detto: così com'erano proposte, tutte e tre le strade lasciavano cancellare la firma dalla catena.
+      Il divieto sta nel **modello**, non nel gesto, così vale per qualunque gesto si scelga.
+    - **le porte della prossima volta sono tutte spente.** Una porta accesa dice che quello strumento è stato usato
+      davvero: nel tempo futuro non lo è stato ancora nessuno.
+
+33. **L'altezza di un nodo aperto è un conto, non una scoperta; e quello che cresce spinge, non copre** (2026-09-08,
+    versione 22). Difetto della versione 20 trovato costruendo le anteprime: aprire un nodo ne copriva un altro **per
+    intero** — 18 096 px², cioè tutti i 208 × 87 del nodo sotto — perché il canvas aggiungeva 168 px in fondo, dove
+    non servivano, invece di spostare in giù le righe seguenti. Con una figura da leggere era già sbagliato; con una
+    da **comporre** è insostenibile, perché il gesto che si usa di più è proprio aprire un nodo. Adesso le righe sotto
+    quella del nodo aperto scendono di quanto lui cresce. Perché il conto si potesse fare **prima** di stampare — la
+    serpentina si calcola nella funzione che disegna e non misura niente dopo (regola 28) — le etichette e i valori
+    dei campi hanno un'**altezza fissa e stanno su una riga sola**: prima «Regola che ferma qui la consegna» andava a
+    capo e il nodo cresceva di un'altezza che nessuno poteva prevedere. Una prova confronta il conto con la resa su
+    **792 stati** del canvas (ogni nodo, aperto e chiuso, nei quattro modi, a due taglie): nessun nodo coperto,
+    nessuno sotto la barra.
+
+34. **L'intestazione sta nella banda riservata anche lei, e i suoi numeri vanno a capo** (2026-09-08, versione 22,
+    conferma f). Era il difetto dichiarato e non corretto della versione 21: `.a-head` si stendeva fino a x 1414 e i
+    suoi ultimi numeri — che sono cliccabili — nascevano sotto la tendina aperta, **4 in tutto**. Delle tre strade
+    misurate (farli scorrere come le strisce di pillole, mandarli a capo, tenerne meno di tre) vale la seconda:
+    nascondere un numero è peggio che nascondere un filtro, e tenerne meno di tre toglie informazione al titolare.
+    L'intestazione passa da **56 a 124 px** e ogni pagina scende di **68** — la stima ne diceva 64, e come sempre la
+    misura ha l'ultima parola. Adesso su **24 pagine per due taglie** l'intestazione non esce mai dai 1008 px e sotto
+    la tendina non nasce più niente: da 4 a **zero**.
+
+35. **Una pagina che serve a tre oggetti non merita un cerchio nel rail: si raggiunge da dove il suo nome già
+    compariva** (2026-09-08, versione 22, conferma e). Le routine sono **tre**, non otto, e adesso hanno la loro
+    pagina: innesco, clausola, rodaggio, i passi dichiarati e che cosa hanno deciso. Il rail resta a **sei** cerchi.
+    Ci si arriva da due strade che esistevano già: il nome nella colonna «chi ha deciso» dello storico delle
+    Richieste — che dalla versione 21 era **testo morto** e adesso apre la routine, quindi la riga guadagna la sua
+    freccia per la regola 26 — e una pillola nell'intestazione del Dipartimento, accanto a quella dei workflow. Non
+    si è aggiunta nessuna freccia nuova: se n'è **resa vera una che c'era già**. La pagina dice anche la differenza
+    che il modello nasconde: i passi di una routine sono **nomi**, senza modello, strumenti, costo né durata, e dove
+    un workflow non esiste la pagina dice perché (il dipendente è pianificato, zero passi conclusi) invece di lasciare
+    un buco.
+
+36. **Il canvas del workflow è un grafo, e il significato sta sul connettore** (2026-09-08, versione 23, decisioni
+    64–67 dell'utente). La richiesta: *«letteralmente la complessità di n8n per creare flussi, ma con una UX che
+    aiuta e semplifica; poter spostare liberamente ogni card e connettere e biforcare più connettori anche su un
+    singolo task»*. Il canvas passa da **catena** a **grafo**: posizioni libere, **fan-out e fan-in illimitati**.
+    Quattro conseguenze, tutte con un numero dietro:
+    - **il significato di un connettore sta sul connettore, non nelle porte del nodo.** n8n lo distribuisce su tre
+      tipi di nodo (`IF` con 2 uscite, `Switch` con *n*, `Merge` con fino a 10 entrate) più una porta d'errore che
+      compare solo con `onError`. In DGT i quattro significati — `poi`, `se…`, `insieme`, `se si ferma` — stanno
+      sull'arco: il nodo non cresce di porte e il fan-out illimitato resta gratis. È la forma su cui **quattro
+      consiglieri su cinque erano arrivati indipendentemente**, con quattro nomi diversi, senza che nessuno la
+      scegliesse come risposta principale — perché la domanda chiedeva *che tipo* di biforcazione, e quella
+      risponde a *dove vive*.
+    - **il ramo d'errore non è una verità nuova**: è lo stato `errore` che la pagina Esecuzione mostra già, a cui
+      il canvas dà una strada. Una sola fonte, due letture. Duplicarlo come porta autonoma sarebbe stato due verità
+      sullo stesso fatto, ed è la ragione per cui il consiglio lo scartava.
+    - **il titolare resta un nodo, e l'autorizzazione va anche in testa.** Tre consiglieri su cinque volevano
+      trasformarlo in una **linea di confine** in fondo al canvas; un revisore ha aperto `mobile.js` e ha trovato
+      che sulla schermata 10 il nodo del titolare è la riga «aspetta te» col chip lime, cioè **l'unica superficie
+      da cui il titolare firma dal telefono**. Il confine la cancellava e nessuno dei tre se n'era accorto. In più,
+      per idea dell'utente, il canvas prende un **nodo d'innesco in testa** con la sua clausola — come il *trigger*
+      di n8n. Non è un concetto nuovo: sono la `clausola` della routine e la firma anticipata della versione 20,
+      promosse da interruttore a forma del canvas. **La convergenza non è obbligatoria**: il vincolo non è «tutto
+      finisce sul nodo firma» ma «tutto ciò che **esce dall'azienda** passa dalla firma», e un ramo che resta
+      dentro finisce dove vuole.
+    - **la biforcazione aggiunge una capacità, non svela un dato.** Contati: **43 passi a undici e 156 a quaranta,
+      zero condizioni, zero duplicati, zero parallelismi.** È la stessa lezione della versione 20, dove «il nodo è
+      un dipendente» cadde contando zero passaggi di mano. Quindi la biforcazione vive **solo nel dichiarato**
+      («la prossima volta»); «l'ultima volta» è e resta una catena, perché è quello che è successo.
+    L'aggancio è a **18 px**, i punti che il canvas già disegna (n8n usa 16, ma la sua griglia è invisibile).
+
+37. **Un canvas che si compone a mano ha bisogno di un «Riordina», o diventa più lento** (2026-09-08, versione 23).
+    È il corollario che **nessuno dei cinque consiglieri aveva visto** e che la revisione incrociata ha nominato:
+    il consiglio ha risposto in cinque su cinque alla prima metà della richiesta (*che cosa è una biforcazione*) e
+    **zero su cinque alla seconda** (*una UX che aiuta e semplifica, più veloce ed efficace*). Il trascinamento
+    libero, da solo, sposta sull'utente un lavoro che prima faceva la macchina. Quindi la **serpentina che il
+    canvas già calcola non si butta: diventa il pulsante** che rimette dritto il disegno — il «Tidy up» di n8n, che
+    lì usa dagre con `rankdir LR`, `nodesep 96`, `ranksep 128`. Con lui entrano gli altri tre acceleratori scelti:
+    il **rilascio del connettore nel vuoto** che crea il passo già collegato (la migliore idea di UX di n8n), il
+    **«+» sul connettore**, e **selezione multipla, scorciatoie, zoom e mini-mappa**.
+
+38. **`transform` non è `zoom`: il canvas può avere il suo zoom e la sua mini-mappa** (2026-09-08, versione 23,
+    emendamento alla regola 17). La regola 28 diceva «niente pan, niente zoom, niente mini-mappa, perché due zoom
+    annidati litigano», e il **secondo riferimento di disegno la mini-mappa e le pillole dello zoom ce le ha**.
+    Misurato: la cornice si scala con `zoom`, ma un `transform: scale()` **dentro** di essa compone esattamente —
+    nodo 208 px → **312 a 1,5×** e **124,8 a 0,6×**, a viewport 1440, 1920 e 1024, e la tendina `position:fixed`
+    resta al bordo dello schermo. Il divieto valeva per `zoom` annidato, non per `transform`: quindi zoom interno e
+    mini-mappa **rientrano**, e con loro il riferimento torna copiato com'è. Resta vero che **1 px del canvas vale
+    esattamente `zoom` px di schermo**, ed è la ragione per cui il trascinamento è possibile: uno spostamento del
+    mouse diviso per `zoom` dà lo spostamento nel canvas, esatto a ogni taglia.
+
 Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in
 `schermate/direzioni/DIREZIONI.md`, sezione 1. Sorgenti in `schermate/direzioni/` (`dati.js`, `comune.js`,
@@ -488,7 +608,9 @@ gli occhi del kit), 8 (pagina dell'Esecuzione), 10 (l'identità degli orbi), 11 
 repository, la sezione «moto» in `DESIGN.md`; niente di visibile cambiato, tranne una perdita di stile sulla schermata della
 revisione del telefono, corretta e da confermare) 15 (le pagine Agenda e Chat del rail e le due tab del telefono), 15a (gli avatar di nuovo centrati nella casella), 16 (la
 barra «Oggi in azienda» come quadro del giorno), 17 (il quadro del giorno anche sul telefono, la tab Dipartimenti, i
-controlli inerti) 18 (le frecce di riga: la regola 25 portata dalle intestazioni alle righe) e 19 (le consegne del dipartimento) in `DIREZIONI.md`, sezione 4; l'analisi delle tre proposte nella sezione 6.
+controlli inerti) 18 (le frecce di riga: la regola 25 portata dalle intestazioni alle righe), 19 (le consegne del dipartimento), 20 (il canvas
+a nodi), 21 (il record della routine e la banda riservata) e 22 (le sei conferme, il ramo e i tre gesti del comporre) in
+`DIREZIONI.md`, sezione 4; l'analisi delle tre proposte nella sezione 6; i due consigli sul canvas componibile nella sezione 7.
 
 
 ### Che cosa il prodotto ancora non ha (2026-09-07, analizzato e contato)

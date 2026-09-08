@@ -104,6 +104,14 @@ const CATTURE = [
   { g: 'workflow', nome: 'a-sez-consegne-mese', q: 'pagina=dipartimento&dip=mkt&tendina=chiusa', sel: '.a-main section:nth-of-type(2)', h: 1600, clic: '[data-az="periodo"][data-sez="dip.consegne"][data-v="mese"]' },
   { g: 'workflow', nome: 'a-dipartimento-workflow', q: 'pagina=dipartimento&dip=mkt&tendina=chiusa' },
   { g: 'workflow', nome: 'spec-editor', file: '../../design-system/specimen.html', q: '', sel: '.editor', h: 1100 },
+  /* --- versione 22: il ramo, i tre gesti e la pagina delle routine --- */
+  { g: 'gesto', nome: 'a-gesto-a', q: 'pagina=workflow&workflow=w1&ramo=1&gesto=a&nodo=2&tendina=chiusa', sel: '.a-main > section:nth-of-type(2)', h: 1400 },
+  { g: 'gesto', nome: 'a-gesto-b', q: 'pagina=workflow&workflow=w1&ramo=1&gesto=b&nodo=2&tendina=chiusa', sel: '.a-main > section:nth-of-type(2)', h: 1400 },
+  { g: 'gesto', nome: 'a-gesto-c', q: 'pagina=workflow&workflow=w1&ramo=1&gesto=c&tendina=chiusa', sel: '.a-main > section:nth-of-type(2)', h: 1400 },
+  { g: 'gesto', nome: 'a-ramo-ultima', q: 'pagina=workflow&workflow=w1&nodo=2&tendina=chiusa', sel: '.a-main > section:nth-of-type(2)', h: 1400 },
+  { g: 'routine', nome: 'a-routine-elenco', q: 'pagina=routine&tendina=chiusa' },
+  { g: 'routine', nome: 'a-routine', q: 'pagina=routine&routine=rt1&tendina=chiusa' },
+  { g: 'routine', nome: 'a-routine-wf', q: 'pagina=routine&routine=rt3&tendina=chiusa' },
   { g: 'dip', nome: 'm-chat-cerca', file: 'mobile.html', q: 'schermata=4', sel: '.m-tel', h: 1100, clic: '[data-az="mcerca"]', eval: "(()=>{const i=document.querySelector('input[data-mcerca]');i.value='mar';i.dispatchEvent(new Event('input',{bubbles:true}))})()" },
   /* --- versione 17: i controlli delle intestazioni di sezione, la regola applicata --- */
   { g: 'controlli', nome: 'a-sez-dipendenti', q: 'tendina=chiusa', sel: '.a-main section:nth-of-type(3) .shead', h: 1400 },
