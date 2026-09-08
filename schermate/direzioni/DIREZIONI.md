@@ -2409,3 +2409,85 @@ Fonti: [monday: la tensione fra automations e workflows](https://dev.to/piotrdiu
   stanno dove stanno gli oggetti), ma sparpaglia il governo su quattro pagine.
 
 **Da confermare dall'utente** (il consiglio prepara la domanda, non la chiude).
+
+### 7.6 Il verdetto del consiglio (2026-09-08)
+
+Cinque pareri indipendenti, revisione incrociata anonima, e **verifica nel codice di ogni affermazione
+verificabile** — perché nella prima applicazione del metodo due affermazioni dei revisori erano false.
+
+#### Dove il consiglio converge (e la convergenza è il verdetto vero)
+
+- **La pillola a destra è sbagliata**: 5 su 5. Un controllo che apre una pagina non è un filtro.
+- **Un oggetto solo, mai due sistemi**: 5 su 5 scartano la strada di monday.
+- **Il canvas è una lente, non un editor**: 4 su 5, e il quinto lo concede da sé. La ragione è tecnica e
+  non estetica: il canvas legge un **consuntivo** (costo, durata, esito per passo), e una routine mai
+  eseguita ha quei campi vuoti — nodi coi trattini violerebbero la regola «un controllo si mostra solo se
+  fa quello che promette».
+- **Non si crea da un modulo vuoto: si promuove un fatto già accaduto**: **5 su 5**, con cinque nomi
+  diversi per lo stesso gesto («Ripeti questo», «Fallo sempre», «rendila una regola», «d'ora in poi fai
+  così», «promuovi»). È la convergenza più forte del consiglio ed è ciò che rende possibili i tre tocchi
+  sul telefono: chi, che cosa, quanto costa e quale clausola si applica sono **già noti dal fatto**.
+- **La fascia morta si cura riservando lo spazio, non spostando i controlli**: 5 su 5.
+- Nella revisione incrociata, **5 revisori su 5** hanno indicato lo stesso parere come il più forte:
+  quello che ordina i lavori e dichiara che cosa misurare invece di discuterne.
+
+#### Dove il consiglio si spacca
+
+- **Dove vive**: quattro dicono una pagina d'azienda (settimo cerchio del rail), uno dice «sul
+  dipendente». Ma chi sceglie il rail lo smonta da sé: «il rail sono i sei posti dove Marco va ogni
+  giorno; le routine si aprono due volte l'anno».
+- **Il titolare continua a VEDERE le uscite automatiche?** Due dicono sì («smette di firmare, non di
+  vedere, o la spina dorsale si rompe in silenzio»), uno dice che escono dalla coda. **Si compongono**:
+  escono dalla *coda delle firme* (che promette «da fare») ed entrano in una striscia «fatto senza di
+  te». Vedere sì, firmare no.
+
+#### Le cose che solo la revisione incrociata ha trovato — verificate nel codice
+
+| Affermazione | Verifica | Esito |
+|---|---|---|
+| «Mansione» è già occupata | 16 occorrenze: è la **mansione del dossier** del dipendente, stampata come `<p class="mans">`, più «Richiesta fuori mansione» nel colloquio | **VERA** — e 3 consiglieri su 5 proponevano quella parola |
+| «Regola» è occupata | 4 record in `m.regole` | **VERA** |
+| «Routine» è libera | 0 occorrenze in tutto il repository | **VERA** |
+| Solo 3 delle 4 regole sono attive | `g4` «Spese sopra 50 €» ha `attiva: false` — ed è proprio quella a soglia in euro | **VERA** — 3 consiglieri fondavano una strada su «le 4 regole» |
+| La tendina estesa è larga 840 px | `.a-tend.estesa{width:840px}` | **VERA**: farla colonna della griglia rifluirebbe la pagina di 510 px a ogni apertura |
+| Due regole fantasma | le richieste citano `Fatture ricorrenti` e `Follow-up`, che **non esistono** in `m.regole` | **VERA**: 2 delle 3 richieste «già automatiche» puntano al nulla |
+| Non esiste un record su cui scrivere | `workflowDi()` è una **derivazione** su `esecuzioneDi(e)`; `firme` è un oggetto in memoria che si perde ricaricando | **VERA**: tutti e cinque promettono «tre tocchi» su un modello in cui non si può scrivere niente |
+| Le 8 routine preesistenti sono un conto gonfiato | 2 ricorrenze distinte, 3 ore distinte, 3 nomi di regola distinti | **FALSA**: sono otto voci diverse |
+
+**La misura che cambia la correzione.** Riservare la banda costa più di quanto il consiglio credesse:
+il canvas è largo **1272 px** su una serpentina a 5 colonne (`W_PAD·2 + 4·W_PX + W_W`), e `.a-main` ne ha
+1312. Togliendo 354 px restano 958 px utili e **ci stanno solo 3 colonne**: il workflow di Sviluppo
+passerebbe da 518 a **728 px di altezza, +41 %**. Nessun consigliere l'aveva contato.
+
+#### Che cosa nessuno ha detto, e va deciso
+
+1. **Chi vince** quando la clausola della routine contraddice la regola d'azienda.
+2. **Un dipendente può scriversi una routine che salta l'approvazione?** Se sì, la spina dorsale la
+   scavalca l'autore, non l'innesco.
+3. **Chi paga e chi ferma.** Una routine spende senza gesto umano: serve un **tetto di spesa per
+   routine** (la clausola vista dal lato dei soldi) e uno stato di guasto con quarantena.
+4. **L'innesco esterno inverte la direzione**: crea un'esecuzione che nessuno ha chiesto. Minimo: la
+   prima volta produce una **richiesta**, non un'uscita.
+
+#### La raccomandazione
+
+1. **La parola è «routine»** (libera, e già dell'utente), l'innesco si chiama **«innesco»**. Non
+   «mansione» (occupata), non «regola» (occupata). «Workflow» resta, ma smette di essere una *modalità*:
+   diventa una **vista** — «vedi a nodi».
+2. **Un oggetto, due tempi**: routine = esecuzione *dichiarata*; workflow = esecuzione *avvenuta*.
+   Nel codice è un record solo con `innesco`, `clausola`, `autore` e `origine: dichiarata | derivata`.
+3. **Si promuove, non si compone.** «Ripeti questo» su una consegna approvata o su un'esecuzione.
+4. **Dove vive**: pagina di **azienda** con filtro per dipartimento, raggiunta dalle Richieste (dove le
+   clausole già vivono) e dal Dipartimento. Il settimo cerchio del rail **solo se** la pagina lo
+   giustifica — la soglia proposta dal consiglio è misurabile: sotto ~900 px di pagina non lo merita.
+5. **La fascia morta**: riservare la banda su tutte le pagine **tranne il canvas**, dove la tendina si
+   richiude da sola — su quella pagina non si firma, si legge. Più asserzioni **geometriche**
+   (`elementFromPoint`) su ogni controllo cliccabile nelle cinque suite.
+
+**Il primo lavoro**: non l'interfaccia, il **record**. Dare alla routine un record vero in `dati.js`
+(`id`, `autore`, `innesco`, `clausola`, `origine`) ed etichettarci dentro le 8 che esistono già; nello
+stesso giro, la fascia morta, le asserzioni geometriche e le 2 regole fantasma. Se etichettando le 8 la
+lista sta in piedi, la funzione ha contenuto; se non sta in piedi, lo si scopre prima di costruire una
+pagina.
+
+**Da confermare dall'utente**: i 4 punti aperti qui sopra e la scelta 4 (dove vive).
