@@ -3,6 +3,47 @@
 Stato al 2026-09-08, fine della sessione della **versione 20**: il perimetro delle consegne e **i workflow** (il
 candidato 7), con il canvas a nodi vero che l'utente ha scelto contro il verdetto unanime di un consiglio.
 
+## Sessione di analisi dell'8 settembre 2026 — nessun codice toccato
+
+Dopo la versione 20 l'utente **non ha trovato l'ingresso ai workflow**. Da lì è nata una sessione di sola analisi:
+il difetto misurato, la ricerca sui concorrenti, il consiglio con la revisione incrociata, e dieci decisioni nuove.
+**Tutto sta in `schermate/direzioni/DIREZIONI.md`, sezioni 7.1–7.10.** Il codice non è stato toccato: la prossima
+sessione parte da qui.
+
+### Il difetto che ha aperto tutto (misurato)
+
+`.a-main` è larga 1312 px e finisce a x 1414, ma la tendina del titolare è `position:fixed` sui 330 px di destra:
+**gli ultimi ~304 px di ogni pagina le stanno sotto.** La pillola «Workflow» e le pillole del periodo delle Consegne
+sono **invisibili allo stato predefinito**; lo è anche «Tutti i costi dell'azienda», che è precedente alla versione 20.
+Le 385 prove non l'hanno preso perché asserivano la presenza nel DOM e il clic, e **Playwright centra l'elemento prima
+di cliccarlo**. Da qui in avanti ogni controllo nuovo vuole un'asserzione di **visibilità** (`elementFromPoint`).
+
+### Decisioni 47–56
+
+| # | Decisione |
+|---|---|
+| 47 | La pillola d'ingresso ai workflow **si sposta**: un controllo che apre una pagina non è un filtro (e sta nella fascia morta) |
+| 48 | La parola è **«routine»** (libera: «mansione» è occupata 16 volte, «regola» da 4 record); l'innesco si chiama **«innesco»**; «workflow» smette di essere una *modalità* e diventa una **vista** |
+| 49 | **Un oggetto solo**: la routine è un workflow con un innesco in testa. Due stati della stessa figura: «come lavora» (dichiarato) e «com'è andata» (eseguito) |
+| 50 | Il riferimento è **n8n**, non Zapier: **la forma è n8n, la porta è Zapier**. Il canvas **diventerà modificabile**, non resterà una lente — su questo il consiglio aveva torto |
+| 51 | Chi scrive: il **dipendente propone**, non crea. Il titolare conferma e sceglie «chiedi prima di procedere» / «fai pure» |
+| 52 | Ogni routine porta **la sua clausola e i suoi limiti** (giorno, settimana, mese), con piena personalizzazione |
+| 53 | Inneschi **anche esterni**, con **rodaggio**: le prime **3** volte producono una richiesta, non un'uscita |
+| 54 | Una sezione dove **provare** la routine (e i workflow) prima del «fai pure». Il **«fai pure» si guadagna, non si sceglie** |
+| 55 | **Tetto di azienda** obbligatorio; dipartimento (in % dell'azienda), dipendente e routine **facoltativi** |
+| 56 | Servono **sia** «approvazione a ogni avvio» **sia** «approvazione dell'uscita», con la preferenza in una pagina **Impostazioni** che non esiste ancora |
+
+### Le tre cose che il modello ha già e che nessuno aveva collegato
+
+1. **Le routine esistono già**, in tre forme senza un nome comune: 2 obiettivi che si ripetono, 3 dipendenti
+   pianificati a un'ora fissa, 3 richieste decise da una regola invece che dal titolare. Otto voci distinte.
+2. **Il modo di provare esiste già due volte**: il **colloquio** del dipendente (Nora: 12 casi, 91 su soglia 85,
+   4 €, 18 min) e la **prova** di una revisione (20 esecuzioni, 30 €, 5 giorni; una è già in `stato: 'prova'`).
+   La prova della routine è il **terzo uso della stessa forma**.
+3. **Il tetto esiste già ed è per dipendente** (`budget.giorno`, `budget.mese`) — ed è **già sfondato**: 3 dipendenti
+   su 11 e 12 su 40 sono oltre il tetto del giorno, l'azienda è al 108 % a undici e al 107 % a quaranta, e **nessuna
+   pagina della Console lo dice**.
+
 ## Che cosa ha scelto l'utente
 
 Sette risposte, date **prima** che scrivessi una riga di codice (il prompt diceva di chiederle):
@@ -782,44 +823,70 @@ inerti su quella pagina.
 
 ## Cosa manca
 
-1. **Il giudizio dell'utente sulla versione 20**: il canvas che non si trascina e i cui nodi sono passi e non
-   dipendenti (scelto contro il 5-0 del consiglio, per una misura), il nodo del titolare in fondo alla catena, e la
-   firma anticipata spenta.
-2. **Il candidato 8, i connettori**: il verdetto, la parola «accesso», la regola di disegno di un servizio senza il
-   suo marchio, e se il Dipartimento spende una sezione per «che cosa può toccare».
-3. **La chat di dipartimento (candidato 5)**: le due domande hanno risposta (decisioni 41 e 42), manca il codice.
-4. **I giudizi sulle versioni 17, 18 e 19**: mai dati. Le catture del prima/dopo sono pronte.
-5. **Che cosa succede quando la firma anticipata si accende davvero**: è la riscrittura della spina dorsale, che
-   questa versione ha preparato senza farla.
-6. I giudizi in sospeso delle versioni 6, 8, 11, 12, 14, 15 e 15a; le scelte di dettaglio della barra (decisioni 33
-   e 34); le **due regole fantasma** del modello (`r16`, `r17`).
-7. I punti aperti elencati in «Come riprendere».
+### Le due conferme rimaste (prima riga del prossimo prompt)
+
+1. **Soffitto o ripartizione** per il tetto di dipartimento. Misurato: oggi i tetti di dipartimento sommano
+   esattamente a quello di azienda (30+35+30+20 = 115), cioè è una **ripartizione** — e con quella Vendite si
+   sarebbe fermata a 30 € uccidendo a metà l'esecuzione dei 200 lead, **mentre Amministrazione teneva fermi 20 €
+   non spesi**. Raccomandato: **soffitto** (ogni % è un limite a sé, possono sommare oltre 100, il tetto di
+   azienda è il fermo vero).
+2. **«Ferma prima del passo»**. I passi dei 200 lead costano 0,5 · 6 · 22 · 9,5 · 23 · 4 €: **un solo passo può
+   costare 23 €, più del doppio dell'intero tetto giornaliero di Nora (10 €)**. Quindi il tetto si controlla
+   *prima* di ogni passo, e l'esecuzione va in uno stato **«ferma per tetto»** — la stessa forma dello stato
+   `errore` che esiste già. Fermarsi a metà è il peggio dei due mondi: soldi spesi e niente consegnato.
+
+### I difetti veri, da sistemare nel primo giro
+
+3. **La fascia morta di 304 px**: due controlli della versione 20 sono invisibili allo stato predefinito.
+   Riservare la banda su tutte le pagine **tranne il canvas** (misurato: togliendo 354 px il canvas passa da 5 a 3
+   colonne e il workflow di Sviluppo da 518 a 728 px, +41 %), dove la tendina si richiude da sola.
+4. **Asserzioni di visibilità** (`elementFromPoint`) nelle cinque suite, su ogni controllo cliccabile.
+5. **Non esiste un record su cui scrivere**: `workflowDi()` è una derivazione su `esecuzioneDi(e)` e `firme` è un
+   oggetto in memoria che si perde ricaricando. Prima dell'interfaccia va il **record** della routine
+   (`id`, `autore`, `innesco`, `clausola`, `origine`, `limiti`), con dentro le **8 routine che esistono già**.
+6. **Le due regole fantasma**: le richieste citano `Fatture ricorrenti` e `Follow-up`, che non esistono in
+   `m.regole`. Due delle tre richieste «già automatiche» puntano al nulla.
+7. **Il tetto giornaliero è già sfondato** e nessuna pagina lo dice (3 su 11, 12 su 40; Vendite a undici è al 203 %).
+8. **La pagina Impostazioni non esiste** e la decisione 56 la richiede.
+
+### Rimasto dalle sessioni precedenti
+
+9. Il **giudizio dell'utente sulla versione 20** non è mai arrivato: il canvas, i nodi che sono passi e non
+   dipendenti, il nodo del titolare in fondo, la firma anticipata spenta.
+10. Il **candidato 8** (i connettori) e il **candidato 5** (la chat di dipartimento, decisioni 41 e 42: risposte
+    date, codice mai scritto).
+11. I giudizi in sospeso delle versioni 6, 8, 11, 12, 14, 15, 15a, 17, 18 e 19; le decisioni 33 e 34 della barra.
+12. **Che cosa succede quando la firma anticipata si accende davvero**: la riscrittura della spina dorsale.
 
 ### Prompt di avvio suggerito per la prossima sessione
 
 ```
-Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md (in particolare «Che cosa ha scelto l'utente», «Che cosa è stato
-costruito», «Stato», «Il lavoro della prossima sessione» e «Come riprendere»), DIREZIONI.md sezione 4 «Versione 20»
-e sezione 6.3 (l'analisi dei connettori). Controlla la PR della sessione precedente: se è unita riparti da main con
-un branch nuovo, altrimenti continua sullo stesso branch.
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md (in particolare «Sessione di analisi dell'8 settembre», «Stato» e «Cosa
+manca») e DIREZIONI.md sezioni 7.1–7.10: sono la ricerca, il consiglio e le dieci decisioni su workflow e routine.
+Controlla la PR della sessione precedente: se è unita riparti da main con un branch nuovo, altrimenti continua
+sullo stesso branch.
 
 Lavoriamo nella direzione A · Console (schermate/componenti.js, schermate/direzioni/direzione-a.js, dati.js,
 comune.js, avatar/, mobile.js): niente emoji, solo le icone dello sprite; gli avatar sono quelli della versione 10;
 i colori restano quelli del sistema; niente logo o marchi di terzi. Sono decise e non si rimettono in discussione:
-la direzione A, la barra «Oggi in azienda» della versione 16 con la correzione 16a, la versione 17, la regola 26
-delle frecce, il conto nel titolo a 36, le due risposte del candidato 5, la decisione 45 (candidato 6, strada A,
-parola «consegna») e la decisione 46 (canvas a nodi vero, parola «workflow», delega spenta, specimen ripuntato).
+la direzione A, la versione 17, la regola 26 delle frecce, la decisione 45 (parola «consegna»), la decisione 46
+(canvas a nodi vero, parola «workflow»), e le decisioni 47–56 (routine, innesco, n8n come forma e Zapier come
+porta, il dipendente che propone, il rodaggio a 3, il «fai pure» che si guadagna, i quattro livelli di tetto).
 
-[QUI VA LA MIA RISPOSTA: il giudizio sulla versione 20 — il canvas dei workflow, i nodi che sono passi e non
-dipendenti, il nodo del titolare in fondo, la firma anticipata spenta — e se si costruisce il candidato 8 (i
-connettori) o il candidato 5 (la chat di dipartimento). Per l'8 servono anche le risposte elencate in «Come
-riprendere»: il verdetto, la parola «accesso», e se il Dipartimento spende una sezione. Senza quelle non si
-comincia, quindi chiedimele prima di scrivere codice.]
+[QUI VA LA MIA RISPOSTA: le due conferme rimaste — soffitto o ripartizione per il tetto di dipartimento, e
+«ferma prima del passo» — più il giudizio sulla versione 20, mai dato. Chiedimele prima di scrivere codice.]
+
+Poi il primo giro, nell'ordine che il consiglio ha votato all'unanimità: (1) il RECORD della routine in dati.js,
+con dentro le 8 che esistono già; (2) la fascia morta dei 304 px, riservando la banda tranne sul canvas; (3) le
+asserzioni di visibilità (elementFromPoint) nelle cinque suite; (4) le due regole fantasma. Nessuna interfaccia
+nuova in questo giro: se etichettando le 8 la lista sta in piedi, la funzione ha contenuto; se non sta in piedi,
+lo scopriamo prima di costruire una pagina.
 
 Il metodo di sempre: prima e dopo, rifare i font locali, lanciare le cinque prove di prove/ e catturare le pagine
-prima di toccare qualcosa; ogni dubbio progettuale passa dal consiglio, ma quello che si misura si misura — e in
-questa sessione una misura ha battuto un consiglio unanime, quindi cercala prima di votare. Attenzione: scatta.js e
-prove/console.js si reggono su section:nth-of-type(2) per la sezione delle consegne del Dipartimento; la prossima
-sezione aggiunta lì rompe tre prove e due catture. Alla fine: prove aggiornate, screenshot, artefatti ripubblicati
-allo stesso indirizzo, DIREZIONI.md, SYSTEM-DESIGN.md, i README, PROSSIMA-SESSIONE.md, commit, push e PR.
+prima di toccare qualcosa; ogni dubbio progettuale passa dal consiglio, ma quello che si misura si misura — in
+questa analisi una misura ha battuto un consiglio unanime due volte, e la revisione incrociata ha trovato tre
+parole occupate e due regole inesistenti che nessun parere aveva visto. Attenzione: scatta.js e prove/console.js
+si reggono su section:nth-of-type(2) per la sezione delle consegne del Dipartimento. Alla fine: prove aggiornate,
+screenshot, artefatti ripubblicati allo stesso indirizzo, DIREZIONI.md, SYSTEM-DESIGN.md, i README,
+PROSSIMA-SESSIONE.md, commit, push e PR.
 ```

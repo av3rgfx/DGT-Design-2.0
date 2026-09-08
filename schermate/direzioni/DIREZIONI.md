@@ -2711,3 +2711,68 @@ sta *prima* che i soldi si spendano, la seconda *dopo*. Oggi DGT ha solo la seco
 
 **Da confermare dall'utente**: il «fai pure» che si guadagna invece di sceglierlo, N = 3, e l'avviso
 sulla somma invece che sul confronto a due a due.
+
+### 7.10 Il tetto a cascata: misurato sui budget veri (2026-09-08)
+
+Proposta dell'utente: **un tetto di azienda**, e in modo **facoltativo** un tetto di dipartimento
+espresso **in percentuale** di quello aziendale, «così il dipartimento si gestisce il suo budget, il
+tetto diventa dinamico e non si creano contrasti».
+
+#### I numeri di oggi
+
+| | 11 dipendenti | 40 dipendenti |
+|---|---|---|
+| Tetto del mese (somma dei budget) | **1 580 €** — spesi 613 € (39 %) | **5 120 €** — spesi 2 154 € (42 %) |
+| Tetto del giorno | **115 €** — spesi oggi **124 €** → **108 %** | **400 €** — spesi oggi **427 €** → **107 %** |
+| Dipendenti già oltre il proprio tetto del giorno | **3 su 11** | **12 su 40** |
+
+Quote per dipartimento (mese): a undici svi 20 %, mkt 32 %, ven 23 %, amm 25 %; a quaranta
+svi 22 %, mkt 23 %, ven 22 %, amm 33 %.
+
+**Difetto misurato, e non piccolo**: il tetto giornaliero è **già sfondato a tutte e due le taglie**, e
+in nessuna pagina della Console c'è qualcosa che lo dica. Il caso peggiore è Vendite a undici: **61 €
+spesi oggi contro un tetto di dipartimento di 30 €, il 203 %** — un solo dipendente («Ricerca lead»,
+l'esecuzione dei 200 lead) si mangia la giornata di tutto il dipartimento.
+
+#### Che cosa regge dell'idea, e la correzione che la fa funzionare
+
+L'idea è buona e la percentuale è il modo giusto di renderla dinamica: si alza il tetto di azienda e
+tutto sale con lui, senza rifare N numeri. Ma **«non si creano contrasti» dipende da una scelta che la
+proposta non fa**, e le due strade si comportano in modo opposto:
+
+- **Ripartizione** (le percentuali **devono sommare a 100**): i contrasti li crea eccome. Per dare 5
+  punti a Sviluppo bisogna toglierli a qualcuno. E i numeri di oggi lo mostrano: le quote sommano a 100
+  solo perché sono calcolate come quote; scelte a mano non ci arriveranno quasi mai.
+- **Soffitto** (ogni percentuale è **un limite a sé**, e possono sommare oltre 100): nessun contrasto.
+  Sviluppo 50 %, Marketing 50 % e Vendite 50 % convivono: ciascuno è limitato, e **il tetto di azienda è
+  il fermo vero**, primo arrivato primo servito.
+
+**La misura sceglie il soffitto.** Oggi i tetti di dipartimento sommano esattamente al tetto di azienda
+(30+35+30+20 = 115): è una ripartizione. Con quella, Vendite si sarebbe fermata a 30 € e l'esecuzione
+dei 200 lead sarebbe morta a metà, **mentre Amministrazione teneva fermi 20 € non spesi** (oggi spende
+0 €). È esattamente lo spreco che l'utente vuole evitare. Col soffitto, Vendite arriva a 61 € finché
+l'azienda ha capienza.
+
+#### Quattro livelli, ma **uno solo obbligatorio**
+
+| Livello | Obbligatorio | Che cos'è |
+|---|---|---|
+| **Azienda** | **sì** | il tetto vero: quando è pieno, si ferma tutto |
+| Dipartimento (% del tetto d'azienda) | no | quanto può concentrare un dipartimento da solo |
+| Dipendente | no | oggi ce l'hanno tutti; diventa l'eccezione, per chi va tenuto a freno |
+| Routine | no | ferma quella routine prima di tutti gli altri |
+
+Così «piena customizzabilità» resta, ma chi non tocca niente ha **un numero solo** da capire.
+
+#### Che cosa fa il tetto quando lo si tocca: **ferma prima di partire, mai a metà**
+
+I passi dell'esecuzione dei 200 lead costano **0,5 · 6 · 22 · 9,5 · 23 · 4 €**: **un singolo passo può
+costare 23 €, più del doppio dell'intero tetto giornaliero di Nora (10 €)**. Quindi il tetto va
+controllato **prima di ogni passo**, non alla fine: il passo che sfonderebbe non parte, e l'esecuzione
+va in uno stato **«ferma per tetto»** — la stessa forma dello stato `errore` che esiste già («Esecuzione
+ferma, serve un intervento», il deploy di Kim) — e compare nella coda come richiesta: «Nora ha finito il
+budget di oggi: alzo, aspetto domani, o la lascio ferma?».
+
+Fermarsi a metà sarebbe il peggio dei due mondi: soldi spesi e niente consegnato.
+
+**Da confermare dall'utente**: soffitto invece di ripartizione, e «ferma prima del passo».
