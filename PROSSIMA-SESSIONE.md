@@ -232,9 +232,16 @@ testo bianco non si legge, quindi il nodo selezionato porta il testo all'inchios
 
 ## Stato
 
-- **Branch**: `claude/direzione-a-console-primo-giro-j2n1xm`. La **PR #17 era già unita** all'avvio, quindi si è
-  ripartiti da `main` come chiedeva il prompt. Se all'avvio della prossima risulta unita, ripartire da `main` con un
-  branch nuovo.
+- **Branch**: `claude/direzione-a-console-primo-giro-j2n1xm`, **PR #18**
+  (https://github.com/av3rgfx/DGT-Design-2.0/pull/18), aperta e non ancora unita a fine sessione. La **PR #17 era
+  già unita** all'avvio, quindi si è ripartiti da `main` come chiedeva il prompt. Se all'avvio della prossima la #18
+  risulta unita, ripartire da `main` con un branch nuovo.
+- **Artefatti ripubblicati allo stesso indirizzo**: la Console
+  (https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34) e il telefono
+  (https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9), tutti e due con l'etichetta «Versione 21».
+  Nota per chi ripubblica: lo strumento rifiuta la pubblicazione finché non si è **letta per intero** la copia
+  salvata della versione viva (525 KB la Console, 390 KB il telefono). Conviene farlo fare a un sottoagente, che ci
+  mette il suo contesto invece del tuo.
 - **Codice toccato**: `dati.js` (il record `routine11` con le tre routine, il generatore delle routine a quaranta,
   `routine`/`routineDi`/`routineIdDi`/`autoreDi`/`rodaggioDi`, `tetti`/`tettoAzienda`/`soffittoDi`/`sommaSoffitti`,
   il campo `deciso` al posto di `regola` su `r8`/`r16`/`r17` e sulle generate); `direzione-a.js` (la banda riservata
@@ -770,7 +777,20 @@ frecce dei passi tornano da sole (la regola 26 dice che una riga con una destina
 
 ## Come riprendere
 
-**Prima cosa: il canvas componibile** (decisione 59, il giudizio dell'utente sulla versione 20). Il record c'è, i
+**L'ordine consigliato**, se non arrivano correzioni che vengono prima:
+
+1. **Il giudizio sulla versione 21.** 45 catture su 70 sono cambiate e tutto il resto si costruisce su questa
+   colonna: le pagine sono larghe 1008 px invece di 1312 e più alte dal 4 al 26 %. Se il prezzo non va bene, va
+   detto prima di costruirci sopra l'editor. E c'è la PR da unire.
+2. **Le sei conferme del punto 2 di «Cosa manca»**, in un colpo solo: sono brevi e ognuna ha già la sua
+   raccomandazione scritta accanto.
+3. **Il canvas componibile**, che a quel punto ha la strada libera.
+
+**Una cosa si può misurare in apertura, senza chiedere niente a nessuno**: quanto costa un nodo in più sulla
+serpentina a quattro colonne. È la terza delle tre cose che servono prima di scrivere l'editor, ed è l'unica delle
+tre che non è un dubbio progettuale.
+
+**Il lavoro grosso: il canvas componibile** (decisione 59, il giudizio dell'utente sulla versione 20). Il record c'è, i
 riferimenti risolvono: quello che manca è il gesto. Tre cose da decidere prima di scrivere una riga, e almeno due
 sono dubbi progettuali da passare dal consiglio:
 1. **Comporre senza trascinare.** La regola 17 vieta pan e zoom dentro una cornice che si scala già. Aggiungere un
@@ -991,19 +1011,19 @@ prima di scrivere l'editor:
 - **il canvas adesso è a quattro colonne** e largo 1006 px: un nodo in più cambia la serpentina, e la pagina si
   ridisegna. Va misurato prima quanto costa un nodo aggiunto.
 
-### 2. Le conferme rimaste, e i punti ciechi del consiglio (tutti **da confermare**)
+### 2. Le sei conferme rimaste (tutte **da confermare**, con la raccomandazione)
 
-- **Le due regole fantasma**: `r16` e `r17` adesso puntano alla routine. La revisione incrociata preferiva le
-  **eccezioni nei dossier** dei dipendenti 9 e 10 con il **contatore dentro `g1`**. Da confermare (dettaglio in
-  `DIREZIONI.md`, versione 21, punto 2).
-- **«Approvata» è falso**: `r17` dice «Approvata» e nessuno l'ha approvata. Tre revisori su cinque l'hanno indicata
-  come più grave della domanda che era stata posta. Costa un valore di stato nuovo («Uscita») e una variante di
-  pillola.
-- **La regola di precedenza non è scritta**: chi vince fra la clausola di una routine e una regola d'azienda attiva.
-  Oggi il prodotto lascia vincere la routine senza dirlo.
-- **`g4` «Spese sopra 50 €» è spenta** mentre `r16` fa uscire 14.200 € di fatture.
-- **La pagina delle routine**: con tre voci non merita un cerchio nel rail (la soglia che il consiglio stesso aveva
-  proposto). Dove vive, allora, va deciso.
+Sono brevi e si possono chiudere in un colpo solo. La colonna «raccomando» è il parere di chi ha scritto il codice,
+non una decisione presa: la decisione è dell'utente.
+
+| # | Cosa | Raccomando | Perché |
+|---|---|---|---|
+| a | **Le due regole fantasma** | **Lasciarle come sono** (`r16` e `r17` puntano alla routine) | L'alternativa che la revisione incrociata preferiva — eccezioni nei dossier dei dipendenti 9 e 10 più il contatore «2 eccezioni ›» dentro `g1` — costa una riga-contatore da costruire e sposta la verità nel dossier, che è il posto dove non si guarda. Dettaglio in `DIREZIONI.md`, versione 21, punto 2 |
+| b | **«Approvata» è falso su `r17`** | **Sistemarlo** | Tre revisori su cinque l'hanno indicato come **più grave della domanda che era stata posta**: l'autore è un dettaglio in fondo alla riga, il participio è l'affermazione principale e nega la spina dorsale. Nessuno l'ha approvata: dovrebbe dire «Uscita». Costa un valore di stato nuovo e una variante di pillola |
+| c | **La regola di precedenza** | **Scriverla** | Chi vince fra la clausola di una routine e una regola d'azienda attiva. Oggi il prodotto lascia vincere la routine **senza dirlo**, e quattro pareri su cinque lo davano per scontato senza accorgersene |
+| d | **`g4` «Spese sopra 50 €» è spenta** | **Accenderla o togliere la card** | Mentre è spenta, `r16` fa uscire 14.200 € di fatture. Una regola spenta che resta in pagina è decorazione |
+| e | **Dove vive la pagina delle routine** | **Non nel rail** | Con tre voci non merita un settimo cerchio: è la soglia che il consiglio stesso aveva proposto (sotto ~900 px di pagina non lo merita). Raggiungibile dalle Richieste e dal Dipartimento |
+| f | **L'intestazione che non sta nella banda** | **Mandare i numeri a capo sotto il titolo** | Le tre strade sono: farli scorrere come le strisce di pillole (ma nascondere un numero è peggio che nascondere un filtro), mandarli a capo (l'intestazione passa da 56 a ~120 px e spinge giù ogni pagina di 64 px), o tenerne meno di tre. I numeri del difetto sono in «Stato» |
 
 ### 3. Rimasto dalle sessioni precedenti
 
@@ -1018,10 +1038,10 @@ prima di scrivere l'editor:
 ### Prompt di avvio suggerito per la prossima sessione
 
 ```
-Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md (in particolare «Versione 21», «Stato» e «Cosa manca») e DIREZIONI.md
-sezione 4 «Versione 21» più la sezione 7: sono il primo giro fatto, e la ricerca e le decisioni che l'hanno deciso.
-Controlla la PR della sessione precedente: se è unita riparti da main con un branch nuovo, altrimenti continua
-sullo stesso branch.
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md (in particolare «Versione 21», «Stato», «Cosa manca» e «Come
+riprendere») e DIREZIONI.md sezione 4 «Versione 21» più la sezione 7: sono il primo giro fatto, e la ricerca e le
+decisioni che l'hanno deciso. Controlla la PR della sessione precedente (#18): se è unita riparti da main con un
+branch nuovo, altrimenti continua sullo stesso branch.
 
 Lavoriamo nella direzione A · Console (schermate/componenti.js, schermate/direzioni/direzione-a.js, dati.js,
 comune.js, avatar/, mobile.js): niente emoji, solo le icone dello sprite; gli avatar sono quelli della versione 10;
@@ -1030,18 +1050,22 @@ la direzione A, la versione 17, la regola 26 delle frecce, le decisioni 45 e 46,
 come forma, il dipendente che propone, il rodaggio a 3, il «fai pure» che si guadagna, i quattro livelli di tetto)
 e le 57–58 (soffitto con avviso sopra il 100 %, ferma prima del passo).
 
-[QUI VA LA MIA RISPOSTA: le conferme aperte della versione 21 — le due regole fantasma (routine, come sono adesso,
-oppure eccezioni nei dossier con il contatore dentro g1), «Approvata» che è falso su r17, la regola di precedenza
-fra clausola e regola, e che cosa fare dell'intestazione che non ci sta nella banda. Più il giudizio sulla versione
-21: le pagine della Console sono più strette (1008 px invece di 1312) e più alte dal 4 al 26 %. Chiedimele prima di
-scrivere codice.]
+[QUI VA LA MIA RISPOSTA, due cose:
+ 1. il GIUDIZIO SULLA VERSIONE 21 — le pagine della Console adesso sono larghe 1008 px invece di 1312 e più alte
+    dal 4 al 26 %, e 45 catture su 70 sono cambiate. Va bene, o il prezzo è troppo?
+ 2. le SEI CONFERME del punto 2 di «Cosa manca», che hanno già la raccomandazione scritta accanto: (a) le due
+    regole fantasma restano attribuite alla routine o diventano eccezioni nei dossier con il contatore dentro g1;
+    (b) «Approvata» che è falso su r17; (c) la regola di precedenza fra clausola di routine e regola d'azienda;
+    (d) g4 spenta mentre escono 14.200 € di fatture; (e) dove vive la pagina delle routine; (f) l'intestazione che
+    non ci sta nella banda.
+ Chiedimele prima di scrivere codice, e se su qualcuna non rispondo prendi la raccomandazione scritta.]
 
 Poi il canvas componibile (decisione 59, il mio giudizio sulla versione 20). Il record c'è e i riferimenti
-risolvono: manca il gesto. Tre cose prima di scrivere una riga, e almeno due sono dubbi progettuali da passare dal
+risolvono: manca il gesto. Prima di scrivere una riga servono tre cose, e due sono dubbi progettuali da passare dal
 consiglio: (1) comporre senza trascinare, perché la regola 17 vieta pan e zoom dentro una cornice che si scala;
 (2) su che cosa si compone — due routine su tre non hanno un workflow, perché i dipendenti 9 e 11 sono pianificati
 con zero passi conclusi, quindi l'editor nasce lì; (3) quanto costa un nodo in più sulla serpentina a quattro
-colonne, e questa si misura.
+colonne, e questa non è un dubbio: misurala in apertura, senza chiedermi niente.
 
 Il metodo di sempre: prima e dopo, rifare i font locali, lanciare le cinque prove di prove/ e catturare le pagine
 prima di toccare qualcosa; ogni dubbio progettuale passa dal consiglio, ma quello che si misura si misura — nella
@@ -1050,4 +1074,15 @@ colonne in meno), e la revisione incrociata ha trovato che «i nomi fantasma son
 deduzione e non una misura. Attenzione: scatta.js e prove/console.js si reggono ancora su section:nth-of-type(2)
 per la sezione delle consegne del Dipartimento. Alla fine: prove aggiornate, screenshot, artefatti ripubblicati
 allo stesso indirizzo, DIREZIONI.md, SYSTEM-DESIGN.md, i README, PROSSIMA-SESSIONE.md, commit, push e PR.
+```
+
+### Prompt breve, se vuoi solo tirare dritto
+
+```
+Leggi CLAUDE.md e PROSSIMA-SESSIONE.md («Versione 21», «Cosa manca», «Come riprendere»). Controlla la PR #18: se è
+unita riparti da main con un branch nuovo. Poi fai il punto 3 di «Come riprendere», il canvas componibile: misura
+prima quanto costa un nodo in più sulla serpentina a quattro colonne, poi passa dal consiglio le due domande di
+forma (comporre senza trascinare; su che cosa si compone) e chiedimi la decisione. Sulle sei conferme aperte prendi
+la raccomandazione già scritta accanto a ognuna, senza chiedermele. Il metodo di sempre, e alla fine prove,
+screenshot, artefatti, documenti, commit, push e PR.
 ```
