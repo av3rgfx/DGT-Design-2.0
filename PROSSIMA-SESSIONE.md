@@ -120,7 +120,21 @@ Console e sul telefono:
 schermata: **228 px**, e «124 € su 115 €» ne chiede **180,5**. È anche la riga che oggi stampa 124 € **una seconda
 volta** (`mobile.js:481`, dopo `:464`).
 
-### Il verdetto del consiglio — **DA CONFERMARE**
+### Le risposte dell'utente, date il 2026-09-09 — **due decise, una aperta**
+
+Il verdetto qui sotto è stato portato all'utente e ha avuto risposta su due delle tre domande.
+
+| domanda | risposta | stato |
+|---|---|---|
+| **la parola** | **«124 € su 115 € al giorno · oltre il limite»** — copiare esattamente la card che la pagina Costi già stampa per l'azienda (`direzione-a.js:1912`), invece di inventare una forma nuova | **decisa** |
+| **il telefono** | **sì, nella riga `.kv` della schermata 3** (la card Consegne, 228 px: la forma ne chiede 180,5). **Non** fra i tre numeri grandi, dove ogni forma sfora da −9 a −78 px | **decisa** |
+| **il freno** | *«decidiamolo prima di disegnare»*: l'utente ha accolto il punto del consiglio — se il tetto ferma il segnale è l'esecuzione ferma, se avverte è il badge, e sono due prodotti diversi. **Quale dei due, non è ancora deciso** | **aperta, e viene prima di tutto** |
+
+Quindi: **la forma e il posto sono fissati, il disegno aspetta la terza risposta.** Le due decise valgono in tutti
+e due i casi (il numero col suo denominatore è vero sia che il tetto fermi sia che avverta); quello che cambia con
+la terza è **se serva anche un segnale in più**, e di che natura.
+
+### Il verdetto del consiglio — che ha portato a quelle risposte
 
 **Dove il consiglio è d'accordo (cinque su cinque).** La strada 1: la home smette di inventare e dice quello che
 la pagina Costi già dice. Nessuno ha scelto la 5 (il silenzio), perché il silenzio qui non è silenzio — è il
@@ -173,9 +187,9 @@ repository dice che un numero che il prodotto stampa e non sa usare è un difett
 
 | | la domanda | la mia raccomandazione |
 |---|---|---|
-| **1** | **la parola**: «oltre il limite» (9 a 1 nelle pagine, ha la forma positiva già disegnata), «oltre il tetto» (la parola del modello, e allora «nel limite» diventa «sotto il tetto» su tre pagine), o **nessuna parola** e solo il rapporto | **«124 € su 115 € al giorno · oltre il limite»**, cioè copiare esattamente la card che la pagina Costi già stampa per l'azienda. Non si inventa niente: si smette di avere due forme per lo stesso fatto |
-| **2** | **il telefono**: si porta o no | **sì, ma solo nella riga `.kv` della schermata 3** (228 px, la forma ci sta a 180,5), che è la riga che oggi ripete 124 € senza denominatore. **Non** fra i tre numeri: lì sfora sempre |
-| **3** | **il freno**: `fermaPrimaDelPasso` diventa vero (con lo stato «ferma per tetto»), oppure si toglie dal modello perché il tetto avverte e non ferma | **decidilo prima di disegnare qualunque segnale nuovo**: se il tetto ferma, il segnale è l'esecuzione ferma e la casella rosa della barra lo dice già; se avverte, il segnale è il badge. Sono due prodotti diversi, non due pixel diversi |
+| **1** ✅ *decisa: la prima* | **la parola**: «oltre il limite» (9 a 1 nelle pagine, ha la forma positiva già disegnata), «oltre il tetto» (la parola del modello, e allora «nel limite» diventa «sotto il tetto» su tre pagine), o **nessuna parola** e solo il rapporto | **«124 € su 115 € al giorno · oltre il limite»**, cioè copiare esattamente la card che la pagina Costi già stampa per l'azienda. Non si inventa niente: si smette di avere due forme per lo stesso fatto |
+| **2** ✅ *decisa: la riga `.kv` della schermata 3* | **il telefono**: si porta o no | **sì, ma solo nella riga `.kv` della schermata 3** (228 px, la forma ci sta a 180,5), che è la riga che oggi ripete 124 € senza denominatore. **Non** fra i tre numeri: lì sfora sempre |
+| **3** ⏳ *aperta: «decidiamolo prima di disegnare»* | **il freno**: `fermaPrimaDelPasso` diventa vero (con lo stato «ferma per tetto»), oppure si toglie dal modello perché il tetto avverte e non ferma | **decidilo prima di disegnare qualunque segnale nuovo**: se il tetto ferma, il segnale è l'esecuzione ferma e la casella rosa della barra lo dice già; se avverte, il segnale è il badge. Sono due prodotti diversi, non due pixel diversi |
 
 **Non raccomando** la quinta casella nella barra (conta le stesse persone di «al lavoro»: 3 su 3 a undici,
 11 su 12 a quaranta; 44 catture e due prove), né l'euro nelle card (sfora di 117,4 px, e la riga è già tagliata).
@@ -218,8 +232,15 @@ contare 300 ms.
 
 1. **Non è stato scritto codice**, di proposito: la domanda era un dubbio progettuale e la decisione è
    dell'utente. Prove **619 verdi, 0 ko** e **82 catture**, rifatte prima e dopo per accertarsene.
-2. **La prima cosa da fare è rispondere alle tre domande** del «Che cosa raccomando» qui sopra: la parola, il
-   telefono, e — la più grossa — se il tetto **ferma** o **avverte**. La terza decide la forma di tutte le altre.
+2. **Due delle tre domande hanno già risposta** (vedi «Le risposte dell'utente»): la forma è
+   **«124 € su 115 € al giorno · oltre il limite»**, copiata dalla card che i Costi già stampano per l'azienda;
+   il posto sul telefono è la **riga `.kv` della schermata 3**. **Manca la terza, e viene prima di tutto**: il
+   tetto **ferma** (e nasce lo stato «ferma per tetto») o **avverte** (e `fermaPrimaDelPasso` esce dal modello)?
+   Finché non ha risposta, il disegno non parte: sono due prodotti diversi.
+   Sotto quella domanda ce n'è una ancora più a monte, che il consiglio ha trovato: **il titolare non ha mai
+   scelto 115 €** — `tettoAzienda()` è la somma di undici budget che la decisione 55 dichiara *facoltativi*, e nei
+   dossier generati quel budget è `10` scritto nel generatore. Finché resta così, «oltre il limite» dice che è
+   stata superata una somma, non che è stata rotta una promessa.
 3. **Il gruppo (a) non aspetta la decisione**: i quattro badge che mentono e i sei che ripetono il numero accanto
    sono numeri inventati, e la regola del repository li chiama difetti. Ma **il primo di quei badge è proprio
    quello in discussione**, quindi conviene farli tutti insieme dopo la risposta, in una versione sola.
@@ -254,10 +275,14 @@ Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md («Versione 31», «Come riprendere (d
 fine della versione 31»). Controlla la PR aperta sul branch claude/home-daily-limit-display-9v2v1b: se è unita
 riparti da main tenendo lo stesso nome di branch, altrimenti continua su quello.
 
-Nella versione 31 il consiglio ha risposto e non è stato scritto codice: la decisione era mia e adesso te la do.
-[QUI LE TRE RISPOSTE: 1. la parola — «oltre il limite» / «oltre il tetto» / solo il rapporto «124 € su 115 €»;
-2. il telefono — sì nella riga .kv della schermata 3 / no; 3. il freno — il tetto FERMA (e nasce lo stato «ferma
-per tetto») oppure AVVERTE e `fermaPrimaDelPasso` si toglie dal modello.]
+Nella versione 31 il consiglio ha risposto e non è stato scritto codice. Due delle tre domande le ho già decise:
+la forma è «124 € su 115 € al giorno · oltre il limite» (copiata dalla card che la pagina Costi già stampa per
+l'azienda, direzione-a.js:1912), e sul telefono va nella riga .kv della card Consegne della schermata 3 — non fra
+i tre numeri grandi, dove sfora sempre. La terza è questa, e viene prima del disegno:
+[QUI LA RISPOSTA: il tetto FERMA (e nasce lo stato «ferma per tetto», con il conto delle firme in più: 13 al
+giorno a undici, 58 a quaranta) oppure AVVERTE (e fermaPrimaDelPasso e avvisoSopra100 escono dal modello, e il
+badge diventa il segnale vero). E, se vuoi rispondere anche a quella a monte: il tetto d'azienda resta la somma
+dei budget dei dipendenti, o diventa un numero che il titolare pone?]
 
 Poi disegna, in una versione sola, anche il gruppo (a) della versione 31, che non è un dubbio progettuale ma un
 elenco di numeri inventati: il ↓12% della home, il Math.min(2, att) nelle tre superfici (home, Richieste,
