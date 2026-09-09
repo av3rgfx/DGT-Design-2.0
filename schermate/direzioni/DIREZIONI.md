@@ -2579,6 +2579,121 @@ volta. **Non è stato toccato**: le strade per chiuderlo (l'editor in un pannell
 che si spengono sotto il nodo aperto; il nodo aperto che si stringe) cambiano come si usa il prodotto, quindi è
 un dubbio progettuale e passa dal consiglio e poi dall'utente.
 
+> **Corretto dalla versione 28**, che l'ha rimisurato su tutti e nove i nodi: non è un nodo, sono **cinque su
+> nove** (tre coperti per intero); e le due etichette di porta non sono «a 8 px l'una dall'altra» — gli 8 px sono
+> lo scarto fra i bordi superiori, ma le etichette sono alte 14, quindi **si sovrappongono per 6 px**, e gli
+> scontri sono **cinque**. I numeri buoni stanno nella «Versione 28», qui sotto.
+
+### Versione 28: il consiglio sul nodo che copre, e nessun codice scritto (2026-09-09)
+
+**Nessuna riga toccata.** Il difetto del §8 della versione 27 è un dubbio progettuale, quindi è passato dal
+consiglio e la decisione è dell'utente: il verdetto e i punti ciechi stanno in `PROSSIMA-SESSIONE.md`, marcati
+**da confermare**. Prove **587 verdi, 0 ko**; catture **81**. Qui restano le misure, che valgono comunque.
+
+#### 1. Il §8 era annotato per difetto: sono cinque nodi, non uno
+
+Misurato su **tutti e nove** i nodi di `w1`, e non sul solo `p3`.
+
+| nodo aperto | alto (Console) | copre | alto (telefono) | copre |
+|---|---|---|---|---|
+| `inn` | 273 px | `p4` per 208×57 | 225 px | `p4` per 208×9 |
+| `p1` | 311 px | `p5` per **208×87 — il nodo INTERO** | 263 px | `p5` per 208×47 |
+| `p2` | 311 px | `p6` per **208×87 — INTERO** | 263 px | `p6` per 208×47 |
+| `p3` | 311 px | `p7` per **208×87 — INTERO** | 263 px | `p7` per 208×47 |
+| `p4` | 273 px | `tit` per 208×57 | 225 px | `tit` per 208×9 |
+| `p5` `p6` `p7` `tit` | 273 / 226 px | nessuno | 225 px | nessuno |
+
+**5 nodi su 9 coprono qualcuno, 3 per intero.** E le etichette di porta non sono «a 8 px l'una dall'altra»: gli 8
+px sono lo scarto fra i due bordi superiori, ma le etichette sono alte 14, quindi **si sovrappongono per 6 px**. E
+sono **5 scontri**, non uno: 2 aprendo `p1`, 2 aprendo `p2`, 1 aprendo `p3`.
+
+Il contorno, misurato: nell'**«ultima volta» il difetto non esiste** (0 coperture — lì `spintaDi` si applica); è
+**indipendente dalla scala** (0,5x, 0,8x, 1x, 1,25x, 1,5x: copre sempre, è geometria); alla scala d'ingresso del
+telefono **non si vede**, perché a 0,306 nessun nodo è aperto. Il nodo aperto più alto di **tutto il modello** — 6
+workflow, 37 nodi, tutte e due le taglie — è **311 px**, e **tutti e 37 superano sia 216 sia 185**.
+
+#### 2. Le due soglie, e perché (c) non basta
+
+Perché il nodo aperto non copra quello sotto serve **alto ≤ 216** (il passo della griglia). Perché non ci vadano
+nemmeno le sue etichette di porta — che stanno 17 px sotto il suo piede e sono alte 14 — serve **alto ≤ 185**.
+
+Misurato iniettando il CSS sulla pagina viva, senza toccare nessun file:
+
+| variante | il più alto (Console) | il più alto (telefono) | esito |
+|---|---|---|---|
+| com'è oggi | 311 px | 263 px | copre ancora **95 px** |
+| campi su una riga sola | 259 px | 211 px | copre ancora 43 px |
+| una riga sola + via le azioni | 212 px | (già così) | nodo salvo, **etichette no**: mancano 27 px |
+| **solo il campo «Modello»** | 171 px | 123 px | **chiude tutto** |
+
+L'unica variante che chiude toglie **Strumenti**, cioè il campo che dice quali strumenti aziendali un dipendente
+AI ha davvero usato. Sul telefono la riga delle azioni è già via (sola lettura) e non basta lo stesso.
+
+#### 3. Il pannello di fianco: il prezzo è la larghezza, e sul telefono non c'è
+
+| pannello | canvas che resta | colonne intere | nodi interi | «tutto dentro» | il testo da 14 px |
+|---|---|---|---|---|---|
+| nessuno (oggi) | 1008 px | 4/4 | **9/9** | 1,026 | 14,4 px |
+| 280 px | 728 px | 3/4 | 7/9 | 0,741 | 10,4 px |
+| 320 px | 688 px | 2/4 | **5/9** | 0,701 | 9,8 px |
+| 360 px | 648 px | 2/4 | 5/9 | 0,660 | 9,2 px |
+
+Sul telefono non ci sta: 278,4 − 280 = **−1,6 px**. E non si compensa con una lastra sovrapposta: misurato,
+`canvasStringi(px, z, vista) = max(min(0,px), min(0, vista − 1008·z))` dà **0 px di scorrimento** nella Console a
+vista 1008 e zoom 1 (ne dà 252 solo da 1,25x). Una lastra che copre 320 px li fa perdere e basta.
+
+#### 4. Il passo verticale: dove sta davvero, e la finestra che non c'è
+
+**`W_PY` (`componenti.js:428`) non dispone un solo nodo del grafo.** `wpos` esce alla prima riga —
+`if (nd && nd.x !== undefined) return { x: nd.x, y: nd.y… }` — e nel grafo tutti i nodi portano `x` e `y`. `W_PY`
+governa **solo la serpentina** dell'«ultima volta», cioè l'unico posto dove il difetto non c'è. Il passo del grafo
+è **`ramoPosa` in `dati.js:1350`** (`PX = 234, PY = 216`).
+
+E lì la regola 42 non si oppone: la 42 chiede di *«guardare se quel valore è generato o è stato messo lì da
+qualcuno»*, e `ramoPosa` lo **semina**; la mano del titolare passa da `ramoPosiziona`. Le tre prove della 42
+confrontano prima e dopo un **gesto**: cambiare il seme non ne rompe nessuna.
+
+Ma la finestra è vuota, ed è il compromesso vero. `basso = 2·PY + 237` (verificato: a PY 216 fa **669 px**,
+esattamente la misura della pagina), e la mini-mappa compare quando `basso > 820`, cioè **da PY 292**:
+
+| passo | canvas | mini-mappa | copre ancora | etichette |
+|---|---|---|---|---|
+| 216 (oggi) | 669 px | nascosta | 95 px | 126 px |
+| 288 | 813 px | nascosta | 23 px | 54 px |
+| 324 | 885 px | **sempre visibile** | 0 px | 18 px |
+| **342** | 921 px | **sempre visibile** | **0 px** | **0 px** |
+
+**Verificato sul vivo**, trascinando i nodi col gesto vero fino a passo 342: **0 coperture, 0 scontri**, canvas
+983 px con un nodo aperto, mini-mappa permanente. Non esiste un passo che chiuda il difetto e lasci la mappa
+nascosta.
+
+#### 5. Cinque cose trovate misurando, che non sono un dubbio progettuale
+
+Vengono dalla revisione incrociata, e si chiudono comunque, qualunque strada si scelga.
+
+1. **Le porte del nodo aperto sono un doppione troncato dei suoi campi.** Aperto `p1`: etichette di porta
+   `[Modello, Archivio, Repository]`, campi della card `Modello → Rapido`, `Strumenti → Archivio del cliente,
+   Repository`. L'etichetta è la prima parola tagliata del valore che la card stampa per esteso. E nel grafo le
+   porte sono **sempre spente** (`const spenta = ramo || nd.stato === 'da fare'`). Sono esattamente quelle che
+   vanno addosso al nodo sotto: non stamparle mentre il nodo è aperto chiude **5 scontri su 5**.
+2. **Le prese galleggiano sopra la card aperta, e rispondono al clic.** `.wio` sta a `z-index:5`, `.wnode.on` a
+   **3**. Misurato col colpo del mouse: aprendo `p1`, `p2` o `p3`, le **due prese del nodo coperto** sono disegnate
+   sopra l'editor e sono cliccabili. Tirando da lì nasce un collegamento **da un nodo che non si vede** — cioè un
+   passo, e quindi un euro, attribuito a un dipendente che il titolare non ha visto. Invece i «+» e le «×» finiti
+   sotto la card sono **già morti** (`z-index:2` sotto 3, sfondo della card opaco).
+3. **Il `wtag` della spina dorsale finisce sotto la card.** «esce senza la tua firma» e «resta in azienda» hanno
+   `pointer-events:none` e **nessuno `z-index`**: appena si biforca, la frase che dichiara che un ramo consegna
+   senza la firma del titolare sparisce sotto il nodo aperto, senza nemmeno il tooltip.
+4. **Il «+» del prodotto ricrea il difetto.** `ramoAggiungi` (`dati.js:1372`) posa il passo nuovo a
+   `base.y + 210`: **210 non è multiplo di 18** — contro la ragione stessa per cui la 24 scelse 216 e 234 — ed è
+   meno del passo, quindi il passo nuovo nasce **sotto la card aperta che l'ha creato**.
+5. **Il trascinamento del titolare non ha freni.** `ramoOccupato` (`dati.js:1466`) misura con `87 + 18`, cioè sul
+   nodo **chiuso**, e lo chiamano `ramoInserisci` e `ramoNuovo` — **ma non `ramoPosiziona`**.
+
+E una sesta, sul repository: la sezione 11 di `prove/workflow.js` si intitola **«il nodo aperto non copre
+nessuno»** ma misura `.wnode:not(.on)`, cioè i soli nodi chiusi, e un commento della versione 23 dichiara che il
+nodo aperto «galleggia sopra gli altri». Il titolo afferma più di quello che la prova verifica, e va corretto.
+
 ## 5. File
 
 | File | Ruolo |

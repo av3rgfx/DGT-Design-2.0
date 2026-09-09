@@ -79,6 +79,12 @@ faceva, e le altre consegne intorno. Studio e misure in `DIREZIONI.md`, «Versio
   `PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css node schermate/direzioni/prove/console.js`
   (e così `mobile.js`, `costi.js`, `agenda-chat.js`).
 - File unico per l'artefatto: `node build-unico.js /percorso/confronto-unico.html`.
+- **Aperto, e aspetta l'utente** (versione 28): aprendo un nodo del grafo il nodo aperto **copre quello sotto** — cinque nodi su nove, tre per intero, misurato su tutti e nove. È un dubbio progettuale: nella 28 è
+  passato dal consiglio e **non è stato scritto codice**. Le misure delle tre strade e le cinque correzioni
+  che ne sono uscite (fra cui `.wio` a `z-index:5` sopra la card aperta, e `ramoAggiungi` che posa a `+210`)
+  stanno in `DIREZIONI.md`, «Versione 28»; il verdetto in `PROSSIMA-SESSIONE.md`, marcato «da confermare».
+  Nota per chi ci mette mano: il passo del **grafo** è `ramoPosa` in `dati.js`, **non** `W_PY` in
+  `componenti.js`, che governa solo la serpentina dell'«ultima volta».
 - **La scelta del gesto** (versione 22): le tre strade per comporre il canvas, costruite nella pagina vera
   (`?pagina=workflow&workflow=w1&ramo=1&gesto=a|b|c`) e messe a confronto con i numeri misurati. Pagina:
   `node costruisci-gesto.js` da `scelta-gesto.src.html`; artefatto

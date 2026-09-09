@@ -1,4 +1,240 @@
 # Prossima sessione — passaggio di consegne
+## Versione 28 — il consiglio sul nodo che copre, e nessun codice scritto (2026-09-09)
+
+**Nessuna riga di codice è stata toccata**, come chiedeva il prompt: il difetto del §8 è un dubbio progettuale,
+quindi è passato dal consiglio e adesso aspetta la decisione dell'utente. Le prove restano **587 verdi, 0 ko** e le
+catture **81** (rilanciate e ricontate all'inizio della sessione, prima di misurare). Gli artefatti non sono stati
+ripubblicati perché il sorgente non è cambiato: si rigenerano da `build-unico.js` e sarebbero identici al byte.
+
+### Il difetto è più largo di come era annotato
+
+Misurato su **tutti e nove** i nodi di `w1`, e non solo su `p3`:
+
+| nodo aperto | alto (Console) | copre | alto (telefono) | copre |
+|---|---|---|---|---|
+| `inn` | 273 px | `p4` per 208×57 | 225 px | `p4` per 208×9 |
+| `p1` | 311 px | `p5` per **208×87 — INTERO** | 263 px | `p5` per 208×47 |
+| `p2` | 311 px | `p6` per **208×87 — INTERO** | 263 px | `p6` per 208×47 |
+| `p3` | 311 px | `p7` per **208×87 — INTERO** | 263 px | `p7` per 208×47 |
+| `p4` | 273 px | `tit` per 208×57 | 225 px | `tit` per 208×9 |
+| `p5` `p6` `p7` `tit` | 273 / 226 px | nessuno | 225 px | nessuno |
+
+**5 nodi su 9 coprono qualcuno, 3 per intero.** E le due etichette di porta non sono «a 8 px l'una dall'altra»: si
+**sovrappongono per 6 px**, e sono **5 scontri**, non uno (2 aprendo `p1`, 2 aprendo `p2`, 1 aprendo `p3`).
+
+Altre misure di contorno: nell'**«ultima volta» il difetto non esiste** (0 coperture: lì `spintaDi` si applica); è
+**indipendente dalla scala** (a 0,5x, 0,8x, 1x, 1,25x e 1,5x copre sempre); alla scala d'ingresso del telefono
+(0,306) **non si vede**, perché lì nessun nodo è aperto. Il nodo aperto più alto di **tutto il modello** — 6
+workflow, 37 nodi, tutte e due le taglie — è **311 px**, e **tutti e 37 superano sia 216 sia 185**.
+
+### Le tre strade, misurate
+
+- **(a) l'editor in un pannello**: chiude tutto (0 coperture, 0 scontri), ma il canvas si stringe. Con un pannello
+  da 320 px restano **5 nodi interi su 9** e «tutto dentro» scende a 0,701, cioè il testo da 14 px va a **9,8**.
+  Sul telefono non ci sta: 278,4 − 280 = **−1,6 px**.
+- **(b) spegnere quello che sta sotto**: non chiude il difetto, lo dichiara. Sotto il nodo aperto finiscono fino a
+  **5 coppie «+»/«×»** e 2 prese per volta.
+- **(c) stringere il nodo**: **non basta**. Servono ≤216 px perché non copra il nodo, e ≤185 perché non ci vadano
+  nemmeno le sue etichette. Campi su una riga sola: 259 px (copre ancora 43). Una riga sola più via le azioni:
+  212 px (nodo salvo, etichette no, mancano 27). L'unica variante che chiude è **«solo il campo Modello»** — cioè
+  togliere **Strumenti**, il campo che dice quali strumenti aziendali un dipendente AI ha davvero usato.
+
+## Il verdetto del consiglio — **DA CONFERMARE**
+
+**Nessuna delle tre come sono poste.** Sui cinque pareri: uno per (a), due per (b), zero per (c), due per «nessuna
+delle tre, il difetto è il passo verticale». Ma la cosa che ha spostato la risposta l'ha portata, come nelle
+versioni 24, 25, 26 e 27, **la revisione incrociata** — e stavolta ha demolito affermazioni di fatto dei pareri,
+verificate una per una col righello.
+
+### Le otto cose che la revisione incrociata ha preso, tutte verificate
+
+1. **`W_PY` non dispone un solo nodo del grafo.** Due consiglieri hanno proposto di alzare il passo cambiando
+   `W_PY` in `componenti.js:428`. Ma `wpos` esce alla prima riga — `if (nd && nd.x !== undefined) return {x: nd.x,
+   y: nd.y…}` — e nel grafo **tutti** i nodi portano `x`/`y`. `W_PY` governa **solo la serpentina**, cioè l'unico
+   posto dove il difetto non c'è. L'indirizzo giusto è **`ramoPosa` in `dati.js:1350`** (`PX = 234, PY = 216`).
+2. **La regola 42 non protegge il 216.** La 42 dice: *«guardare se quel valore è generato o è stato messo lì da
+   qualcuno»*. Le posizioni di `w1` **le semina il codice** (`ramoPosa`); la mano del titolare passa da
+   `ramoPosiziona`, che aggancia alla griglia da 18 px. Quindi il seme si può cambiare; le disposizioni fatte a
+   mano no. Le tre prove della 42 confrontano prima e dopo un **gesto**: cambiare il seme non ne rompe nessuna.
+3. **La finestra aritmetica è vuota, ed è il compromesso vero.** `basso = 2·PY + 237` (verificato: a PY 216 fa
+   **669 px**, esattamente la misura della pagina). La mini-mappa compare quando `basso > 820`, cioè **da PY 292 in
+   su**. Ma per chiudere il difetto serve **PY ≥ 324** (nodo) o **≥ 342** (anche le etichette). Non esiste un passo
+   che chiuda il difetto e lasci la mini-mappa nascosta: il massimo compatibile è **288**, che lascia 23 px di
+   copertura. **Verificato sul vivo trascinando i nodi col gesto vero a passo 342: 0 coperture, 0 scontri, canvas
+   983 px, mini-mappa permanente** (e la prova `workflow.js:320`, che verifica `g.mappa === 0`, andrebbe rifatta).
+4. **Il «+» del prodotto ricrea il difetto da solo.** `ramoAggiungi` (`dati.js:1372`) posa il passo nuovo a
+   `base.y + 210`: **210 non è multiplo di 18** (contro la ragione stessa per cui la 24 scelse 216 e 234) ed è
+   **meno del passo**, quindi il passo nuovo nasce **sotto la card aperta che l'ha creato**. Alzare il passo non lo
+   tocca: è una terza costante, separata.
+5. **Il trascinamento del titolare non ha nessun freno.** `ramoOccupato` (`dati.js:1466`) controlla la
+   sovrapposizione con `87 + 18`, cioè sul nodo **chiuso**, e lo chiamano `ramoInserisci` e `ramoNuovo` — **ma non
+   `ramoPosiziona`**. Il titolare può impilare due nodi a 0 px di distanza e nessuno glielo dice.
+6. **La spina dorsale finisce sotto la card.** Il `wtag` che dice **«esce senza la tua firma»** e **«resta in
+   azienda»** — la frase che dichiara che un ramo consegna senza la firma del titolare — ha `pointer-events:none` e
+   **nessuno `z-index`**, contro una card aperta a `z-index:3`. Appena il titolare biforca, quella frase sparisce
+   sotto il nodo aperto, e non c'è nemmeno il tooltip a recuperarla.
+7. **Un difetto nuovo, che nessuno dei cinque aveva nominato — e uno dei cinque aveva affermato il contrario.**
+   `.wio` (le due maniglie del collegamento) sta a **`z-index:5`**, la card aperta a **3**. Misurato col colpo del
+   mouse: aprendo `p1`, `p2` o `p3`, le **due prese del nodo coperto sono disegnate SOPRA la card aperta e
+   rispondono al clic**. Sono due pallini lime da 11 px posati sull'editor, che appartengono a un nodo che non si
+   vede: **tirando da lì nasce un collegamento da un nodo invisibile**, cioè un passo — e quindi un euro —
+   attribuito a un dipendente che il titolare non ha visto. Invece i «+» e le «×» finiti sotto la card sono
+   **già morti** (`z-index:2` sotto 3, e la card ha sfondo opaco): lì (b) non toglierebbe niente, dichiarerebbe.
+8. **I 5 scontri contesi sono fra decorazioni.** Nel grafo **tutte** le porte sono sempre spente
+   (`const spenta = ramo || nd.stato === 'da fare'`), e le etichette del nodo aperto ripetono, **troncate**, i
+   campi che la card stampa per esteso: porta «Archivio» contro campo «Archivio del cliente». Finché il nodo è
+   aperto, le sue porte non aggiungono niente — e sono esattamente quelle che vanno addosso al nodo sotto.
+
+E una nona, sul repository più che sul disegno: la sezione 11 di `prove/workflow.js` **si intitola «il nodo aperto
+non copre nessuno»** ma misura `.wnode:not(.on)`, cioè solo i nodi chiusi; e un commento della versione 23 dichiara
+che il nodo aperto «galleggia sopra gli altri». Il difetto era **già scritto nel repository come voluto**: quel
+titolo afferma una cosa che la prova non verifica, e va corretto su qualunque strada si scelga.
+
+### Quello che il consiglio ha demolito da sé
+
+- **(a) poggiava su una misura falsa.** Il suo sostenitore proponeva una «lastra sopra» che lascia il canvas a
+  1008 px «spostando la vista». Ma `canvasStringi(px, z, vista) = max(min(0,px), min(0, vista − 1008·z))`: con
+  vista 1008 e zoom 1 lo scorrimento possibile è **0 px** (lo diventa 252 solo da 1,25x). Quindi la lastra **è**
+  lo split della tabella, con il testo a 9,8 px — cioè proprio il prezzo che dichiarava di rifiutare.
+- **(c) è caduta senza appello.** Nessuno dei cinque l'ha scelta.
+- **La proposta di far crescere il nodo verso l'alto non regge**: `.wcanvas` ha `overflow:hidden`, e un nodo della
+  prima riga partirebbe a **y = −188**, con i campi tagliati. La prima riga contiene 3 dei 5 nodi che coprono.
+
+### Che cosa raccomando, e che cosa devi decidere tu
+
+La raccomandazione è **spezzare la domanda in due**, perché tre delle cose trovate non sono un dubbio progettuale:
+si misurano, e vanno chiuse comunque, qualunque strada scegli.
+
+**Parte 1 — non è un dubbio, è una correzione** (nessuna delle tre strade, nessuna decisione da prendere):
+- le porte del **nodo aperto** non si stampano finché è aperto: sono un doppione troncato dei suoi campi e nel
+  grafo sono sempre spente → **chiude 5 scontri su 5** senza toccare una coordinata;
+- le prese (`.wio`) di un nodo coperto non galleggiano più sopra la card aperta → chiude il difetto nuovo del
+  punto 7, quello che fa nascere un collegamento da un nodo invisibile;
+- il `wtag` della spina dorsale non finisce mai sotto una card;
+- `ramoAggiungi` posa il passo nuovo sulla griglia da 18 e **sotto** l'ingombro del nodo aperto, non a `+210`;
+- `ramoPosiziona` riceve lo stesso freno che `ramoInserisci` e `ramoNuovo` già hanno.
+
+**Parte 2 — questo lo decidi tu**, ed è una domanda sola, con un prezzo misurato:
+
+> Il passo verticale del grafo (oggi 216, seminato da `ramoPosa`) va portato a **342**, così che un nodo aperto non
+> copra mai più quello sotto? Il prezzo misurato è che **la mini-mappa diventa permanente** (il canvas passa da
+> 669 a 921 px e supera la soglia degli 820) e che il grafo non sta più in una schermata sola.
+
+E, attaccata a quella, una seconda domanda che nessuno ti ha ancora messo davanti: **i grafi che hai già disposto a
+mano restano al passo vecchio** — la regola 42 li trasporta e non li tocca. L'unico modo per portarli al passo
+nuovo è **«Riordina»**, che oggi riscrive tutte le posizioni ed è l'unica eccezione ammessa alla 42. Va bene che
+resti così (i vecchi restano come li hai messi, e li allinei tu quando vuoi), oppure vuoi che il prodotto te lo
+proponga?
+
+Se rispondi **no** alla parte 2, la strada che resta è **(b) nella forma minima**: velare quello che è
+materialmente coperto, per la durata dell'apertura — che, misurato, toglierebbe pochissimo, perché i «+» e le «×»
+lì sotto sono già morti.
+
+### I punti ciechi che restano aperti — **da confermare**
+
+- **Nessuno ha misurato che cosa succede a 40 dipendenti** su un grafo davvero denso: `w1` è una catena di 9 nodi
+  in tre righe, e tutte le misure di questa sessione vengono da lì. A taglia 40 i workflow sono 6, ma il nodo
+  aperto più alto resta 311.
+- **Il gesto che decide il costo di (b) non è stato osservato**: se il titolare tiene un nodo aperto *mentre* ne
+  collega altri, (b) gli rompe il flusso; se lo apre, legge, chiude, non gli toglie niente. Verificato come si
+  chiude: si riclicca il nodo o si preme **Escape** (Console), si ritocca (telefono). Quindi **l'apertura dura
+  finché vuoi tu**, non è momentanea — ma quanto la tieni aperta non lo sa nessuno.
+- **Il numero degli strumenti**: `altNodo` cresce con `nd.strumenti.length`. Oggi il massimo misurato è 311 px (2
+  strumenti), ma con 4 strumenti il nodo aperto sarebbe **387 px** e sfonderebbe anche il passo 342. Nessuna
+  correzione del passo è una garanzia: è un buon valore predefinito.
+- **Le parole**: i cinque consiglieri hanno usato **cinque nomi** per la stessa superficie nuova (lastra,
+  pannello, scheda, riquadro, piano sopra) e **tre valori** per la stessa costante (324, 342, 360). Se la parte 2
+  passa, il nome va scelto una volta sola.
+
+## Come riprendere (dalla versione 28)
+
+1. **La prima cosa è la risposta dell'utente alla parte 2** (il passo a 342, e che cosa fare dei grafi già
+   disposti a mano). Finché non c'è, il canvas non si tocca.
+2. **La parte 1 si può fare subito**, perché non è un dubbio progettuale: sono cinque correzioni misurate, tutte
+   in `componenti.js` e `dati.js`, e nessuna cambia come si usa il prodotto. Se l'utente dà il via libera, si
+   comincia da lì: chiudono 5 scontri su 5, il difetto delle prese sopra la card, e la frase della spina dorsale
+   che sparisce.
+3. **La sezione 11 di `prove/workflow.js` va rititolata comunque**: dice «il nodo aperto non copre nessuno» e
+   misura solo i nodi chiusi. Il titolo afferma più di quello che verifica.
+4. **Gli indirizzi giusti**, che il consiglio ha sbagliato due volte: il passo del **grafo** è `ramoPosa` in
+   `dati.js:1350`; `W_PY` in `componenti.js:428` governa **solo** la serpentina dell'«ultima volta».
+5. **Attenzione**, come sempre: `scatta.js` e `prove/console.js` si reggono ancora su `section:nth-of-type(2)` per
+   le consegne del Dipartimento; le sezioni 25 e 26 di `prove/workflow.js` vogliono un contesto `hasTouch` e
+   costruiscono `TouchEvent` a mano.
+
+## Stato alla fine della versione 28
+
+- **Branch**: `claude/node-overlap-issue-ccwwgu`. La **PR #21 era unita** all'avvio, quindi si è ripartiti da
+  `main` sullo stesso nome di branch, come chiede il prompt.
+- **Codice**: **nessun file toccato.** Il prompt chiedeva esplicitamente di non scrivere codice prima della
+  decisione, e la decisione è dell'utente.
+- **Prove**: **587 verifiche verdi, 0 ko** — Console 160, mobile 83, Costi 50, Agenda e Chat 56, Workflow 189,
+  Routine 49. Rilanciate all'inizio della sessione, prima di misurare. **Catture: 81**, ricontate.
+- **Artefatti**: **non ripubblicati**, e per una ragione, non per dimenticanza: si rigenerano da `build-unico.js`
+  a partire da un sorgente che non è cambiato, quindi sarebbero identici al byte. Restano quelli della 27 — la
+  Console (https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34) e il telefono
+  (https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9).
+- **Documenti toccati**: `PROSSIMA-SESSIONE.md` (questa sezione) e `schermate/direzioni/DIREZIONI.md`
+  («Versione 28»).
+- **Quello che resta aperto**, in ordine:
+  1. **La decisione della parte 2** (il passo a 342 e i grafi già disposti): è la sola cosa che blocca il resto.
+  2. **La parte 1**, cinque correzioni misurate che aspettano solo il via libera.
+  3. **La decisione 75** (il modo semplificato per le routine con inneschi) aspetta i dati: i 3 inneschi sono
+     tutti di tipo `ora`, nessuna routine ha un workflow dietro, il record non ha né `nodi` né `archi`.
+  4. **Le decisioni 68 e 69** aspettano le biforcazioni (nel modello: 0).
+  5. **La soglia di `g4`**, i **due contrasti a quaranta**, il **tetto giornaliero già sfondato** e la **pagina
+     Impostazioni** (decisione 56) che non esiste. Restano il **candidato 8** (connettori) e il **candidato 5**
+     (chat di dipartimento, decisioni 41 e 42).
+
+## Pronto per la prossima sessione
+
+Da incollare così com'è, **dopo aver risposto alle due domande della parte 2**.
+
+```
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md («Versione 28», «Come riprendere (dalla versione 28)» e «Stato alla
+fine della versione 28»). Controlla la PR di quel branch: se è unita riparti da main tenendo lo stesso nome di
+branch, altrimenti continua su quello.
+
+Nella 28 non è stato scritto codice: il difetto del nodo che copre è passato dal consiglio, e il verdetto sta in
+PROSSIMA-SESSIONE.md marcato «da confermare». Le prove sono 587 verdi e le catture 81: non rifare il canvas.
+
+Ho risposto alle due domande: <QUI LA RISPOSTA SUL PASSO A 342 E SUI GRAFI GIÀ DISPOSTI A MANO>.
+
+Fai prima la PARTE 1, che non è un dubbio progettuale ma cinque correzioni misurate: le porte del nodo aperto non
+si stampano finché è aperto (doppione troncato dei suoi campi, e nel grafo sempre spente: chiude 5 scontri su 5);
+le prese .wio di un nodo coperto non galleggiano più sopra la card aperta (oggi z-index 5 contro 3, e rispondono
+al clic: si tira un collegamento da un nodo invisibile); il wtag «esce senza la tua firma» non finisce mai sotto
+una card; ramoAggiungi posa il passo nuovo sulla griglia da 18 e sotto l'ingombro del nodo aperto, non a +210;
+ramoPosiziona riceve il freno che ramoInserisci e ramoNuovo già hanno. Poi la PARTE 2, secondo la mia risposta.
+
+Gli indirizzi giusti, che il consiglio ha sbagliato due volte: il passo del GRAFO è ramoPosa in dati.js:1350;
+W_PY in componenti.js:428 governa solo la serpentina dell'ultima volta, dove il difetto non esiste. E rititola
+comunque la sezione 11 di prove/workflow.js: dice «il nodo aperto non copre nessuno» e misura solo i nodi chiusi.
+
+Il metodo di sempre: prima e dopo, rifare i font locali, lanciare le SEI prove di prove/ e catturare le pagine
+PRIMA di toccare qualcosa; quello che si misura si misura. Attenzione: scatta.js e prove/console.js si reggono
+ancora su section:nth-of-type(2) per le consegne del Dipartimento; le sezioni 25 e 26 di prove/workflow.js
+vogliono un contesto hasTouch e costruiscono TouchEvent a mano. Se il passo cambia, la prova workflow.js:320
+(g.mappa === 0) va rifatta: a passo 342 la mini-mappa diventa permanente.
+
+Alla fine: prove aggiornate, screenshot, artefatti ripubblicati allo stesso indirizzo, DIREZIONI.md,
+SYSTEM-DESIGN.md, i README, PROSSIMA-SESSIONE.md, commit, push e PR.
+```
+
+### I comandi che servono subito
+
+```bash
+export SC=<cartella-di-lavoro>                       # es. lo scratchpad della sessione
+export PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules
+export LOCAL_FONT_CSS=$SC/fonts.css                  # i font locali vanno rifatti a ogni sessione
+node schermate/direzioni/prove/{console,mobile,costi,agenda-chat,workflow,routine}.js
+node schermate/direzioni/scatta.js [--in <cartella>] [gruppo…]
+node schermate/direzioni/build-unico.js              # i due file unici per gli artefatti
+```
+
+Nota: `export SC=… PLAYWRIGHT_MODULE=…` sulla **stessa riga** non funziona — la shell espande `$SC` prima di
+assegnarlo, e le prove partono cercando `/fonts.css`. Vanno su righe separate.
+
 ## Versione 27 — il canvas passa al telefono e diventa un componente (2026-09-09)
 
 **Le decisioni 72-74 della versione 26 sono disegnate.** Erano prese e non toccavano codice: adesso ci sono. La

@@ -659,6 +659,17 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     stesso oggetto mostra al titolare **una disposizione che lui non ha scelto**, e gli fa perdere l'unica cosa che
     il canvas gli aveva dato: la memoria di dove ha messo le cose. È la stessa malattia della regola 41 — due
     strade per la stessa cosa, con regole diverse — spostata dalla creazione alla forma.
+
+    **Chiarimento della versione 28** (2026-09-09; non è una decisione nuova, è una misura che evita un errore già
+    fatto due volte). La regola protegge la **mano**, non il **seme**, e nel codice sono due funzioni diverse:
+    `ramoPosa` (`dati.js`) **semina** le posizioni quando un grafo nasce e quando si preme «Riordina»;
+    `ramoPosiziona` (`dati.js`) scrive quelle che il titolare ha messo **trascinando**. Cambiare il seme non
+    ricalcola niente di nessuno — è proprio la distinzione che la regola già enuncia («guardare se quel valore è
+    generato o è stato messo lì da qualcuno»); cambiare quelle del titolare è vietato. Corollario per chi cerca
+    il passo della griglia: quello del **grafo** è in `ramoPosa`, mentre `W_PY` in `componenti.js` governa
+    **solo** la serpentina dell'«ultima volta», perché `wpos` esce alla prima riga quando il nodo porta già la sua
+    `x` — e nel grafo la porta sempre. Un consiglio di cinque, nella versione 28, ha proposto due volte di
+    correggere il grafo cambiando `W_PY`: non avrebbe toccato un solo nodo del grafo.
     Il criterio generale: **prima di ricalcolare una posizione, una scelta o un ordine su una superficie nuova,
     guardare se quel valore è generato o è stato messo lì da qualcuno.** Se è stato messo, si trasporta; non si
     rifà. Il corollario pratico che ne discende: il telefono mostra il canvas **così com'è**, e paga i 632 px di
