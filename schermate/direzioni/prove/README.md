@@ -1,7 +1,7 @@
 # Prove cliccate
 
-**Sei** prove con Playwright che aprono le pagine da `file://`, cliccano e verificano il DOM, il modello e la console — **587
-verifiche in tutto** (Console 160, mobile 83, Costi 50, Agenda e Chat 56, Workflow 189, Routine 49). Tutte leggono
+**Sei** prove con Playwright che aprono le pagine da `file://`, cliccano e verificano il DOM, il modello e la console — **619
+verifiche in tutto** (Console 160, mobile 83, Costi 50, Agenda e Chat 56, Workflow 221, Routine 49). Tutte leggono
 le stesse variabili d'ambiente:
 
 - `LOCAL_FONT_CSS` — il CSS con Urbanist incorporata (`design-system/tools/fetch-fonts.py`), servito al posto di Google Fonts;

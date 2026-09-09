@@ -92,6 +92,15 @@ faceva, e le altre consegne intorno. Studio e misure in `DIREZIONI.md`, «Versio
   quaranta); **la riga di stato delle card «Al lavoro adesso» è già tagliata oggi** (39 px contro 71: si legge
   «Pass…», e a quaranta quelle card **non** diventano righe compatte); e la forma «124 € su 115 € al giorno ·
   oltre il limite» **esiste già** in `direzione-a.js:1912`, per l'azienda, nella pagina Costi.
+  Il titolare ha poi deciso quattro cose (la forma, il posto sul telefono, che il tetto **ferma** con la scelta
+  cambiabile dalle Impostazioni, e che **il tetto d'azienda lo pone lui**) e ne ha aperta una quinta: **come si
+  dispongono i limiti**. Secondo consiglio, e un fatto che riformula la domanda — **i soffitti di dipartimento
+  sono due e si contraddicono**: **30 €** disegnati dalla pagina Costi (la somma dei budget dei suoi) contro i
+  **69 €** del modello (la quota del 60 %), 2,3 volte. Altre tre note misurate: col tetto che ferma davvero **il
+  prodotto si apre fermo** (6 esecuzioni a undici, 20 a quaranta); un **sesto stato** non è un chip ma una
+  superficie di crash (`m.STATI[e.stato].breve` lancia; 42 punti in 5 file; e «ferma» è già la parola dell'errore,
+  in rosa); e **nessun limite è scrivibile oggi** — l'editor ha tre chiavi e le penne sulle card dei budget sono
+  `rb ghost` senza `data-az`.
 - **Il prodotto se ne accorge e lo propone** (versione 30, decisa dall'utente): se due nodi si coprono quando li
   apri, la riga in cima al canvas lo dice — «1 nodo ne copre un altro quando lo apri · Riordina» — ed è l'unica
   pillola della riga che si clicca. Il gesto è **«Riordina»**, quello che c'era già. Dice «nodi» e non «passi»

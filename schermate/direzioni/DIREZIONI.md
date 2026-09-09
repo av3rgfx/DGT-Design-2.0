@@ -2967,6 +2967,138 @@ undici budget che la decisione 55 dichiara **facoltativi**, e nei dossier genera
 generatore (`dati.js:463`).
 
 
+### Il secondo consiglio: come si dispongono i limiti — **DA CONFERMARE**
+
+L'utente ha riaperto la domanda notando una contraddizione vera: *«io avevo già proposto di impostare i limiti dei
+dipartimenti per % del tetto aziendale o trovare un modo migliore per disporre i limiti (in modo opzionale, non è
+obbligatorio impostare un limite del dipartimento). fai una analisi e proponi scelte migliori o migliora la mia»*.
+Cinque pareri, revisione incrociata su cinque angoli (i fatti nel codice, il costo su prove e catture, le regole e
+la lingua, la spina dorsale e il carico, la prova dei quaranta).
+
+#### Il fatto che riformula la domanda: i soffitti di dipartimento sono **due**, e si contraddicono
+
+La pagina Costi **disegna già** un soffitto per tutti e quattro i dipartimenti, in euro. Misurato:
+
+| dipartimento | disegnato a schermo | nel modello (la quota %) |
+|---|---|---|
+| Sviluppo | «42 € su **30 €** al giorno» | — |
+| Marketing | «21 € su **35 €** al giorno» | — |
+| **Vendite** | «61 € su **30 €** al giorno» + chip «oltre il limite» | **69 €** (60 %) |
+| Amministrazione | «0 € su **20 €** al giorno» | — |
+
+**Vendite ne ha due, distanti 2,3 volte**, che dicono cose opposte: quello a schermo «oltre il limite», quello nel
+modello «dentro». E quello a schermo non l'ha scelto nessuno: è **la somma dei budget dei suoi dipendenti**, la
+stessa malattia del tetto d'azienda che la decisione di oggi ha appena curato. Quindi il lavoro non è **creare** un
+limite di dipartimento: è **riconciliarne due che ci sono già**.
+
+(Correzione a quanto scritto sopra: «nessuna pagina disegna il soffitto di dipartimento» vale **solo** per
+`soffittoDi`, la percentuale. Il secondo lo disegna `cardCostoDip`, `direzione-a.js:1893`.)
+
+#### Dove il consiglio è d'accordo, cinque su cinque
+
+1. **La percentuale muore.** Non per gusto: perché `soffittoDi(dip) = round(tettoAzienda().giorno × quota / 100)`
+   fa muovere il soffitto di **Vendite** da 69 a 75 € quando si assume in **Amministrazione**. Un limite che
+   cambia per fatti altrui non è un limite.
+2. **Una sola unità: euro**, a tutti i livelli.
+3. **Un solo fermo: l'azienda.** Gli altri livelli non fermano il lavoro: mandano la cosa nella coda che esiste
+   già, col lime e con `m.decidi`.
+4. **Sblocca solo il titolare.** Nessun dipendente AI, nessuna routine, nessun orologio.
+5. `avvisoSopra100` muore con la percentuale (non potrebbe scattare mai: la somma delle quote fa 60, la soglia
+   è 100).
+
+#### Dove si scontra
+
+- **Se il dipartimento ferma o solo chiede la firma.** Tre dicono che ferma, due che è solo una soglia. Chi dice
+  «solo soglia» ammette da sé che il dipartimento diventa «un cartello con dei numeri sopra», il giorno dopo che
+  il titolare ha deciso che il tetto **ferma**.
+- **Se nasce un sesto stato** («ferma per tetto») o si riusa `attesa`. Il conto qui sotto dice che la seconda è
+  molto più a buon mercato, e la lingua dice che «ferma» è già occupata.
+- **Se restano tre orizzonti** (giorno, settimana, mese) o due. La settimana esiste solo nelle routine, e ha una
+  ragione: rt2 scatta **il venerdì**.
+
+#### Le sei cose che la revisione incrociata ha corretto, tutte verificate col righello
+
+1. **Un secondo numero del contesto era sbagliato, e tutti e cinque ci hanno fatto aritmetica sopra.** Il
+   «13 firme al giorno a undici, 58 a quaranta» **non è una misura**: veniva da questo documento, e i due revisori
+   che l'hanno ricontato hanno ottenuto numeri diversi fra loro (7 contro 13; 58 contro 61). Ricontato:
+
+   | | a undici | a quaranta |
+   |---|---|---|
+   | esecuzioni al lavoro | 3 | 12 |
+   | passi in tutto | 17 | 72 |
+   | passi non ancora **finiti** | 10 | 44 |
+   | passi non ancora **partiti** | **7** | **32** |
+   | esecuzioni bloccate dal solo tetto d'azienda, **comprese le pianificate** | **6** | **20** |
+
+   Le **pianificate** (3 a undici, 8 a quaranta) non le aveva contate nessuno dei cinque: col tetto già sfondato
+   non partono nemmeno quelle.
+2. **Col tetto che ferma davvero, il prodotto si apre fermo.** Il tetto d'azienda è superato (124 su 115) *prima*
+   di qualunque passo nuovo: si fermerebbero **3 esecuzioni su 3** a undici e **12 su 12** a quaranta, **6 e 20**
+   contando le pianificate. Va deciso: o il tetto vale solo per quello che parte da adesso, o il valore d'apertura
+   sta sopra la spesa già fatta.
+3. **Il sesto stato non è un chip, è una superficie di crash.** `m.STATI[e.stato].breve` (`direzione-a.js:1920`)
+   accede diretto: su uno stato ignoto lancia, e `scatta.js` e tutte e sei le prove escono 1 su `pageerror`. Il
+   raggio contato è di **42 punti in 5 file**.
+4. **«ferma/ferme» è già occupata, e in rosa**: la barra «Oggi in azienda» stampa già «1 ferma · Kim» per il
+   gruppo **errore** (`.qua.err` su `--badge-red`). E un **punto di stato lime** su chi è fermo direbbe il
+   contrario del vero: `SEGC = { lavoro: lime, attesa: giallo, errore: rosa }`, e la regola 19 dice «niente da
+   fermo».
+5. **Esiste già un quinto limite in euro che il contesto non aveva contato**: `w.soglia`, «**Soglia di costo**»
+   del workflow (`dati.js:1562`), uno dei tre freni della decisione 71, con la descrizione *«Sopra la soglia
+   l'uscita torna in coda»*. È esattamente la «soglia di firma» che tre consiglieri credevano di inventare.
+6. **Nessun limite è modificabile, oggi, da nessuna parte.** L'editor del dipendente ha tre chiavi (`dip`, `seme`,
+   `tinta`) e **nessun campo budget**; le penne sulle card dei budget sono `rb ghost` **senza `data-az`**:
+   decorazione. Quindi i 22 numeri a undici (44 a quaranta) sono assegnati senza che il titolare li veda mai, e
+   **Impostazioni sarebbe il primo numero scrivibile del prodotto**.
+
+#### Quello che nessuno dei cinque ha detto
+
+**Nessuna delle cinque proposte toglie al titolare una sola approvazione.** Tutte le «smette di» sono cose che
+smette di *impostare* (percentuali, unità, budget preassegnati): zero decisioni tolte. Il bilancio è **additivo**
+a tutte e cinque, e il criterio scritto in questo repository è che l'attenzione del titolare è la risorsa scarsa.
+
+E un corollario tecnico: **la coda che tutte e cinque riusano non regge quello che le chiedono.** `m.decidi(id,
+stato, commento, esitoRevisione)` non ha un parametro per una **cifra**, e una richiesta ha `cliente`, `testo`,
+`allegato` — non `importo`. Quattro proposte su cinque pretendono «alza il tetto di X € per oggi».
+
+#### Che cosa raccomando, e come migliorerei la proposta dell'utente
+
+**La percentuale non va buttata: va spostata da dato a gesto.** L'intenzione dietro la proposta dell'utente — «io
+metto un numero per l'azienda e i reparti seguono» — è giusta, ed è la comodità che si perde passando agli euro.
+Si tiene tutta **scrivendo la percentuale nell'editor e fissandola in euro nel momento in cui la scrivi**:
+«60 % di 115 → **69 €**», e da lì è 69 € e non si muove più. Si ha la comodità del gesto e un numero che non
+cambia quando assumi altrove. È l'unica delle cinque proposte che migliora la tua invece di sostituirla.
+
+Il resto della raccomandazione, in ordine di quanto è misurato:
+
+| | raccomandazione | perché, misurato |
+|---|---|---|
+| **unità** | **euro** dappertutto; la percentuale resta solo come modo di scrivere il numero | il soffitto di Vendite si muove da 69 a 75 € per un'assunzione in Amministrazione |
+| **livelli** | azienda (**obbligatorio**), dipartimento, dipendente, routine (facoltativi) — e il **workflow** ha già la sua soglia: sono **cinque**, non quattro | `w.soglia` esiste, è disegnata e dichiara già che cosa fa |
+| **orizzonti** | **giorno e mese**; la settimana resta **solo** dove la cadenza è settimanale (rt2, il venerdì) | il tetto del **mese non è mai sfondato** (39 %, 42 %): prescriverlo ovunque aggiunge decorazione |
+| **chi ferma** | **solo l'azienda**; gli altri mandano in coda | il fermo a ogni livello produce 7 (32) interruzioni al giorno su una coda che ne ha 4 (7) |
+| **lo stato** | **nessuno stato nuovo**: chi è fermo resta in `attesa`, che è letteralmente ciò che è | il sesto stato tocca 42 punti in 5 file e `STATI[...].breve` lancia; «ferma» è già la parola dell'errore, in rosa |
+| **le parole** | **tetto** = quello che ferma (l'azienda) · **budget** = i facoltativi · **soglia** = resta al workflow | i cinque ne hanno proposte **sette** (tetto, soffitto, budget, limite, autonomia, soglia di firma, delega). Tre lavori, tre parole |
+| **prima di tutto** | **riconciliare i due soffitti di dipartimento** (30 € a schermo, 69 € nel modello) | è la stessa malattia del tetto d'azienda, e sta già in pagina |
+
+**Dove starebbe, misurato**: l'intestazione della pagina Dipartimento ha **326 px liberi** a 1440 (249 a 1100) e
+un quarto numero ne costa 282: ci sta. L'intestazione dei **Costi** no: ha 95 px liberi a undici e **25 a
+quaranta**.
+
+#### I punti ciechi che restano — **da confermare**
+
+1. **Il prodotto si apre fermo** (punto 2 qui sopra): va sciolto prima di disegnare qualunque cosa.
+2. **Il bilancio è additivo**: nessuna proposta toglie una decisione al titolare. Se questo non va bene, la
+   domanda da fare non è «come si dispongono i limiti» ma «che cosa il titolare smette di firmare».
+3. **La coda non sa portare una cifra**: `m.decidi` non ha un importo. Uno sblocco «alza di X €» richiede di
+   cambiarla.
+4. **A quaranta Amministrazione spende più di Vendite** (137 € contro 122): la storia con cui la decisione 55 è
+   stata scritta regge solo a undici.
+5. **`rigaCostoCompatta` butta via la barra del budget**: nella forma che il prodotto usa a quaranta (regola 3) il
+   limite non ha dove stare.
+6. **Nessun limite è scrivibile**: la pagina Impostazioni non è un contorno, è il primo posto del prodotto dove si
+   scrive un numero.
+
 ### Una cattura instabile, trovata rifacendo il prima/dopo
 
 Rifacendo le 82 catture a codice **immutato**, una è uscita diversa: **`a-workflow-firma.png`**, e la differenza
