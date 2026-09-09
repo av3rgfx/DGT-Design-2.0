@@ -346,6 +346,23 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     la casella «aspettano te» è stata tolta perché la linguetta lime «N da approvare» (`.a-mini`, `position:fixed`) è su tutte
     e sette le pagine e per giunta apre la coda — nella home e nel Dipartimento lo stesso numero compariva tre volte sulla
     stessa schermata. La divisione: **la barra dice che cosa fa l'azienda, la linguetta che cosa deve fare il titolare.**
+
+    **Misura della versione 31** (2026-09-09; non è una regola nuova, è il conto di quanto la 16a sia ancora
+    disattesa). Censiti i badge delle intestazioni su undici pagine, a undici e a quaranta: **dieci badge, e sei
+    ripetono esattamente il numero che gli sta accanto** — «2 approvate oggi ↑**2**», «4 da rifare ↓**4**»,
+    «3 al lavoro ↑**3**», «40 da leggere ↓**40**», in Richieste, Dipartimento, Dipendente e Chat
+    (`direzione-a.js:1029, 1030, 1087, 1088, 1668, 2139`). Altri **quattro mentono**: `↑1` scritto a mano
+    (dice 1 anche con dodici al lavoro), `Math.min(2, att)` **due volte** (dice 2 con quattro in coda a undici e
+    con sette a quaranta; lo stesso conto è anche sul telefono, `mobile.js:565`, mentre `mobile.js:805` conta
+    onesto) e `↓12%` scritto a mano, che dichiara un **calo** sullo stesso numero che la pagina Costi marca
+    **«⚠ oltre»**. Restano onesti i quattro confronti a 30 giorni del Dipendente, i due dei Costi e i due
+    dell'Agenda: la fascia non è tutta decorazione, è metà decorazione.
+
+    **Corollario di misura**, perché nella 31 un consiglio di cinque ha sbagliato il prezzo tutte e cinque le
+    volte: `.stat .badge` è `position:absolute;right:0;top:4px` dentro un `.stat` con `padding-right:44px`
+    (`direzione-a.js:140` e `:143`). **Il badge non occupa larghezza**: cambiargli il testo costa **zero px**,
+    con qualunque parola, e il terzo numero della home resta 236,0 px a undici e 251,1 a quaranta. Chi calcola
+    quanto «costa» un badge sta misurando un oggetto fuori dal flusso.
 25. **Un controllo si vede solo se fa quello che promette, con i dati che ci sono già** (2026-09-07, versione 17). Due prove:
     *serve* in questa sezione? *si può fare* col modello? Chi le passa diventa vero, chi ne fallisce una sparisce; non ci
     sono controlli per figura. Nella Console valeva per 263 elementi contati (non 61 come diceva la lista: mancavano le

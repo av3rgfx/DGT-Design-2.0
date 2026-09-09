@@ -79,6 +79,19 @@ faceva, e le altre consegne intorno. Studio e misure in `DIREZIONI.md`, «Versio
   `PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css node schermate/direzioni/prove/console.js`
   (e così `mobile.js`, `costi.js`, `agenda-chat.js`).
 - File unico per l'artefatto: `node build-unico.js /percorso/confronto-unico.html`.
+- **Aperto, e aspetta l'utente** (versione 31): la domanda era «che cosa dice la home quando 3 dipendenti su 11
+  hanno sfondato il tetto del giorno». È un dubbio progettuale, quindi è passato dal consiglio e **non è stato
+  scritto codice**. La revisione incrociata ha spostato la domanda: **la home non tace, dice il contrario del
+  vero** — stampa «124 € spesi oggi» col badge `↓ 12 %` (scritto a mano: nel modello non esiste nessun ieri)
+  mentre la pagina Costi stampa lo stesso numero con «⚠ oltre», e il numero della home è cliccabile e porta
+  proprio lì. Censiti tutti i badge delle intestazioni: **quattro mentono e sei ripetono il numero che gli sta
+  accanto**. Verdetto e cinque punti ciechi in `PROSSIMA-SESSIONE.md`, «Versione 31», marcati «da confermare»;
+  le misure in `DIREZIONI.md`.
+  Tre note per chi ci mette mano, tutte contro un errore già fatto: **il badge di `.stat` è `position:absolute`
+  e non occupa larghezza** (cambiargli il testo costa zero px, il terzo numero resta 236,0 a undici e 251,1 a
+  quaranta); **la riga di stato delle card «Al lavoro adesso» è già tagliata oggi** (39 px contro 71: si legge
+  «Pass…», e a quaranta quelle card **non** diventano righe compatte); e la forma «124 € su 115 € al giorno ·
+  oltre il limite» **esiste già** in `direzione-a.js:1912`, per l'azienda, nella pagina Costi.
 - **Il prodotto se ne accorge e lo propone** (versione 30, decisa dall'utente): se due nodi si coprono quando li
   apri, la riga in cima al canvas lo dice — «1 nodo ne copre un altro quando lo apri · Riordina» — ed è l'unica
   pillola della riga che si clicca. Il gesto è **«Riordina»**, quello che c'era già. Dice «nodi» e non «passi»

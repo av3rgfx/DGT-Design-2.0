@@ -2891,6 +2891,96 @@ La pillola non è raggiungibile da un indirizzo: col passo a 342 nessun grafo **
 coprono, e nel modello nessuno è mai stato trascinato. Quindi `a-grafo-coperti.png` **trascina davvero** — `p7`
 sotto `p3`, con eventi del mouse veri, come farebbe una mano — e poi scatta. È la 82ª cattura.
 
+### Versione 31: il consiglio sul tetto sfondato, e nessun codice scritto (2026-09-09)
+
+**Sessione di solo consiglio, come la 28.** Domanda: che cosa dice la home quando 3 dipendenti su 11 hanno
+sfondato il tetto del giorno e l'azienda è al 108 %. Cinque pareri, revisione incrociata su cinque angoli
+(i fatti nel codice, il costo su prove e catture, le regole e la lingua, la spina dorsale, il righello a undici
+e a quaranta), verdetto **da confermare** in `PROSSIMA-SESSIONE.md`. Prove **619 verdi, 0 ko**, catture **82**,
+rifatte prima e dopo: **nessuna riga toccata**.
+
+**La domanda era mal posta, e la revisione incrociata l'ha spostata.** La home non tace: stampa già
+«124 € spesi oggi» con il badge **`↓ 12 %`** — freccia in giù, tono «calo» — mentre la pagina Costi stampa lo
+**stesso identico numero** con «⚠ oltre». E quel 12 % è scritto a mano (`direzione-a.js:894`): nel modello
+`costi('oggi').prima` è `null`, non esiste nessun ieri. Il numero della home è cliccabile e porta proprio ai
+Costi, cioè alla pagina che lo smentisce.
+
+**Il censimento dei badge dell'intestazione**, su undici pagine a undici e a quaranta: **quattro mentono**
+(`↑1` scritto a mano, `Math.min(2, att)` due volte, `↓12%`) e **sei ripetono il numero che gli sta accanto**
+(«2 approvate oggi ↑2», «4 da rifare ↓4», «3 al lavoro ↑3», «40 da leggere ↓40», in Richieste, Dipartimento,
+Dipendente e Chat). I sei violano **oggi** la regola che nella versione 16 è già costata una correzione chiesta
+dall'utente. Lo stesso `Math.min(2, …)` è anche sul telefono (`mobile.js:565`), mentre `mobile.js:805` conta
+onesto: tre superfici, tre conti dello stesso numero.
+
+**Le quattro cose che la revisione incrociata ha corretto, tutte verificate col righello.**
+
+1. **Il prezzo scritto nel contesto era sbagliato e tutti e cinque l'hanno ripetuto.** Il contesto diceva
+   «scambiare il badge costa 9,2 px sui 322,6 liberi». `direzione-a.js:143` dice
+   `.stat .badge{position:absolute;right:0;top:4px}`: **il badge è fuori dal flusso**. Rimisurato cambiandogli
+   il testo dal vivo, il terzo numero resta **236,0 px a undici e 251,1 a quaranta con qualunque parola**
+   (`12%` 44,6 · `oltre` 53,8 · `oltre il tetto` 111,1 · `oltre il limite` 116,2), e i tre numeri restano 685,4
+   e 714,5. **Costa zero.** Il badge sconfina sulla colonna dell'etichetta ma sta in una fascia verticale diversa
+   (badge y 184-204, etichetta y 204-236): non si toccano, verificato con le geometrie e con un ritaglio a 2×.
+2. **La forma proposta come nuova esiste già, e con la parola.** `direzione-a.js:1912`, `cardCostoAzienda`,
+   pagina Costi: per **l'azienda** stampa già «Oggi **124 € su 115 € al giorno · ⚠ oltre il limite**». Tre
+   consiglieri hanno proposto il rapporto «124 € / 115 €» come terza strada: è un componente in produzione.
+3. **«Accendi le card» è impossibile per il righello, non per il colore.** La riga di stato delle tre card
+   «Al lavoro adesso» è **già tagliata oggi**: «Passo 2 di 4» chiede **71 px** e ne ha **39**
+   (`overflow:hidden`, `text-overflow:ellipsis`), e a schermo si legge **«Pass…»** — su tutte e tre le card, a
+   undici e a quaranta. Con «· 38 € su 10 €» servirebbero 289,4 px su 172: sfora di **117,4**. Ed è falso che a
+   quaranta quelle card diventino righe compatte: restano **12 card da 316 px** (`compatto` governa solo la
+   sezione Dipendenti).
+4. **Il censimento delle parole ribalta il voto.** Tre consiglieri su cinque hanno votato «tetto» perché è la
+   parola del modello. Contate **nelle pagine** (dodici della Console più il telefono): **limite 9** (Dipendente 5,
+   Esecuzione 2, Costi 1, Routine 1), **budget 3**, **tetto 1** — e quell'una sta sulla stessa card intitolata
+   «I limiti che ha» — **soffitto 0**, e il telefono **nessuna delle quattro**. «Quattro parole per cose vicine»
+   è vero nel codice; nelle pagine sono due, **9 a 1 per "limite"**, che è anche l'unica con la forma positiva
+   già disegnata («nel limite», chip con `i-check`).
+
+**Il costo di ogni strada, contato e non stimato.**
+
+| strada | px | prove | catture |
+|---|---|---|---|
+| il badge della home dice quello che dicono i Costi | **0** | **0** (nessuna asserisce `12%`) | **11** |
+| quinta casella nella barra «Oggi in azienda» | 133,2 su 182 di vuoto | `console.js:175` e `:203`, `caselle[2]/[3]`, `.qua:nth-child(1)` | **44** (la barra è su ogni pagina) |
+| terza riga nel Riepilogo | 20 px, resta senza scorrimento | 0 | 1 |
+| l'euro nelle card «Al lavoro adesso» | **sfora di 117,4** | `routine.js:140` (altezza della home, 2388) | — |
+
+**Sul telefono** il vincolo non era sul desktop: la fila dei tre numeri della schermata 3 ha **278 px** e
+qualunque denominatore sfora (da −9 a −78 px). L'unico posto che lo regge è la riga `.kv` della card Consegne,
+**228 px**, dove «124 € su 115 €» ne chiede 180,5 — ed è la riga che oggi stampa 124 € una **seconda** volta
+(`mobile.js:481`, dopo `:464`).
+
+**Quello che il consiglio ha demolito da sé.** Fare dello sfondamento una **richiesta** nella coda lime: contata,
+con un freno che controlla prima di ogni passo produrrebbe **13 firme in più al giorno** a undici (6 + 3 + 4 sui
+passi delle tre esecuzioni che sfondano) e **58** a quaranta; la coda passerebbe da 4 a 17 e da 7 a 65. Il
+consigliere l'aveva prezzata «da 2 a 5». E il lime della spina dorsale è «il titolare approva ogni **uscita**»:
+uno sblocco di budget non è un'uscita verso un cliente.
+
+**Il punto che ha spostato tutto.** Quattro consiglieri su cinque, indipendentemente: **la home tace perché il
+freno non è cablato.** `fermaPrimaDelPasso: true` sta in `dati.js:1252` e non lo legge **nessuna pagina** — l'unico
+lettore in tutto il repository è `prove/workflow.js:182`, che lo stampa in un log — e lo stato «ferma per tetto»
+non esiste in `STATI`. Se il tetto fermasse, le tre esecuzioni sarebbero ferme e la casella rosa che la barra ha
+già direbbe «4 ferme» invece di «1 ferma · Kim»: la home lo starebbe già dicendo, con un elemento già in pagina.
+Sotto c'è una premessa più profonda: **il titolare non ha mai scelto 115 €** — `tettoAzienda()` è la somma di
+undici budget che la decisione 55 dichiara **facoltativi**, e nei dossier generati quel budget è `10` scritto nel
+generatore (`dati.js:463`).
+
+
+### Una cattura instabile, trovata rifacendo il prima/dopo
+
+Rifacendo le 82 catture a codice **immutato**, una è uscita diversa: **`a-workflow-firma.png`**, e la differenza
+sta tutta nella **tendina del titolare** (x 1232-1439, quattro fasce di ~56 px a y 240-295, 308-364, 854-910,
+922-978; 0,214 % dei byte). Rilanciata da sola undici volte: **9 uguali alla committata, 2 diverse** — una su
+cinque, poi una su sei.
+
+La causa sta nella riga della cattura (`scatta.js:100`): è l'unica del gruppo che fa un **clic**
+(`[data-az="firma"]`) e poi aspetta **300 ms** fissi prima di scattare. Il clic rifà la tendina, e ogni tanto lo
+scatto prende un fotogramma intermedio. Non è un difetto del prodotto e non c'entra con questa sessione — il file
+committato è quello che esce 9 volte su 11, e non è stato toccato. Ma è una cattura che non è deterministica, e
+finché resta così un prima/dopo su di lei non prova niente: va aspettata la fine della transizione invece di
+contare 300 ms.
+
 ## 5. File
 
 | File | Ruolo |
