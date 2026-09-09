@@ -120,19 +120,47 @@ Console e sul telefono:
 schermata: **228 px**, e «124 € su 115 €» ne chiede **180,5**. È anche la riga che oggi stampa 124 € **una seconda
 volta** (`mobile.js:481`, dopo `:464`).
 
-### Le risposte dell'utente, date il 2026-09-09 — **due decise, una aperta**
+### Le risposte dell'utente, date il 2026-09-09 — **quattro decise, una aperta**
 
-Il verdetto qui sotto è stato portato all'utente e ha avuto risposta su due delle tre domande.
+Il verdetto qui sotto è stato portato all'utente. Ha avuto risposta su tutte e tre le domande e su una quarta
+che il consiglio aveva sollevato; una quinta l'ha aperta l'utente stesso, ed è quella su cui il consiglio è
+stato convocato una seconda volta.
 
 | domanda | risposta | stato |
 |---|---|---|
 | **la parola** | **«124 € su 115 € al giorno · oltre il limite»** — copiare esattamente la card che la pagina Costi già stampa per l'azienda (`direzione-a.js:1912`), invece di inventare una forma nuova | **decisa** |
 | **il telefono** | **sì, nella riga `.kv` della schermata 3** (la card Consegne, 228 px: la forma ne chiede 180,5). **Non** fra i tre numeri grandi, dove ogni forma sfora da −9 a −78 px | **decisa** |
-| **il freno** | *«decidiamolo prima di disegnare»*: l'utente ha accolto il punto del consiglio — se il tetto ferma il segnale è l'esecuzione ferma, se avverte è il badge, e sono due prodotti diversi. **Quale dei due, non è ancora deciso** | **aperta, e viene prima di tutto** |
+| **il freno** | **il tetto FERMA**, non avverte soltanto — **e la scelta dev'essere modificabile dalle impostazioni del prodotto**. `fermaPrimaDelPasso` va cablato davvero e nasce lo stato «ferma per tetto»; la pagina Impostazioni (decisione 56) smette di essere facoltativa, perché è il posto dove si cambia questa scelta | **decisa** |
+| **il tetto d'azienda** | **lo pone il titolare**, non è più la somma dei budget dei dipendenti | **decisa** |
+| **la disposizione dei limiti** | l'utente ha rilanciato: *«io avevo già proposto di impostare i limiti dei dipartimenti per % del tetto aziendale o trovare un modo migliore per disporre i limiti (in modo opzionale, non è obbligatorio impostare un limite del dipartimento). fai una analisi e proponi scelte migliori o migliora la mia»* | **aperta: seconda passata dal consiglio** |
 
-Quindi: **la forma e il posto sono fissati, il disegno aspetta la terza risposta.** Le due decise valgono in tutti
-e due i casi (il numero col suo denominatore è vero sia che il tetto fermi sia che avverta); quello che cambia con
-la terza è **se serva anche un segnale in più**, e di che natura.
+Quindi: **la forma, il posto, il freno e la natura del tetto d'azienda sono fissati.** Resta aperta una sola
+cosa, ed è la più strutturale: **come si dispongono i limiti** fra azienda, dipartimento, dipendente e routine.
+L'ha riaperta il titolare notando una contraddizione vera — se i limiti di dipartimento sono una **percentuale
+del tetto d'azienda** e il tetto d'azienda era una somma calcolata, quella percentuale non significava niente.
+Adesso che il tetto lo pone lui, la domanda si riapre per davvero.
+
+### La contraddizione, misurata: quattro livelli, quattro unità, quattro orizzonti
+
+| livello | unità | orizzonti | chi ce l'ha | lo disegna una pagina? |
+|---|---|---|---|---|
+| **azienda** | euro — oggi la **somma** dei budget, da oggi **posta dal titolare** | giorno, mese | sempre | sì, come «spesi oggi» |
+| **dipartimento** | **% del tetto d'azienda** | **solo giorno** | **1 su 4** (Vendite, 60 %) | **no, mai** |
+| **dipendente** | euro assoluti | giorno, mese | 11 su 11 | sì |
+| **routine** | euro assoluti | giorno, **settimana**, mese | 3 su 3 | sì |
+
+**Cinque difetti misurati:**
+
+1. **Il soffitto di dipartimento non può scattare mai.** Vendite ha il 60 % = **69 €**, ma i budget dei suoi tre
+   dipendenti sommano **30 €**: il soffitto è **2,3 volte** quello che i suoi possono spendere in tutto. A
+   quaranta: **240 € contro 100**, 2,4 volte. Scattano prima tutti i tetti individuali.
+2. **Il soffitto di un dipartimento si muove se assumi in un altro.** Misurato: assunto un dipendente in
+   **Amministrazione**, il soffitto di **Vendite** passa da **69 a 75 €** — Vendite non è cambiata di niente.
+3. **Nessuna pagina disegna il soffitto di dipartimento.** `soffittoDi` è letto solo da sé stesso in `dati.js` e
+   da una prova: la proposta del titolare è nel modello dalla decisione 55 e **il prodotto non la mostra**.
+4. **Il dipartimento ha solo il giorno**, mentre azienda e dipendenti hanno giorno e mese e le routine hanno
+   anche la settimana.
+5. **La percentuale era la percentuale di una somma** — e questo lo chiude la decisione di oggi.
 
 ### Il verdetto del consiglio — che ha portato a quelle risposte
 
