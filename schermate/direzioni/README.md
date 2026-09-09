@@ -106,6 +106,11 @@ faceva, e le altre consegne intorno. Studio e misure in `DIREZIONI.md`, «Versio
   porta il denominatore nella riga «Spesa di oggi» della schermata 3 — 228 px, la forma ne chiede 180,5 — e i
   **quattordici** badge delle intestazioni che mentivano o ripetevano il numero accanto sono spariti. Prove
   **638 verdi** (erano 619): le 19 nuove tengono due **invarianti**, non due elementi.
+  **Deciso anche il resto**: i limiti passano tutti agli **euro**, con la percentuale che sopravvive come *gesto*
+  nell'editor («60 % di 115 → 69 €», fissata in euro quando la scrivi); cinque livelli con la sola azienda
+  obbligatoria; **ferma solo l'azienda** e nessuno stato nuovo; il dipartimento parte **senza** soffitto. Il
+  prodotto **si aprirà fermo** (6 esecuzioni a undici, 20 a quaranta) ed è voluto. Costruirlo è la prossima
+  sessione, e comincia da **Impostazioni** (decisione 56): oggi nessun limite è scrivibile da nessuna parte.
 - **Il prodotto se ne accorge e lo propone** (versione 30, decisa dall'utente): se due nodi si coprono quando li
   apri, la riga in cima al canvas lo dice — «1 nodo ne copre un altro quando lo apri · Riordina» — ed è l'unica
   pillola della riga che si clicca. Il gesto è **«Riordina»**, quello che c'era già. Dice «nodi» e non «passi»

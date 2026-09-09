@@ -2968,7 +2968,7 @@ undici budget che la decisione 55 dichiara **facoltativi**, e nei dossier genera
 generatore (`dati.js:463`).
 
 
-### Il secondo consiglio: come si dispongono i limiti — **DA CONFERMARE**
+### Il secondo consiglio: come si dispongono i limiti — **CONFERMATO** (e migliorato dall'utente)
 
 L'utente ha riaperto la domanda notando una contraddizione vera: *«io avevo già proposto di impostare i limiti dei
 dipartimenti per % del tetto aziendale o trovare un modo migliore per disporre i limiti (in modo opzionale, non è
@@ -3085,6 +3085,24 @@ Il resto della raccomandazione, in ordine di quanto è misurato:
 **Dove starebbe, misurato**: l'intestazione della pagina Dipartimento ha **326 px liberi** a 1440 (249 a 1100) e
 un quarto numero ne costa 282: ci sta. L'intestazione dei **Costi** no: ha 95 px liberi a undici e **25 a
 quaranta**.
+
+#### Che cosa ha deciso l'utente
+
+**La proposta dell'utente, migliorata**: la percentuale non si butta, si sposta da **dato** a **gesto** — si
+scrive nell'editor e il prodotto **la fissa in euro in quel momento** («60 % di 115 → 69 €»), e da lì non si
+muove più. Si tiene la comodità di impostare i reparti in proporzione al tetto e si perde il difetto.
+Con lei: **euro** dappertutto, **cinque livelli** (azienda obbligatoria, dipartimento / dipendente / routine /
+workflow facoltativi), **giorno e mese** con la settimana solo dove la cadenza è settimanale, **ferma solo
+l'azienda**, **nessuno stato nuovo** (chi è fermo resta in `attesa`), **tre parole** (tetto, budget, soglia).
+
+E le due domande che quella si portava dietro:
+
+- **«il prodotto si apre fermo»**: sì, **ed è giusto così**. Col tetto già sfondato non parte nessun passo nuovo:
+  6 esecuzioni a undici, 20 a quaranta. È la cosa più coerente con «il tetto ferma», e il prezzo — la prima cosa
+  che il titolare vede sono quelle esecuzioni che aspettano la sua firma — è accettato.
+- **i due soffitti di dipartimento**: **nessuno dei due**, finché non lo pone il titolare. Il dipartimento parte
+  senza soffitto, e la pagina Costi smette di stampare «su 30 €», che era la somma dei budget e non l'aveva
+  scelta nessuno. Stessa cura del tetto d'azienda.
 
 #### I punti ciechi che restano — **da confermare**
 
