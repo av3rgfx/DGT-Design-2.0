@@ -80,6 +80,70 @@ non è raggiungibile.
   finché non si è letta per intero la copia salvata della versione viva: conviene farlo fare a un sottoagente.
 - **Quello che resta aperto**: niente sul canvas. Il resto è nell'elenco di «Come riprendere», punto 2.
 
+## Pronto per la prossima sessione
+
+Da incollare così com'è, dopo aver scelto il prossimo lavoro fra quelli del punto 2 qui sopra.
+
+```
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md («Versione 30», «Come riprendere (dalla versione 30)» e «Stato alla
+fine della versione 30»). Controlla la PR #22: se è unita riparti da main tenendo lo stesso nome di branch,
+altrimenti continua su quello.
+
+Il canvas dei workflow è chiuso e non va rifatto: 619 verifiche verdi in sei prove, 82 catture, il passo di riga
+a 342, il nodo aperto che non copre più nessuno, e la pillola che lo dice quando sei tu a stringere due nodi.
+
+Il prossimo lavoro è: <QUI IL LAVORO SCELTO>.
+
+Il metodo di sempre: prima e dopo, rifare i font locali, lanciare le SEI prove di prove/ e catturare le pagine
+PRIMA di toccare qualcosa; quello che si misura si misura, e una diagnosi a occhio va verificata col righello
+prima di diventare una correzione. Ogni dubbio progettuale passa dal consiglio (llm-council) con il contesto
+scritto per esteso e i prezzi in numeri, e la revisione incrociata non si salta: nelle versioni 24-30 è sempre
+stata lei a cambiare la risposta.
+
+Da sapere prima di toccare il canvas:
+- il passo di riga del GRAFO è RAMO_PASSO in dati.js; W_PY in componenti.js governa SOLO la serpentina
+  dell'«ultima volta», dove il difetto non esiste. Il consiglio ha sbagliato questo indirizzo due volte;
+- la regola 42 protegge la MANO (ramoPosiziona), non il SEME (ramoPosa): il seme si può cambiare;
+- regola 44: quello che appartiene a un nodo nascosto dalla card non si disegna sopra la card che lo nasconde;
+- un conto che decide una posizione deve misurare quello che si disegna davvero (altNodo conosce la sola
+  lettura, e il freno ramoOccupato vuole l'altezza del nodo APERTO, RAMO_ALT_APERTO);
+- scatta.js e prove/console.js si reggono ancora su section:nth-of-type(2) per le consegne del Dipartimento;
+- le sezioni 25, 26 e 31 di prove/workflow.js vogliono un contesto hasTouch o un telefono a parte, e le prove che
+  trascinano chiamano canvasInVista() prima di prendere le misure (col canvas più alto un nodo della seconda riga
+  cade fuori dalla finestra, e un rilascio fuori dalla finestra non trova nessun nodo);
+- c'è una prova che prende gli errori muti del CSS: nessuna variabile usata SENZA valore di ripiego può essere
+  mai definita. In questa sessione ne ha presi due, tutti e due miei.
+
+Alla fine: prove aggiornate, screenshot, artefatti ripubblicati allo stesso indirizzo, DIREZIONI.md,
+SYSTEM-DESIGN.md, i README, PROSSIMA-SESSIONE.md, commit, push e PR.
+```
+
+### Pronto breve, se vuoi solo tirare dritto
+
+```
+Leggi CLAUDE.md e PROSSIMA-SESSIONE.md («Versione 30», «Come riprendere»). Controlla la PR #22: se è unita
+riparti da main con lo stesso nome di branch. Il canvas dei workflow è chiuso (619 prove, 82 catture): non
+rifarlo. Il prossimo lavoro è <QUI IL LAVORO SCELTO>. Il metodo di sempre, ogni dubbio progettuale dal consiglio
+con la revisione incrociata, e alla fine prove, screenshot, artefatti, documenti, commit, push e PR.
+```
+
+### I comandi che servono subito
+
+```bash
+export SC=<cartella-di-lavoro>                       # es. lo scratchpad della sessione
+export PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules
+export LOCAL_FONT_CSS=$SC/fonts.css                  # i font locali vanno rifatti a ogni sessione
+node schermate/direzioni/prove/{console,mobile,costi,agenda-chat,workflow,routine}.js
+node schermate/direzioni/scatta.js [--in <cartella>] [gruppo…]
+cd schermate/direzioni && node build-unico.js direzione-a.html <out>.html   # i due file unici per gli artefatti
+cd schermate/direzioni && node build-unico.js mobile.html <out>.html
+```
+
+Nota: `export SC=… PLAYWRIGHT_MODULE=…` sulla **stessa riga** non funziona — la shell espande `$SC` prima di
+assegnarlo, e le prove partono cercando `/fonts.css`. Vanno su righe separate. E `build-unico.js` vuole i
+percorsi **relativi alla sua cartella**: si lancia da `schermate/direzioni`.
+
+
 ## Versione 29 — il passo a 342, e il consiglio su come il prodotto lo dice (2026-09-09)
 
 **Le due decisioni dell'utente della versione 28 sono in opera per la metà che non era un dubbio.** I grafi nascono
