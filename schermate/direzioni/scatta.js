@@ -101,6 +101,7 @@ const CATTURE = [
   { g: 'workflow', nome: 'a-workflow-canvas', q: 'pagina=workflow&workflow=w5&nodo=2&tendina=chiusa', sel: '.wcanvas', h: 1400 },
   { g: 'workflow', nome: 'a-workflow-40', q: 'n=40&pagina=workflow&workflow=w3&tendina=chiusa' },
   { g: 'workflow', nome: 'm-workflow', file: 'mobile.html', q: 'schermata=10&dip=mkt&workflow=w5', sel: '.m-tel', h: 1100 },
+  { g: 'workflow', nome: 'm-workflow-nodo', file: 'mobile.html', q: 'schermata=10&dip=mkt&workflow=w5&nodo=2', sel: '.m-tel', h: 1100 },
   { g: 'workflow', nome: 'a-sez-consegne-mese', q: 'pagina=dipartimento&dip=mkt&tendina=chiusa', sel: '.a-main section:nth-of-type(2)', h: 1600, clic: '[data-az="periodo"][data-sez="dip.consegne"][data-v="mese"]' },
   { g: 'workflow', nome: 'a-dipartimento-workflow', q: 'pagina=dipartimento&dip=mkt&tendina=chiusa' },
   { g: 'workflow', nome: 'spec-editor', file: '../../design-system/specimen.html', q: '', sel: '.editor', h: 1100 },
@@ -112,7 +113,11 @@ const CATTURE = [
   { g: 'grafo', nome: 'a-grafo-innesco', q: 'pagina=workflow&workflow=w1&ramo=1&nodo=inn&tendina=chiusa', sel: '.wcanvas', h: 1400 },
   { g: 'grafo', nome: 'a-grafo-zoom', q: 'pagina=workflow&workflow=w1&ramo=1&zoom=1.5&tendina=chiusa', sel: '.wcanvas', h: 1400 },
   { g: 'grafo', nome: 'a-ramo-ultima', q: 'pagina=workflow&workflow=w1&nodo=2&tendina=chiusa', sel: '.a-main > section:nth-of-type(2)', h: 1400 },
+  /* versione 27: il telefono porta il canvas vero, e le sue due scale (decisione 73). «m-grafo» e' lo scatto
+     d'ingresso «tutto dentro» (0,306), «m-grafo-nodo» la seconda scala — scala 1 centrata sul nodo toccato —
+     e «m-workflow» la stessa cosa sulla tab «L'ultima volta», che dalla 27 si ingrandisce anche lei. */
   { g: 'grafo', nome: 'm-grafo', file: 'mobile.html', q: 'schermata=10&dip=svi&workflow=w1&ramo=1', sel: '.m-tel', h: 1100 },
+  { g: 'grafo', nome: 'm-grafo-nodo', file: 'mobile.html', q: 'schermata=10&dip=svi&workflow=w1&ramo=1&nodo=p3', sel: '.m-tel', h: 1100 },
   { g: 'routine', nome: 'a-routine-elenco', q: 'pagina=routine&tendina=chiusa' },
   { g: 'routine', nome: 'a-routine', q: 'pagina=routine&routine=rt1&tendina=chiusa' },
   { g: 'routine', nome: 'a-routine-wf', q: 'pagina=routine&routine=rt3&tendina=chiusa' },

@@ -1,4 +1,95 @@
 # Prossima sessione — passaggio di consegne
+## Versione 27 — il canvas passa al telefono e diventa un componente (2026-09-09)
+
+**Le decisioni 72-74 della versione 26 sono disegnate.** Erano prese e non toccavano codice: adesso ci sono. La
+75 (il modo semplificato per le routine con inneschi) resta ferma dov'era — aspetta i dati, e i dati non ci sono.
+**587 verifiche verdi** (erano 552), **81 catture** (erano 79), 0 ko.
+
+### Che cosa c'è adesso
+
+1. **Il canvas si è spostato, non riscritto.** `canvasWorkflow` con tutto il suo CSS è passato da
+   `direzione-a.js` a `schermate/componenti.js`, che `mobile.html` carica già. Il CSS è **lo stesso**, riga per
+   riga: tutti e due i file fanno `prefissa(css, '.dirA')`, quindi si trasporta. Con lui il conto della griglia
+   (`W_COL`, `W_PX`, `W_PY`…), `altNodo`, `wpos`, `arcoVia`, `nodoWorkflow`, più tre funzioni nuove che le due
+   superfici condividono: `canvasMisure`, `canvasTuttoDentro`, `canvasSuNodo` (e `canvasStringi`, `W_METRICHE`).
+   Nella Console restano la pagina e i suoi gesti. **La prova che è un trasporto e non una riscrittura**: delle
+   79 catture della Console ne sono cambiate **sei** — le sole che portano la barra dello zoom, arrivata dal
+   punto 3 — e `a-grafo*.png` sono identiche al byte.
+2. **`soloLettura`: un interruttore, non un secondo canvas.** Sul telefono vanno a zero le 16 prese `.wio`, gli
+   8 «+» sull'arco, le 8 «×», il trascinamento dei 9 nodi e le due azioni della barra («Riordina», «Aggiungi»).
+   Restano il nodo che si apre (è lettura) e lo zoom. Cadono anche la barra in fondo, il conto in cima e la
+   mini-mappa da 200×120, che a 278,4 px coprirebbe il disegno che dovrebbe aiutare a leggere. La classe lo dice:
+   `.wcanvas.comp` si compone, `.wcanvas.sl` si legge. **Regola 43** in `SYSTEM-DESIGN.md`.
+3. **Lo zoom vale su tutte e due le tab.** Era `const z = ramo ? zoom : 1`: «L'ultima volta» — dove stanno costi,
+   durate e «aspetta la tua firma» — era a scala fissa. Adesso lo zoom è del **canvas**, non della tab.
+4. **Le due scale, misurate**: ingresso «tutto dentro» = 278,4 / 910 = **0,306** (testo a 4,3 px, card alta 205
+   px); tocco su un nodo = **scala 1** (testo a 14 px, card alta 669 px). «Tutto dentro» vuol dire tutto: il
+   grafo va da 0 a 348 px di schermo su 348, tocca tutti e due i fianchi. La seconda scala centra il nodo
+   toccato: misurato **0,0 px** dal centro visibile.
+5. **I due gesti del dito.** Nel repository non c'era **nessun** ascoltatore `touch` o `pointer`: era tutto
+   mouse. Adesso due, e non uno di più: trascina-la-vista in orizzontale (160 px di dito = **128 px di disegno**,
+   cioè 160 / 1,25) e pinch (due dita a un terzo portano lo zoom a 0,333, e il punto fra le dita resta fermo).
+   Il verticale non è un gesto del canvas: `touch-action:pan-y` lo lascia alla pagina, e una prova verifica che
+   un dito in su **non** muove la vista.
+6. **La colonna è caduta, le etichette del contratto no.** Spariti `.m-wf`, `.m-wn`, `.m-warc`, `.m-wgo` e con
+   loro i chip della topologia, che adesso è disegno. Restano quelli del contratto («esce senza la tua firma»,
+   «resta in azienda»), **fuori** dal canvas così non si rimpiccioliscono con lui: 10 px invece di 4,3.
+
+### Le tre misure che hanno cambiato il disegno
+
+Sono le cose che il righello ha trovato e che a occhio non si vedevano.
+
+1. **Su `w1` la striscia del contratto sarebbe nata vuota.** `ramoEsce` sul grafo di partenza — una catena —
+   ritorna `fuori: []` e `anticipata: []`: una striscia costruita sulle sole eccezioni non avrebbe stampato
+   niente. Il contratto però c'è, ed è il più forte dei tre: tutto arriva alla firma. Quando non ci sono
+   eccezioni la striscia dice la **regola**, con le parole che il nodo del titolare stampa già dentro il canvas —
+   «aspetterà la tua firma».
+2. **Il centro verticale non era dove sembrava.** I rettangoli della pagina sono in pixel di **schermo** (i
+   telefoni stanno dentro `zoom:1.25`) mentre `scrollTop` è in pixel **CSS**; e il centro non è quello della
+   cornice ma quello della parte che si **vede**, perché in basso la navigazione ne copre una fascia — che è il
+   `padding-bottom` che lo scorrevole già dichiara. Prima della correzione lo scarto era −59,1 px in un caso e
+   −38,9 in un altro; dopo è **0**.
+3. **`?nodo=` entrava alla scala sbagliata.** L'indirizzo calcolava sempre «tutto dentro», quindi la cattura
+   della seconda scala non sarebbe stata la schermata ma la schermata scorsa a caso. Adesso un indirizzo e un
+   dito lasciano **la stessa schermata**.
+
+E una che ha **evitato** una correzione sbagliata: in un piede di nodo si leggeva «12 min2 €» e sembrava una
+sovrapposizione fra durata e costo. Misurati gli spazi: **126-233 px**, nessuna sovrapposizione — erano i testi
+di due nodi diversi concatenati da `textContent`. Niente da correggere.
+
+### Regola 42, verificata
+
+Tre prove confrontano `offsetLeft`/`offsetTop` dei nodi **prima e dopo**: dopo lo zoom sul telefono, dopo il
+trascinamento della vista, dopo il pinch, dopo lo zoom nella Console. Identici al pixel. Il prezzo accettato sta
+scritto in una prova: a scala 1 il disegno esce di **730 px** dalla cornice del telefono, e si raggiunge
+trascinando.
+
+### Un difetto misurato che non è di questa versione, e resta aperto — **da confermare**
+
+Aprendo un nodo a scala 1, il nodo aperto **copre quello sotto**: nella Console `p3` copre `p7` per **208×87 px**
+(il nodo intero), sul telefono per 208×47; due etichette di porte finiscono a **8 px** l'una dall'altra.
+
+È un difetto della **versione 24**: nel grafo le posizioni sono libere e la spinta della serpentina (`spintaDi`,
+versione 22) lì non si applica — a ragione, perché spostare i nodi violerebbe la regola 42. La 27 lo rende solo
+più visibile, perché sul telefono si guarda un nodo alla volta. **Non è stato toccato**: le tre strade per
+chiuderlo (l'editor in un pannello invece che dentro il nodo; le porte che si spengono sotto il nodo aperto; il
+nodo aperto che si stringe) cambiano **come si usa il prodotto**, quindi è un dubbio progettuale — passa dal
+consiglio e poi dall'utente. Sta anche in `DIREZIONI.md`, «Versione 27», §8.
+
+## Come riprendere (dalla versione 27)
+
+1. **Il difetto del §8 è la prima cosa da mettere davanti all'utente**, e con il consiglio: è l'unica cosa aperta
+   che si vede a occhio nudo aprendo un nodo.
+2. **La decisione 75 aspetta ancora i dati**: tutti e 3 gli inneschi delle routine sono di tipo `ora`, nessuna
+   routine ha un workflow dietro, e il record non ha né `nodi` né `archi`. Il vero primo passo è che un workflow
+   possa **nascere dal nulla**: oggi nasce solo da un'esecuzione riuscita (`workflowDi`), né sul telefono né
+   nell'editor. **Le decisioni 68 e 69 restano in attesa dei dati** (biforcazioni: 0), come dalla versione 25.
+3. **Il canvas adesso è in `componenti.js`**: chi lo tocca cambia tutte e due le superfici insieme. La Console
+   passa `soloLettura: false` (predefinito), il telefono `true` con `vista: 278.4` e `barra/chips/mappa: false`.
+4. **Le prove touch** (`prove/workflow.js`, sezioni 25 e 26) vogliono un contesto `hasTouch` e costruiscono
+   `TouchEvent` a mano: `page.touchscreen` muove un dito solo e il pinch ne vuole due.
+5. **Attenzione**, come sempre: `scatta.js` e `prove/console.js` si reggono ancora su `section:nth-of-type(2)`
+   per le consegne del Dipartimento.
 
 ## Versione 26 — il workflow sul telefono diventa il canvas, e le posizioni sono dati (2026-09-09)
 

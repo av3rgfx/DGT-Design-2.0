@@ -137,16 +137,23 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(await conta('.wnode') >= 4, 'il canvas si apre anche a quaranta');
   check(await largo(), 'e non scorre di lato nemmeno con i workflow più lunghi');
 
-  console.log('11. il telefono: la schermata 10, il workflow girato in colonna');
+  /* ---- 11. il telefono: la schermata 10 (riscritta alla versione 27) ----
+     Fino alla 26 questa sezione contava «.m-wn», le card della colonna. La colonna non c'è più: il telefono
+     mostra **lo stesso canvas** della Console, in sola lettura (decisione 72), quindi si contano i «.wnode» —
+     gli stessi nodi, la stessa classe, lo stesso componente. È il conto che dice se telefono e Console sono
+     davvero un oggetto solo: se un giorno divergessero, questa riga sarebbe la prima a saperlo. */
+  console.log('11. il telefono: la schermata 10, il canvas vero in sola lettura');
   await page.goto(tel('schermata=8,10&dip=mkt&workflow=w5')); await page.waitForTimeout(500);
   const schermi = await page.locator('.m-scr').evaluateAll(a => a.map(x => x.dataset.schermata));
   check(schermi.join(',') === '8,10', 'le due schermate: il dipartimento e il workflow');
   check(await conta('.m-scr[data-schermata="8"] [data-az="workflow"]') === 2, 'dal dipartimento si arriva ai due workflow, senza una sezione nuova');
-  check(await conta('.m-wn') === 5, 'cinque nodi in colonna');
-  check(await conta('.m-warc') === 4, 'quattro connettori fra un nodo e l\'altro');
-  check(await conta('.m-wn.tit') === 1, 'e l\'ultimo è il titolare');
+  check(await conta('.m-scr[data-schermata="10"] .wcanvas') === 1, 'il telefono porta il canvas, non una colonna di card');
+  check(await conta('.m-wn') === 0, 'e la colonna della versione 20 non c\'è più da nessuna parte (0 «.m-wn»)');
+  check(await conta('.m-scr[data-schermata="10"] .wnode') === 5, 'cinque nodi, gli stessi della Console e con la stessa classe');
+  check(await conta('.m-scr[data-schermata="10"] .wnode.tit') === 1, 'e l\'ultimo è il titolare');
+  check(await conta('.m-scr[data-schermata="10"] .wport') > 0, 'le porte con l\'etichetta sono quelle del riferimento, non chip dentro la card');
   const lato = await page.evaluate(() => [...document.querySelectorAll('.m-scroll')].every(s => s.scrollWidth <= s.clientWidth));
-  check(lato, 'nessuno schermo scorre di lato: il canvas si gira, non si stringe');
+  check(lato, 'nessuno schermo scorre di lato: a scorrere è la vista **dentro** il canvas, non lo schermo');
   await page.click('.m-scr[data-schermata="10"] [data-az="firma"]'); await page.waitForTimeout(300);
   check((await txt('.m-scr[data-schermata="10"] .m-azioni .pill')).includes('Spegni'), 'la firma si accende anche dal telefono, ed è lo stesso stato della Console');
 
@@ -478,23 +485,92 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(numeri.every(w => w.zeri === 0), 'e un passo da fare non porta più il costo stimato dentro il nodo');
   check(numeri.some(w => w.previsto > 0), 'la stima non è sparita: sta in un campo suo (`previsto`), separata dal misurato — ' + numeri.map(w => w.id + ': ' + w.costo + ' € avvenuti, ' + w.previsto + ' € previsti').slice(0, 3).join(' · '));
 
-  console.log('\n23. il telefono: la colonna legge il grafo, e i rami non si affiancano');
-  await page.goto(tel('schermata=10&dip=svi&workflow=w1')); await page.waitForTimeout(400);
-  const larghezze = await page.evaluate(() => ({
-    colonna: Math.round(document.querySelector('.m-wf').getBoundingClientRect().width),
-    card: Math.round(document.querySelector('.m-wn').getBoundingClientRect().width),
-    perRiga: (() => { const c = [...document.querySelectorAll('.m-wn')].map(e => Math.round(e.getBoundingClientRect().top)); return Math.max(...Object.values(c.reduce((o, y) => { o[y] = (o[y] || 0) + 1; return o; }, {}))); })(),
+  /* ---- 23. il telefono porta il canvas vero (versione 27, decisioni 72-74) ----
+     Questa sezione contava la colonna: la card che prendeva tutta la larghezza, una per riga, e i chip che
+     dicevano la topologia. La colonna è caduta con la decisione 72, e con lei le sue asserzioni. Al suo posto si
+     misura quello che la decisione ha promesso, e ognuna delle righe qui sotto è un numero, non un'impressione:
+     che sia **lo stesso** canvas della Console (le stesse classi), che i gesti del comporre siano **spenti**,
+     che si entri a «tutto dentro» con il grafo che tocca tutti e due i fianchi, che il tocco su un nodo porti a
+     scala 1 centrato su quello, e — la più importante — che le posizioni dei nodi **non si muovano mai**
+     (regola 42: sono dati del titolare, non una disposizione da rifare per far stare il disegno nello schermo). */
+  console.log('\n23. il telefono: il canvas vero, in sola lettura, e lo scatto d\'ingresso');
+  await page.goto(tel('schermata=10&dip=svi&workflow=w1&ramo=1')); await page.waitForTimeout(450);
+  const cv0 = await page.evaluate(() => {
+    const cv = document.querySelector('.wcanvas'), zl = cv.querySelector('.wzoom');
+    const r = cv.getBoundingClientRect(), s = r.width / cv.offsetWidth;
+    const nodi = [...cv.querySelectorAll('.wnode')].map(n => n.getBoundingClientRect());
+    return { vista: +cv.dataset.vista, zoom: +cv.dataset.zoom, pan: +cv.dataset.pan,
+      largoCSS: cv.offsetWidth, zlW: zl.offsetWidth, altezza: cv.offsetHeight, s,
+      sinistra: +(Math.min(...nodi.map(n => n.left)) - r.left).toFixed(1),
+      destra: +(Math.max(...nodi.map(n => n.right)) - r.left).toFixed(1), largoSchermo: +r.width.toFixed(1) };
+  });
+  check(Math.abs(cv0.vista - 278.4) < 0.6, 'la colonna del telefono misura 278,4 px, il numero su cui è scelto lo scatto d\'ingresso (' + cv0.vista + ')');
+  check(Math.abs(cv0.zoom - 278.4 / 910) < 0.002, 'si entra a «tutto dentro»: 278,4 / 910 = 0,306 (' + cv0.zoom.toFixed(4) + ')');
+  check(cv0.sinistra <= 0.6 && Math.abs(cv0.destra - cv0.largoSchermo) < 0.6, 'e «tutto dentro» vuol dire tutto: il grafo tocca tutti e due i fianchi (' + cv0.sinistra + ' → ' + cv0.destra + ' su ' + cv0.largoSchermo + ')');
+  check(cv0.zlW === 1008, 'la cornice che si scala resta larga 1008 px come nella Console: quello che cambia è da quanto lontano la si guarda, non il disegno');
+  check(await conta('.m-scr[data-schermata="10"] .wnode') === 9, 'nove nodi: l\'innesco, i sette passi e la firma');
+  check(await conta('.m-scr[data-schermata="10"] .wnode.inn') === 1, 'la prossima volta comincia dall\'innesco, come nella Console');
+  check(await conta('.m-scr[data-schermata="10"] svg.edges path.arc') === 8, 'e gli otto collegamenti sono le curve luminose del riferimento, non barrette dritte');
+  /* La sola lettura: cinque gesti spenti, contati uno per uno. */
+  const spenti = await page.evaluate(() => ({
+    prese: document.querySelectorAll('.wcanvas .wio').length,
+    piu: document.querySelectorAll('.wcanvas .wplus').length,
+    ics: document.querySelectorAll('.wcanvas .wdel').length,
+    trascina: document.querySelectorAll('.wcanvas .wnode.presa').length,
+    riordina: document.querySelectorAll('[data-az="ramo-riordina"]').length,
+    aggiungi: document.querySelectorAll('[data-az="ramo-aggiungi"]').length,
+    tipo: document.querySelectorAll('[data-az="ramo-tipo"]').length,
+    comp: document.querySelectorAll('.wcanvas.comp').length, sl: document.querySelectorAll('.wcanvas.sl').length,
   }));
-  check(larghezze.card >= larghezze.colonna - 2, 'una card prende tutta la colonna (' + larghezze.card + ' su ' + larghezze.colonna + '): due rami non si affiancano, mai');
-  check(larghezze.perRiga === 1, 'e infatti c\'è una card per riga (' + larghezze.perRiga + ')');
-  const euri = await page.evaluate(() => [...document.querySelectorAll('.m-wn .eur')].map(e => e.textContent.trim()));
-  check(!euri.includes('0 €'), 'e nessuna card stampa «0 €»: era lo zero inventato del telefono (' + euri.join(' · ') + ')');
+  check(spenti.prese === 0 && spenti.piu === 0 && spenti.ics === 0, 'sola lettura: niente prese, niente «+» sull\'arco, niente «×» (' + spenti.prese + ', ' + spenti.piu + ', ' + spenti.ics + ')');
+  check(spenti.trascina === 0 && spenti.riordina === 0 && spenti.aggiungi === 0 && spenti.tipo === 0, 'e niente trascinamento del nodo, «Riordina», «Aggiungi» o cambio di significato sul collegamento');
+  check(spenti.comp === 0 && spenti.sl === 1, 'il canvas si dichiara: «.sl» e non «.comp» — è un interruttore, non un secondo disegno');
+  /* Le etichette del contratto (decisione 74): stanno fuori dal canvas, quindi non si rimpiccioliscono con lui. */
+  const cont74 = await page.evaluate(() => {
+    const s = [...document.querySelectorAll('.m-wcon .chip')];
+    return { n: s.length, testi: s.map(c => c.textContent.trim()), px: s.length ? parseFloat(getComputedStyle(s[0]).fontSize) : 0,
+      dentro: s.filter(c => c.closest('.wcanvas')).length };
+  });
+  check(cont74.n >= 1 && cont74.dentro === 0, 'il contratto è scritto fuori dal canvas: non si rimpicciolisce con lo zoom (' + cont74.n + ' etichette)');
+  check(cont74.px >= 10, 'e si legge davvero: ' + cont74.px + ' px, non i 4,3 px che avrebbe dentro il disegno a 0,306');
+  check(cont74.testi.join(' ').includes('firma'), 'e dice la firma, che è il contratto: «' + cont74.testi.join(' · ') + '»');
+  check(await conta('.m-wcon .chip:has-text("2 rami")') === 0, 'la topologia invece non si scrive più: «2 rami» e «arriva da 2» adesso sono disegno');
+  /* Il tocco su un nodo: scala 1, centrato su quello. */
+  const prima42 = await page.evaluate(() => [...document.querySelectorAll('.wcanvas .wnode')].map(n => n.dataset.id + ':' + n.offsetLeft + ',' + n.offsetTop).join(' '));
+  await page.click('.wnode[data-id="p3"]', { force: true }); await page.waitForTimeout(300);
+  const dopoTocco = await page.evaluate(() => {
+    const cv = document.querySelector('.wcanvas'), on = cv.querySelector('.wnode.on'), r = cv.getBoundingClientRect();
+    const a = on.getBoundingClientRect();
+    return { zoom: +cv.dataset.zoom, id: on.dataset.id, campi: on.querySelectorAll('.campi .fv').length,
+      fuoriCentro: +((a.left + a.width / 2) - (r.left + r.width / 2)).toFixed(1) };
+  });
+  check(dopoTocco.zoom === 1 && dopoTocco.id === 'p3', 'il tocco su un nodo porta a scala 1 su quel nodo (decisione 73)');
+  check(Math.abs(dopoTocco.fuoriCentro) < 1.5, 'e lo mette al centro della vista (' + dopoTocco.fuoriCentro + ' px dal centro)');
+  check(dopoTocco.campi === 3, 'a scala 1 il nodo apre i suoi campi: modello e strumenti, che la colonna diceva in chip');
+  /* ---- Regola 42, la riga che conta più di tutte ---- */
+  const dopo42 = await page.evaluate(() => [...document.querySelectorAll('.wcanvas .wnode')].map(n => n.dataset.id + ':' + n.offsetLeft + ',' + n.offsetTop).join(' '));
+  check(prima42 === dopo42, 'regola 42: dopo lo zoom le posizioni dei nodi sono **le stesse**, al pixel — sono dati del titolare, non una disposizione da rifare');
+  const scorri = await page.evaluate(() => {
+    const cv = document.querySelector('.wcanvas'), z = +cv.dataset.zoom;
+    return Math.round(1008 * z - cv.offsetWidth);
+  });
+  check(scorri === 730, 'e il prezzo accettato si vede in faccia: a scala 1 il disegno esce di 730 px dalla cornice, e si raggiunge trascinando (' + scorri + ')');
+  await page.click('.wnode[data-id="p3"]', { force: true }); await page.waitForTimeout(300);
+  const tornato = await page.evaluate(() => +document.querySelector('.wcanvas').dataset.zoom);
+  check(Math.abs(tornato - 278.4 / 910) < 0.002, 'toccare di nuovo lo stesso nodo rimette tutto dentro: è la strada di ritorno, e non è nascosta');
+  /* Lo zoom vale su tutte e due le tab (decisione 72), non solo sulla prossima volta. */
+  await page.click('.m-wtabs .pill[data-v="0"]'); await page.waitForTimeout(350);
   check(await conta('.m-wtabs .pill') === 2, 'la schermata 10 ha le due tab della Console: le stesse due parole');
-  await page.click('.m-wtabs .pill[data-v="1"]'); await page.waitForTimeout(350);
-  check(await conta('.m-wn.inn') === 1, 'la prossima volta si guarda anche dal telefono, e comincia dall\'innesco');
-  check(await conta('.m-wn') === 9, 'nove card: l\'innesco, i sette passi e la firma (' + await conta('.m-wn') + ')');
+  const ultima = await page.evaluate(() => {
+    const cv = document.querySelector('.wcanvas');
+    return { zoom: +cv.dataset.zoom, barra: cv.querySelectorAll('.wzoombar').length, nodi: cv.querySelectorAll('.wnode').length };
+  });
+  check(ultima.barra === 1 && Math.abs(ultima.zoom - 278.4 / 910) < 0.002, 'anche «L\'ultima volta» si ingrandisce e entra a «tutto dentro»: fino alla 26 era `ramo ? zoom : 1`, cioè metà pagina senza zoom');
+  check(ultima.nodi === 8, 'e mostra gli otto nodi avvenuti — i sette passi e il titolare — non i nove dichiarati, che contano anche l\'innesco');
+  const euri = await page.evaluate(() => [...document.querySelectorAll('.wcanvas .wnode .eur')].map(e => e.textContent.trim()));
+  check(!euri.includes('0 €'), 'nessun nodo stampa «0 €»: era lo zero inventato del telefono (' + (euri.join(' · ') || 'nessun costo stampato') + ')');
   const latoTel = await page.evaluate(() => [...document.querySelectorAll('.m-scroll')].every(s => s.scrollWidth <= s.clientWidth));
-  check(latoTel, 'e nessuno schermo scorre di lato');
+  check(latoTel, 'e lo schermo non scorre di lato in nessuno di questi stati');
 
   /* ---- 24. i tre freni valgono anche per il permesso in testa (decisione 71, 2026-09-09) ----
      La revisione incrociata della versione 24 aveva trovato che la clausola dell'innesco faceva uscire le
@@ -568,6 +644,91 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(telFreni.some(x => /^Soglia /.test(x)), 'il telefono legge i tre freni dalla stessa funzione della Console (' + telFreni.slice(0, 4).join(' · ') + ')');
   const latoF = await page.evaluate(() => [...document.querySelectorAll('.m-scroll')].every(s => s.scrollWidth <= s.clientWidth));
   check(latoF, 'e lo schermo non scorre di lato');
+
+  /* ---- 25. i due gesti touch, e il canvas che è uno solo (versione 27, decisioni 72-73) ----
+     **Prima di oggi nel repository non c'era nessun ascoltatore `touch` o `pointer`**: era tutto mouse, perché
+     fino alla 26 sul telefono non c'era niente da spostare. Adesso ce ne sono due, e vanno provati col gesto
+     vero — un tocco simulato che parte, si muove e si stacca — non guardando se la funzione esiste.
+     I gesti si costruiscono con `TouchEvent` invece che con `page.touchscreen`, perché il pinch vuole **due**
+     dita insieme e la scorciatoia di Playwright ne muove una sola. */
+  console.log('\n25. i due gesti del dito: trascina-la-vista e pinch');
+  const ctxT = await browser.newContext({ viewport: { width: 1440, height: 1100 }, reducedMotion: 'reduce', hasTouch: true });
+  const pt = await ctxT.newPage();
+  await pt.route('https://fonts.googleapis.com/**', r => r.fulfill({ status: 200, contentType: 'text/css', body: css }));
+  pt.on('pageerror', e => errors.push(e.message)); pt.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+  const gesto = (tipo, punti) => pt.evaluate(({ tipo, punti }) => {
+    const cv = document.querySelector('.wcanvas');
+    const ts = punti.map((q, i) => new Touch({ identifier: i, target: cv, clientX: q[0], clientY: q[1] }));
+    cv.dispatchEvent(new TouchEvent(tipo, { bubbles: true, cancelable: true, touches: ts, targetTouches: ts, changedTouches: ts }));
+  }, { tipo, punti });
+  const statoT = () => pt.evaluate(() => {
+    const cv = document.querySelector('.wcanvas');
+    return { zoom: +cv.dataset.zoom, pan: +cv.dataset.pan, alt: cv.offsetHeight,
+      pos: [...cv.querySelectorAll('.wnode')].map(n => n.dataset.id + ':' + n.offsetLeft + ',' + n.offsetTop).join(' ') };
+  });
+  await pt.goto(tel('schermata=10&dip=svi&workflow=w1&ramo=1&nodo=p3')); await pt.waitForTimeout(450);
+  const t0 = await statoT();
+  check(t0.zoom === 1, 'la schermata si apre a scala 1 sul nodo chiesto dall\'indirizzo (?nodo=p3)');
+  const box = await pt.locator('.wcanvas').boundingBox();
+  const cx = box.x + box.width / 2, cy = box.y + box.height / 2;
+  /* Primo gesto: un dito che va a destra di 160 px di schermo. I telefoni stanno dentro `zoom:1.25`, quindi nel
+     disegno sono 128 px: se il conto non dividesse per la scala della cornice, la vista correrebbe più del dito —
+     ed è l'errore che questa riga prende. Si tira **verso destra** apposta: aperti su `p3`, che è il nodo più a
+     destra del grafo, dall'altra parte la vista è già in fondo alla sua corsa e misurerebbe lo stringimento
+     invece del gesto. */
+  await gesto('touchstart', [[cx, cy]]); await gesto('touchmove', [[cx + 60, cy]]); await gesto('touchmove', [[cx + 160, cy]]);
+  await gesto('touchend', [[cx + 160, cy]]); await pt.waitForTimeout(250);
+  const t1 = await statoT();
+  check(Math.abs((t1.pan - t0.pan) - 128) < 3, 'trascina-la-vista: 160 px di dito muovono la vista di 128 px di disegno, cioè 160 / 1,25 (' + Math.round(t1.pan - t0.pan) + ')');
+  check(t1.zoom === t0.zoom, 'e trascinare non cambia l\'ingrandimento');
+  check(t1.pos === t0.pos, 'regola 42: trascinando la vista i nodi **non si spostano** — si sposta quello che si guarda, non il disegno');
+  /* Un dito in verticale non è un gesto del canvas: è la pagina che scorre, e il canvas non se ne appropria. */
+  const t1b = await statoT();
+  await gesto('touchstart', [[cx, cy]]); await gesto('touchmove', [[cx, cy - 120]]); await gesto('touchend', [[cx, cy - 120]]);
+  await pt.waitForTimeout(200);
+  check((await statoT()).pan === t1b.pan, 'un dito in su non muove la vista: il verticale resta della pagina (è `touch-action:pan-y`)');
+  /* Secondo gesto: due dita che si avvicinano da 120 a 40 px, cioè un terzo. */
+  await gesto('touchstart', [[cx - 60, cy], [cx + 60, cy]]);
+  await gesto('touchmove', [[cx - 20, cy], [cx + 20, cy]]); await gesto('touchend', []);
+  await pt.waitForTimeout(250);
+  const t2 = await statoT();
+  check(Math.abs(t2.zoom - 1 / 3) < 0.02, 'pinch: due dita che si avvicinano a un terzo portano l\'ingrandimento a un terzo (' + t2.zoom.toFixed(3) + ')');
+  check(t2.alt < t1.alt, 'e la card si abbassa con lui: l\'altezza è `basso × zoom`, quindi in verticale non resta mai niente fuori dalla cornice (' + t1.alt + ' → ' + t2.alt + ' px)');
+  check(t2.pos === t0.pos, 'regola 42 di nuovo: nemmeno il pinch tocca le posizioni');
+  /* Il fondo dell'ingrandimento è «tutto dentro»: sotto non c'è disegno, c'è vuoto. */
+  await gesto('touchstart', [[cx - 90, cy], [cx + 90, cy]]);
+  await gesto('touchmove', [[cx - 4, cy], [cx + 4, cy]]); await gesto('touchend', []);
+  await pt.waitForTimeout(250);
+  const t3 = await statoT();
+  check(Math.abs(t3.zoom - 278.4 / 910) < 0.002, 'e non si scende sotto «tutto dentro»: più in là non c\'è disegno da vedere (' + t3.zoom.toFixed(4) + ')');
+  await ctxT.close();
+
+  /* ---- 26. il canvas è uno solo, e adesso vive in componenti.js ---- */
+  console.log('\n26. un canvas solo: la Console e il telefono chiamano la stessa funzione');
+  await page.goto(file('pagina=workflow&workflow=w1&ramo=1&tendina=chiusa')); await page.waitForTimeout(400);
+  const dove = await page.evaluate(() => ({
+    inComponenti: typeof DGT_COMPONENTI.canvasWorkflow === 'function',
+    misure: typeof DGT_COMPONENTI.canvasMisure === 'function' && typeof DGT_COMPONENTI.canvasTuttoDentro === 'function',
+    cssCanvas: [...document.querySelectorAll('style')].filter(s => s.id === 'css-componenti' && s.textContent.includes('.wcanvas')).length,
+    cssConsole: [...document.querySelectorAll('style')].filter(s => s.id === 'css-a' && s.textContent.includes('.wnode{')).length,
+  }));
+  check(dove.inComponenti && dove.misure, 'il canvas e le sue misure stanno in DGT_COMPONENTI: il telefono lo prende da lì, non da una copia');
+  check(dove.cssCanvas === 1 && dove.cssConsole === 0, 'e anche il suo CSS si è spostato con lui: sta nel foglio dei componenti, non più in quello della Console');
+  /* Lo zoom sulle due tab, nella Console (decisione 72): fino alla 26 «L'ultima volta» era `ramo ? zoom : 1`. */
+  await page.click('.wtabs .pill[data-v="0"]'); await page.waitForTimeout(350);
+  const ult27 = await page.evaluate(() => ({ barra: document.querySelectorAll('.wzoombar').length, zoom: +document.querySelector('.wcanvas').dataset.zoom }));
+  check(ult27.barra === 1 && ult27.zoom === 1, '«L\'ultima volta» ha la sua barra dello zoom: prima era la metà di pagina senza zoom né mappa');
+  await page.click('.wzoombar [data-v="piu"]'); await page.waitForTimeout(300);
+  const ing = await page.evaluate(() => {
+    const cv = document.querySelector('.wcanvas');
+    return { zoom: +cv.dataset.zoom, mappa: cv.querySelectorAll('.wmini').length, largoNodo: Math.round(cv.querySelector('.wnode').getBoundingClientRect().width) };
+  });
+  check(ing.zoom === 1.25 && ing.largoNodo === 260, 'e si ingrandisce davvero: 208 px di nodo diventano 260 a 1,25x (' + ing.largoNodo + ')');
+  check(ing.mappa === 1, 'con la mini-mappa, che compare quando c\'è qualcosa fuori dalla cornice — anche qui, adesso');
+  const prima42c = await page.evaluate(() => [...document.querySelectorAll('.wnode')].map(n => n.offsetLeft + ',' + n.offsetTop).join(' '));
+  await page.click('.wzoombar [data-v="uno"]'); await page.waitForTimeout(300);
+  const dopo42c = await page.evaluate(() => [...document.querySelectorAll('.wnode')].map(n => n.offsetLeft + ',' + n.offsetTop).join(' '));
+  check(prima42c === dopo42c, 'e nemmeno nella Console lo zoom sposta un nodo di un pixel');
 
   if (!errors.length) ok++; else ko++;
   console.log('\n' + ok + ' ok, ' + ko + ' ko');
