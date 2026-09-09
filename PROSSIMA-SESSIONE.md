@@ -91,6 +91,113 @@ consiglio e poi dall'utente. Sta anche in `DIREZIONI.md`, «Versione 27», §8.
 5. **Attenzione**, come sempre: `scatta.js` e `prove/console.js` si reggono ancora su `section:nth-of-type(2)`
    per le consegne del Dipartimento.
 
+## Stato alla fine della versione 27
+
+- **Branch**: `claude/canvas-mobile-workflow-da5j4j`, **PR #21**
+  (https://github.com/av3rgfx/DGT-Design-2.0/pull/21), aperta a fine sessione. La **PR #20 era già unita**
+  all'avvio, quindi si è ripartiti da `main` sullo stesso nome di branch, come chiede il prompt. Se all'avvio
+  della prossima la #21 risulta unita, ripartire da `main`
+  (`git fetch origin main && git checkout -B <branch> origin/main`).
+- **Prove**: 587 verifiche verdi, 0 ko — Console 160, mobile 83, Costi 50, Agenda e Chat 56, Workflow 189,
+  Routine 49. **Catture**: 81.
+- **Artefatti ripubblicati allo stesso indirizzo**, tutti e due con l'etichetta «Versione 27»: la Console
+  (https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34) e il telefono
+  (https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9). Nota per chi ripubblica: lo strumento
+  rifiuta la pubblicazione finché non si è **letta per intero** la copia salvata della versione viva (7 420 righe
+  la Console, 6 116 il telefono). Conviene farlo fare a un sottoagente, che ci mette il suo contesto invece del tuo.
+- **Codice toccato**: `componenti.js` (il canvas trasportato con il suo CSS, `soloLettura`, `canvasMisure`,
+  `canvasTuttoDentro`, `canvasSuNodo`, `canvasStringi`, `W_METRICHE`), `direzione-a.js` (il canvas tolto, lo zoom
+  su tutte e due le tab, i gesti che leggono `.wcanvas`), `mobile.js` (la schermata 10 rifatta sul canvas vero, i
+  due gesti touch, `entraCanvas`/`toccaNodo`/`centraNodo`/`zoomM`), `mobile.html` (`?nodo=`),
+  `prove/workflow.js` (sezioni 11 e 23 riscritte su `.wnode`, nuove la 25 e la 26), `scatta.js` (due catture
+  nuove). **Non toccati**: `dati.js`, `comune.js`, `avatar/`, `direzione-a.html`, lo specimen e i token.
+- **Quello che resta aperto**, in ordine di quanto si vede:
+  1. **Il nodo aperto copre quello sotto** — Console `p3` su `p7` = 208×87 px, telefono 208×47, due etichette di
+     porte a 8 px. È della versione 24, misurato e lasciato aperto perché le tre strade per chiuderlo cambiano
+     come si usa il prodotto: dubbio progettuale, consiglio e poi utente. `DIREZIONI.md`, «Versione 27», §8.
+  2. **La decisione 75** (il modo semplificato per le routine con inneschi) aspetta i dati: i 3 inneschi sono
+     tutti di tipo `ora`, nessuna routine ha un workflow dietro, il record non ha né `nodi` né `archi`. Il vero
+     primo passo è che un workflow possa **nascere dal nulla**: oggi nasce solo da un'esecuzione riuscita.
+  3. **Le decisioni 68 e 69** aspettano le biforcazioni (nel modello: 0).
+  4. **La soglia di `g4`** (a 50 € non trattiene niente: la consegna più cara costa 33,80) e **i due contrasti a
+     quaranta** (uscite senza il titolare mentre `g1` dice «Sempre da approvare»): la pagina li dice, il prodotto
+     non sa ancora che cosa farne.
+  5. **Il tetto giornaliero è già sfondato** (3 dipendenti su 11, 12 su 40; l'azienda al 108 % e al 107 %) e
+     nessuna pagina lo dice. La **pagina Impostazioni** (decisione 56) non esiste. Restano il **candidato 8**
+     (connettori) e il **candidato 5** (chat di dipartimento, decisioni 41 e 42).
+
+## Pronto per la prossima sessione
+
+Da incollare così com'è.
+
+```
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md («Versione 27», «Come riprendere (dalla versione 27)» e «Stato alla
+fine della versione 27»). Controlla la PR #21: se è unita riparti da main tenendo lo stesso nome di branch,
+altrimenti continua su quello.
+
+Il codice della versione 27 è verde e completo: il canvas vive in schermate/componenti.js ed è LO STESSO
+componente per la Console (che lo compone) e per il telefono (che lo legge, con soloLettura), 587 verifiche in
+sei prove e 81 catture. Non rifarlo.
+
+Il prossimo passo è UNO, ed è il difetto misurato che sta in DIREZIONI.md, «Versione 27», §8: aprendo un nodo, il
+nodo aperto COPRE quello sotto — nella Console p3 copre p7 per 208x87 px, cioè il nodo intero, sul telefono per
+208x47, e due etichette di porte finiscono a 8 px l'una dall'altra. È della versione 24, non della 27: nel grafo
+le posizioni sono libere e la spinta della serpentina (spintaDi) lì non si applica, a ragione, perché spostare i
+nodi violerebbe la regola 42 (le posizioni sono DATI del titolare e non si ricalcolano mai).
+
+È un dubbio progettuale, quindi NON scrivere codice prima della decisione: passalo dalla skill llm-council con il
+contesto scritto per esteso — che cos'è DGT e la sua spina dorsale, che cosa il canvas è già oggi, e le tre
+strade con il loro prezzo IN NUMERI, misurato aprendo le pagine, non stimato:
+  (a) l'editor in un pannello accanto al canvas invece che dentro il nodo — il nodo resta alto 87 px sempre;
+  (b) le porte e i nodi sotto quello aperto che si spengono o si nascondono finché resta aperto;
+  (c) il nodo aperto che si stringe — meno campi, o i campi su una riga sola.
+Chiedi a ogni consigliere l'obiezione più forte alla propria scelta, una terza strada e le conseguenze concrete
+sull'interfaccia già costruita; NON saltare la revisione incrociata, che nelle versioni 24, 25, 26 e 27 è quella
+che ha cambiato la risposta. Poi porta a me il verdetto e i punti ciechi: la decisione la prendo io. Scrivili in
+PROSSIMA-SESSIONE.md marcati «da confermare» finché non rispondo.
+
+Da sapere prima di misurare: la regola 42 non si viola nemmeno per chiudere questo difetto, e tre prove la
+verificano confrontando offsetLeft/offsetTop prima e dopo ogni ingrandimento, trascinamento e pinch. Sul telefono
+il canvas è in sola lettura (.wcanvas.sl) e la vista è 278,4 px, con lo scatto d'ingresso «tutto dentro» a 0,306
+e il tocco sul nodo che porta a scala 1 centrata: qualunque strada si scelga deve reggere tutte e due le scale e
+tutte e due le superfici, perché adesso sono un componente solo (regola 43).
+
+Il metodo di sempre: prima e dopo, rifare i font locali, lanciare le SEI prove di prove/ e catturare le pagine
+PRIMA di toccare qualcosa; quello che si misura si misura, e una diagnosi a occhio va verificata col righello
+prima di diventare una correzione. Attenzione: scatta.js e prove/console.js si reggono ancora su
+section:nth-of-type(2) per le consegne del Dipartimento; le sezioni 25 e 26 di prove/workflow.js vogliono un
+contesto hasTouch e costruiscono TouchEvent a mano, perché page.touchscreen muove un dito solo e il pinch ne
+vuole due.
+
+Alla fine: prove aggiornate, screenshot, artefatti ripubblicati allo stesso indirizzo, DIREZIONI.md,
+SYSTEM-DESIGN.md, i README, PROSSIMA-SESSIONE.md, commit, push e PR.
+```
+
+### Pronto breve, se vuoi solo tirare dritto
+
+```
+Leggi CLAUDE.md e PROSSIMA-SESSIONE.md («Versione 27», «Come riprendere (dalla versione 27)»). Controlla la PR
+#21: se è unita riparti da main tenendo lo stesso nome di branch. Il codice della 27 è verde (587 verifiche, 81
+catture) e il canvas è un componente solo per Console e telefono: non rifarlo. Prossimo passo: il difetto del §8
+di DIREZIONI.md — il nodo aperto copre quello sotto (208x87 px nella Console). È un dubbio progettuale: passalo
+dal consiglio con le tre strade misurate in numeri, non violare la regola 42, e portami il verdetto perché
+decida io. Il metodo di sempre, e alla fine prove, screenshot, artefatti, documenti, commit, push e PR.
+```
+
+### I comandi che servono subito
+
+```bash
+export SC=<cartella-di-lavoro>                       # es. lo scratchpad della sessione
+export PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules
+export LOCAL_FONT_CSS=$SC/fonts.css                  # i font locali vanno rifatti a ogni sessione
+node schermate/direzioni/prove/{console,mobile,costi,agenda-chat,workflow,routine}.js
+node schermate/direzioni/scatta.js [--in <cartella>] [gruppo…]
+node schermate/direzioni/build-unico.js              # i due file unici per gli artefatti
+```
+
+Nota: `export SC=… PLAYWRIGHT_MODULE=…` sulla **stessa riga** non funziona — la shell espande `$SC` prima di
+assegnarlo, e le prove partono cercando `/fonts.css`. Vanno su righe separate.
+
 ## Versione 26 — il workflow sul telefono diventa il canvas, e le posizioni sono dati (2026-09-09)
 
 Quattro decisioni prese dall'utente, tutte sulla raccomandazione del consiglio. **Nessuna è ancora in codice**:
@@ -879,7 +986,7 @@ testo bianco non si legge, quindi il nodo selezionato porta il testo all'inchios
   nell'Esecuzione» (`tipo:'titolare'` e `.lrow.titolare` esistono) e «il passaggio di mano esiste, `dati.js:482`»
   (quella riga sta nell'esecuzione del dipendente 1 e `r5` ha `chi: 1` — è la stessa mano).
 
-## Stato
+## Stato (alla versione 21 — quello di adesso sta in cima)
 
 - **Branch**: `claude/direzione-a-console-primo-giro-j2n1xm`, **PR #18**
   (https://github.com/av3rgfx/DGT-Design-2.0/pull/18), aperta e non ancora unita a fine sessione. La **PR #17 era
@@ -1219,7 +1326,7 @@ testo bianco non si legge, quindi il nodo selezionato porta il testo all'inchios
 Vincolo che vale sempre: nessun logo, foto o marchio di terzi (i modelli sono livelli neutri di DGT: Rapido, Standard,
 Esperto; il riferimento lilguy.net è stato studiato, non copiato); contenuti sintetici di DGT; documenti in italiano.
 
-## Il lavoro della prossima sessione
+## Il lavoro della prossima sessione (scritto alla versione 20)
 
 **Due delle tre proposte sono state costruite**: il candidato 6 nella versione 19 (le consegne) e il **candidato 7
 nella versione 20** (i workflow). L'analisi per esteso sta in `schermate/direzioni/DIREZIONI.md`, **sezione 6**; le
@@ -1470,7 +1577,7 @@ stato vuoto del dipendente appena creato. Sono lavori di modello, non di design.
 hanno adesso righe senza freccia perché la tendina del passo non è mai stata costruita. Se un giorno si costruisce, le
 frecce dei passi tornano da sole (la regola 26 dice che una riga con una destinazione la freccia ce l'ha).
 
-## Come riprendere
+## Come riprendere (scritto alla versione 23, fatto)
 
 **Tutte le decisioni sono prese** (64–67, qui sopra): non c'è niente da chiedere prima di cominciare. La prossima
 sessione è **di disegno**, e l'ordine è questo:
@@ -1684,11 +1791,28 @@ inerti su quella pagina.
   passaggio di consegne venivano da lì, e tutte e due erano sbagliate per difetto. Il conto giusto si fa aprendo le pagine
   e prendendo `.rb`, `.pill` o `i-ne` senza `data-az` **e senza un antenato con `data-az`**, su tutte le pagine e tutte e
   due le taglie.
+- **Centrare qualcosa dentro il telefono vuole due divisioni, non una** (versione 27): i rettangoli di
+  `getBoundingClientRect` sono in pixel di **schermo** (`.m-phones` ha `zoom:1.25`) mentre `scrollTop` è in pixel
+  **CSS**, quindi si divide per la scala misurata (`b.width / sc.clientWidth`); e il centro non è quello della
+  cornice ma quello della parte che si **vede**, perché in basso la navigazione ne copre una fascia — che è il
+  `padding-bottom` che lo scorrevole già dichiara. Senza la seconda divisione lo scarto era −59,1 px in un caso e
+  −38,9 in un altro, cioè sbagliato **e** incoerente: due sintomi diversi dello stesso errore.
+- **Il pinch si prova solo con `TouchEvent` costruito a mano** (versione 27): `page.touchscreen` di Playwright
+  muove **un dito solo**, e il pinch ne vuole due insieme. Il contesto va aperto con `hasTouch: true`, se no gli
+  ascoltatori `touchstart` non ricevono niente e la prova passa per il motivo sbagliato. `touch-action: pan-y`
+  divide i due mondi: il verticale resta al browser, l'orizzontale e il pinch sono nostri — e va provato anche
+  che un dito in su **non** muova la vista, se no la regola si scopre rotta il giorno che qualcuno scorre.
+- **Il CSS si trasporta fra due file solo se tutti e due lo prefissano allo stesso modo** (versione 27):
+  `componenti.js` e `direzione-a.js` fanno tutti e due `prefissa(css, '.dirA')`, quindi le 148 righe del canvas
+  sono passate senza toccarne una. La prova che è un trasporto e non una riscrittura non è la lettura del diff:
+  sono le catture: sei cambiate su 79, e quelle sono le sei che portano una cosa nuova.
+- **`export A=… B=$A` sulla stessa riga non funziona**: la shell espande `$A` prima di assegnarlo, e le prove
+  partono cercando `/fonts.css` invece del file vero. Due righe, sempre.
 - Lo z-index del telefono, la linea del tempo a segmenti, `m.decidi`, l'orbe della versione 10, gli intagli con `--behind`, le
   tendine, la Console che si scala con `zoom`, le differenze LCS, la card costo su fondo lime, la striscia «chi» e il rail: come
   nelle note delle sessioni precedenti (storia di questo file in git, commit `b50f659`, `d2b625c`, `044e363`, `f3a5d53`, `5d20ff9`).
 
-## Cosa manca
+## Cosa manca (alla versione 22 — i punti ancora aperti stanno in cima, in «Stato alla fine della versione 27»)
 
 ### 1. Il canvas componibile — metà costruito, e la metà che manca è una domanda sola
 
