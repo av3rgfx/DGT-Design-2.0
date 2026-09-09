@@ -79,6 +79,38 @@ faceva, e le altre consegne intorno. Studio e misure in `DIREZIONI.md`, «Versio
   `PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css node schermate/direzioni/prove/console.js`
   (e così `mobile.js`, `costi.js`, `agenda-chat.js`).
 - File unico per l'artefatto: `node build-unico.js /percorso/confronto-unico.html`.
+- **Aperto, e aspetta l'utente** (versione 31): la domanda era «che cosa dice la home quando 3 dipendenti su 11
+  hanno sfondato il tetto del giorno». È un dubbio progettuale, quindi è passato dal consiglio e **non è stato
+  scritto codice**. La revisione incrociata ha spostato la domanda: **la home non tace, dice il contrario del
+  vero** — stampa «124 € spesi oggi» col badge `↓ 12 %` (scritto a mano: nel modello non esiste nessun ieri)
+  mentre la pagina Costi stampa lo stesso numero con «⚠ oltre», e il numero della home è cliccabile e porta
+  proprio lì. Censiti tutti i badge delle intestazioni: **quattro mentono e sei ripetono il numero che gli sta
+  accanto**. Verdetto e cinque punti ciechi in `PROSSIMA-SESSIONE.md`, «Versione 31», marcati «da confermare»;
+  le misure in `DIREZIONI.md`.
+  Tre note per chi ci mette mano, tutte contro un errore già fatto: **il badge di `.stat` è `position:absolute`
+  e non occupa larghezza** (cambiargli il testo costa zero px, il terzo numero resta 236,0 a undici e 251,1 a
+  quaranta); **la riga di stato delle card «Al lavoro adesso» è già tagliata oggi** (39 px contro 71: si legge
+  «Pass…», e a quaranta quelle card **non** diventano righe compatte); e la forma «124 € su 115 € al giorno ·
+  oltre il limite» **esiste già** in `direzione-a.js:1912`, per l'azienda, nella pagina Costi.
+  Il titolare ha poi deciso quattro cose (la forma, il posto sul telefono, che il tetto **ferma** con la scelta
+  cambiabile dalle Impostazioni, e che **il tetto d'azienda lo pone lui**) e ne ha aperta una quinta: **come si
+  dispongono i limiti**. Secondo consiglio, e un fatto che riformula la domanda — **i soffitti di dipartimento
+  sono due e si contraddicono**: **30 €** disegnati dalla pagina Costi (la somma dei budget dei suoi) contro i
+  **69 €** del modello (la quota del 60 %), 2,3 volte. Altre tre note misurate: col tetto che ferma davvero **il
+  prodotto si apre fermo** (6 esecuzioni a undici, 20 a quaranta); un **sesto stato** non è un chip ma una
+  superficie di crash (`m.STATI[e.stato].breve` lancia; 42 punti in 5 file; e «ferma» è già la parola dell'errore,
+  in rosa); e **nessun limite è scrivibile oggi** — l'editor ha tre chiavi e le penne sulle card dei budget sono
+  `rb ghost` senza `data-az`.
+  **Quello che le decisioni hanno chiuso è disegnato**: la home dice «124 € su 115 € al giorno · oltre il limite»
+  (la stessa forma della card che i Costi stampavano già per l'azienda, copiata invece che inventata), il telefono
+  porta il denominatore nella riga «Spesa di oggi» della schermata 3 — 228 px, la forma ne chiede 180,5 — e i
+  **quattordici** badge delle intestazioni che mentivano o ripetevano il numero accanto sono spariti. Prove
+  **638 verdi** (erano 619): le 19 nuove tengono due **invarianti**, non due elementi.
+  **Deciso anche il resto**: i limiti passano tutti agli **euro**, con la percentuale che sopravvive come *gesto*
+  nell'editor («60 % di 115 → 69 €», fissata in euro quando la scrivi); cinque livelli con la sola azienda
+  obbligatoria; **ferma solo l'azienda** e nessuno stato nuovo; il dipartimento parte **senza** soffitto. Il
+  prodotto **si aprirà fermo** (6 esecuzioni a undici, 20 a quaranta) ed è voluto. Costruirlo è la prossima
+  sessione, e comincia da **Impostazioni** (decisione 56): oggi nessun limite è scrivibile da nessuna parte.
 - **Il prodotto se ne accorge e lo propone** (versione 30, decisa dall'utente): se due nodi si coprono quando li
   apri, la riga in cima al canvas lo dice — «1 nodo ne copre un altro quando lo apri · Riordina» — ed è l'unica
   pillola della riga che si clicca. Il gesto è **«Riordina»**, quello che c'era già. Dice «nodi» e non «passi»

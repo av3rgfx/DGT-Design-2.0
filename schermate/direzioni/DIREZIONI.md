@@ -2891,6 +2891,281 @@ La pillola non è raggiungibile da un indirizzo: col passo a 342 nessun grafo **
 coprono, e nel modello nessuno è mai stato trascinato. Quindi `a-grafo-coperti.png` **trascina davvero** — `p7`
 sotto `p3`, con eventi del mouse veri, come farebbe una mano — e poi scatta. È la 82ª cattura.
 
+### Versione 31: il tetto sfondato che la home diceva al contrario (2026-09-09)
+
+**Due consigli, cinque decisioni dell'utente, e la parte decisa disegnata.** Domanda di partenza: che cosa dice la
+home quando 3 dipendenti su 11 hanno sfondato il tetto del giorno e l'azienda è al 108 %. Cinque pareri, revisione
+incrociata su cinque angoli (i fatti nel codice, il costo su prove e catture, le regole e la lingua, la spina
+dorsale, il righello a undici e a quaranta); poi le risposte dell'utente, un **secondo** consiglio sulla
+disposizione dei limiti, e il disegno di quello che era stato deciso. Prove **638 verdi, 0 ko** (erano 619),
+catture **82** di cui 28 rifatte, artefatti ripubblicati.
+
+**La domanda era mal posta, e la revisione incrociata l'ha spostata.** La home non tace: stampa già
+«124 € spesi oggi» con il badge **`↓ 12 %`** — freccia in giù, tono «calo» — mentre la pagina Costi stampa lo
+**stesso identico numero** con «⚠ oltre». E quel 12 % è scritto a mano (`direzione-a.js:894`): nel modello
+`costi('oggi').prima` è `null`, non esiste nessun ieri. Il numero della home è cliccabile e porta proprio ai
+Costi, cioè alla pagina che lo smentisce.
+
+**Il censimento dei badge dell'intestazione**, su undici pagine a undici e a quaranta: **quattro mentono**
+(`↑1` scritto a mano, `Math.min(2, att)` due volte, `↓12%`) e **sei ripetono il numero che gli sta accanto**
+(«2 approvate oggi ↑2», «4 da rifare ↓4», «3 al lavoro ↑3», «40 da leggere ↓40», in Richieste, Dipartimento,
+Dipendente e Chat). I sei violano **oggi** la regola che nella versione 16 è già costata una correzione chiesta
+dall'utente. Lo stesso `Math.min(2, …)` è anche sul telefono (`mobile.js:565`), mentre `mobile.js:805` conta
+onesto: tre superfici, tre conti dello stesso numero.
+
+**Le quattro cose che la revisione incrociata ha corretto, tutte verificate col righello.**
+
+1. **Il prezzo scritto nel contesto era sbagliato e tutti e cinque l'hanno ripetuto.** Il contesto diceva
+   «scambiare il badge costa 9,2 px sui 322,6 liberi». `direzione-a.js:143` dice
+   `.stat .badge{position:absolute;right:0;top:4px}`: **il badge è fuori dal flusso**. Rimisurato cambiandogli
+   il testo dal vivo, il terzo numero resta **236,0 px a undici e 251,1 a quaranta con qualunque parola**
+   (`12%` 44,6 · `oltre` 53,8 · `oltre il tetto` 111,1 · `oltre il limite` 116,2), e i tre numeri restano 685,4
+   e 714,5. **Costa zero.** Il badge sconfina sulla colonna dell'etichetta ma sta in una fascia verticale diversa
+   (badge y 184-204, etichetta y 204-236): non si toccano, verificato con le geometrie e con un ritaglio a 2×.
+2. **La forma proposta come nuova esiste già, e con la parola.** `direzione-a.js:1912`, `cardCostoAzienda`,
+   pagina Costi: per **l'azienda** stampa già «Oggi **124 € su 115 € al giorno · ⚠ oltre il limite**». Tre
+   consiglieri hanno proposto il rapporto «124 € / 115 €» come terza strada: è un componente in produzione.
+3. **«Accendi le card» è impossibile per il righello, non per il colore.** La riga di stato delle tre card
+   «Al lavoro adesso» è **già tagliata oggi**: «Passo 2 di 4» chiede **71 px** e ne ha **39**
+   (`overflow:hidden`, `text-overflow:ellipsis`), e a schermo si legge **«Pass…»** — su tutte e tre le card, a
+   undici e a quaranta. Con «· 38 € su 10 €» servirebbero 289,4 px su 172: sfora di **117,4**. Ed è falso che a
+   quaranta quelle card diventino righe compatte: restano **12 card da 316 px** (`compatto` governa solo la
+   sezione Dipendenti).
+4. **Il censimento delle parole ribalta il voto.** Tre consiglieri su cinque hanno votato «tetto» perché è la
+   parola del modello. Contate **nelle pagine** (dodici della Console più il telefono): **limite 9** (Dipendente 5,
+   Esecuzione 2, Costi 1, Routine 1), **budget 3**, **tetto 1** — e quell'una sta sulla stessa card intitolata
+   «I limiti che ha» — **soffitto 0**, e il telefono **nessuna delle quattro**. «Quattro parole per cose vicine»
+   è vero nel codice; nelle pagine sono due, **9 a 1 per "limite"**, che è anche l'unica con la forma positiva
+   già disegnata («nel limite», chip con `i-check`).
+
+**Il costo di ogni strada, contato e non stimato.**
+
+| strada | px | prove | catture |
+|---|---|---|---|
+| il badge della home dice quello che dicono i Costi | **0** | **0** (nessuna asserisce `12%`) | **11** |
+| quinta casella nella barra «Oggi in azienda» | 133,2 su 182 di vuoto | `console.js:175` e `:203`, `caselle[2]/[3]`, `.qua:nth-child(1)` | **44** (la barra è su ogni pagina) |
+| terza riga nel Riepilogo | 20 px, resta senza scorrimento | 0 | 1 |
+| l'euro nelle card «Al lavoro adesso» | **sfora di 117,4** | `routine.js:140` (altezza della home, 2388) | — |
+
+**Sul telefono** il vincolo non era sul desktop: la fila dei tre numeri della schermata 3 ha **278 px** e
+qualunque denominatore sfora (da −9 a −78 px). L'unico posto che lo regge è la riga `.kv` della card Consegne,
+**228 px**, dove «124 € su 115 €» ne chiede 180,5 — ed è la riga che oggi stampa 124 € una **seconda** volta
+(`mobile.js:481`, dopo `:464`).
+
+**Quello che il consiglio ha demolito da sé.** Fare dello sfondamento una **richiesta** nella coda lime: contata,
+con un freno che controlla prima di ogni passo produrrebbe **13 firme in più al giorno** a undici (6 + 3 + 4 sui
+passi delle tre esecuzioni che sfondano) e **58** a quaranta; la coda passerebbe da 4 a 17 e da 7 a 65. Il
+consigliere l'aveva prezzata «da 2 a 5». E il lime della spina dorsale è «il titolare approva ogni **uscita**»:
+uno sblocco di budget non è un'uscita verso un cliente.
+
+**Il punto che ha spostato tutto.** Quattro consiglieri su cinque, indipendentemente: **la home tace perché il
+freno non è cablato.** `fermaPrimaDelPasso: true` sta in `dati.js:1252` e non lo legge **nessuna pagina** — l'unico
+lettore in tutto il repository è `prove/workflow.js:182`, che lo stampa in un log — e lo stato «ferma per tetto»
+non esiste in `STATI`. Se il tetto fermasse, le tre esecuzioni sarebbero ferme e la casella rosa che la barra ha
+già direbbe «4 ferme» invece di «1 ferma · Kim»: la home lo starebbe già dicendo, con un elemento già in pagina.
+Sotto c'è una premessa più profonda: **il titolare non ha mai scelto 115 €** — `tettoAzienda()` è la somma di
+undici budget che la decisione 55 dichiara **facoltativi**, e nei dossier generati quel budget è `10` scritto nel
+generatore (`dati.js:463`).
+
+
+### Il secondo consiglio: come si dispongono i limiti — **CONFERMATO** (e migliorato dall'utente)
+
+L'utente ha riaperto la domanda notando una contraddizione vera: *«io avevo già proposto di impostare i limiti dei
+dipartimenti per % del tetto aziendale o trovare un modo migliore per disporre i limiti (in modo opzionale, non è
+obbligatorio impostare un limite del dipartimento). fai una analisi e proponi scelte migliori o migliora la mia»*.
+Cinque pareri, revisione incrociata su cinque angoli (i fatti nel codice, il costo su prove e catture, le regole e
+la lingua, la spina dorsale e il carico, la prova dei quaranta).
+
+#### Il fatto che riformula la domanda: i soffitti di dipartimento sono **due**, e si contraddicono
+
+La pagina Costi **disegna già** un soffitto per tutti e quattro i dipartimenti, in euro. Misurato:
+
+| dipartimento | disegnato a schermo | nel modello (la quota %) |
+|---|---|---|
+| Sviluppo | «42 € su **30 €** al giorno» | — |
+| Marketing | «21 € su **35 €** al giorno» | — |
+| **Vendite** | «61 € su **30 €** al giorno» + chip «oltre il limite» | **69 €** (60 %) |
+| Amministrazione | «0 € su **20 €** al giorno» | — |
+
+**Vendite ne ha due, distanti 2,3 volte**, che dicono cose opposte: quello a schermo «oltre il limite», quello nel
+modello «dentro». E quello a schermo non l'ha scelto nessuno: è **la somma dei budget dei suoi dipendenti**, la
+stessa malattia del tetto d'azienda che la decisione di oggi ha appena curato. Quindi il lavoro non è **creare** un
+limite di dipartimento: è **riconciliarne due che ci sono già**.
+
+(Correzione a quanto scritto sopra: «nessuna pagina disegna il soffitto di dipartimento» vale **solo** per
+`soffittoDi`, la percentuale. Il secondo lo disegna `cardCostoDip`, `direzione-a.js:1893`.)
+
+#### Dove il consiglio è d'accordo, cinque su cinque
+
+1. **La percentuale muore.** Non per gusto: perché `soffittoDi(dip) = round(tettoAzienda().giorno × quota / 100)`
+   fa muovere il soffitto di **Vendite** da 69 a 75 € quando si assume in **Amministrazione**. Un limite che
+   cambia per fatti altrui non è un limite.
+2. **Una sola unità: euro**, a tutti i livelli.
+3. **Un solo fermo: l'azienda.** Gli altri livelli non fermano il lavoro: mandano la cosa nella coda che esiste
+   già, col lime e con `m.decidi`.
+4. **Sblocca solo il titolare.** Nessun dipendente AI, nessuna routine, nessun orologio.
+5. `avvisoSopra100` muore con la percentuale (non potrebbe scattare mai: la somma delle quote fa 60, la soglia
+   è 100).
+
+#### Dove si scontra
+
+- **Se il dipartimento ferma o solo chiede la firma.** Tre dicono che ferma, due che è solo una soglia. Chi dice
+  «solo soglia» ammette da sé che il dipartimento diventa «un cartello con dei numeri sopra», il giorno dopo che
+  il titolare ha deciso che il tetto **ferma**.
+- **Se nasce un sesto stato** («ferma per tetto») o si riusa `attesa`. Il conto qui sotto dice che la seconda è
+  molto più a buon mercato, e la lingua dice che «ferma» è già occupata.
+- **Se restano tre orizzonti** (giorno, settimana, mese) o due. La settimana esiste solo nelle routine, e ha una
+  ragione: rt2 scatta **il venerdì**.
+
+#### Le sei cose che la revisione incrociata ha corretto, tutte verificate col righello
+
+1. **Un secondo numero del contesto era sbagliato, e tutti e cinque ci hanno fatto aritmetica sopra.** Il
+   «13 firme al giorno a undici, 58 a quaranta» **non è una misura**: veniva da questo documento, e i due revisori
+   che l'hanno ricontato hanno ottenuto numeri diversi fra loro (7 contro 13; 58 contro 61). Ricontato:
+
+   | | a undici | a quaranta |
+   |---|---|---|
+   | esecuzioni al lavoro | 3 | 12 |
+   | passi in tutto | 17 | 72 |
+   | passi non ancora **finiti** | 10 | 44 |
+   | passi non ancora **partiti** | **7** | **32** |
+   | esecuzioni bloccate dal solo tetto d'azienda, **comprese le pianificate** | **6** | **20** |
+
+   Le **pianificate** (3 a undici, 8 a quaranta) non le aveva contate nessuno dei cinque: col tetto già sfondato
+   non partono nemmeno quelle.
+2. **Col tetto che ferma davvero, il prodotto si apre fermo.** Il tetto d'azienda è superato (124 su 115) *prima*
+   di qualunque passo nuovo: si fermerebbero **3 esecuzioni su 3** a undici e **12 su 12** a quaranta, **6 e 20**
+   contando le pianificate. Va deciso: o il tetto vale solo per quello che parte da adesso, o il valore d'apertura
+   sta sopra la spesa già fatta.
+3. **Il sesto stato non è un chip, è una superficie di crash.** `m.STATI[e.stato].breve` (`direzione-a.js:1920`)
+   accede diretto: su uno stato ignoto lancia, e `scatta.js` e tutte e sei le prove escono 1 su `pageerror`. Il
+   raggio contato è di **42 punti in 5 file**.
+4. **«ferma/ferme» è già occupata, e in rosa**: la barra «Oggi in azienda» stampa già «1 ferma · Kim» per il
+   gruppo **errore** (`.qua.err` su `--badge-red`). E un **punto di stato lime** su chi è fermo direbbe il
+   contrario del vero: `SEGC = { lavoro: lime, attesa: giallo, errore: rosa }`, e la regola 19 dice «niente da
+   fermo».
+5. **Esiste già un quinto limite in euro che il contesto non aveva contato**: `w.soglia`, «**Soglia di costo**»
+   del workflow (`dati.js:1562`), uno dei tre freni della decisione 71, con la descrizione *«Sopra la soglia
+   l'uscita torna in coda»*. È esattamente la «soglia di firma» che tre consiglieri credevano di inventare.
+6. **Nessun limite è modificabile, oggi, da nessuna parte.** L'editor del dipendente ha tre chiavi (`dip`, `seme`,
+   `tinta`) e **nessun campo budget**; le penne sulle card dei budget sono `rb ghost` **senza `data-az`**:
+   decorazione. Quindi i 22 numeri a undici (44 a quaranta) sono assegnati senza che il titolare li veda mai, e
+   **Impostazioni sarebbe il primo numero scrivibile del prodotto**.
+
+#### Quello che nessuno dei cinque ha detto
+
+**Nessuna delle cinque proposte toglie al titolare una sola approvazione.** Tutte le «smette di» sono cose che
+smette di *impostare* (percentuali, unità, budget preassegnati): zero decisioni tolte. Il bilancio è **additivo**
+a tutte e cinque, e il criterio scritto in questo repository è che l'attenzione del titolare è la risorsa scarsa.
+
+E un corollario tecnico: **la coda che tutte e cinque riusano non regge quello che le chiedono.** `m.decidi(id,
+stato, commento, esitoRevisione)` non ha un parametro per una **cifra**, e una richiesta ha `cliente`, `testo`,
+`allegato` — non `importo`. Quattro proposte su cinque pretendono «alza il tetto di X € per oggi».
+
+#### Che cosa raccomando, e come migliorerei la proposta dell'utente
+
+**La percentuale non va buttata: va spostata da dato a gesto.** L'intenzione dietro la proposta dell'utente — «io
+metto un numero per l'azienda e i reparti seguono» — è giusta, ed è la comodità che si perde passando agli euro.
+Si tiene tutta **scrivendo la percentuale nell'editor e fissandola in euro nel momento in cui la scrivi**:
+«60 % di 115 → **69 €**», e da lì è 69 € e non si muove più. Si ha la comodità del gesto e un numero che non
+cambia quando assumi altrove. È l'unica delle cinque proposte che migliora la tua invece di sostituirla.
+
+Il resto della raccomandazione, in ordine di quanto è misurato:
+
+| | raccomandazione | perché, misurato |
+|---|---|---|
+| **unità** | **euro** dappertutto; la percentuale resta solo come modo di scrivere il numero | il soffitto di Vendite si muove da 69 a 75 € per un'assunzione in Amministrazione |
+| **livelli** | azienda (**obbligatorio**), dipartimento, dipendente, routine (facoltativi) — e il **workflow** ha già la sua soglia: sono **cinque**, non quattro | `w.soglia` esiste, è disegnata e dichiara già che cosa fa |
+| **orizzonti** | **giorno e mese**; la settimana resta **solo** dove la cadenza è settimanale (rt2, il venerdì) | il tetto del **mese non è mai sfondato** (39 %, 42 %): prescriverlo ovunque aggiunge decorazione |
+| **chi ferma** | **solo l'azienda**; gli altri mandano in coda | il fermo a ogni livello produce 7 (32) interruzioni al giorno su una coda che ne ha 4 (7) |
+| **lo stato** | **nessuno stato nuovo**: chi è fermo resta in `attesa`, che è letteralmente ciò che è | il sesto stato tocca 42 punti in 5 file e `STATI[...].breve` lancia; «ferma» è già la parola dell'errore, in rosa |
+| **le parole** | **tetto** = quello che ferma (l'azienda) · **budget** = i facoltativi · **soglia** = resta al workflow | i cinque ne hanno proposte **sette** (tetto, soffitto, budget, limite, autonomia, soglia di firma, delega). Tre lavori, tre parole |
+| **prima di tutto** | **riconciliare i due soffitti di dipartimento** (30 € a schermo, 69 € nel modello) | è la stessa malattia del tetto d'azienda, e sta già in pagina |
+
+**Dove starebbe, misurato**: l'intestazione della pagina Dipartimento ha **326 px liberi** a 1440 (249 a 1100) e
+un quarto numero ne costa 282: ci sta. L'intestazione dei **Costi** no: ha 95 px liberi a undici e **25 a
+quaranta**.
+
+#### Che cosa ha deciso l'utente
+
+**La proposta dell'utente, migliorata**: la percentuale non si butta, si sposta da **dato** a **gesto** — si
+scrive nell'editor e il prodotto **la fissa in euro in quel momento** («60 % di 115 → 69 €»), e da lì non si
+muove più. Si tiene la comodità di impostare i reparti in proporzione al tetto e si perde il difetto.
+Con lei: **euro** dappertutto, **cinque livelli** (azienda obbligatoria, dipartimento / dipendente / routine /
+workflow facoltativi), **giorno e mese** con la settimana solo dove la cadenza è settimanale, **ferma solo
+l'azienda**, **nessuno stato nuovo** (chi è fermo resta in `attesa`), **tre parole** (tetto, budget, soglia).
+
+E le due domande che quella si portava dietro:
+
+- **«il prodotto si apre fermo»**: sì, **ed è giusto così**. Col tetto già sfondato non parte nessun passo nuovo:
+  6 esecuzioni a undici, 20 a quaranta. È la cosa più coerente con «il tetto ferma», e il prezzo — la prima cosa
+  che il titolare vede sono quelle esecuzioni che aspettano la sua firma — è accettato.
+- **i due soffitti di dipartimento**: **nessuno dei due**, finché non lo pone il titolare. Il dipartimento parte
+  senza soffitto, e la pagina Costi smette di stampare «su 30 €», che era la somma dei budget e non l'aveva
+  scelta nessuno. Stessa cura del tetto d'azienda.
+
+#### I punti ciechi che restano — **da confermare**
+
+1. **Il prodotto si apre fermo** (punto 2 qui sopra): va sciolto prima di disegnare qualunque cosa.
+2. **Il bilancio è additivo**: nessuna proposta toglie una decisione al titolare. Se questo non va bene, la
+   domanda da fare non è «come si dispongono i limiti» ma «che cosa il titolare smette di firmare».
+3. **La coda non sa portare una cifra**: `m.decidi` non ha un importo. Uno sblocco «alza di X €» richiede di
+   cambiarla.
+4. **A quaranta Amministrazione spende più di Vendite** (137 € contro 122): la storia con cui la decisione 55 è
+   stata scritta regge solo a undici.
+5. **`rigaCostoCompatta` butta via la barra del budget**: nella forma che il prodotto usa a quaranta (regola 3) il
+   limite non ha dove stare.
+6. **Nessun limite è scrivibile**: la pagina Impostazioni non è un contorno, è il primo posto del prodotto dove si
+   scrive un numero.
+
+### Che cosa è stato disegnato, dopo le decisioni
+
+Le quattro risposte dell'utente hanno chiuso il dubbio, quindi la parte che era **il lavoro di questa sessione**
+è stata scritta. Prove **638 verdi, 0 ko** (erano 619: **+19**), catture **82**, di cui **28 rifatte**.
+
+**1. La home dice quello che la pagina Costi dice già.** Il terzo numero dell'intestazione passa da
+
+> «124 € **spesi oggi** · `↓ 12 %`»  →  «124 € **su 115 € al giorno** · ⚠ **oltre il limite**»
+
+ed è **la stessa forma** che `cardCostoAzienda` stampa già per l'azienda nella pagina Costi (`direzione-a.js:1912`):
+non è stato inventato né un componente né una parola. A quaranta dice «427 € su 400 € al giorno · oltre il limite».
+Il badge di `.stat` è `position:absolute`, quindi **il cambio è costato zero px**: il terzo numero resta 236,0 px a
+undici e 251,1 a quaranta, e l'intestazione ha 269,8 px liberi (229,1 a quaranta). Il ramo opposto («nel limite»,
+`badge flat`) esiste e regge, anche se nel modello di oggi non si vede mai.
+
+**2. I quattordici badge che mentivano o ripetevano se ne sono andati.** Cinque **mentivano** (`↑1` scritto a mano;
+`Math.min(2, att)` nella home, nelle Richieste e sul telefono; `↓12%`) e nove **ripetevano il numero che gli stava
+accanto** — «2 approvate oggi ↑2», «4 da rifare ↓4», «3 al lavoro ↑3», «40 da leggere ↓40» — cioè violavano la
+regola della versione 16 in quattro pagine della Console e in tre schermate del telefono. Nella home ne resta
+**uno solo**: quello che dice il tetto. Gli altri badge del prodotto non sono stati toccati, perché sono onesti:
+i due confronti veri dei Costi, i quattro a 30 giorni del Dipendente, i due dell'Agenda, e i due del telefono
+(«3» al lavoro su 11 dipendenti, «15:00» del prossimo) — che sono numeri **diversi** da quello accanto.
+
+**3. Il telefono porta il denominatore dove ci sta.** La riga `.kv` della card Consegne della schermata 3 dice
+adesso «Spesa di oggi **124 € su 115 €**»: 228 px di riga, e la forma ne chiede 180,5 — non tagliata, e nessuno
+degli otto telefoni scorre di lato. **Non** fra i tre numeri grandi, dove ogni forma sfora (da −9 a −78 px su
+278 px di colonna). La stessa riga del **Riepilogo della Console** è stata allineata: cambiarne una sola avrebbe
+creato una nuova incoerenza fra le due superfici.
+
+**4. Le prove non verificano l'elemento, verificano l'invariante.** Le +19 verifiche chiedono due cose: che la
+home e i Costi dicano **la stessa cosa dello stesso numero** (se un giorno divergono, la prova cade) e che
+**nessun badge dell'intestazione ripeta il numero accanto**, su dieci pagine per due taglie. Il difetto non era il
+singolo badge: era la classe, ed è la classe che adesso è tenuta — come per gli errori muti del CSS.
+
+### Una cattura instabile, trovata rifacendo il prima/dopo
+
+Rifacendo le 82 catture a codice **immutato**, una è uscita diversa: **`a-workflow-firma.png`**, e la differenza
+sta tutta nella **tendina del titolare** (x 1232-1439, quattro fasce di ~56 px a y 240-295, 308-364, 854-910,
+922-978; 0,214 % dei byte). Rilanciata da sola undici volte: **9 uguali alla committata, 2 diverse** — una su
+cinque, poi una su sei.
+
+La causa sta nella riga della cattura (`scatta.js:100`): è l'unica del gruppo che fa un **clic**
+(`[data-az="firma"]`) e poi aspetta **300 ms** fissi prima di scattare. Il clic rifà la tendina, e ogni tanto lo
+scatto prende un fotogramma intermedio. Non è un difetto del prodotto e non c'entra con questa sessione — il file
+committato è quello che esce 9 volte su 11, e non è stato toccato. Ma è una cattura che non è deterministica, e
+finché resta così un prima/dopo su di lei non prova niente: va aspettata la fine della transizione invece di
+contare 300 ms.
+
 ## 5. File
 
 | File | Ruolo |
