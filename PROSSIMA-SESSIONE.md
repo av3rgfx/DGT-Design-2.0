@@ -59,7 +59,8 @@ non è raggiungibile.
    un'esecuzione riuscita); le **decisioni 68 e 69** aspettano le biforcazioni (nel modello: 0); la **pagina
    Impostazioni** (decisione 56) non esiste; restano il **candidato 8** (connettori) e il **candidato 5** (chat di
    dipartimento, decisioni 41 e 42). E i numeri che il prodotto dice ma non sa ancora usare: la **soglia di `g4`**,
-   i **due contrasti a quaranta**, il **tetto giornaliero già sfondato** (3 dipendenti su 11, l'azienda al 108 %).
+   i **due contrasti a quaranta**, e il **tetto giornaliero sfondato** — vedi la raccomandazione qui sotto, dove
+   la vecchia frase «nessuna pagina lo dice» è stata **corretta misurando**: due pagine su cinque lo dicono.
 3. **Attenzione**, come sempre: `scatta.js` e `prove/console.js` si reggono su `section:nth-of-type(2)` per le
    consegne del Dipartimento; le sezioni 25, 26 e 31 di `prove/workflow.js` vogliono un contesto `hasTouch` o un
    telefono a parte; e dalla 29 le prove che trascinano chiamano `canvasInVista()` prima di prendere le misure.
@@ -80,9 +81,51 @@ non è raggiungibile.
   finché non si è letta per intero la copia salvata della versione viva: conviene farlo fare a un sottoagente.
 - **Quello che resta aperto**: niente sul canvas. Il resto è nell'elenco di «Come riprendere», punto 2.
 
+## Il prossimo passo, raccomandato — e la frase che ho dovuto correggere
+
+Chiudendo la sessione ho contato lo stato dei candidati aperti invece di ricordarlo, e **una frase che questo
+documento si porta dietro dalla versione 21 è risultata falsa**.
+
+Diceva: «il tetto giornaliero è già sfondato e **nessuna pagina lo dice**». Misurato aprendo le pagine:
+
+| pagina | dice «oltre il limite»? |
+|---|---|
+| Console · **home** | **no** |
+| Console · Dipendente | **sì**, per il dipendente che stai guardando |
+| Console · Dipartimento | **no** |
+| Console · Costi | **sì**, una volta, per l'azienda |
+| Console · Richieste | **no** |
+| **telefono**, tutte e tre le schermate provate | **no**, mai |
+
+Quindi non è vero che nessuno lo dice: **lo dicono due pagine su cinque**, e tutte e due solo se ci vai apposta.
+Tacciono la **home** — il posto dove il titolare guarda l'azienda — e **tutto il telefono**, che è la superficie
+da cui firma.
+
+E il fatto è grosso, contato nel modello vivo:
+
+| | a undici | a quaranta |
+|---|---|---|
+| dipendenti sopra il tetto **del giorno** | **3 su 11** | **12 su 40** |
+| l'azienda, sul tetto del giorno | **108 %** | **107 %** |
+| sopra il tetto **del mese** | 0 | 2 |
+| l'azienda, sul tetto del mese | 39 % | 42 % |
+
+Il giorno è sfondato, il mese no: sono due storie diverse, e il prodotto oggi le tratta uguale.
+
+**Perché raccomando questo e non gli altri.** È l'unico dei candidati aperti che **non aspetta dati**: la
+decisione 75 vuole routine con un workflow dietro (oggi: 0 su 3, e tutti e tre gli inneschi sono di tipo `ora`);
+le decisioni 68 e 69 vogliono le biforcazioni (nel modello: 0). Questo invece è già tutto nel modello, è
+misurato, e tocca la spina dorsale: **ogni euro risale a un dipendente**, e il titolare non lo vede dove guarda.
+
+**Ed è un dubbio progettuale**, quindi passa dal consiglio: che cosa dice la home quando 3 dipendenti su 11 hanno
+sfondato il tetto del giorno? È un conto in più nella barra «Oggi in azienda», una casella che si accende, una
+riga nel Riepilogo, o niente — perché il titolare non deve decidere lui su ogni euro? E che parola: «oltre il
+limite» esiste già, ma dice il caso singolo, non l'azienda. E sul telefono: lo si porta, o lì si firma e basta?
+
 ## Pronto per la prossima sessione
 
-Da incollare così com'è, dopo aver scelto il prossimo lavoro fra quelli del punto 2 qui sopra.
+Da incollare così com'è: porta già il prossimo lavoro, raccomandato qui sopra. Se ne vuoi un altro fra
+quelli del punto 2, cambia il paragrafo che comincia con «Il prossimo lavoro è».
 
 ```
 Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md («Versione 30», «Come riprendere (dalla versione 30)» e «Stato alla
@@ -92,7 +135,21 @@ altrimenti continua su quello.
 Il canvas dei workflow è chiuso e non va rifatto: 619 verifiche verdi in sei prove, 82 catture, il passo di riga
 a 342, il nodo aperto che non copre più nessuno, e la pillola che lo dice quando sei tu a stringere due nodi.
 
-Il prossimo lavoro è: <QUI IL LAVORO SCELTO>.
+Il prossimo lavoro è il **tetto giornaliero sfondato che la home non dice**. Misurato chiudendo la sessione
+scorsa: 3 dipendenti su 11 (12 su 40) hanno superato il tetto del giorno, e l'azienda è al 108 % (107 % a
+quaranta); il mese invece è al 39 %, quindi giorno e mese sono due storie diverse. Attenzione: la frase «nessuna
+pagina lo dice», che il documento si portava dietro dalla versione 21, è FALSA e l'ho corretta — lo dicono la
+pagina Dipendente e la pagina Costi, ma solo se ci vai apposta. Tacciono la home, il Dipartimento, le Richieste
+e TUTTO il telefono, che è la superficie da cui il titolare firma.
+
+È un dubbio progettuale, quindi NON scrivere codice prima della decisione: passalo dal consiglio con il contesto
+scritto per esteso e i prezzi in numeri, misurati aprendo le pagine. La domanda: che cosa dice la home quando 3
+dipendenti su 11 hanno sfondato il tetto del giorno? Un conto in più nella barra «Oggi in azienda», una casella
+che si accende, una riga nel Riepilogo, o niente — perché il titolare non deve decidere lui su ogni euro? Quale
+parola: «oltre il limite» esiste già ma dice il caso singolo, non l'azienda. E sul telefono: si porta o no?
+Chiedi a ogni consigliere l'obiezione più forte alla propria scelta, una terza strada e le conseguenze concrete
+sull'interfaccia già costruita; NON saltare la revisione incrociata. Poi porta il verdetto all'utente: la
+decisione la prende lui, e va scritta in PROSSIMA-SESSIONE.md marcata «da confermare» finché non risponde.
 
 Il metodo di sempre: prima e dopo, rifare i font locali, lanciare le SEI prove di prove/ e catturare le pagine
 PRIMA di toccare qualcosa; quello che si misura si misura, e una diagnosi a occhio va verificata col righello
@@ -123,8 +180,11 @@ SYSTEM-DESIGN.md, i README, PROSSIMA-SESSIONE.md, commit, push e PR.
 ```
 Leggi CLAUDE.md e PROSSIMA-SESSIONE.md («Versione 30», «Come riprendere»). Controlla la PR #22: se è unita
 riparti da main con lo stesso nome di branch. Il canvas dei workflow è chiuso (619 prove, 82 catture): non
-rifarlo. Il prossimo lavoro è <QUI IL LAVORO SCELTO>. Il metodo di sempre, ogni dubbio progettuale dal consiglio
-con la revisione incrociata, e alla fine prove, screenshot, artefatti, documenti, commit, push e PR.
+rifarlo. Il prossimo lavoro è il tetto giornaliero sfondato che la home non dice: 3 dipendenti su 11 sopra il tetto del
+giorno, l'azienda al 108 %, e tacciono la home e tutto il telefono (la pagina Dipendente e la pagina Costi invece
+lo dicono — la frase «nessuna pagina lo dice» nei vecchi documenti è falsa e l'ho corretta). È un dubbio
+progettuale: consiglio con la revisione incrociata, poi la decisione la prende l'utente. Il metodo di sempre, e
+alla fine prove, screenshot, artefatti, documenti, commit, push e PR.
 ```
 
 ### I comandi che servono subito
