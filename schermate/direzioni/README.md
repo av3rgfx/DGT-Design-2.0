@@ -67,7 +67,7 @@ faceva, e le altre consegne intorno. Studio e misure in `DIREZIONI.md`, «Versio
   il CSS delle primitive, le variabili e le funzioni che le stampano (`av`, `pair`, `chipStato`, `iconaTipo`, `eur`,
   `differenze`…). Ogni pagina lo carica subito dopo `comune.js` e mette in pagina `DGT_COMPONENTI.css` prima del CSS della
   Console (`direzione-a.js`, che tiene la cornice, le pagine, le tendine e `monta`).
-- **Sei** prove cliccate in `prove/` (con il `README.md` che dice il comando), **587 verifiche in tutto** (dalla versione 27; erano 552 alla 24, 478 alla 22, 421 alla 21 e 385 alla 20): la quinta è `workflow.js` (189: il perimetro delle consegne, il canvas dei workflow, la firma anticipata, la schermata 10 del telefono, i 120 stati del canvas in cui nessun nodo ne copre un altro e — dalla versione 24 — **il grafo e i suoi sette gesti**: che gli archi vengano da `G.archi` e non dall'ordine dell'array, che i due capi di ogni filo cadano sulle prese, che il trascinamento sia esatto a cinque combinazioni di larghezza e zoom, che «Riordina» porti a zero gli incroci, che il rilascio nel vuoto crei il passo già collegato, che lo zoom interno componga con quello della cornice, e che nessun nodo stampi «0 €»; dalla **versione 27** il canvas sul telefono — che sia lo stesso componente e non una copia, i cinque gesti spenti dalla sola lettura, lo scatto d'ingresso «tutto dentro» col grafo che tocca tutti e due i fianchi, il tocco sul nodo che porta a scala 1 centrato, le etichette del contratto fuori dal disegno e leggibili, i **due gesti del dito** costruiti a mano con `TouchEvent` perché il pinch vuole due dita, e la **regola 42** verificata prima e dopo ogni ingrandimento) e la sesta è `routine.js` (49: le sei conferme della versione 22, cioè «Uscita» al posto di «Approvata», la precedenza fra routine e regola, `g4` accesa col suo conto, la pagina delle routine e l'intestazione a due righe). Stanno in un file loro perché `console.js` sceglie tre sezioni con `nth-of-type`. `console.js` (160 verifiche: tendine, Richieste, editor del
+- **Sei** prove cliccate in `prove/` (con il `README.md` che dice il comando), **605 verifiche in tutto** (dalla versione 29; erano 587 alla 27, 552 alla 24, 478 alla 22, 421 alla 21 e 385 alla 20): la quinta è `workflow.js` (207: il perimetro delle consegne, il canvas dei workflow, la firma anticipata, la schermata 10 del telefono, i 120 stati del canvas in cui nessun nodo ne copre un altro e — dalla versione 24 — **il grafo e i suoi sette gesti**: che gli archi vengano da `G.archi` e non dall'ordine dell'array, che i due capi di ogni filo cadano sulle prese, che il trascinamento sia esatto a cinque combinazioni di larghezza e zoom, che «Riordina» porti a zero gli incroci, che il rilascio nel vuoto crei il passo già collegato, che lo zoom interno componga con quello della cornice, e che nessun nodo stampi «0 €»; dalla **versione 27** il canvas sul telefono — che sia lo stesso componente e non una copia, i cinque gesti spenti dalla sola lettura, lo scatto d'ingresso «tutto dentro» col grafo che tocca tutti e due i fianchi, il tocco sul nodo che porta a scala 1 centrato, le etichette del contratto fuori dal disegno e leggibili, i **due gesti del dito** costruiti a mano con `TouchEvent` perché il pinch vuole due dita, e la **regola 42** verificata prima e dopo ogni ingrandimento) e la sesta è `routine.js` (49: le sei conferme della versione 22, cioè «Uscita» al posto di «Approvata», la precedenza fra routine e regola, `g4` accesa col suo conto, la pagina delle routine e l'intestazione a due righe). Stanno in un file loro perché `console.js` sceglie tre sezioni con `nth-of-type`. `console.js` (160 verifiche: tendine, Richieste, editor del
   dipendente, esecuzione, 40, la barra «Oggi in azienda», la barra dei passi, i controlli delle intestazioni, le frecce di
   riga e — dalla versione 21 — le **asserzioni di visibilità** su nove pagine per due taglie e due stati della tendina,
   più l'invariante «chi ha deciso al posto del titolare risolve a un record che esiste»), `mobile.js` (83: le otto
@@ -79,12 +79,18 @@ faceva, e le altre consegne intorno. Studio e misure in `DIREZIONI.md`, «Versio
   `PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css node schermate/direzioni/prove/console.js`
   (e così `mobile.js`, `costi.js`, `agenda-chat.js`).
 - File unico per l'artefatto: `node build-unico.js /percorso/confronto-unico.html`.
-- **Aperto, e aspetta l'utente** (versione 28): aprendo un nodo del grafo il nodo aperto **copre quello sotto** — cinque nodi su nove, tre per intero, misurato su tutti e nove. È un dubbio progettuale: nella 28 è
-  passato dal consiglio e **non è stato scritto codice**. Le misure delle tre strade e le cinque correzioni
-  che ne sono uscite (fra cui `.wio` a `z-index:5` sopra la card aperta, e `ramoAggiungi` che posa a `+210`)
-  stanno in `DIREZIONI.md`, «Versione 28»; il verdetto in `PROSSIMA-SESSIONE.md`, marcato «da confermare».
-  Nota per chi ci mette mano: il passo del **grafo** è `ramoPosa` in `dati.js`, **non** `W_PY` in
-  `componenti.js`, che governa solo la serpentina dell'«ultima volta».
+- **Il nodo aperto non copre più quello sotto** (versione 29, decisa dall'utente): i grafi nascono con le
+  righe a **342 px** invece che a 216 (`RAMO_PASSO` in `dati.js` — **non** `W_PY` in `componenti.js`, che governa
+  solo la serpentina dell'«ultima volta»). Misurato su 31 nodi aperti in sei workflow: da 5 nodi su 9 che ne
+  coprivano un altro, e 3 coperti per intero, a **zero**; da 5 scontri fra etichette a zero. Il prezzo accettato:
+  il canvas passa da 731 a 1036 px e la mini-mappa è sempre presente — con una riserva in fondo, perché a 342
+  copriva il 22 % del nodo del titolare. Con la stessa versione: quello che appartiene a un nodo nascosto dalla
+  card **non si disegna** (le prese stavano a `z-index:5` sopra la card ed erano cliccabili), le porte del nodo
+  aperto non si stampano (erano un doppione troncato dei suoi campi), e tre conti sbagliati corretti —
+  `ramoAggiungi` a `+210` fuori griglia, `altNodo` che contava le azioni anche in sola lettura, e il freno che
+  misurava il nodo chiuso mentre un passo nuovo **nasce aperto**. Resta aperta la seconda metà della decisione
+  («il prodotto se ne accorge e lo propone»): verdetto del consiglio in `PROSSIMA-SESSIONE.md`, «Versione 29»,
+  marcato «da confermare».
 - **La scelta del gesto** (versione 22): le tre strade per comporre il canvas, costruite nella pagina vera
   (`?pagina=workflow&workflow=w1&ramo=1&gesto=a|b|c`) e messe a confronto con i numeri misurati. Pagina:
   `node costruisci-gesto.js` da `scelta-gesto.src.html`; artefatto
@@ -94,7 +100,7 @@ faceva, e le altre consegne intorno. Studio e misure in `DIREZIONI.md`, «Versio
   segnaposto `IMG:<nome>`, quindi non si apre da sola), `node costruisci-scelta.js` la costruisce incorporando i PNG di
   `screenshot/`. Artefatto: https://claude.ai/code/artifact/3a3fcb9e-c894-4a83-9cdb-54820f65756f
 - Screenshot: `LOCAL_FONT_CSS=/tmp/fonts.css node ../../design-system/tools/screenshot-page.js "direzione-a.html?n=40" out.png`.
-  Le catture di `screenshot/` — **81** dalla versione 27 — si rigenerano tutte con `scatta.js`, che ne dichiara i parametri:
+  Le catture di `screenshot/` — **81**, dieci rifatte nella versione 29 — si rigenerano tutte con `scatta.js`, che ne dichiara i parametri:
   `PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules LOCAL_FONT_CSS=/percorso/fonts.css node schermate/direzioni/scatta.js`
   (`console` o `barra` per un gruppo solo, `--in <cartella>` per il confronto prima/dopo). Le catture che restano a mano
   sono dichiarate in `FUORI` dentro il file.

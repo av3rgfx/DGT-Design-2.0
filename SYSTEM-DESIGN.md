@@ -752,6 +752,27 @@ sono dell'utente e sono ancora da prendere.**
   su 11**. E lo sprite **non ha** busta, chiave, nuvola né immagine, mentre la scorciatoia delle iniziali in un disco
   colorato è vietata dalla regola 19: serve una regola nuova per disegnare un servizio senza il suo marchio.
 
+44. **Quello che appartiene a un oggetto nascosto non si disegna sopra ciò che lo nasconde** (2026-09-09,
+    versione 29). Nel canvas il nodo aperto ha `z-index:3` e sfondo opaco: quello che gli finisce sotto non si
+    vede. Ma tre cose venivano disegnate lo stesso, e **due sopra di lui**, perché stavano più in alto nella pila:
+    le **prese** del collegamento (`z-index:5`) e i **tag** del contratto. Misurato col colpo del mouse: le due
+    prese del nodo coperto erano disegnate sull'editor e **rispondevano al clic** — e da lì nasceva un
+    collegamento **da un nodo che non si vede**, cioè un passo, e quindi un euro, attribuito a un dipendente che
+    il titolare non ha mai visto. Un comando che appartiene a qualcosa di invisibile è peggio di un comando
+    assente: promette un'azione su un oggetto che chi clicca non sta guardando.
+    La regola non è «velare» né «spegnere» — è **non disegnare**: se un oggetto è coperto, quello che è suo
+    (porte, prese, etichette, tag) non compare finché resta coperto, e torna appena si scopre. Il prezzo va
+    dichiarato dove tocca la spina dorsale: se il coperto porta un tag del contratto, quel tag sparisce dal
+    disegno — ma **il conto in cima continua a dirlo** («1 ramo resta in azienda»), quindi si perde *quale*, non
+    *che c'è*. Quando un'informazione della spina dorsale può sparire dal disegno, deve restare detta **fuori** dal
+    disegno: è lo stesso corollario della regola 43 sulle etichette del contratto.
+    Il corollario dei conti: **un conto che decide una posizione deve misurare quello che si disegna davvero.**
+    Due errori dello stesso stampo, trovati insieme: `altNodo` contava la riga delle azioni anche dove la sola
+    lettura non la disegna (47,6 px di scarto sul telefono), e il freno che cerca un posto libero misurava il nodo
+    **chiuso** mentre i tre gesti che creano un passo lo lasciano **aperto** — così il prodotto stesso posava un
+    passo che, aperto, ne copriva due, e in un caso copriva il nodo del titolare. Il conto diceva «libero», la
+    resa copriva.
+
 ## 11. Collegamenti
 
 - Confronto delle tre direzioni (artefatto): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f

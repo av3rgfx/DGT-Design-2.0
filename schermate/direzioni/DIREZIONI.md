@@ -2699,6 +2699,99 @@ E una sesta, sul repository: la sezione 11 di `prove/workflow.js` si intitola **
 nessuno»** ma misura `.wnode:not(.on)`, cioè i soli nodi chiusi, e un commento della versione 23 dichiara che il
 nodo aperto «galleggia sopra gli altri». Il titolo afferma più di quello che la prova verifica, e va corretto.
 
+### Versione 29: il passo di riga a 342, e il nodo aperto che non copre più (2026-09-09)
+
+**Decisa dall'utente**, dopo il consiglio della versione 28: i grafi nascono con le righe a **342 px** invece che a
+216, e il prodotto deve accorgersi da sé quando due nodi si coprono e proporre di rimediare. La prima metà è
+disegnata; la seconda è passata da un secondo consiglio e il verdetto sta in `PROSSIMA-SESSIONE.md`, marcato **da
+confermare**. Prove: **605 verdi, 0 ko** (erano 587). Catture: **81**, di cui 10 cambiate.
+
+#### 1. Il passo sta in `ramoPosa`, non in `W_PY`
+
+`W_PY` (`componenti.js`) **non dispone un solo nodo del grafo**: `wpos` esce alla prima riga quando il nodo porta
+già la sua `x`, e nel grafo la porta sempre. Governa **solo** la serpentina dell'«ultima volta», dove il difetto
+non esiste perché lì le righe sotto quella aperta scendono da sole. Il passo del grafo è **`RAMO_PASSO` in
+`dati.js`**, che adesso è la sola costante: la leggono `ramoPosa` e `ramoAggiungi`, e non vive più in tre posti con
+tre valori.
+
+**342 = 19×18**, quindi resta sulla griglia, ed è il conto di quello che un nodo aperto occupa: 311 di card + 17
+fino alle porte + 14 di etichetta. La regola 42 non si oppone perché questo è il **seme**, non la mano: le
+posizioni messe trascinando (`ramoPosiziona`) non le tocca nessuno.
+
+| | prima (216) | adesso (342) |
+|---|---|---|
+| nodi che, aperti, ne coprono un altro | **5 su 9** | **0** |
+| coperti per intero | 3 | 0 |
+| scontri fra etichette di porta | 5 (sovrapposte per 6 px) | 0 |
+| altezza del canvas | 731 px | 1036 px |
+| mini-mappa | compare solo ingrandendo | **sempre** |
+
+Misurato su **31 nodi aperti**, sei workflow, due taglie.
+
+#### 2. La mini-mappa non si sposta: le si riserva lo spazio
+
+Trovato **guardando l'anteprima** e poi misurato: a 342 la `.wmini` da 200×120 (`left:16px; bottom:78px`) finiva
+sopra il nodo del titolare — **180×22 px, il 22 % della card**, proprio la striscia dove è scritto «aspetterà la
+tua firma». Chiudere una copertura aprendone un'altra, e sul nodo che dice chi firma, non è un affare.
+
+La mappa resta dove la mette il riferimento; è il canvas che riserva in fondo **167 px** invece di 114 quando la
+mappa c'è (120 di mappa + 16 di stacco, più 17+14 per le porte dell'ultima riga). Il conto si fa in due tempi
+perché la soglia guarda l'altezza: prima la riserva normale, con quella si decide se la mappa serve, e solo allora
+si allarga. Una prova verifica che la mappa non copra **nessun** nodo, etichetta o tag.
+
+#### 3. Quello che appartiene a un nodo nascosto non si disegna
+
+Il nodo aperto ha `z-index:3` e sfondo opaco. Ma tre cose venivano disegnate lo stesso, e **due sopra di lui**:
+
+- **le prese del collegamento** (`.wio`, `z-index:5`). Misurato col colpo del mouse: aprendo un nodo, le due prese
+  del nodo coperto erano disegnate sull'editor e **rispondevano al clic** — da lì nasceva un collegamento **da un
+  nodo che non si vede**, cioè un passo, e quindi un euro, attribuito a un dipendente che il titolare non ha
+  visto. È il difetto che il consiglio della 28 non aveva nominato, e che un consigliere aveva dichiarato inesistente;
+- **i tag del contratto** (`.wtag`, `pointer-events:none`, nessuno `z-index`): «esce senza la tua firma» finiva
+  sotto la card senza nemmeno il tooltip;
+- **le porte del nodo aperto**, che scendevano con lui — ed è da lì che nascevano i cinque scontri.
+
+I «+» e le «×», che stanno più in basso nella pila, erano **già morti**: lì non si è tolto niente.
+
+La regola: **quello che appartiene a un nodo nascosto dalla card non si disegna.** Non è un velo né uno
+spegnimento — è non disegnare qualcosa che già non si vedeva ma rispondeva. Misurato dopo: 0 prese vive, 0 tag,
+0 etichette sopra la card.
+
+**Il prezzo, dichiarato**: se il titolare trascina un nodo col tag del contratto sotto un altro e lo apre, quel tag
+sparisce dal disegno. Il conto in cima però **continua a dirlo** — verificato: «1 ramo resta in azienda» resta
+stampato. Si perde *quale*, non *che c'è*.
+
+#### 4. Le porte del nodo aperto erano un doppione
+
+Aperto `p1`: etichette di porta `[Modello, Archivio, Repository]`; campi della card: `Modello → Rapido`,
+`Strumenti → Archivio del cliente, Repository`. L'etichetta è la **prima parola tagliata** del valore che la card
+stampa per esteso, e nel grafo le porte sono **sempre spente**. Finché il nodo è aperto non aggiungono niente, e
+sono esattamente quelle che andavano addosso al nodo sotto: non stamparle chiude **cinque scontri su cinque**
+senza spostare una coordinata. Quando il nodo si richiude, tornano. Misurato: 16 porte → 13.
+
+#### 5. Tre conti che non tornavano, trovati dalla revisione incrociata
+
+1. **`ramoAggiungi` posava a `base.y + 210`**: 210 non è multiplo di 18 — contro la ragione stessa per cui la 24
+   scelse 234 e 216 — ed era **meno del passo**, quindi il passo nuovo nasceva **sotto la card che l'aveva appena
+   creato**. Adesso scende di un passo intero, sulla griglia.
+2. **`altNodo` contava la riga delle azioni anche in sola lettura**: sul telefono il conto diceva 311 px e la resa
+   ne faceva **263,4** — 47,6 px di scarto, cioè esattamente `W_GAP + 2 + W_AZ`. Da quel conto dipendono l'altezza
+   del canvas e il rettangolo della card: lo scarto si propagava. Adesso `altNodo` sa se le azioni si disegnano.
+3. **Il freno non sapeva che un passo nuovo nasce aperto.** `ramoOccupato` misurava sempre il nodo **chiuso**
+   (87 + 18), ma i tre gesti che creano un passo lo lasciano **aperto**: un passo appena nato è alto **273 px**.
+   Misurato: il «+» sull'arco posava un passo che, aperto, ne copriva **due**; il «+» dentro l'innesco copriva il
+   nodo del **titolare**. Il conto diceva «libero», la resa copriva. Adesso il posto è libero solo se ci sta la
+   card aperta, e il confronto non è più simmetrico: sopra basta il nodo chiuso, sotto serve tutta la card.
+   **Il prezzo, misurato e dichiarato in una prova**: il posto si cerca scendendo di 36 px alla volta, quindi con
+   un grafo fitto il passo nuovo può nascere **a y 846**, lontano da dove si è premuto.
+
+#### 6. Che cosa resta possibile, e di proposito
+
+**`ramoPosiziona` non ha nessun freno**: il titolare può ancora trascinare un nodo sotto un altro, e impilarne due
+anche da chiusi. Non è una dimenticanza — mettere un freno che sposta il nodo dove il titolare non l'ha messo è
+esattamente quello che la regola 42 vieta. Una prova lo fa apposta e verifica che, in quel caso, sotto la card non
+resti niente di cliccabile. **È il caso per cui serve la seconda metà della decisione**, quella che aspetta.
+
 ## 5. File
 
 | File | Ruolo |
