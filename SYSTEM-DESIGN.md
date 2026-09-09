@@ -648,6 +648,21 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     leggono la firma anticipata, il permesso, la Console e il telefono; prima erano scritti a mano in due pagine e
     non governavano niente. E la pagina **nomina la strada accesa** («Dal permesso», e non solo «Accesa»), perché
     con due interruttori per la stessa luce dire che è accesa non basta a dire chi l'ha accesa.
+
+42. **Dove il titolare ha disposto qualcosa con le mani, quella disposizione è un dato: nessuna superficie la
+    ricalcola** (2026-09-09, versione 26, decisione 72). Trovato dalla **revisione incrociata**, e da nessuno dei
+    cinque pareri. Nel canvas dei workflow il titolare trascina i nodi dove vuole, e `ramoPosiziona` (`dati.js`)
+    **scrive `nd.x` e `nd.y` dentro il nodo**, agganciati alla griglia da 18 px e tenuti dentro la banda
+    (`1008 - 208 - 8`). Quelle coordinate non sono impaginazione: sono una cosa che il titolare ha detto.
+    Due proposte del consiglio volevano «riposare» il grafo sul telefono — ricalcolare x e y sullo schermo stretto,
+    così da togliere ogni scorrimento laterale. Il conto tornava; il prodotto no. Una seconda geometria per lo
+    stesso oggetto mostra al titolare **una disposizione che lui non ha scelto**, e gli fa perdere l'unica cosa che
+    il canvas gli aveva dato: la memoria di dove ha messo le cose. È la stessa malattia della regola 41 — due
+    strade per la stessa cosa, con regole diverse — spostata dalla creazione alla forma.
+    Il criterio generale: **prima di ricalcolare una posizione, una scelta o un ordine su una superficie nuova,
+    guardare se quel valore è generato o è stato messo lì da qualcuno.** Se è stato messo, si trasporta; non si
+    rifà. Il corollario pratico che ne discende: il telefono mostra il canvas **così com'è**, e paga i 632 px di
+    scorrimento laterale invece di guadagnarseli con una posa sua.
     Il corollario disegnato: cambiando permesso, il canvas **non smette di dire** che cosa succede a un ramo. Prima
     con «chiedi prima di consegnare» un ramo che non arriva alla firma diceva «resta in azienda», e con gli altri
     due permessi non diceva **niente** — l'informazione spariva proprio dove serviva di più. Ora dice «esce senza

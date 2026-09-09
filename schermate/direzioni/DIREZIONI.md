@@ -2433,6 +2433,38 @@ lungo e coprisse il nodo vicino. Misurato: «esce senza la tua firma» sta in 14
 sborda; a coprire era il **nodo**, posato dove capita. Correggere il testo sarebbe stato lavoro inutile su una
 diagnosi sbagliata.
 
+### Versione 26: il workflow sul telefono diventa il canvas (2026-09-09)
+
+**Decisa, non ancora disegnata.** Giudizio dell'utente sulla schermata 10: dà «un'anteprima del workflow
+sbagliata». Verificato sulle catture: telefono e Console non sono lo stesso oggetto a due misure, sono due
+disegni diversi.
+
+| | oggi (versione 25) | deciso (versione 26) |
+|---|---|---|
+| fondo | chiaro (`m-scr chiara rie`) | la notte del canvas, **dentro una card**, non a schermata intera |
+| il nodo | card a tutta larghezza, 348 px | il nodo del canvas, 208×87, con le sue prese |
+| fra due nodi | barretta lime dritta | la curva luminosa del canvas |
+| la forma | implicita, detta dai chip | **disegnata**: si entra a «tutto dentro» (scala 0,306) |
+| leggere un passo | sempre a 14 px | si tocca il nodo e si va a scala 1, testo a 14 px |
+| modificare | niente | **niente** (sola lettura: prese, `+`, `×`, trascinamento e «Riordina» spenti) |
+| le posizioni | ricalcolate in colonna | **quelle del titolare**, mai ricalcolate (regola 42) |
+| firma, freni, tab | nella pagina | **restano dove sono**: il canvas è una card, non una schermata |
+
+**La misura che decide.** Nella larghezza utile dello schermo (278,4 px) sta **una colonna di nodi a scala 1**
+(208 px, con 70 di margine); due colonne vogliono scala 0,6 (testo 8,8 px), quattro — cioè tutto il grafo,
+910 px — scala 0,306 (testo 4,3 px). Non esiste uno zoom che mostri insieme forma e contenuto: da qui le due
+scale della decisione 73.
+
+**Il costo, dopo la correzione.** Nel contesto del consiglio avevo scritto «5,6 schermate di trascinamento»:
+sbagliato. `.wzoom` fa `translate(px, 0)` — il pan è solo orizzontale — e la card cresce in altezza, quindi il
+verticale è il normale scorrimento. Il prezzo vero è **632 px di scorrimento laterale**.
+
+**Quello che la revisione incrociata ha trovato e i cinque pareri no**: le posizioni dei nodi sono **dati** del
+titolare (`ramoPosiziona` scrive `nd.x`/`nd.y`), quindi «riposare» il grafo sul telefono mostrerebbe una
+disposizione che lui non ha scelto — diventata la **regola 42**; lo zoom oggi vive **solo** nella tab «La
+prossima volta» (`const z = ramo ? zoom : 1`); il canvas è una **card** e non una schermata, il che smonta
+l'unica obiezione forte contro la strada scelta.
+
 ## 5. File
 
 | File | Ruolo |

@@ -1,5 +1,93 @@
 # Prossima sessione — passaggio di consegne
 
+## Versione 26 — il workflow sul telefono diventa il canvas, e le posizioni sono dati (2026-09-09)
+
+Quattro decisioni prese dall'utente, tutte sulla raccomandazione del consiglio. **Nessuna è ancora in codice**:
+questa sessione ha misurato, consultato e deciso; il disegno si fa nella prossima. Il codice del prodotto è quello
+della versione 25 (552 verifiche verdi, 79 catture).
+
+### Da dove nasce
+
+Giudizio dell'utente sulla schermata 10 del telefono: «come è stato fatto adesso non mi piace per niente perché
+dà un'anteprima del workflow sbagliata». **Verificato guardando le due catture, ed è vero.** Telefono e Console
+oggi non sono lo stesso oggetto a due misure, sono **due disegni diversi**: fondo chiaro contro notte; card a
+tutta larghezza (348 px) contro nodo da 208; una colonna dritta contro una serpentina su tre righe; porte come
+chip dentro la card contro pallini con etichetta sotto il nodo; barretta dritta contro curva luminosa. Chi guarda
+il telefono si figura *un elenco di cinque passi*, poi apre la Console e trova *una lavagna notturna*.
+
+### Le quattro decisioni
+
+| n. | domanda | decisione |
+|---|---|---|
+| **72** | che forma prende il workflow sul telefono | **il canvas vero, in sola lettura**, con tre condizioni: resta una **card dentro la pagina** (non una schermata intera, così firma, freni e tab non si spostano); lo zoom vale su **tutte e due le tab**, non solo «La prossima volta»; le posizioni **non si ricalcolano mai** (regola 42) |
+| **73** | con quale ingrandimento si apre | **«tutto dentro» (0,306) come stato d'ingresso**, e il tocco su un nodo porta a scala 1 centrato su quello. Un oggetto a due scale invece di due oggetti: la mappa non è un componente nuovo, è lo stesso canvas rimpicciolito |
+| **74** | che fine fa la colonna di oggi | **sparisce, il canvas la sostituisce**. I chip che dicono la topologia («2 rami», «arriva da 2») diventano disegno; quelli che dicono il **contratto** («esce senza la tua firma», «resta in azienda») restano come etichette, perché dicono la firma e la firma non si legge a 4,3 px |
+| **75** | il modo semplificato per creare routine con trigger | **prima i dati, poi il modo.** Si costruisce quando esistono gli inneschi veri. Vincoli già decisi: stesso oggetto dell'editor, apribile lì; può solo **stringere**, mai allargare; **non può accendere una firma anticipata senza i tre freni**; se il flusso esce dalla catena, il modulo si rifiuta di aprirlo e manda al canvas, **mai appiattire in silenzio**. Il nome è **«routine»**: esiste già, niente parole nuove |
+
+### Le misure che hanno deciso, e quella che avevo sbagliato
+
+Quanto grafo entra nella larghezza utile dello schermo (278,4 px), a scala 1:
+
+| | scala | testo da 14 px |
+|---|---|---|
+| 1 colonna di nodi (208 px) | **1** | **14 px** |
+| 2 colonne (una biforcazione, 442 px) | 0,6 | 8,8 px |
+| 3 colonne (676 px) | 0,4 | 5,8 px |
+| 4 colonne = tutto il grafo (910 px) | **0,306** | **4,3 px** |
+
+**Il numero che avevo sbagliato io, e che i revisori hanno corretto.** Nel contesto passato al consiglio avevo
+scritto «~5,6 schermate di trascinamento» per attraversare un grafo. È falso: `direzione-a.js:1680` fa
+`translate(${px}px, 0)` — il pan è **solo orizzontale** — e la card del canvas cresce in altezza
+(`alt = basso * z + 62`), quindi il verticale lo fa il normale scorrimento della pagina. Il prezzo vero della
+strada scelta è **632 px di scorrimento laterale** (910 − 278,4). Metà del consiglio ha discusso un costo che non
+esiste, e la strada dell'utente ne è uscita più forte di come io l'avevo presentata.
+
+### Che cosa ha trovato la revisione incrociata, e i pareri no
+
+Come nella versione 24 e nella 25, le cose che hanno cambiato la risposta vengono da qui.
+
+1. **Le posizioni dei nodi sono dati del titolare** (`ramoPosiziona`, `dati.js:1357`, scrive `nd.x`/`nd.y` con il
+   vincolo `1008 - 208 - 8`). Due pareri proponevano di «riposare» il grafo sul telefono per azzerare lo
+   scorrimento laterale: mostrerebbe una disposizione che il titolare non ha scelto. **È diventata la regola 42**,
+   ed è l'argomento più forte a favore della strada dell'utente — che nessuno dei cinque pareri aveva.
+2. **Lo zoom esiste in una tab su due.** `const z = ramo ? zoom : 1` (`direzione-a.js:1566`), e lo stesso per la
+   mini-mappa (1655) e la barra dello zoom (1664). «L'ultima volta» — la tab dove stanno costi, durate e «aspetta
+   la tua firma» — è a scala fissa, senza zoom e senza mappa. Ogni parere era scritto per metà della pagina.
+3. **Il canvas è una card, non una schermata** (`direzione-a.js:1679`). Il parere che rifiutava la strada
+   dell'utente lo faceva su un costo inventato («il titolare smette di firmare dal telefono»): come card, la
+   pillola della firma e i tre freni restano dove sono. L'argomento decisivo contro spariva.
+4. **Un parere aveva inventato un numero**: «26 routine a quaranta». Contate: **3 a undici e 3 a quaranta**; 26 è
+   il numero dei *workflow*. Verificato a mano prima di usarlo.
+5. **278,4 px non è un telefono vero**: è la cornice 300×620 dello specimen mostrata a `zoom:1.25`. Su un telefono
+   reale (390-430 px CSS) la scala «tutto dentro» sarebbe ~0,43. Le decisioni restano prese nel sistema di misura
+   dello specimen, che è quello del repository, ma va saputo.
+
+### Perché la 75 non tocca codice oggi
+
+Contato nel modello: **tutti e 3 gli inneschi delle routine sono di tipo `ora`** (evento, soglia ed esterno hanno
+zero record); **nessuna delle 3 routine ha un workflow dietro**; il record `routine` **non ha né `nodi` né
+`archi`** (ha `passi`, che sono nomi) e tutte sono `origine: 'derivata'`. Il «trigger event» che l'utente vuole
+**non esiste nei dati**, e nemmeno l'oggetto su cui il modo semplificato dovrebbe scrivere. Regola 26: non si
+promette quello che non c'è. Da segnalare per chi la costruirà: oggi un workflow **nasce da un'esecuzione
+riuscita** (`workflowDi`), quindi «creare un flusso dal nulla» è un gesto che nel prodotto non esiste ancora —
+né sul telefono né nell'editor. È il vero primo passo della 75, prima di qualunque modulo.
+
+## Come riprendere (dalla versione 26)
+
+1. **Il disegno della 72-74 è tutto da fare.** Il metodo di sempre: rifare i font locali, lanciare le sei prove di
+   `prove/` e catturare le pagine **prima** di toccare qualcosa.
+2. **L'ordine suggerito**: (a) spostare il canvas da `direzione-a.js` a `componenti.js` — che `mobile.html` carica
+   già — insieme al suo CSS, che **non va riscritto** perché tutti e due i file fanno `prefissa(css, '.dirA')`;
+   (b) il flag `soloLettura` che spegne prese, `+` sull'arco, `×`, trascinamento del nodo e «Riordina»; (c) lo
+   zoom esteso alla tab «L'ultima volta»; (d) lo scatto d'ingresso «tutto dentro»; (e) i gesti touch — **oggi nel
+   repository non ce n'è nessuno, è tutto mouse**: ne servono due, trascina-la-vista e pinch.
+3. **Le prove che moriranno**: le sezioni di `prove/workflow.js` che contano `.m-wn` vanno riscritte su `.wnode`.
+   La sezione dei freni (versione 25) sopravvive.
+4. **Attenzione**, come sempre: `scatta.js` e `prove/console.js` si reggono ancora su `section:nth-of-type(2)` per
+   le consegne del Dipartimento.
+5. **Le decisioni 68 e 69 restano in attesa dei dati** (biforcazioni: 0), come dalla versione 25.
+
+
 ## Versione 25 — le quattro decisioni prese, e il permesso che non aveva freni (2026-09-09)
 
 Le tre domande della versione 24 e la quarta che solo la revisione incrociata aveva sollevato sono **decise**
