@@ -33,7 +33,7 @@
   DGT_UI.stile('css-m', DGT_MOBILE.css);    // le cornici del telefono e le tre schermate
   const modello = DGT_DATI.modello(DGT_DATI.nDaUrl());
   const schermate = (q.get('schermata') || '1,2,3,4,5,6,7,8').split(',').map(Number).filter(s => s >= 1 && s <= 10);
-  DGT_MOBILE.monta(document.getElementById('root'), modello, { schermate, richiesta: +(q.get('richiesta') || 0), filo: +(q.get('filo') || 0), dip: q.get('dip') || '', consegna: q.get('consegna') || '', workflow: q.get('workflow') || '', quadro: q.has('quadro') ? +q.get('quadro') : undefined, conta: q.has('conta') ? +q.get('conta') : undefined });
+  DGT_MOBILE.monta(document.getElementById('root'), modello, { schermate, richiesta: +(q.get('richiesta') || 0), filo: +(q.get('filo') || 0), dip: q.get('dip') || '', consegna: q.get('consegna') || '', workflow: q.get('workflow') || '', ramo: q.get('ramo') || 0, quadro: q.has('quadro') ? +q.get('quadro') : undefined, conta: q.has('conta') ? +q.get('conta') : undefined });
 </script>
 </body>
 </html>

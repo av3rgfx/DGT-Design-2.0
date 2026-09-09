@@ -313,6 +313,80 @@ window.DIREZIONE_A = (function () {
 .wplus svg{width:11px;height:11px;color:var(--white)}
 .wplus:hover i{opacity:1;background:var(--lime);border-color:transparent}
 .wplus:hover svg{color:var(--ink)}
+/* I due comandi del collegamento (versione 24): il «+» infila un passo in mezzo, la «×» toglie il collegamento.
+   La «×» si vede solo quando il mouse e' sul filo — se no ogni connettore porterebbe due cerchi, che a otto
+   collegamenti fanno sedici pastiglie su un disegno che deve restare quello del riferimento. */
+.warcz{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:2px;z-index:2}
+.warcz .wplus{position:static;transform:none}
+.warcz .wdel{width:38px;height:40px;display:grid;place-items:center;cursor:pointer;opacity:0;transition:opacity .12s}
+.warcz:hover .wdel{opacity:1}
+.warcz .wdel i{width:22px;height:22px;border-radius:50%;background:var(--round);border:1px solid rgb(255 255 255/.22);display:grid;place-items:center}
+.warcz .wdel:hover i{background:var(--white);border-color:transparent}
+.warcz .wdel svg{width:11px;height:11px;color:var(--white)}
+.warcz .wdel:hover svg{color:var(--ink)}
+/* ---- Il grafo (versione 24) ----
+   Dalla decisione 64 il canvas della prossima volta non e' piu' una catena disposta da sola: e' un **grafo** con
+   posizioni libere, fan-out e fan-in illimitati, e il significato **sul connettore**. Quello che cambia nel CSS e'
+   soltanto quello che il grafo aggiunge — la cornice che si scala («.wzoom»), le due prese del nodo («.wio»),
+   l'etichetta sul collegamento («.warcl»), la mini-mappa («.wmini») e i comandi dello zoom («.wzoombar»).
+   Nodo, griglia puntinata, porte con l'etichetta e bagliore restano quelli del riferimento. */
+.wcanvas.comp{cursor:grab}
+.wcanvas.comp.trascina{cursor:grabbing}
+/* La cornice che si scala: «transform», non «zoom». La regola 17 vietava due zoom annidati perche' litigano — ed
+   e' vero per «zoom»; misurato: «transform: scale()» compone esattamente (nodo 208 -> 312 a 1,5x, -> 124,8 a 0,6x,
+   a 1440, 1920 e 1024) e le tendine »position:fixed« restano al bordo dello schermo. La griglia sta **dentro**, cosi'
+   i punti si scalano con i nodi e l'aggancio a 18 px continua a cadere sui punti che si vedono. */
+.wcanvas .wzoom{position:absolute;left:0;top:0;transform-origin:0 0}
+.wcanvas .wzoom .grid{inset:0}
+/* Le due prese del nodo: da quella di destra si tira un collegamento, in quella di sinistra lo si lascia. Sono la
+   stessa pastiglia delle porte del riferimento (10 px, lime, bagliore), messa sul fianco invece che sotto. */
+.wio{position:absolute;width:11px;height:11px;border-radius:50%;background:rgb(255 255 255/.22);border:1px solid rgb(255 255 255/.30);box-sizing:border-box;transform:translate(-50%,-50%);z-index:5;cursor:crosshair}
+.wio.usc{background:var(--lime);border-color:transparent;box-shadow:0 0 10px rgb(184 252 100/.55)}
+.wio:hover{background:var(--lime);border-color:transparent;box-shadow:0 0 16px rgb(184 252 100/.85);width:15px;height:15px}
+.wio.ent{cursor:default}
+.wcanvas.collega .wio.ent{cursor:crosshair;background:var(--lime);box-shadow:0 0 12px rgb(184 252 100/.6)}
+/* Il collegamento che si sta tirando: lo stesso filo, tratteggiato finche' non ha un capo. */
+.wcanvas .edges path.tira{fill:none;stroke:var(--lime);stroke-width:2.2;stroke-dasharray:6 5;opacity:.85}
+.wcanvas .edges path.arc.se{stroke-dasharray:9 6}
+.wcanvas .edges path.arc.insieme{stroke-width:3.4}
+/* L'errore **non cambia colore**: l'emendamento dell'8 settembre ha portato al lime l'unico secondo accento che
+   restava nel repository, e rimetterne uno qui — il rosa degli errori — lo riaprirebbe. Il significato lo dice
+   l'etichetta sul collegamento (decisione 65), la tinta resta una sola: il tratteggio fine dice «e' una strada
+   che si prende solo se qualcosa va storto», la parola dice quale. */
+.wcanvas .edges path.arc.errore{stroke-dasharray:2 5;opacity:.75}
+.wcanvas .edges path.arc.scelto{stroke-width:3.6}
+.wcanvas .edges path.presa{fill:none;stroke:transparent;stroke-width:16;pointer-events:stroke;cursor:pointer}
+/* L'etichetta sul collegamento: e' li' che sta il significato (decisione 65), non nelle porte del nodo. La pillola
+   e' la ».wtag« gia' disegnata, rimpicciolita: nessun componente nuovo. */
+.warcl{position:absolute;transform:translate(-50%,-50%);height:20px;display:inline-flex;align-items:center;gap:5px;padding:0 8px;border-radius:9999px;background:var(--round);border:1px solid rgb(255 255 255/.16);font-size:10px;line-height:20px;color:var(--t2);white-space:nowrap;z-index:3;cursor:pointer;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.warcl:hover{border-color:var(--lime);color:var(--lime)}
+.warcl.se{color:var(--lime);border-color:rgb(184 252 100/.45)}
+.warcl.errore{color:var(--t2-light);border-color:rgb(255 255 255/.28)}
+/* Il nodo d'innesco, in testa (idea dell'utente, decisione 66): n8n da' al trigger l'angolo arrotondato: qui il
+   fianco sinistro diventa un semicerchio da 36 px, come nel loro canvas, e la presa d'entrata non c'e' — prima
+   dell'innesco non c'e' lavoro. */
+.wnode.inn{border-radius:44px 18px 18px 44px;padding-left:16px}
+.wnode.inn .nic{border-radius:50%;background:var(--lime)}
+.wnode.inn .nic svg{color:var(--ink)}
+.wnode.inn.on .nic{background:var(--lime)}
+/* Il nodo scelto quando ce n'e' piu' d'uno (selezione multipla): l'anello lime senza i campi aperti. */
+.wnode.mult{border-color:var(--lime);box-shadow:0 0 0 1px var(--lime),0 0 26px rgb(184 252 100/.18)}
+.wnode.presa{cursor:grab}
+.wnode.presa:active{cursor:grabbing}
+/* I comandi dello zoom e la mini-mappa: il secondo riferimento ce li ha tutti e due. */
+.wzoombar{position:absolute;right:16px;bottom:78px;display:flex;align-items:center;gap:6px;z-index:6}
+.wzoombar .rb{width:32px;height:32px;background:rgb(10 10 10/.72);backdrop-filter:blur(10px)}
+.wzoombar .rb svg{width:13px;height:13px}
+.wzoombar .zv{height:32px;padding:0 10px;border-radius:9999px;background:rgb(10 10 10/.72);backdrop-filter:blur(10px);border:1px solid rgb(255 255 255/.14);font-size:11px;color:var(--t2);display:flex;align-items:center;cursor:pointer}
+.wmini{position:absolute;left:16px;bottom:78px;width:200px;height:120px;border-radius:14px;background:rgb(10 10 10/.72);backdrop-filter:blur(10px);border:1px solid rgb(255 255 255/.12);z-index:6;overflow:hidden;cursor:pointer}
+.wmini i{position:absolute;background:rgb(255 255 255/.28);border-radius:2px}
+.wmini i.tit{background:rgb(255 255 255/.5)}
+.wmini i.inn{background:var(--lime);opacity:.75}
+.wmini b{position:absolute;border:1px solid var(--lime);border-radius:3px;background:rgb(184 252 100/.10);pointer-events:none}
+/* La barra del canvas quando si compone: il conto a sinistra, gli acceleratori al centro. */
+.wbar .azioni-b .pill.picc{height:32px;padding:0 12px;font-size:12px}
+.wsc{position:absolute;left:16px;top:16px;z-index:6;display:flex;gap:6px;align-items:center;font-size:11px;color:var(--t2)}
+.wsc .chip{height:24px;font-size:11px}
 .wfirma{display:grid;gap:14px;margin-top:24px;grid-template-columns:repeat(3,1fr)}
 .wfirma .fcard{background:var(--card);border-radius:var(--r-inner);padding:18px 20px;display:grid;gap:6px;align-content:start}
 .wfirma .fcard .k{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--t2)}
@@ -1343,7 +1417,13 @@ window.DIREZIONE_A = (function () {
      stringerlo di 6 px: 36·2 + 3·242 + 208 = **1006 px**, dentro i 1008 della colonna. Misurato il prezzo vero:
      **un workflow su sei cresce di 210 px a undici, due su ventisei a quaranta**. Niente eccezione, quindi:
      nessuna pagina larga, nessun nodo che nasce sotto la tendina, e il prodotto resta uno. */
-  const W_COL = 4, W_PX = 242, W_PY = 210, W_PAD = 36, W_W = 208, W_H = 96;
+  /* ---- Il passo della griglia (versione 24: 234x216, non 242x210) ----
+     Il canvas aggancia i nodi ogni **18 px**, che sono i punti della griglia puntinata: i nodi cadono sui punti
+     che si vedono. Ma il passo della disposizione — 242x210 — **non era un multiplo di 18**, quindi un nodo
+     appena disposto (o appena riordinato) stava fra i punti, e uno trascinato ci cadeva sopra: due regole diverse
+     per la stessa cosa, e una prova che non poteva passare. 234 = 13x18 e 216 = 12x18 le mettono d'accordo.
+     La colonna riservata regge lo stesso: 36x2 + 3x234 + 208 = **982 px** dentro i 1008 (prima erano 1006). */
+  const W_COL = 4, W_PX = 234, W_PY = 216, W_PAD = 36, W_W = 208, W_H = 96;
   /* ---- Quanto e' alto un nodo, e dove finisce quello che gli sta sotto (versione 22) ----
      Difetto trovato misurando, ed e' della versione 20: **il nodo aperto copriva per intero il nodo sotto di se'**
      — 18 096 px², cioe' 208×87, tutta la sua superficie. Il canvas aggiungeva 168 px in fondo, dove non servivano,
@@ -1355,104 +1435,151 @@ window.DIREZIONE_A = (function () {
   const W_H_CHIUSO = 87;              /* 12+33+8+20+12 di riempimento e figli, piu' i due bordi */
   const W_FL = 20, W_FV = 32, W_GAP = 6, W_CAMPI_SU = 9;   /* etichetta, valore, spazio fra loro, bordo + spazio in cima */
   const W_AZ = 39;                    /* la riga delle azioni del gesto A: bordo, spazio, cerchi da 28 */
-  const altNodo = (nd, on, ramo, gesto) => {
+  const altNodo = (nd, on, ramo) => {
     if (!on) return W_H_CHIUSO;
     const righe = nd.titolare
       ? [W_FL, W_FV, W_FL, W_FV]                                  /* regola, firma anticipata */
-      : [W_FL, W_FV].concat(                                       /* modello */
-          [W_FL], (nd.strumenti && nd.strumenti.length ? nd.strumenti : ['x']).map(() => W_FV),
-          nd.esito ? [W_FL, W_FV] : []);
+      : nd.innesco
+        ? [W_FL, W_FV, W_FL, W_FV]                                /* quando parte, permesso */
+        : [W_FL, W_FV].concat(                                     /* modello */
+            [W_FL], (nd.strumenti && nd.strumenti.length ? nd.strumenti : ['x']).map(() => W_FV),
+            nd.esito ? [W_FL, W_FV] : []);
     const campi = W_CAMPI_SU + righe.reduce((t, h) => t + h, 0) + W_GAP * (righe.length - 1);
-    const az = !nd.titolare && ramo && gesto === 'a' ? W_GAP + 2 + W_AZ : 0;
+    const az = !nd.titolare && ramo ? W_GAP + 2 + W_AZ : 0;
     return W_H_CHIUSO + 8 + campi + az;
   };
-  /* La spinta: di quanto scendono le righe sotto quella del nodo aperto. */
-  const spintaDi = (nodi, sel, ramo, gesto) => {
+  /* La spinta: di quanto scendono le righe sotto quella del nodo aperto. Vale solo per «l'ultima volta», dove le
+     posizioni le calcola la serpentina; nel grafo le posizioni sono dell'utente e non le sposta nessuno. */
+  const spintaDi = (nodi, sel, ramo) => {
     const i = nodi.findIndex(nd => nd.n === sel);
     if (i < 0) return { riga: -1, px: 0 };
-    return { riga: Math.floor(i / W_COL), px: Math.max(0, altNodo(nodi[i], true, ramo, gesto) - W_H_CHIUSO) };
+    return { riga: Math.floor(i / W_COL), px: Math.max(0, altNodo(nodi[i], true, ramo) - W_H_CHIUSO) };
   };
   const wpos = (i, sp, nd) => {
-    /* Nel ramo la posizione la porta il nodo (versione 23: e' libera, la sposta l'utente). Nell'ultima volta la
+    /* Nel grafo la posizione la porta il nodo (versione 23: e' libera, la sposta l'utente). Nell'ultima volta la
        calcola la serpentina, come sempre: quello che e' avvenuto non si dispone. */
     if (nd && nd.x !== undefined) return { x: nd.x, y: nd.y, r: -1, c: -1 };
     const r = Math.floor(i / W_COL); const c = r % 2 ? W_COL - 1 - (i % W_COL) : i % W_COL;
     const giu = sp && sp.riga >= 0 && r > sp.riga ? sp.px : 0;
     return { x: W_PAD + c * W_PX, y: W_PAD + r * W_PY + giu, r, c };
   };
+  /* ---- La geometria di un collegamento (versione 24) ----
+     Esce dal fianco destro del nodo che parte, entra nel fianco sinistro del nodo che arriva, sempre all'altezza
+     del nodo **chiuso** (43,5 px). Cosi' un nodo che si apre non fa saltare i suoi collegamenti: le posizioni si
+     calcolano prima di stampare, mai misurando la pagina dopo averla disegnata (regola del canvas, versione 20).
+     Quando il nodo d'arrivo sta **a sinistra** di quello di partenza — e con le posizioni libere succede — il filo
+     esce a destra, gira e rientra da sinistra: e' la forma che n8n da' ai ritorni, e senza di essa un arco
+     all'indietro passerebbe dritto sopra i due nodi. */
+  const W_MEZZO = W_H_CHIUSO / 2;
+  const arcoVia = (a, b) => {
+    const x1 = a.x + W_W, y1 = a.y + W_MEZZO, x2 = b.x, y2 = b.y + W_MEZZO;
+    if (x2 >= x1 + 24) {
+      const d = Math.max(38, Math.min(150, (x2 - x1) * 0.55));
+      return { d: 'M' + x1 + ' ' + y1 + ' C ' + (x1 + d) + ' ' + y1 + ', ' + (x2 - d) + ' ' + y2 + ', ' + x2 + ' ' + y2, mx: (x1 + x2) / 2, my: (y1 + y2) / 2 };
+    }
+    /* Il ritorno **di riga**: il nodo d'arrivo sta a sinistra ma piu' in basso — e' il capoverso del disegno. Una
+       S sola, con le maniglie tenute dentro la colonna (1008 px) perche' il canvas non scorre di lato e quello che
+       esce dal bordo lo taglia `overflow:hidden`. */
+    if (Math.abs(y2 - y1) >= 12) {
+      /* La maniglia non va tenuta dentro la colonna: misurato, una S da (970, 79) a (36, 289) con maniglia 110
+         sfonda a destra di **6 px** soli, perche' il punto d'arrivo tira la curva subito a sinistra. Tenerla corta
+         faceva una diagonale dritta, che di una curva non ha niente: misurato, con maniglia 250 il punto piu' a
+         destra della curva e' **996 px** e il piu' a sinistra **10**, cioe' dentro la colonna da 1008. */
+      const h = Math.max(40, Math.min(150, (x1 - x2) * 0.18));
+      return { d: 'M' + x1 + ' ' + y1 + ' C ' + (x1 + h) + ' ' + y1 + ', ' + (x2 - h) + ' ' + y2 + ', ' + x2 + ' ' + y2,
+               mx: (x1 + x2) / 2, my: (y1 + y2) / 2 };
+    }
+    /* Il ritorno **sulla stessa riga**: dritto passerebbe sopra i due nodi, quindi scende e rientra da sotto —
+       la forma che n8n da' ai suoi anelli. */
+    const h = Math.min(90, Math.max(40, (x1 - x2) * 0.2));
+    const my = Math.max(y1, y2) + 92, mx = (x1 + x2) / 2;
+    return { d: 'M' + x1 + ' ' + y1 + ' C ' + (x1 + h) + ' ' + y1 + ', ' + (mx + h) + ' ' + my + ', ' + mx + ' ' + my
+              + ' C ' + (mx - h) + ' ' + my + ', ' + (x2 - h) + ' ' + y2 + ', ' + x2 + ' ' + y2, mx, my };
+  };
   const ICONA_NODO = { rapido: 'i-bolt', standard: 'i-bot', esperto: 'i-star' };
-  function nodoWorkflow(m, w, nd, i, sel, ramo, gesto, tot, sp) {
+  /* Il numero del passo non e' piu' un identificatore: in un grafo due rami che partono dallo stesso nodo portano
+     **lo stesso numero** (sono lo stesso momento del lavoro). Quindi nel grafo il nodo si sceglie dal suo `id`, e
+     nell'ultima volta — che e' una catena — dal numero, come prima. */
+  const nodoScelto = (nd, sel, ramo) => (ramo ? String(sel) === String(nd.id) : sel === nd.n);
+  function nodoWorkflow(m, w, nd, i, sel, ramo, tot, sp, multi) {
     const p = wpos(i, sp, nd);
-    const on = sel === nd.n;
-    const cls = nd.titolare ? `wnode tit${nd.stato === 'attesa' ? ' att' : ''}${on ? ' on' : ''}` : `wnode${on ? ' on' : ''}`;
-    const icona = nd.titolare ? 'i-hand' : ICONA_NODO[nd.modello] || 'i-bot';
-    const sotto = nd.titolare ? esc(nd.regola) : `Passo ${nd.n} · ${esc(nd.modello)}`;
-    /* il nodo selezionato apre i suoi campi, come il nodo verde della figura: e' il gesto con cui si modifica il
-       workflow — si sceglie il modello di un passo e gli strumenti che puo' toccare */
-    /* Le azioni del **gesto A** (versione 22): stanno dentro il nodo aperto, sotto i suoi campi, e ci sono solo
-       nella prossima volta — l'ultima volta e' successa e non si modifica. «Aggiungi» mette il passo **dopo
-       questo e prima della firma**: il nodo del titolare non si scavalca, non si sposta e non si toglie. */
-    const azA = on && ramo && gesto === 'a' && !nd.titolare ? `<div class="azioni-n">
-        <span class="rb pieno" data-az="ramo-aggiungi" data-n="${nd.n}" title="Aggiungi un passo dopo questo">${ic('i-plus')}</span>
-        <span class="rb"${i > 0 ? ` data-az="ramo-su" data-n="${nd.n}"` : ' aria-disabled="true"'} title="Spostalo prima">${ic('i-up')}</span>
-        <span class="rb"${i < tot - 2 ? ` data-az="ramo-giu" data-n="${nd.n}"` : ' aria-disabled="true"'} title="Spostalo dopo">${ic('i-dn')}</span>
-        <span class="rb"${tot > 2 ? ` data-az="ramo-togli" data-n="${nd.n}"` : ' aria-disabled="true"'} title="Toglilo">${ic('i-x')}</span>
+    const on = nodoScelto(nd, sel, ramo);
+    const inMulti = ramo && multi.length > 1 && multi.indexOf(nd.id) >= 0;
+    const cls = (nd.innesco ? 'wnode inn' : nd.titolare ? 'wnode tit' + (nd.stato === 'attesa' ? ' att' : '') : 'wnode')
+      + (on ? ' on' : '') + (inMulti ? ' mult' : '') + (ramo ? ' presa' : '');
+    const icona = nd.innesco ? 'i-bolt' : nd.titolare ? 'i-hand' : ICONA_NODO[nd.modello] || 'i-bot';
+    const clau = nd.innesco ? (m.RAMO_CLAUSOLE.find(c => c.id === nd.clausola) || m.RAMO_CLAUSOLE[1]) : null;
+    const sotto = nd.innesco ? esc(nd.testo) : nd.titolare ? esc(nd.regola) : `Passo ${nd.n} · ${esc(nd.modello)}`;
+    /* Le azioni del nodo aperto (decisione 64: «il nodo aperto e' l'editor»). Stanno dentro il nodo, sotto i suoi
+       campi, e ci sono solo nella prossima volta — l'ultima volta e' successa e non si modifica. Il nodo del
+       titolare non si scavalca, non si sposta e non si toglie: il divieto sta nel modello, non nel gesto. */
+    const azA = on && ramo && !nd.titolare ? `<div class="azioni-n">
+        <span class="rb pieno" data-az="ramo-aggiungi" data-id="${esc(nd.id)}" title="Aggiungi un passo dopo questo">${ic('i-plus')}</span>
+        <span class="rb"${!nd.innesco && tot > 3 ? ` data-az="ramo-togli" data-id="${esc(nd.id)}"` : ' aria-disabled="true"'} title="Toglilo">${ic('i-x')}</span>
       </div>` : '';
-    const campi = on && !nd.titolare ? `<div class="campi">
-        <span class="fl">Modello</span><span class="fv"${ramo ? ` data-az="ramo-modello" data-n="${nd.n}" title="Cambia il modello"` : ''}><span>${esc((m.MODELLI[nd.modello] || {}).nome || nd.modello)}</span>${ic('i-chev')}</span>
+    const campi = on && !nd.titolare && !nd.innesco ? `<div class="campi">
+        <span class="fl">Modello</span><span class="fv"${ramo ? ` data-az="ramo-modello" data-id="${esc(nd.id)}" title="Cambia il modello"` : ''}><span>${esc((m.MODELLI[nd.modello] || {}).nome || nd.modello)}</span>${ic('i-chev')}</span>
         <span class="fl">Strumenti</span>${(nd.strumenti.length ? nd.strumenti : ['Nessuno']).map(s => `<span class="fv"><span>${esc(s)}</span>${ic('i-chev')}</span>`).join('')}
         ${nd.esito ? `<span class="fl">Esito dell'ultima volta</span><span class="fv"><span>${esc(nd.esito)}</span></span>` : ''}
+      </div>${azA}` : '';
+    /* Il nodo d'innesco apre due campi soli: quando parte, e il permesso. Il permesso e' la `clausola` che il
+       modello ha gia' (decisione 66): chi autorizza in testa non deve far convergere i rami in coda. */
+    const campiInn = on && nd.innesco ? `<div class="campi">
+        <span class="fl">Quando parte</span><span class="fv"><span>${esc(nd.testo)}</span></span>
+        <span class="fl">Permesso</span><span class="fv"${ramo ? ` data-az="ramo-clausola" data-id="${esc(nd.id)}" title="${esc(clau.desc)}"` : ''}><span>${esc(clau.nome)}</span>${ic('i-chev')}</span>
       </div>${azA}` : '';
     const campiTit = on && nd.titolare ? `<div class="campi">
         <span class="fl">Regola che ferma qui la consegna</span><span class="fv"><span>${esc(nd.regola)}</span>${ic('i-chev')}</span>
         <span class="fl">Firma anticipata</span><span class="fv"><span>${w.firma ? 'Accesa' : 'Spenta — ogni uscita passa da te'}</span>${ic('i-chev')}</span>
       </div>` : '';
-    return `<div class="${cls}" style="left:${p.x}px;top:${p.y}px" data-az="nodo" data-n="${nd.n}" title="${esc(nd.nome)}">
+    /* Il piede. Nella prossima volta non porta numeri: di un passo che deve ancora succedere non si sa ne' il
+       costo ne' la durata. **E nell'ultima volta nemmeno** (versione 24): fino a ieri un passo `da fare` stampava
+       la sua **stima** sotto la parola «misurati» — 33,20 € su 71,20 nel primo workflow. Adesso dice «non ancora»,
+       che e' la verita' e non costa un numero inventato. */
+    const piede = nd.innesco
+      ? `<span>${esc(ramo ? clau.nome.toLowerCase() : nd.testo)}</span>`
+      : nd.titolare
+        ? `<span>${esc(ramo ? 'aspetterà la tua firma' : nd.quando || 'non ancora consegnata')}</span>`
+        : ramo
+          ? `<span>${nd.nato ? 'passo nuovo' : 'come l\'ultima volta'}</span>`
+          : nd.stato === 'da fare'
+            ? `<span>non ancora${nd.stima ? ' · ≈ ' + esc(nd.stima) : ''}</span>`
+            : `<span>${esc(nd.durata || '—')}</span><span class="eur">${eur(nd.costo)}</span>`;
+    return `<div class="${cls}" style="left:${p.x}px;top:${p.y}px" data-az="nodo" data-n="${nd.n}"${nd.id ? ` data-id="${esc(nd.id)}"` : ''} title="${esc(nd.nome)}">
       <div class="hd"><span class="nic">${ic(icona)}</span><div class="tt"><b>${esc(nd.nome)}</b><span>${sotto}</span></div></div>
-      ${/* Nella prossima volta il piede non porta numeri: di un passo che deve ancora succedere non si sa ne' il
-            costo ne' la durata, e stampare uno zero sarebbe inventarli. E' la ragione per cui il ramo non sporca
-            «misurati, non stimati»: i due totali in cima alla pagina restano dell'ultima volta. */''}
-      <div class="ft">${nd.titolare ? `<span>${esc(ramo ? 'aspetterà la tua firma' : nd.quando || 'non ancora consegnata')}</span>` : ramo ? `<span>${nd.nato ? 'passo nuovo' : 'come l\'ultima volta'}</span>` : `<span>${esc(nd.durata || '—')}</span><span class="eur">${eur(nd.costo)}</span>`}</div>
-      ${campi}${campiTit}</div>`;
+      <div class="ft">${piede}</div>
+      ${campi}${campiInn}${campiTit}</div>`;
   }
-  function canvasWorkflow(m, w, sel, ramo, gesto) {
-    /* Il ramo (versione 22): stesso canvas, altro tempo. Dalla **versione 23** i nodi della prossima volta hanno
-       una posizione libera e gli archi sono un elenco, non piu' l'ordine dell'array: e' il grafo che l'utente ha
-       chiesto («spostare liberamente ogni card, collegare e biforcare piu' connettori anche su un singolo task»).
-       «L'ultima volta» resta la serpentina calcolata: e' avvenuta, non si dispone. */
+  function canvasWorkflow(m, w, sel, ramo, zoom, multi, pan) {
+    /* ---- Un canvas, due tempi (versione 22), e dalla 24 due **forme** ----
+       «L'ultima volta» e' una catena avvenuta: la serpentina la dispone da sola, gli archi vanno da un nodo al
+       seguente, e non si tocca. «La prossima volta» e' il **grafo** che l'utente ha chiesto: posizioni libere,
+       archi da `G.archi`, fan-out e fan-in illimitati, il significato sul collegamento e il nodo d'innesco in
+       testa. Le due strade condividono nodo, griglia, porte e barra: e' lo stesso canvas, non due disegni. */
     const G = ramo ? m.ramoDi(w) : null;
     const nodiFonte = ramo ? G.nodi : w.nodi;
+    const wOrig = w;
     w = Object.assign({}, w, { nodi: nodiFonte });
     const n = w.nodi.length;
     const righe = Math.ceil(n / W_COL);
-    /* La spinta del nodo aperto: le righe sotto la sua scendono di quanto lui cresce, e il canvas si allunga dello
-       stesso numero. 78: le porte sotto l'ultima riga; 62: la barra in fondo. */
-    const sp = ramo ? { riga: -1, px: 0 } : spintaDi(w.nodi, sel, ramo, gesto);
-    /* Nel ramo l'altezza non viene dalle righe della serpentina ma dal nodo piu' in basso: le posizioni sono
-       libere, quindi il canvas cresce dietro a quello che l'utente ha disegnato. Il nodo aperto cresce con i suoi
-       campi e il canvas se ne accorge (regola 33: quello che cresce spinge, non copre). */
-    const bassoRamo = ramo ? Math.max(...w.nodi.map(nd => nd.y + altNodo(nd, nd.n === sel, ramo, gesto))) : 0;
-    const alt = ramo ? bassoRamo + 78 + 62 + W_PAD : W_PAD * 2 + (righe - 1) * W_PY + W_H + 78 + 62 + sp.px;
-    const nodi = w.nodi.map((nd, i) => nodoWorkflow(m, w, nd, i, sel, ramo, gesto, n, sp)).join('');
-    /* **Gesto C**: il «+» sul connettore. Uno per arco, piu' uno in coda prima del titolare. Il cerchio si vede al
-       passaggio; il bersaglio e' il tratto libero dell'arco — 34 px fra due nodi della stessa riga, 123 nel salto
-       di riga (misurati, non i 242 che il consiglio credeva: quello e' il passo, non l'arco). */
-    const piu = ramo && gesto === 'c' ? w.nodi.slice(0, -1).map((nd, i) => {
-      const a = wpos(i, sp), b = wpos(i + 1, sp);
-      const x = a.r === b.r ? (a.x + W_W + b.x) / 2 : (a.x + b.x) / 2 + W_W / 2;
-      const y = a.r === b.r ? a.y + W_H / 2 : (a.y + W_H + b.y) / 2;
-      return `<span class="wplus" style="left:${x}px;top:${y}px" data-az="ramo-aggiungi" data-n="${nd.n}" title="Aggiungi un passo qui"><i>${ic('i-plus')}</i></span>`;
-    }).join('') : '';
-    /* Le porte: sotto ogni nodo che non e' il titolare, una per il modello e una per ogni strumento — le stesse tre
-       del riferimento (Modello, Memoria, Strumento), che nel prodotto esistono gia'. Spente quando il passo non e'
-       ancora stato fatto: una porta accesa dice che quello strumento e' stato davvero usato. */
+    const sp = ramo ? { riga: -1, px: 0 } : spintaDi(w.nodi, sel, ramo);
+    const z = ramo ? zoom : 1;
+    /* Quanto e' alto il contenuto: nel grafo lo dice il nodo piu' in basso (le posizioni sono libere, il canvas
+       cresce dietro a quello che l'utente ha disegnato), nell'ultima volta le righe della serpentina. 78: le porte
+       sotto l'ultima riga. La barra in fondo (62) sta **fuori** dalla cornice che si scala: e' un comando, non
+       disegno, e non si rimpicciolisce con lo zoom. */
+    const basso = ramo
+      ? Math.max(...w.nodi.map(nd => nd.y + altNodo(nd, nodoScelto(nd, sel, ramo), ramo))) + 78 + W_PAD
+      : W_PAD * 2 + (righe - 1) * W_PY + W_H + 78 + sp.px;
+    const alt = Math.round(basso * z) + 62;
+    const nodi = w.nodi.map((nd, i) => nodoWorkflow(m, w, nd, i, sel, ramo, n, sp, multi || [])).join('');
+    /* Le porte del riferimento: sotto ogni nodo che non e' il titolare, una per il modello e una per ogni
+       strumento. Spente quando il passo non e' ancora stato fatto: una porta accesa dice che quello strumento e'
+       stato davvero usato. Nel grafo l'innesco non ne ha — non usa modelli, dice quando si comincia. */
     const porte = w.nodi.map((nd, i) => {
-      if (nd.titolare) return '';
+      if (nd.titolare || nd.innesco) return '';
       const p = wpos(i, sp, nd);
-      /* sotto il nodo aperto le porte scendono con lui: prima finivano dentro la card, sopra le sue etichette */
-      const giu = nd.n === sel ? altNodo(nd, true, ramo, gesto) - W_H_CHIUSO : 0;
-      /* l'etichetta della porta deve stare in 56 px: si prende la **prima parola** del nome dello strumento invece di
-         tagliarlo a meta' («Archivio del» non e' un nome, «Archivio» si') */
+      const giu = nodoScelto(nd, sel, ramo) ? altNodo(nd, true, ramo) - W_H_CHIUSO : 0;
       const corta = t => { const w0 = String(t).split(/[ ·]/)[0]; return w0.length > 11 ? w0.slice(0, 10) + '…' : w0; };
       const voci = [['Modello', true], ...nd.strumenti.slice(0, 2).map(s => [corta(s), true])];
       const spenta = ramo || nd.stato === 'da fare';
@@ -1461,39 +1588,105 @@ window.DIREZIONE_A = (function () {
         return `<span class="wport${spenta ? ' off' : ''}" style="left:${x}px;top:${y}px"></span><span class="wplab" style="left:${x}px;top:${y + 8}px">${esc(v[0])}</span>`;
       }).join('');
     }).join('');
-    /* Gli archi: da un nodo al seguente. Sulla stessa riga una curva orizzontale; a fine riga la serpentina scende
-       dal basso del nodo e rientra dal basso del successivo, che nella riga dispari sta dall'altra parte. */
-    const archi = w.nodi.slice(0, -1).map((nd, i) => {
-      const a = wpos(i, sp), b = wpos(i + 1, sp);
-      const suc = w.nodi[i + 1];
-      const cls = suc.titolare && suc.stato === 'attesa' ? 'arc att' : nd.stato === 'da fare' ? 'arc off' : 'arc';
-      if (a.r === b.r) {
-        const x1 = a.x + W_W, y1 = a.y + W_H / 2, x2 = b.x, y2 = b.y + W_H / 2;
-        return `<path class="${cls}" d="M${x1} ${y1} C ${x1 + 22} ${y1}, ${x2 - 22} ${y2}, ${x2} ${y2}"/>`;
-      }
-      const x1 = a.x + W_W / 2, y1 = a.y + W_H, x2 = b.x + W_W / 2, y2 = b.y;
-      return `<path class="${cls}" d="M${x1} ${y1} C ${x1} ${y1 + 74}, ${x2} ${y2 - 74}, ${x2} ${y2}"/>`;
-    }).join('');
+    /* ---- Gli archi ---- */
+    let archi = '', prese = '', etic = '', piu = '', io = '', fuori = '';
+    if (ramo) {
+      const perId = {}; w.nodi.forEach(nd => { perId[nd.id] = nd; });
+      const TIPI = {}; m.RAMO_TIPI.forEach(t => { TIPI[t.id] = t; });
+      G.archi.forEach(a => {
+        const da = perId[a.da], ab = perId[a.a];
+        if (!da || !ab) return;
+        const v = arcoVia(da, ab), tipo = a.tipo || 'poi';
+        archi += `<path class="arc ${tipo}" data-arco="${esc(a.id)}" data-da="${esc(a.da)}" data-a="${esc(a.a)}" d="${v.d}"/>`;
+        /* il bersaglio del clic e' un tratto invisibile largo 16 px sopra il filo: un filo da 2,2 px non si prende */
+        prese += `<path class="presa" data-az="ramo-tipo" data-arco="${esc(a.id)}" data-da="${esc(a.da)}" data-a="${esc(a.a)}" d="${v.d}"><title>${esc(TIPI[tipo].nome + ' — ' + TIPI[tipo].desc)}</title></path>`;
+        /* L'etichetta sta **sul collegamento**, ed e' li' che vive il significato (decisione 65): il nodo non
+           cresce di porte, e il fan-out illimitato resta gratis. «poi» non si stampa: e' il caso di tutti gli
+           archi di partenza (8 su 8), e scriverlo otto volte sarebbe rumore, non informazione. */
+        if (tipo !== 'poi') etic += `<span class="warcl ${tipo}" style="left:${v.mx}px;top:${v.my - 20}px" data-az="ramo-tipo" data-arco="${esc(a.id)}" title="${esc(TIPI[tipo].desc)}">${esc(TIPI[tipo].nome)}${a.se ? ' ' + esc(a.se) : ''}</span>`;
+        /* I due comandi del collegamento: il «+» (acceleratore 3 di n8n) infila un passo in mezzo, la «×» toglie
+           il collegamento — senza di lei `ramoScollega` non aveva nessun gesto che la chiamasse. Il bersaglio e'
+           38x40 px sul punto di mezzo del filo; il resto del filo (16 px di presa) gira fra i quattro
+           significati, e l'etichetta sta 20 px piu' su, per non finire sotto i due cerchi. */
+        piu += `<span class="warcz" style="left:${v.mx}px;top:${v.my}px"><span class="wplus" data-az="ramo-inserisci" data-arco="${esc(a.id)}" title="Infila un passo qui"><i>${ic('i-plus')}</i></span><span class="wdel" data-az="ramo-scollega" data-arco="${esc(a.id)}" title="Togli il collegamento"><i>${ic('i-x')}</i></span></span>`;
+      });
+      /* Le due prese di ogni nodo: da quella di destra si tira un collegamento nuovo, in quella di sinistra lo si
+         lascia. L'innesco non ha entrata (prima di lui non c'e' lavoro) e il titolare non ha uscita (dopo la firma
+         non c'e' altro lavoro): sono i due divieti del modello, disegnati. */
+      w.nodi.forEach(nd => {
+        if (!nd.innesco) io += `<span class="wio ent" data-porta="ent" data-id="${esc(nd.id)}" style="left:${nd.x}px;top:${nd.y + W_MEZZO}px"></span>`;
+        if (!nd.titolare) io += `<span class="wio usc" data-az="ramo-tira" data-porta="usc" data-id="${esc(nd.id)}" style="left:${nd.x + W_W}px;top:${nd.y + W_MEZZO}px" title="Tira un collegamento da qui"></span>`;
+      });
+      /* I rami che **non escono dall'azienda**: con il permesso «chiedi prima di consegnare» un ramo che non
+         arriva alla firma resta dentro, e la pagina lo **dice** invece di vietarlo (nessuna validazione impone la
+         convergenza: era il timore dell'utente, e non era fondato). */
+      const esce = m.ramoEsce(wOrig);
+      fuori = esce.fuori.map(nd => `<span class="wtag" style="left:${nd.x + W_W / 2}px;top:${nd.y - 14}px" title="Questo ramo non arriva alla tua firma: quello che produce resta in azienda">${ic('i-hand')}resta in azienda</span>`).join('')
+        /* Con il permesso in testa gli stessi rami **escono**, senza passare dalla coda. Prima il canvas taceva
+           proprio qui (decisione 71): cambiando il permesso i tag sparivano e non restava niente a dire che quel
+           ramo consegnava da solo. Adesso lo dice, e dice entro che cosa. */
+        + esce.anticipata.map(nd => `<span class="wtag" style="left:${nd.x + W_W / 2}px;top:${nd.y - 14}px" title="Questo ramo consegna senza passare dalla coda: lo autorizza il permesso in testa, entro i tre freni">${ic('i-bolt')}esce senza la tua firma</span>`).join('');
+    } else {
+      archi = w.nodi.slice(0, -1).map((nd, i) => {
+        const a = wpos(i, sp), b = wpos(i + 1, sp);
+        const suc = w.nodi[i + 1];
+        const cls = suc.titolare && suc.stato === 'attesa' ? 'arc att' : nd.stato === 'da fare' ? 'arc off' : 'arc';
+        if (a.r === b.r) {
+          const x1 = a.x + W_W, y1 = a.y + W_H / 2, x2 = b.x, y2 = b.y + W_H / 2;
+          return `<path class="${cls}" d="M${x1} ${y1} C ${x1 + 22} ${y1}, ${x2 - 22} ${y2}, ${x2} ${y2}"/>`;
+        }
+        const x1 = a.x + W_W / 2, y1 = a.y + W_H, x2 = b.x + W_W / 2, y2 = b.y;
+        return `<path class="${cls}" d="M${x1} ${y1} C ${x1} ${y1 + 74}, ${x2} ${y2 - 74}, ${x2} ${y2}"/>`;
+      }).join('');
+    }
     /* L'etichetta sull'arco che entra nel titolare: e' il numero che il canvas era stato scelto per far vedere —
-       dove il lavoro si ferma ad aspettare una firma. Nelle righe della pagina Esecuzione non c'e' posto, perche'
-       li' la sequenza e' gia' finita quando l'attesa comincia. */
+       dove il lavoro si ferma ad aspettare una firma. */
     const ult = w.nodi[w.nodi.length - 1];
-    const ia = w.nodi.length - 2, pa = wpos(ia, sp), pb = wpos(w.nodi.length - 1, sp);
+    const pb = wpos(w.nodi.length - 1, sp, ramo ? ult : null);
     const tag = !ramo && ult.stato === 'attesa'
       ? `<span class="wtag lime" style="left:${pb.x + W_W / 2}px;top:${pb.y - 15}px">${ic('i-bell')}aspetta la tua firma</span>` : '';
-    return `<div class="wcanvas" style="height:${alt}px">
-      <div class="grid" aria-hidden="true"></div>
-      <svg class="edges" viewBox="0 0 ${W_PAD * 2 + W_COL * W_PX} ${alt}" preserveAspectRatio="none" aria-hidden="true">${archi}</svg>
-      ${porte}${piu}${nodi}${tag}
-      ${/* **Gesto B**: le azioni nella barra, sul nodo scelto. La barra tiene il suo mestiere — il conto a
-            sinistra, l'uscita a destra — e le azioni stanno in mezzo. Senza un nodo scelto resta solo «aggiungi
-            in coda», che e' la ragione per cui questo gesto non ha bisogno di un nodo da aprire. */''}
-      <div class="wbar"><div class="tx"><b>${w.nodi.length} nodi · ${w.nodi.length - 1} passi e la tua firma</b><span>${ramo ? `${esc(w.nome)} · ${esc(w.perimetro)} · quello che succederà la prossima volta: nessun costo misurato, perché non è ancora successo` : `${esc(w.nome)} · ${esc(w.perimetro)} · ${eur(w.costo)} · ${w.minuti} min, misurati sull'esecuzione da cui è nato`}</span></div>
-        ${ramo && gesto === 'b' ? `<div class="azioni-b">
-          <span class="pill lime" data-az="ramo-aggiungi" data-n="${sel && sel < n ? sel : n - 1}">${ic('i-plus')}${sel && sel < n ? 'Aggiungi dopo il passo ' + sel : 'Aggiungi in coda'}</span>
-          <span class="pill"${sel && sel > 1 && sel < n ? ` data-az="ramo-su" data-n="${sel}"` : ' aria-disabled="true"'}>${ic('i-up')}Su</span>
-          <span class="pill"${sel && sel < n - 1 ? ` data-az="ramo-giu" data-n="${sel}"` : ' aria-disabled="true"'}>${ic('i-dn')}Giù</span>
-          <span class="pill"${sel && sel < n && n > 2 ? ` data-az="ramo-togli" data-n="${sel}"` : ' aria-disabled="true"'}>${ic('i-x')}Togli</span>
+    /* ---- La mini-mappa (acceleratore 4) ----
+       200x120 come quella di n8n. Non e' una figura: e' l'unico modo di sapere dove si e' quando il grafo esce
+       dalla cornice, ed e' il secondo riferimento ad averla. Ogni nodo e' un rettangolo in scala, e il riquadro
+       lime e' quello che si vede adesso. */
+    /* La mini-mappa **compare quando serve** e non prima: n8n la fa comparire e sparire dopo 1 s, qui la regola e'
+       che c'e' quando c'e' qualcosa da non vedere — il grafo ingrandito, o piu' alto della schermata. Cosi' non
+       copre il disegno nei casi in cui il disegno si vede tutto. */
+    const serveMappa = ramo && (z !== 1 || basso > 820);
+    const mini = serveMappa ? (() => {
+      const largo = 1008, altoC = basso;
+      const k = Math.min(198 / largo, 118 / altoC);
+      const q = w.nodi.map(nd => `<i class="${nd.innesco ? 'inn' : nd.titolare ? 'tit' : ''}" style="left:${(1 + nd.x * k).toFixed(1)}px;top:${(1 + nd.y * k).toFixed(1)}px;width:${Math.max(3, W_W * k).toFixed(1)}px;height:${Math.max(2, W_H_CHIUSO * k).toFixed(1)}px"></i>`).join('');
+      const px0 = Math.max(Math.min(0, (pan && pan.x) || 0), -Math.max(0, 1008 * z - 1008));
+      const vw = Math.min(198, largo * k / z), vh = 118;
+      return `<div class="wmini" title="La mappa del flusso: il riquadro è quello che vedi">${q}<b style="left:${(1 + (-px0 / z) * k).toFixed(1)}px;top:1px;width:${vw.toFixed(1)}px;height:${vh.toFixed(1)}px"></b></div>`;
+    })() : '';
+    const zoomBar = ramo ? `<div class="wzoombar">
+      <span class="rb" data-az="ramo-zoom" data-v="meno" title="Rimpicciolisci (−)">${ic('i-dn')}</span>
+      <span class="zv" data-az="ramo-zoom" data-v="uno" title="Torna al 100 % (0)">${Math.round(z * 100)} %</span>
+      <span class="rb" data-az="ramo-zoom" data-v="piu" title="Ingrandisci (+)">${ic('i-up')}</span>
+    </div>` : '';
+    /* Il conto in cima a sinistra: quanti passi, quanti collegamenti, quanti rami restano dentro. E' la riga che
+       legge il grafo, e sostituisce il nome che il gesto non ha. */
+    const passiRamo = ramo ? w.nodi.filter(nd => !nd.innesco && !nd.titolare).length : 0;
+    const esceC = ramo ? m.ramoEsce(wOrig) : null;
+    const fuoriN = esceC ? esceC.fuori.length : 0;
+    const antN = esceC ? esceC.anticipata.length : 0;
+    const cima = ramo ? `<div class="wsc"><span class="chip">${ic('i-rows')}${passiRamo} passi · ${G.archi.length} collegamenti</span>${fuoriN ? `<span class="chip">${ic('i-hand')}${fuoriN} ${fuoriN === 1 ? 'ramo resta' : 'rami restano'} in azienda</span>` : ''}${antN ? `<span class="chip">${ic('i-bolt')}${antN} ${antN === 1 ? 'ramo esce' : 'rami escono'} senza la tua firma</span>` : ''}${G.ciclo ? `<span class="chip">${ic('i-warn')}il flusso si chiude ad anello</span>` : ''}</div>` : '';
+    /* Lo spostamento della vista: serve solo quando il grafo ingrandito e' piu' largo della colonna (1008 px),
+       cioe' da 1,25x in su. In verticale non serve: il canvas cresce in basso, come ogni altra sezione. */
+    const px = ramo ? Math.max(Math.min(0, (pan && pan.x) || 0), -Math.max(0, 1008 * z - 1008)) : 0;
+    return `<div class="wcanvas${ramo ? ' comp' : ''}" style="height:${alt}px"${ramo ? ` data-zoom="${z}" data-pan="${px}"` : ''}>
+      <div class="wzoom" style="width:1008px;height:${basso}px;transform:translate(${px}px,0) scale(${z})">
+        <div class="grid" aria-hidden="true"></div>
+        <svg class="edges" viewBox="0 0 1008 ${basso}" width="1008" height="${basso}" aria-hidden="true">${archi}<path class="tira" d="" style="display:none"/>${prese}</svg>
+        ${porte}${piu}${nodi}${etic}${io}${fuori}${tag}
+      </div>
+      ${cima}${mini}${zoomBar}
+      <div class="wbar"><div class="tx"><b>${ramo ? `${n} nodi · l'innesco, ${passiRamo} passi e la tua firma` : `${n} nodi · ${n - 1} passi e la tua firma`}</b><span>${ramo ? `${esc(w.nome)} · ${esc(w.perimetro)} · quello che succederà la prossima volta: nessun costo misurato, perché non è ancora successo` : `${esc(w.nome)} · ${esc(w.perimetro)} · ${eur(w.costo)} · ${w.minuti} min, misurati sui passi già avvenuti`}</span></div>
+        ${ramo ? `<div class="azioni-b">
+          <span class="pill picc" data-az="ramo-riordina" title="Rimetti in ordine il disegno (R)">${ic('i-grid')}Riordina</span>
+          <span class="pill picc" data-az="ramo-aggiungi" data-id="${esc((multi && multi.length === 1 ? multi[0] : '') || 'inn')}" title="Aggiungi un passo">${ic('i-plus')}Aggiungi</span>
         </div>` : ''}
         <span class="pill" data-az="pagina" data-pagina="esecuzione" data-id="${w.chi}">Vedi l'esecuzione ${ic('i-ne')}</span></div>
     </div>`;
@@ -1608,13 +1801,17 @@ window.DIREZIONE_A = (function () {
     const w = m.workflowIdDi(opz.workflow);
     if (!w) return elencoWorkflow(m, opz);
     const e = m.byId[w.chi], d = m.dipDi(e);
-    const sel = +opz.nodo || 0;
-    /* `?ramo=1` apre la prossima volta; `?gesto=a|b|c` sceglie il gesto con cui si compone — le tre strade della
-       domanda 1 del consiglio, costruite tutte e tre per poterle guardare invece che immaginarle. Quando l'utente
-       avra' scelto, le altre due si tolgono. */
+    /* `?ramo=1` apre la prossima volta. I tre gesti della versione 22 non ci sono piu': l'utente ha scelto il
+       primo (decisione 64, «il nodo aperto e' l'editor»), e le altre due strade si sono tolte come era scritto.
+       Il «+» sul collegamento, che era il gesto C, e' rimasto — ma come **acceleratore** (decisione 67), non come
+       modo alternativo di comporre. */
     const ramo = opz.ramo === '1' || opz.ramo === 1 || opz.ramo === true;
-    const gesto = ['a', 'b', 'c'].includes(opz.gesto) ? opz.gesto : 'a';
-    const nodiVisti = ramo ? m.ramoDi(w) : w.nodi;
+    /* Nel grafo il nodo si sceglie dal suo id (due rami portano lo stesso numero); nell'ultima volta dal numero. */
+    const sel = ramo ? (opz.nodo === 0 || opz.nodo === undefined ? '' : String(opz.nodo)) : (+opz.nodo || 0);
+    const multi = ramo ? (Array.isArray(opz.multi) && opz.multi.length ? opz.multi : (sel ? [sel] : [])) : [];
+    const zoom = ramo ? (+opz.zoom || 1) : 1;
+    const G = ramo ? m.ramoDi(w) : null;
+    const nodiVisti = ramo ? G.nodi : w.nodi;
     const ult = w.nodi[w.nodi.length - 1];
     const altri = m.workflowDi(w.dip).filter(x => x.id !== w.id);
     /* La firma anticipata e i suoi tre freni. Scelta del titolare: **nasce spenta**, quindi la pagina la mostra
@@ -1634,27 +1831,42 @@ window.DIREZIONE_A = (function () {
             volta» e' dichiarata e si compone. I due numeri in cima alla pagina restano sull'ultima volta, sempre:
             e' il motivo per cui questa strada non sporca «misurati, non stimati». */''}
       <section>
-        <div class="shead"><h3>Il workflow</h3><span class="cnt"><b>${nodiVisti.length}</b><span>Nodi · ${nodiVisti.length - 1} passi e la tua firma</span></span>
+        <div class="shead"><h3>Il workflow</h3><span class="cnt"><b>${nodiVisti.length}</b><span>Nodi · ${ramo ? `l'innesco, ${nodiVisti.length - 2} passi e la tua firma` : `${nodiVisti.length - 1} passi e la tua firma`}</span></span>
           <div class="destra"><span class="pill${sel ? '' : ' on'}" data-az="nodo" data-n="0">Tutto il disegno</span></div></div>
         <div class="wtabs">
           <span class="pill${ramo ? '' : ' on'}" data-az="ramo" data-v="0" title="Quello che è successo: misurato, e non si modifica">${ic('i-eye')}L'ultima volta</span>
           <span class="pill${ramo ? ' on' : ''}" data-az="ramo" data-v="1" title="Quello che succederà: dichiarato, e si compone">${ic('i-pen')}La prossima volta</span>
         </div>
         <p class="adesso" style="max-width:900px">${ramo
-          ? `Questo è il lavoro <b>dichiarato</b>: la prossima volta ${esc(m.etichetta(e))} farà questi passi. Nasce come copia di quello che ha funzionato l'ultima volta, <b>senza i numeri</b> — un passo che deve ancora succedere non ha un costo misurato. L'ultimo nodo resta la tua firma, e non si può togliere né scavalcare.`
-          : `Questo è il lavoro <b>avvenuto</b>: ${w.conclusi} passi conclusi su ${w.passi}, ${eur(w.costo)} e ${w.minuti} minuti misurati. Non si modifica — è già successo. Per scrivere la prossima volta c'è l'altra pillola.`}</p>
-        ${canvasWorkflow(m, w, sel, ramo, gesto)}
+          ? `Questo è il lavoro <b>dichiarato</b>: la prossima volta ${esc(m.etichetta(e))} farà questi passi. Nasce come copia di quello che ha funzionato l'ultima volta, <b>senza i numeri</b> — un passo che deve ancora succedere non ha un costo misurato. I nodi <b>si trascinano</b>, dalla presa di destra si tira un collegamento, e il significato sta sul collegamento. L'ultimo nodo resta la tua firma, e non si può togliere né scavalcare.`
+          : `Questo è il lavoro <b>avvenuto</b>: ${w.conclusi} passi conclusi su ${w.passi}, ${eur(w.costo)} e ${w.minuti} minuti misurati <b>sui passi già avvenuti</b> — i passi ancora da fare non portano numeri, perché il loro costo sarebbe una stima. Non si modifica: è già successo. Per scrivere la prossima volta c'è l'altra pillola.`}</p>
+        ${canvasWorkflow(m, w, sel, ramo, zoom, multi, opz.pan)}
+        ${ramo ? `<p class="adesso" style="max-width:900px">Le scorciatoie: <b>R</b> rimette in ordine, <b>+</b> e <b>−</b> ingrandiscono, <b>0</b> torna al 100 %, <b>Canc</b> toglie i passi scelti, <b>Esc</b> lascia andare la scelta. Con <b>maiuscolo</b> premuto si sceglie più di un passo e si trascinano insieme.</p>` : ''}
       </section>
-      <section>
-        <div class="shead"><h3>La firma anticipata</h3><span class="cnt"><b>${w.firma ? 'Accesa' : 'Spenta'}</b><span>${w.firma ? 'le uscite a norma escono da sole' : 'ogni uscita passa dalla coda'}</span></span>
+      ${(() => {
+        /* ---- Chi firma quello che esce (decisione 71, 2026-09-09) ----
+           La sezione parlava della sola firma anticipata. Ma le strade per firmare in anticipo sono **due** — la
+           pillola qui e il permesso sul nodo d'innesco, che sta dentro il canvas — e la seconda usciva senza
+           freni, in un posto dove il titolare non guarda le approvazioni. Adesso la sezione dice il regime
+           **qualunque delle due sia accesa**, e i tre freni sono gli stessi perche' vengono da una funzione sola.
+           (Niente apici inversi in questo commento: sta dentro un template, e li' chiudono la stringa.) */
+        const reg = m.ramoRegime(w);
+        const daClausola = reg.da === 'clausola';
+        const cl = m.RAMO_CLAUSOLE.find(c => c.id === reg.clausola) || m.RAMO_CLAUSOLE[1];
+        const freni = m.ramoFreni(w);
+        return `<section>
+        <div class="shead"><h3>La firma anticipata</h3><span class="cnt"><b>${reg.anticipata ? (daClausola ? 'Dal permesso' : 'Accesa') : 'Spenta'}</b><span>${reg.anticipata ? 'entro i tre freni' : 'ogni uscita passa dalla coda'}</span></span>
           <div class="destra"><span class="pill${w.firma ? ' lime' : ''}" data-az="firma" data-id="${esc(w.id)}">${ic(w.firma ? 'i-check' : 'i-bell')}${w.firma ? 'Spegni la firma anticipata' : 'Accendi la firma anticipata'}</span></div></div>
-        <p class="adesso" style="max-width:900px">Accenderla vuol dire <b>firmare in anticipo le uscite che rispettano questo workflow</b>: stessi passi, stesso modello, strumenti dichiarati, entro la soglia. Tutto il resto continua a passare dalla coda. Oggi è spenta, e finché lo è la regola che vale è «${esc(ult.regola)}».</p>
+        <p class="adesso" style="max-width:900px">${daClausola
+          ? `Il permesso in testa al flusso è <b>«${esc(cl.nome)}»</b>, e con quel permesso le uscite non passano dalla coda: le autorizza il nodo d'innesco, nella <b>prossima volta</b>. Vale <b>entro gli stessi tre freni</b> della firma anticipata — prima non ne aveva nessuno, ed era una seconda strada per spegnere la firma, accesa dentro il canvas invece che qui. Per rimetterle in coda si riporta il permesso su «Chiedi prima di consegnare».`
+          : w.firma
+            ? `La firma anticipata è <b>accesa</b>: le uscite che rispettano questo workflow — stessi passi, stesso modello, strumenti dichiarati, entro la soglia — escono da sole. Tutto il resto continua a passare dalla coda.`
+            : `Accenderla vuol dire <b>firmare in anticipo le uscite che rispettano questo workflow</b>: stessi passi, stesso modello, strumenti dichiarati, entro la soglia. Tutto il resto continua a passare dalla coda. Oggi è spenta, e finché lo è la regola che vale è «${esc(ult.regola)}».`}</p>
         <div class="wfirma">
-          <div class="fcard"><span class="k">Soglia di costo</span><b>${eur(w.soglia)}</b><span class="d">Questo workflow è costato ${eur(w.costo)} l'ultima volta. Sopra la soglia l'uscita torna in coda anche con la firma accesa.</span></div>
-          <div class="fcard"><span class="k">Perimetro</span><b>${esc(w.perimetro)}</b><span class="d">Vale solo per questo cliente. Per un altro cliente la firma non si applica e la consegna aspetta te.</span></div>
-          <div class="fcard"><span class="k">Scadenza</span><b>${w.scadenza} esecuzioni</b><span class="d">Poi torna in coda da sola, e anche prima se cambia il soul prompt del dipendente o il modello di un passo.</span></div>
+          ${freni.map(f => `<div class="fcard"><span class="k">${esc(f.nome)}</span><b>${f.eur ? eur(f.valore) : esc(f.valore)}</b><span class="d">${esc(f.desc)}</span></div>`).join('')}
         </div>
-      </section>
+      </section>`;
+      })()}
       ${altri.length ? `
       <section>
         <div class="shead"><h3>Gli altri workflow di ${esc(d.nome)}</h3>${contoSez(altri.length, altri.length, 'Workflow')}
@@ -1668,6 +1880,7 @@ window.DIREZIONE_A = (function () {
        parola lo dice invece di lasciarlo capire. E' la garanzia che il ramo non sporca «misurati, non stimati». */
     const stats = `<div class="stat"><b>${eur(w.costo)}</b><span>costo misurato</span></div>
       <div class="stat"><b>${w.nodi.length}</b><span>nodi${ramo ? " l'ultima volta" : ''}</span></div>`;
+    void G;
     return cornice(m, opz, w.nome.toUpperCase(), stats, 'org', corpo, '');
   }
 
@@ -2397,13 +2610,15 @@ window.DIREZIONE_A = (function () {
   }
 
   function render(m, opz) {
-    opz = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, confronto: null, motivo: false, periodo: {}, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '', cerca: {}, sez: {}, forma: '', consegna: '', workflow: '', nodo: 0, routine: '', ramo: 0, gesto: 'a' }, opz || {});
+    opz = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, confronto: null, motivo: false, periodo: {}, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '', cerca: {}, sez: {}, forma: '', consegna: '', workflow: '', nodo: 0, routine: '', ramo: 0, zoom: 1, multi: [], pan: { x: 0, y: 0 } }, opz || {});
     return opz.pagina === 'routine' ? paginaRoutine(m, opz) : opz.pagina === 'workflow' ? paginaWorkflow(m, opz) : opz.pagina === 'consegna' ? paginaConsegna(m, opz) : opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : opz.pagina === 'dipendente' ? dipendente(m, opz) : opz.pagina === 'esecuzione' ? esecuzione(m, opz) : opz.pagina === 'costi' ? paginaCosti(m, opz) : opz.pagina === 'agenda' ? agenda(m, opz) : opz.pagina === 'chat' ? chat(m, opz) : home(m, opz);
   }
 
   /* Disegna e collega i clic: tendina, cambio pagina, filtri, decisioni. Ritorna lo stato. */
   function monta(radice, m, opz) {
-    const st = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, editor: null, confronto: null, motivo: false, log: 'tutto', periodo: { dipartimenti: 'mese', dipendenti: 'mese', clienti: 'mese', modelli: 'mese' }, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '', cerca: {}, sez: {}, forma: '', workflow: '', nodo: 0, routine: '', ramo: 0, gesto: 'a' }, opz || {});
+    const st = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, editor: null, confronto: null, motivo: false, log: 'tutto', periodo: { dipartimenti: 'mese', dipendenti: 'mese', clienti: 'mese', modelli: 'mese' }, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '', cerca: {}, sez: {}, forma: '', workflow: '', nodo: 0, routine: '', ramo: 0, zoom: 1, multi: [], pan: { x: 0, y: 0 } }, opz || {});
+    if (!Array.isArray(st.multi)) st.multi = [];
+    if (!st.pan) st.pan = { x: 0, y: 0 };
     const n = () => m.richiesteDi('attesa').length;
     /* parametri di avvio della pagina del dipendente: ?tendina=dossier (la revisione in sospeso del dipendente, estesa) e ?confronto=a,b (due versioni del prompt) */
     const idxRevisione = id => inAttesa(m).findIndex(r => r.tipo === 'revisione' && r.chi === id);
@@ -2477,6 +2692,155 @@ window.DIREZIONE_A = (function () {
       b[k] = inp.value; inp.style.borderColor = '';
       aggiornaAnteprima();
     });
+    /* ================= I gesti del canvas (versione 24) =================
+       La richiesta dell'utente era «poter spostare liberamente ogni card nel canvas e connettere e biforcare piu'
+       connettori anche a un singolo task». Qui ci sono i quattro gesti che la realizzano — trascinare, collegare,
+       spostare la vista, scegliere piu' nodi — piu' i quattro acceleratori di n8n (decisione 67).
+
+       **La matematica, misurata.** La Console si scala con `zoom` sulla radice (larghezza / 1440) e il canvas si
+       scala con `transform: scale()` al suo interno. Un pixel del disegno vale quindi `s x z` pixel di schermo, e
+       i due fattori non si indovinano: si **misurano** dal rapporto fra il rettangolo sullo schermo e la
+       larghezza dichiarata. Cosi' il trascinamento e' esatto a qualunque larghezza di finestra e a qualunque
+       ingrandimento — che era la misura presa nella versione 23.
+
+       **Perche' il disegno si rifa' tutto a ogni movimento**: nodo, collegamenti, porte, etichette e prese sono
+       un conto solo, fatto prima di stampare (regola del canvas, versione 20). Muovendo il solo nodo, gli archi
+       resterebbero indietro — che e' esattamente il difetto che il grafo aveva. Un workflow ha da 4 a 9 nodi:
+       ridisegnare la sola sezione del canvas costa meno di un fotogramma. */
+    let trascinato = false;             /* un trascinamento non deve diventare anche un clic */
+    let gesto = null;
+    const canvasComp = () => radice.querySelector('.wcanvas.comp');
+    const wDiSt = () => (st.pagina === 'workflow' && st.workflow ? m.workflowIdDi(st.workflow) : null);
+    /* I due fattori di scala, misurati sulla pagina viva: `s` e' lo zoom della cornice, `f` e' `s x z`. */
+    const fattori = cv => {
+      const zl = cv.querySelector('.wzoom');
+      return { s: cv.getBoundingClientRect().width / cv.offsetWidth, f: zl.getBoundingClientRect().width / zl.offsetWidth, zl };
+    };
+    const puntoCanvas = (cv, ev) => {
+      const { f, zl } = fattori(cv), r = zl.getBoundingClientRect();
+      return { x: (ev.clientX - r.left) / f, y: (ev.clientY - r.top) / f };
+    };
+    /* Ridisegna la sola sezione del canvas, non tutta la pagina: durante un trascinamento la pagina intera
+       costerebbe il riavvio degli avatar animati a ogni fotogramma. */
+    const soloCanvas = () => {
+      const w = wDiSt(), cv = radice.querySelector('.wcanvas');
+      if (!w || !cv) { tutto(); return; }
+      const t = document.createElement('div');
+      t.innerHTML = canvasWorkflow(m, w, st.multi.length === 1 ? st.multi[0] : '', true, st.zoom, st.multi, st.pan);
+      cv.replaceWith(t.firstElementChild);
+    };
+    const ZOOMI = [0.6, 0.8, 1, 1.25, 1.5];
+    const zoomA = v => {
+      const i = ZOOMI.indexOf(st.zoom) >= 0 ? ZOOMI.indexOf(st.zoom) : 2;
+      st.zoom = v === 'piu' ? ZOOMI[Math.min(ZOOMI.length - 1, i + 1)] : v === 'meno' ? ZOOMI[Math.max(0, i - 1)] : 1;
+      if (st.zoom <= 1) st.pan = { x: 0, y: 0 };
+      tutto();
+    };
+    radice.addEventListener('mousedown', ev => {
+      if (ev.button !== 0) return;
+      const cv = canvasComp(); if (!cv || !cv.contains(ev.target)) return;
+      const w = wDiSt(); if (!w) return;
+      /* dalla presa di destra si tira un collegamento nuovo (acceleratore 2 di n8n) */
+      const porta = ev.target.closest('.wio.usc');
+      if (porta) {
+        ev.preventDefault();
+        gesto = { tipo: 'tira', da: porta.dataset.id, cv, w };
+        cv.classList.add('collega');
+        return;
+      }
+      /* un comando dentro il nodo resta un comando: non si trascina */
+      if (ev.target.closest('.azioni-n, .campi .fv, .warcz, .warcl, .wzoombar, .wbar, .wmini')) return;
+      const nodo = ev.target.closest('.wnode');
+      if (nodo) {
+        const id = nodo.dataset.id; if (!id) return;
+        ev.preventDefault();
+        const ids = st.multi.length > 1 && st.multi.indexOf(id) >= 0 ? st.multi.slice() : [id];
+        const r = m.ramoDi(w), da = {};
+        ids.forEach(k => { const nd = r.nodi.find(x => x.id === k); if (nd) da[k] = { x: nd.x, y: nd.y }; });
+        gesto = { tipo: 'sposta', ids, da, x0: ev.clientX, y0: ev.clientY, cv, w };
+        cv.classList.add('trascina');
+        return;
+      }
+      /* sul fondo: con il maiuscolo si sceglie a riquadro, se no si sposta la vista */
+      ev.preventDefault();
+      const p = puntoCanvas(cv, ev);
+      gesto = ev.shiftKey
+        ? { tipo: 'riquadro', p0: p, cv, w }
+        : { tipo: 'vista', x0: ev.clientX, pan0: (st.pan && st.pan.x) || 0, cv, w };
+      cv.classList.add('trascina');
+    });
+    window.addEventListener('mousemove', ev => {
+      if (!gesto) return;
+      /* La cornice va **ripresa ogni volta**: `soloCanvas()` sostituisce l'elemento a ogni fotogramma, e quello di
+         partenza resta staccato dal documento — un rettangolo largo 0, cioe' un fattore di scala 0 e posizioni
+         `NaN`. E' il difetto che il primo giro di prove ha trovato al primo trascinamento. */
+      const cv = canvasComp() || gesto.cv, w = gesto.w;
+      gesto.cv = cv;
+      if (gesto.tipo === 'sposta') {
+        const { f } = fattori(cv);
+        const dx = (ev.clientX - gesto.x0) / f, dy = (ev.clientY - gesto.y0) / f;
+        if (!trascinato && Math.abs(ev.clientX - gesto.x0) + Math.abs(ev.clientY - gesto.y0) < 4) return;
+        trascinato = true;
+        gesto.ids.forEach(id => { const d = gesto.da[id]; if (d) m.ramoPosiziona(w, id, d.x + dx, d.y + dy); });
+        soloCanvas();
+      } else if (gesto.tipo === 'tira') {
+        trascinato = true;
+        const p = puntoCanvas(cv, ev);
+        const r = m.ramoDi(w).nodi.find(x => x.id === gesto.da);
+        const filo = cv.querySelector('path.tira');
+        if (r && filo) {
+          const d = Math.max(30, Math.min(120, Math.abs(p.x - (r.x + 208)) * 0.5));
+          filo.setAttribute('d', 'M' + (r.x + 208) + ' ' + (r.y + 43.5) + ' C ' + (r.x + 208 + d) + ' ' + (r.y + 43.5) + ', ' + (p.x - d) + ' ' + p.y + ', ' + p.x + ' ' + p.y);
+          filo.style.display = '';
+        }
+      } else if (gesto.tipo === 'vista') {
+        trascinato = true;
+        const { s } = fattori(cv);
+        st.pan = { x: gesto.pan0 + (ev.clientX - gesto.x0) / s, y: 0 };
+        soloCanvas();
+      } else if (gesto.tipo === 'riquadro') {
+        trascinato = true;
+        const p = puntoCanvas(cv, ev), a = gesto.p0;
+        const x1 = Math.min(a.x, p.x), x2 = Math.max(a.x, p.x), y1 = Math.min(a.y, p.y), y2 = Math.max(a.y, p.y);
+        st.multi = m.ramoDi(w).nodi.filter(nd => nd.x + 208 > x1 && nd.x < x2 && nd.y + 87 > y1 && nd.y < y2).map(nd => nd.id);
+        gesto.riquadro = { x1, y1, x2, y2 };
+        soloCanvas();
+        const cvv = canvasComp(); if (cvv) { const zl = cvv.querySelector('.wzoom'); const b = document.createElement('i'); b.className = 'wband'; b.style.cssText = 'position:absolute;border:1px solid var(--lime);background:rgb(184 252 100/.08);left:' + x1 + 'px;top:' + y1 + 'px;width:' + (x2 - x1) + 'px;height:' + (y2 - y1) + 'px;z-index:7;pointer-events:none'; zl.appendChild(b); }
+      }
+    });
+    window.addEventListener('mouseup', ev => {
+      if (!gesto) return;
+      const g = gesto; gesto = null;
+      if (g.cv) g.cv.classList.remove('trascina', 'collega');
+      if (g.tipo === 'sposta' && trascinato) { st.multi = g.ids; st.nodo = g.ids.length === 1 ? g.ids[0] : 0; tutto(); }
+      else if (g.tipo === 'tira') {
+        const su = document.elementFromPoint(ev.clientX, ev.clientY);
+        const nodo = su && su.closest ? su.closest('.wnode') : null;
+        /* Il rilascio **nel vuoto** crea il passo gia' collegato: e' l'idea di UX migliore di n8n, e senza di essa
+           creare un passo collegato sono tre gesti invece di uno. */
+        if (nodo && nodo.dataset.id) { m.ramoCollega(g.w, g.da, nodo.dataset.id); st.nodo = nodo.dataset.id; st.multi = [nodo.dataset.id]; }
+        else if (trascinato) { const p = puntoCanvas(g.cv, ev); const id = m.ramoNuovo(g.w, g.da, p.x - 104, p.y - 43); if (id) { st.nodo = id; st.multi = [id]; } }
+        tutto();
+      }
+      else if (g.tipo === 'riquadro' && trascinato) { st.nodo = st.multi.length === 1 ? st.multi[0] : 0; tutto(); }
+      else if (g.tipo === 'vista' && trascinato) { /* la vista e' gia' aggiornata */ }
+      setTimeout(() => { trascinato = false; }, 0);
+    });
+    /* Le scorciatoie. n8n ne ha una quarantina; qui ce ne sono sei, e sono quelle dei gesti che esistono davvero
+       (regola 25: un comando fa quello che dice, o non c'e'). */
+    window.addEventListener('keydown', ev => {
+      if (!(st.pagina === 'workflow' && st.ramo && st.workflow)) return;
+      if (ev.target && ev.target.closest && ev.target.closest('input, textarea')) return;
+      const w = wDiSt(); if (!w) return;
+      const k = ev.key;
+      if (k === 'Escape') { st.multi = []; st.nodo = 0; tutto(); }
+      else if (k === 'Delete' || k === 'Backspace') { if (!st.multi.length) return; ev.preventDefault(); st.multi.forEach(id => m.ramoTogli(w, id)); st.multi = []; st.nodo = 0; tutto(); }
+      else if (k === 'r' || k === 'R') { m.ramoRiordina(w); st.pan = { x: 0, y: 0 }; tutto(); }
+      else if (k === '+' || k === '=') { zoomA('piu'); }
+      else if (k === '-' || k === '_') { zoomA('meno'); }
+      else if (k === '0') { zoomA('uno'); }
+      else if (k === 'a' && (ev.ctrlKey || ev.metaKey)) { ev.preventDefault(); st.multi = m.ramoDi(w).nodi.map(nd => nd.id); st.nodo = 0; tutto(); }
+    });
     radice.addEventListener('keydown', ev => {
       if (ev.key === 'Enter' && ev.target.closest('input[data-campo="motivo"]')) { ev.preventDefault(); const b = radice.querySelector('[data-az="rifiuta-conferma"]'); if (b) b.click(); return; }
       if (ev.key === 'Enter' && ev.target.closest('input[data-campo="chat"]')) { ev.preventDefault(); const b = radice.querySelector('[data-az="esec-invia"],[data-az="chat-invia"]'); if (b) inviaNota(+b.dataset.id, b.dataset.az === 'chat-invia'); return; }
@@ -2511,22 +2875,45 @@ window.DIREZIONE_A = (function () {
       /* la routine (versione 22, conferma e): dal nome nella colonna «chi ha deciso» e dal Dipartimento. Niente
          cerchio nel rail: con tre voci non lo merita. */
       else if (az === 'routine') { ev.stopPropagation(); st.routine = el.dataset.id || ''; st.pagina = 'routine'; if (el.dataset.dip) { st.dip = el.dataset.dip; st.routine = ''; } if (st.tendina === 'estesa') st.tendina = 'aperta'; tutto(); window.scrollTo(0, 0); }
-      else if (az === 'nodo') { ev.stopPropagation(); const v = +el.dataset.n || 0; st.nodo = st.nodo === v ? 0 : v; tutto(); }
-      /* Il ramo e le tre azioni del comporre (versione 22). Il modello e' l'unico che sa che cosa si puo' fare —
-         il titolare non si tocca — e i tre gesti chiamano le stesse tre funzioni: e' il modo di poterli guardare
-         uno accanto all'altro senza che uno sia piu' capace degli altri. */
-      else if (az === 'ramo') { ev.stopPropagation(); st.ramo = el.dataset.v === '1' ? 1 : 0; st.nodo = 0; tutto(); }
-      else if (az === 'ramo-aggiungi' || az === 'ramo-su' || az === 'ramo-giu' || az === 'ramo-togli' || az === 'ramo-modello') {
+      /* Nel grafo il nodo si sceglie dal suo id: due rami che escono dallo stesso passo portano lo stesso numero.
+         Col maiuscolo premuto se ne sceglie piu' d'uno, e allora nessuno si apre (selezione multipla). */
+      else if (az === 'nodo') {
         ev.stopPropagation();
-        const w = m.workflowIdDi(st.workflow); if (!w) return;
-        const n = +el.dataset.n || 0;
-        if (az === 'ramo-aggiungi') st.nodo = m.ramoAggiungi(w, n);
-        else if (az === 'ramo-su') st.nodo = m.ramoSposta(w, n, -1);
-        else if (az === 'ramo-giu') st.nodo = m.ramoSposta(w, n, 1);
-        else if (az === 'ramo-togli') st.nodo = m.ramoTogli(w, n);
-        else { const ordine = Object.keys(m.MODELLI); const nd = m.ramoDi(w)[n - 1]; if (nd) m.ramoCampo(w, n, 'modello', ordine[(ordine.indexOf(nd.modello) + 1) % ordine.length]); }
+        if (trascinato) { trascinato = false; return; }
+        const id = el.dataset.id, num = +el.dataset.n || 0;
+        if (st.ramo && id) {
+          if (ev.shiftKey) {
+            const i = st.multi.indexOf(id);
+            st.multi = i >= 0 ? st.multi.filter(x => x !== id) : st.multi.concat([id]);
+          } else st.multi = st.multi.length === 1 && st.multi[0] === id ? [] : [id];
+          st.nodo = st.multi.length === 1 ? st.multi[0] : 0;
+        } else { st.nodo = st.nodo === num ? 0 : num; st.multi = []; }
         tutto();
       }
+      else if (az === 'ramo') { ev.stopPropagation(); st.ramo = el.dataset.v === '1' ? 1 : 0; st.nodo = 0; st.multi = []; st.pan = { x: 0, y: 0 }; tutto(); }
+      /* ---- I gesti del comporre (versione 24) ----
+         Il modello e' l'unico che sa che cosa si puo' fare — il titolare non si tocca, l'innesco non si toglie,
+         un arco non torna su se stesso — e la pagina si limita a chiamarlo. Le azioni si passano l'**id** del
+         nodo o dell'arco, mai il numero del passo: nel grafo il numero non identifica piu' niente. */
+      else if (az === 'ramo-aggiungi' || az === 'ramo-togli' || az === 'ramo-modello' || az === 'ramo-clausola'
+               || az === 'ramo-inserisci' || az === 'ramo-tipo' || az === 'ramo-riordina' || az === 'ramo-scollega') {
+        ev.stopPropagation();
+        const w = m.workflowIdDi(st.workflow); if (!w) return;
+        const id = el.dataset.id || '', arco = el.dataset.arco || '';
+        if (az === 'ramo-aggiungi') { st.nodo = m.ramoAggiungi(w, id || 'inn'); st.multi = st.nodo ? [st.nodo] : []; }
+        else if (az === 'ramo-togli') { m.ramoTogli(w, id); st.nodo = 0; st.multi = []; }
+        else if (az === 'ramo-scollega') { m.ramoScollega(w, arco); }
+        else if (az === 'ramo-inserisci') { st.nodo = m.ramoInserisci(w, arco); st.multi = st.nodo ? [st.nodo] : []; }
+        else if (az === 'ramo-riordina') { m.ramoRiordina(w); st.pan = { x: 0, y: 0 }; }
+        /* Un clic sul collegamento gira fra i quattro significati (decisione 65: stanno sull'arco, non sulle porte
+           del nodo). Il quarto, «se si ferma», e' lo stato `errore` che la pagina Esecuzione mostra gia': una
+           sola fonte, due letture. */
+        else if (az === 'ramo-tipo') { const a = m.ramoDi(w).archi.find(x => x.id === arco); if (a) { const o = m.RAMO_TIPI.map(t => t.id); m.ramoArco(w, arco, 'tipo', o[(o.indexOf(a.tipo || 'poi') + 1) % o.length]); } }
+        else if (az === 'ramo-clausola') { const r = m.ramoDi(w); const nd = r.nodi.find(x => x.id === id); if (nd) { const o = m.RAMO_CLAUSOLE.map(c => c.id); nd.clausola = o[(o.indexOf(nd.clausola) + 1) % o.length]; } }
+        else { const ordine = Object.keys(m.MODELLI); const nd = m.ramoDi(w).nodi.find(x => x.id === id); if (nd) m.ramoCampo(w, id, 'modello', ordine[(ordine.indexOf(nd.modello) + 1) % ordine.length]); }
+        tutto();
+      }
+      else if (az === 'ramo-zoom') { ev.stopPropagation(); zoomA(el.dataset.v); }
       else if (az === 'firma') { ev.stopPropagation(); const id = el.dataset.id; m.firme[id] = !m.firme[id]; tutto(); }
       else if (az === 'consegna') { ev.stopPropagation(); st.consegna = el.dataset.id; st.pagina = 'consegna'; if (st.tendina === 'estesa') st.tendina = 'aperta'; st.motivo = false; tutto(); window.scrollTo(0, 0); }
       else if (az === 'pagina') { ev.stopPropagation(); st.pagina = el.dataset.pagina; st.routine = el.dataset.routine || ''; if (el.dataset.dip) { st.dip = el.dataset.dip; if (st.pagina === 'richieste') st.filtri = { dip: el.dataset.dip }; } if (el.dataset.id) { if (st.pagina === 'chat') st.filo = +el.dataset.id; else st.id = +el.dataset.id; } if (el.dataset.chi) st.filtri = { chi: el.dataset.chi }; if (el.dataset.cliente) st.filtri = Object.assign(st.pagina === 'richieste' && el.dataset.dip ? { dip: el.dataset.dip } : {}, { cliente: el.dataset.cliente }); if (st.tendina === 'confronto' || st.tendina === 'estesa') st.tendina = 'aperta'; st.motivo = false; tutto(); window.scrollTo(0, 0); }

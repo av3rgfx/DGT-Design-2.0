@@ -1,5 +1,341 @@
 # Prossima sessione — passaggio di consegne
 
+## Versione 26 — il workflow sul telefono diventa il canvas, e le posizioni sono dati (2026-09-09)
+
+Quattro decisioni prese dall'utente, tutte sulla raccomandazione del consiglio. **Nessuna è ancora in codice**:
+questa sessione ha misurato, consultato e deciso; il disegno si fa nella prossima. Il codice del prodotto è quello
+della versione 25 (552 verifiche verdi, 79 catture).
+
+### Da dove nasce
+
+Giudizio dell'utente sulla schermata 10 del telefono: «come è stato fatto adesso non mi piace per niente perché
+dà un'anteprima del workflow sbagliata». **Verificato guardando le due catture, ed è vero.** Telefono e Console
+oggi non sono lo stesso oggetto a due misure, sono **due disegni diversi**: fondo chiaro contro notte; card a
+tutta larghezza (348 px) contro nodo da 208; una colonna dritta contro una serpentina su tre righe; porte come
+chip dentro la card contro pallini con etichetta sotto il nodo; barretta dritta contro curva luminosa. Chi guarda
+il telefono si figura *un elenco di cinque passi*, poi apre la Console e trova *una lavagna notturna*.
+
+### Le quattro decisioni
+
+| n. | domanda | decisione |
+|---|---|---|
+| **72** | che forma prende il workflow sul telefono | **il canvas vero, in sola lettura**, con tre condizioni: resta una **card dentro la pagina** (non una schermata intera, così firma, freni e tab non si spostano); lo zoom vale su **tutte e due le tab**, non solo «La prossima volta»; le posizioni **non si ricalcolano mai** (regola 42) |
+| **73** | con quale ingrandimento si apre | **«tutto dentro» (0,306) come stato d'ingresso**, e il tocco su un nodo porta a scala 1 centrato su quello. Un oggetto a due scale invece di due oggetti: la mappa non è un componente nuovo, è lo stesso canvas rimpicciolito |
+| **74** | che fine fa la colonna di oggi | **sparisce, il canvas la sostituisce**. I chip che dicono la topologia («2 rami», «arriva da 2») diventano disegno; quelli che dicono il **contratto** («esce senza la tua firma», «resta in azienda») restano come etichette, perché dicono la firma e la firma non si legge a 4,3 px |
+| **75** | il modo semplificato per creare routine con trigger | **prima i dati, poi il modo.** Si costruisce quando esistono gli inneschi veri. Vincoli già decisi: stesso oggetto dell'editor, apribile lì; può solo **stringere**, mai allargare; **non può accendere una firma anticipata senza i tre freni**; se il flusso esce dalla catena, il modulo si rifiuta di aprirlo e manda al canvas, **mai appiattire in silenzio**. Il nome è **«routine»**: esiste già, niente parole nuove |
+
+### Le misure che hanno deciso, e quella che avevo sbagliato
+
+Quanto grafo entra nella larghezza utile dello schermo (278,4 px), a scala 1:
+
+| | scala | testo da 14 px |
+|---|---|---|
+| 1 colonna di nodi (208 px) | **1** | **14 px** |
+| 2 colonne (una biforcazione, 442 px) | 0,6 | 8,8 px |
+| 3 colonne (676 px) | 0,4 | 5,8 px |
+| 4 colonne = tutto il grafo (910 px) | **0,306** | **4,3 px** |
+
+**Il numero che avevo sbagliato io, e che i revisori hanno corretto.** Nel contesto passato al consiglio avevo
+scritto «~5,6 schermate di trascinamento» per attraversare un grafo. È falso: `direzione-a.js:1680` fa
+`translate(${px}px, 0)` — il pan è **solo orizzontale** — e la card del canvas cresce in altezza
+(`alt = basso * z + 62`), quindi il verticale lo fa il normale scorrimento della pagina. Il prezzo vero della
+strada scelta è **632 px di scorrimento laterale** (910 − 278,4). Metà del consiglio ha discusso un costo che non
+esiste, e la strada dell'utente ne è uscita più forte di come io l'avevo presentata.
+
+### Che cosa ha trovato la revisione incrociata, e i pareri no
+
+Come nella versione 24 e nella 25, le cose che hanno cambiato la risposta vengono da qui.
+
+1. **Le posizioni dei nodi sono dati del titolare** (`ramoPosiziona`, `dati.js:1357`, scrive `nd.x`/`nd.y` con il
+   vincolo `1008 - 208 - 8`). Due pareri proponevano di «riposare» il grafo sul telefono per azzerare lo
+   scorrimento laterale: mostrerebbe una disposizione che il titolare non ha scelto. **È diventata la regola 42**,
+   ed è l'argomento più forte a favore della strada dell'utente — che nessuno dei cinque pareri aveva.
+2. **Lo zoom esiste in una tab su due.** `const z = ramo ? zoom : 1` (`direzione-a.js:1566`), e lo stesso per la
+   mini-mappa (1655) e la barra dello zoom (1664). «L'ultima volta» — la tab dove stanno costi, durate e «aspetta
+   la tua firma» — è a scala fissa, senza zoom e senza mappa. Ogni parere era scritto per metà della pagina.
+3. **Il canvas è una card, non una schermata** (`direzione-a.js:1679`). Il parere che rifiutava la strada
+   dell'utente lo faceva su un costo inventato («il titolare smette di firmare dal telefono»): come card, la
+   pillola della firma e i tre freni restano dove sono. L'argomento decisivo contro spariva.
+4. **Un parere aveva inventato un numero**: «26 routine a quaranta». Contate: **3 a undici e 3 a quaranta**; 26 è
+   il numero dei *workflow*. Verificato a mano prima di usarlo.
+5. **278,4 px non è un telefono vero**: è la cornice 300×620 dello specimen mostrata a `zoom:1.25`. Su un telefono
+   reale (390-430 px CSS) la scala «tutto dentro» sarebbe ~0,43. Le decisioni restano prese nel sistema di misura
+   dello specimen, che è quello del repository, ma va saputo.
+
+### Perché la 75 non tocca codice oggi
+
+Contato nel modello: **tutti e 3 gli inneschi delle routine sono di tipo `ora`** (evento, soglia ed esterno hanno
+zero record); **nessuna delle 3 routine ha un workflow dietro**; il record `routine` **non ha né `nodi` né
+`archi`** (ha `passi`, che sono nomi) e tutte sono `origine: 'derivata'`. Il «trigger event» che l'utente vuole
+**non esiste nei dati**, e nemmeno l'oggetto su cui il modo semplificato dovrebbe scrivere. Regola 26: non si
+promette quello che non c'è. Da segnalare per chi la costruirà: oggi un workflow **nasce da un'esecuzione
+riuscita** (`workflowDi`), quindi «creare un flusso dal nulla» è un gesto che nel prodotto non esiste ancora —
+né sul telefono né nell'editor. È il vero primo passo della 75, prima di qualunque modulo.
+
+## Come riprendere (dalla versione 26)
+
+1. **Il disegno della 72-74 è tutto da fare.** Il metodo di sempre: rifare i font locali, lanciare le sei prove di
+   `prove/` e catturare le pagine **prima** di toccare qualcosa.
+2. **L'ordine suggerito**: (a) spostare il canvas da `direzione-a.js` a `componenti.js` — che `mobile.html` carica
+   già — insieme al suo CSS, che **non va riscritto** perché tutti e due i file fanno `prefissa(css, '.dirA')`;
+   (b) il flag `soloLettura` che spegne prese, `+` sull'arco, `×`, trascinamento del nodo e «Riordina»; (c) lo
+   zoom esteso alla tab «L'ultima volta»; (d) lo scatto d'ingresso «tutto dentro»; (e) i gesti touch — **oggi nel
+   repository non ce n'è nessuno, è tutto mouse**: ne servono due, trascina-la-vista e pinch.
+3. **Le prove che moriranno**: le sezioni di `prove/workflow.js` che contano `.m-wn` vanno riscritte su `.wnode`.
+   La sezione dei freni (versione 25) sopravvive.
+4. **Attenzione**, come sempre: `scatta.js` e `prove/console.js` si reggono ancora su `section:nth-of-type(2)` per
+   le consegne del Dipartimento.
+5. **Le decisioni 68 e 69 restano in attesa dei dati** (biforcazioni: 0), come dalla versione 25.
+
+
+## Versione 25 — le quattro decisioni prese, e il permesso che non aveva freni (2026-09-09)
+
+Le tre domande della versione 24 e la quarta che solo la revisione incrociata aveva sollevato sono **decise**
+dall'utente, tutte e quattro sulla raccomandazione del consiglio. Tre non toccano codice oggi; la quarta era un
+difetto vivo, ed è chiusa. **552 verifiche verdi** (erano 535), 79 catture.
+
+### Le quattro decisioni
+
+| n. | domanda | decisione |
+|---|---|---|
+| **68** | che aspetto ha un ramo mai percorso nell'«ultima volta» | **spento, e a dirlo è il collegamento**: il nodo resta quello che è (`.arc.off`, porte spente: zero stati nuovi) e il filo non percorso porta l'etichetta **«non è passato di qui»**. La parola separa «non ancora» da «mai», che sarebbero lo stesso grigio su 9 nodi a undici e 40 a quaranta |
+| **69** | un flusso biforcato produce una voce o *n* nella coda | ***n* voci, vicine e legate**: una per uscita, perché la responsabilità è per uscita; consecutive in coda, e ognuna dice «2 di 3 · stessa esecuzione». Prezzo misurato: da 4 voci a 6-8 a undici, da 7 a 10-12 a quaranta |
+| **70** | quale parola per il quarto tipo di connettore | **«se si ferma»**, la parola del modello. Misurata nel canvas vero, Urbanist 10 px: **65,67 px**, dentro i 150 dell'etichetta — e smonta l'obiezione di chi voleva portare il canvas da quattro colonne a tre stimandola ~95 |
+| **71** | la clausola dell'innesco prende i tre freni della firma anticipata | **sì, gli stessi tre** |
+
+### La 71 era un difetto vivo, e adesso è chiuso
+
+Firmare in anticipo si poteva in **due modi**: la pillola «firma anticipata», che dichiara soglia, perimetro e
+scadenza, e il **permesso sul nodo d'innesco**, che non aveva **nessun** freno. La seconda era la più nascosta
+(si accende dentro il canvas, non nel pannello dove il titolare guarda le approvazioni) ed era la più permissiva.
+E la descrizione di «Fai pure» **prometteva già** i tre freni che il codice non applicava: la parola diceva una
+cosa e la funzione ne faceva un'altra.
+
+Che cosa è cambiato:
+- i tre freni stanno in **una funzione sola** (`ramoFreni`), che leggono la firma anticipata, il permesso, la
+  Console e il telefono. Prima erano scritti a mano in due pagine e non governavano niente;
+- `ramoRegime(w)` dice **quale delle due strade** firma, e la sezione lo stampa («Dal permesso», non solo
+  «Accesa»): con due interruttori per la stessa luce, dire che è accesa non dice chi l'ha accesa;
+- `ramoEsce` **non tace più** cambiando permesso. Prima un ramo che non arriva alla firma diceva «resta in
+  azienda» con «chiedi prima di consegnare» e **niente** con gli altri due — l'informazione spariva dove serviva
+  di più. Ora dice «esce senza la tua firma», e la riga in cima lo conta.
+
+**La prova era tautologica, e me ne sono accorto solo eseguendola.** Nel grafo di partenza *ogni* nodo arriva al
+titolare, quindi i rami terminali sono **zero** e il confronto «con il permesso escono tanti rami quanti ne
+restavano senza» era `0 === 0`: verde, e non provava niente. La prova adesso **costruisce il caso** col gesto
+vero — si tira dalla presa e si rilascia nel vuoto — e allora i numeri sono 1 contro 0 e 0 contro 1.
+
+### Un secondo difetto, trovato disegnando
+
+Il rilascio nel vuoto posava il passo nuovo **sopra un altro nodo**: nella prima cattura ne copriva due, e con
+loro il proprio tag. Il gesto gemello (il «+» sul connettore) la spinta verso il basso ce l'aveva già dalla
+versione 24 (`ramoOccupato`); a `ramoNuovo` mancava, ed erano le stesse due righe. Adesso: **0 coppie di nodi
+sovrapposti**, e una prova lo fissa.
+
+Da segnalare: la prima diagnosi era **sbagliata** — avevo scritto che a coprire fosse il tag, troppo lungo.
+Misurato: «esce senza la tua firma» sta in **148 px** contro i 208 del nodo, quindi il tag non sborda affatto.
+A coprire era il nodo. La misura ha corretto la diagnosi prima che diventasse una correzione inutile.
+
+### Le tre decisioni che non toccano codice oggi, e perché
+
+68 e 69 descrivono cose che nei dati **non esistono ancora**: le condizioni sui connettori sono **zero** e i
+flussi biforcati sono **zero**, quindi non c'è un ramo mai percorso da spegnere né una biforcazione che produca
+più voci in coda. Si costruiscono insieme alla prima esecuzione biforcata, non prima (regola 26: non si promette
+quello che non c'è). La 70 era già in codice dalla versione 24, e la decisione la conferma.
+
+## Come riprendere (dalla versione 25)
+
+1. **Le decisioni 68 e 69 aspettano i dati, non una risposta.** Sono decise; quello che manca è la prima
+   esecuzione **biforcata** nel modello — oggi le condizioni sono zero e i flussi biforcati sono zero. Chi la
+   costruisce porta con sé: il filo mai percorso spento con l'etichetta «non è passato di qui» (68), e le *n*
+   voci consecutive in coda con «2 di 3 · stessa esecuzione» (69). Sono già scritte: non si ridiscutono, si
+   disegnano.
+2. **Il candidato 8, i connettori** — l'ultimo dei tre, e il più lungo. Aspetta ancora le sue risposte
+   (credenziale nominata per cliente, permesso d'uso del dipartimento, la parola «accesso», la sezione nel
+   Dipartimento). Prima del codice servono una regola di disegno nuova (l'accesso quadrato e monocromo, mai
+   tondo — la regola 19 vieta il disco in tinta per un oggetto che non è una persona) e due icone che nello
+   sprite non ci sono (**chiave**, **busta**).
+3. **Il candidato 5, la chat di dipartimento**: le due domande che lo bloccavano hanno risposta (decisioni 41 e
+   42). Non manca una decisione, manca il codice.
+4. **Il metodo non cambia**: font locali, sei prove e catture **prima** di toccare, e le stesse dopo. Due
+   trappole viste in questa sessione, tutte e due costate poco solo perché la misura è arrivata prima del codice:
+   una prova che confronta **zero con zero** è verde e non prova niente (costruisci il caso, poi misura), e una
+   **diagnosi a occhio** («il tag è troppo lungo») può essere falsa — 148 px contro 208, non sbordava.
+5. **Attenzione, ancora vera**: `scatta.js` e `prove/console.js` si reggono su `section:nth-of-type(2)` per le
+   consegne del Dipartimento. Aggiungere una sezione prima di quella le rompe tutte e due.
+
+---
+
+
+
+## Versione 24 — il grafo disegnato, e le tre domande (2026-09-08; le risposte sono nella versione 25)
+
+**Fatto tutto l'ordine di «Come riprendere»**, i sette punti: il grafo, il trascinamento, «Riordina», il collegare,
+lo zoom con la mini-mappa, il «+» sul connettore con la selezione multipla e le scorciatoie, e il telefono.
+**535 verifiche verdi** (erano 478), **79 catture** (erano 77). Più due difetti chiusi che sono venuti fuori
+disegnando, e che nessuno aveva visto perché nessuno aveva ancora disegnato.
+
+### Che cosa c'è adesso nel canvas
+
+| | |
+|---|---|
+| **Il grafo** | archi da `G.archi`, non dall'ordine dell'array; posizioni libere; nodo d'innesco in testa col fianco arrotondato a 44 e senza presa d'entrata; prese sui fianchi (a destra si esce, a sinistra si entra); il titolare senza presa d'uscita |
+| **Trascinare** | esatto a 1440, 1920 e 1024 px e con lo zoom a 1,5 e 0,6 — **5 su 5** — sempre agganciato ai 18 px |
+| **«Riordina»** | tre nodi trascinati fanno **5 incroci** di collegamenti; «Riordina» li porta a **0** |
+| **Collegare** | si tira dalla presa; il **rilascio nel vuoto** crea il passo già collegato (9/9 → 10/10) |
+| **Sul collegamento** | l'etichetta del significato (e **«poi» non si stampa**), il **«+»** che infila un passo, la **«×»** che lo toglie |
+| **Zoom e mini-mappa** | 208 px → **312** a 1,5× e **124,8** a 0,6×, a tre larghezze; la mini-mappa compare quando serve |
+| **Selezione multipla** | maiuscolo o riquadro sul fondo; due nodi si spostano dello stesso spostamento (108/108) |
+| **Scorciatoie** | sei, non quaranta: `R`, `+`/`−`, `0`, `Canc`, `Esc`, `Ctrl/Cmd+A` |
+| **Il telefono** | le due tab della Console; la colonna in ordine topologico; i chip «2 rami», «se… → *passo*», «arriva da 2», «resta in azienda» |
+
+### I due difetti chiusi
+
+1. **Il 47 % del «costo misurato» era una stima.** Il costo di un workflow sommava anche i passi da fare, e quello
+   di un passo da fare è una stima — lo dice il codice che la genera. w1 stampava **71,20 €** «misurati», di cui
+   **33,20 stimati**, e 121 minuti di cui 83. Adesso: **38 € e 38 minuti** avvenuti, la previsione in un campo suo.
+   Corollario: `eur(0)` stampa «0 €», quindi un passo non avvenuto stampava uno zero inventato — sul canvas **e sul
+   telefono**, dove era rimasto vivo anche dopo la correzione della Console. Adesso in nessuno dei due.
+2. **Nodi e archi leggevano due posizioni diverse.** I nodi la posizione libera, gli archi la serpentina:
+   coincidevano solo perché la posa di partenza era la stessa, e **al primo trascinamento il connettore restava
+   indietro**. Una prova adesso verifica su ogni arco che i due capi cadano sulle prese, a meno di 1 px.
+
+### La disposizione ha dovuto cambiare, e non è un'opinione
+
+Il primo disegno ha riusato la serpentina (riga dispari all'indietro). Con le prese sui **fianchi**, una riga che
+torna indietro rende **ogni suo arco un ritorno**: 8 collegamenti, **4 all'indietro**. Nel grafo le righe vanno
+tutte da sinistra a destra; la serpentina resta nell'**ultima volta**, che è una catena avvenuta. E il passo è
+diventato **234×216** (13×18 e 12×18) perché l'aggancio è a 18 px e il passo vecchio (242×210) non lo era: un nodo
+appena disposto stava *fra* i punti, uno trascinato *sopra*. La colonna regge: 982 px dentro i 1008.
+
+---
+
+## Il consiglio sulle tre domande — **tutte e quattro decise il 9 settembre** (decisioni 68-71)
+
+Cinque pareri indipendenti, cinque revisioni incrociate anonime. **Come sempre, la parte che ha cambiato la
+risposta è venuta dalla revisione**, e stavolta ha corretto anche me:
+
+- **una premessa del contesto era falsa, e l'avevo scritta io**: «la coda mostra già più voci per la stessa
+  esecuzione». Verificato: le consegne **in attesa** per esecuzione sono **una**, a undici e a quaranta. Le tre
+  uscite di un'esecuzione stanno in `bozza`/`da fare`/`fatto`/`errore` e **non entrano mai in coda**. Tutti e
+  cinque i consiglieri ci hanno costruito sopra. È la terza volta: il contesto va **verificato nel codice**, non
+  solo scritto per esteso;
+- **un numero l'ho sbagliato io**: «49 nodi spenti a quaranta». Sono **40**; 49 erano 9+40, due caselle sommate;
+- **le parole collidono**, e solo la revisione l'ha contato (vedi domanda 3);
+- **una misura ha battuto un'obiezione strutturale**: «se si ferma» misura **65,67 px**, non ~95 come sosteneva
+  chi voleva portare il canvas da quattro colonne a tre. Nessuna ristrutturazione.
+
+### Domanda 1 · Che aspetto ha un ramo mai percorso nell'«ultima volta»
+
+**Voti**: 2 «spento», 2 «nascosto», 1 «un terzo aspetto». Ma **tutti e cinque** sono poi arrivati alla stessa
+terza strada, con cinque parole diverse: il fatto sta **sul collegamento**, non sul nodo.
+
+**Verdetto, confermato dall'utente il 9 settembre** — **lo si disegna spento, e a dirlo è il collegamento.** Il nodo resta quello che è
+già (`.arc.off`, porte spente: bianco 38 %, tratteggio 3-5, niente bagliore: **zero stati nuovi**), e il
+collegamento non percorso porta l'etichetta **«non è passato di qui»**. Perché:
+- la strada «nascondere» aveva un prezzo che **è già pagato**: le due tab mostrano già grafi diversi (8 nodi
+  contro 9, per via dell'innesco), quindi non è quello a rompere la pillola dei due tempi;
+- «spento» da solo non basta: «non ancora» e «mai» diventerebbero lo stesso grigio su **9 nodi a undici e 40 a
+  quaranta**. La parola li separa, e non costa uno stato;
+- sul telefono funziona: la colonna ha già i chip sul collegamento, costruiti in questa versione.
+
+**Il punto cieco che resta**: un'esecuzione conclusa e una in corso hanno lo stesso grigio per motivi diversi. Un
+revisore propone di dirlo **una volta sola in testa al canvas** («esecuzione conclusa» / «in corso») invece che
+su ogni nodo.
+
+### Domanda 2 · Un flusso biforcato produce una voce o *n* nella tendina?
+
+**Voti: 5 su 5 «n voci»**, una per uscita. Ma la revisione ha demolito la ragione con cui lo dicevano («il
+modello lo fa già»): **non lo fa** — oggi un'esecuzione produce **una** voce in coda, quindi *n* voci è una
+**capacità nuova**, non un riuso. Il verdetto non cambia, la ragione sì.
+
+**Verdetto, confermato dall'utente il 9 settembre** — **n voci, una per uscita, ma consecutive e riconoscibili.** La firma è per uscita
+perché la responsabilità è per uscita (spina dorsale 1: «il titolare approva ogni uscita», non ogni flusso), e
+raggrupparle in una voce sola creerebbe in coda un oggetto — «il flusso» — che il modello non ha e che non si può
+né aprire né consegnare. Quello che si aggiunge è: le uscite della stessa esecuzione stanno **vicine** in coda, e
+ognuna dice «2 di 3 · stessa esecuzione». Prezzo misurato: da 4 voci a undici si va a 6-8 con due flussi
+biforcati; da 7 a 10-12 a quaranta.
+
+**Il punto cieco che la revisione ha trovato, e che nessuno dei cinque aveva visto — e che secondo me viene prima
+di questa domanda**: **la clausola dell'innesco è un interruttore della firma senza freni.** `ramoEsce` fa
+`if (clausola !== 'uscita') return { tutti: true }`: appena il titolare mette il permesso in testa («chiedi prima
+di partire» o «fai pure»), la funzione che gli dice quali rami escono **senza** la sua firma tace, e per quel
+flusso la coda va a **zero voci**. I tre freni (soglia, perimetro, scadenza a 10 esecuzioni) stanno su
+`w.firma`, **non sulla clausola**. Cioè: la domanda 2 svanisce proprio sui flussi per cui è stata posta, e il
+permesso in testa diventa una seconda strada per spegnere la firma — accesa **dentro il canvas**, non nel
+pannello delle approvazioni dove il titolare guarda. **Va deciso se la clausola prende gli stessi tre freni.**
+
+### Domanda 3 · Quali parole stampa il prodotto
+
+**Convergenza quasi piena su tre punti su quattro**, e la revisione ha contato le collisioni che nessun
+consigliere aveva visto:
+
+| parola proposta | collisione trovata contando |
+|---|---|
+| «freccia» | è già la **freccia di riga** (regole 25-26, 22 occorrenze) |
+| «ramo» | è già **tutto il grafo** della prossima volta (207 occorrenze) |
+| «collegamento» | è già il nome di una **consegna** dentro w1 (`Collegamento al magazzino`) |
+| «uscita» | `Uscita` è già un chip di `chipEsito`, col significato **opposto**: già uscita, senza la tua firma |
+
+**Verdetto, confermato dall'utente il 9 settembre, e già in codice** perché senza parole non si poteva disegnare:
+- **(b) i quattro tipi restano quelli**: `poi`, `se…`, `insieme`, `se si ferma`. Misurati nel canvas vero, in
+  Urbanist a 10 px: 31,31 · 32,89 · 51,25 · **65,67 px** — tutti dentro i 150 px dichiarati dall'etichetta. E
+  **«poi» non si stampa**: è il caso di tutti gli 8 archi di partenza;
+- **(c) il gesto non si nomina.** Niente «biforcazione», niente «dividi»: si tira un secondo collegamento e basta.
+  Dove serve un conto, il canvas stampa una **riga che legge il grafo**: «7 passi · 8 collegamenti»;
+- **(d) l'innesco resta «Quando parte»**, con il **permesso** sulla seconda riga;
+- **(a) il nome della linea è «collegamento»** — è il sostantivo del verbo che il codice già usa
+  (`ramoCollega`/`ramoScollega`), e sta nei comandi («Togli il collegamento»), non come etichetta sul disegno.
+  La collisione con `Collegamento al magazzino` è con **un dato**, non con un termine del prodotto.
+
+**Le due parole su cui vale la pena che tu dica la tua**: «se si ferma» (l'Estraneo la legge come «se lo metto in
+pausa io» e propone **«se sbaglia»**: misurata 61,61 px, ci sta uguale) e «collegamento» contro il non nominarlo
+affatto.
+
+---
+
+## Come si riprendeva dalla versione 24 (fatto)
+
+1. ~~Le tre risposte qui sopra, più la quarta che la revisione ha sollevato.~~ **Arrivate il 9 settembre**, tutte
+   e quattro sulla raccomandazione: decisioni 68-71, in cima a questo documento.
+2. **Il ramo mai percorso non è disegnabile finché non c'è**: nei dati le condizioni sono **zero**, quindi la
+   domanda 1 si costruisce insieme alla prima esecuzione biforcata, non prima (regola 26: non si promette quello
+   che non c'è).
+3. **Il candidato 8, i connettori** — l'ultimo dei tre, e il più lungo. Aspetta ancora le sue risposte
+   (credenziale nominata per cliente, permesso d'uso del dipartimento, la parola «accesso», la sezione nel
+   Dipartimento). Prima del codice servono una regola di disegno nuova (l'accesso quadrato e monocromo, mai
+   tondo — la regola 19 vieta il disco in tinta per un oggetto che non è una persona) e due icone che nello
+   sprite non ci sono (**chiave**, **busta**).
+4. **Il candidato 5, la chat di dipartimento**: le due domande che lo bloccavano hanno risposta (decisioni 41 e
+   42). Non manca una decisione, manca il codice.
+5. **Le tre domande che l'editor lascia aperte** e che nessuno ha ancora deciso: che cosa vuol dire **salvare**
+   una prossima volta (diventa una routine? cambia il workflow? resta una proposta?); **chi approva un passo
+   scritto a mano**; che cosa vede il titolare quando **il dichiarato e il misurato non coincidono**.
+
+**Non rimettere in discussione**: la direzione A, la versione 16 con la correzione 16a, la 17, la regola 26 delle
+frecce, il conto nel titolo a 36, le decisioni 41, 42, 45, 46, 57 e 58, gli avatar della versione 10, «niente
+emoji», e le **decisioni 64–67** (il grafo, i tre significati sul connettore, il titolare nodo più il permesso in
+testa, i quattro acceleratori).
+
+**Il metodo, con due lezioni nuove:**
+- **Se il codice cambia mentre il consiglio gira, la revisione giudica un albero diverso da quello che i
+  consiglieri hanno letto.** È successo qui: il difetto dei numeri stimati era vero, l'ho corretto durante la
+  sessione, e due revisori l'hanno poi bocciato come «premessa falsa» leggendo il file già corretto. Il consiglio
+  va fatto girare su un albero **fermo**, o va detto ai revisori a quale commit guardare.
+- **Il disegno trova difetti che il modello non può trovare.** Le due posizioni divergenti (nodi dalla posizione
+  libera, archi dalla serpentina) erano invisibili finché la posa di partenza le faceva coincidere: solo il primo
+  trascinamento le ha separate. Un modello con le prove verdi non è un disegno che funziona.
+
+**Prima e dopo, come sempre**: rifare i font locali (`fetch-fonts.py`), lanciare le **sei** prove di `prove/`
+(**535 verifiche**) e catturare le pagine prima di toccare qualcosa (`scatta.js --in <cartella>`, **79 catture**);
+leggere `CLAUDE.md`, `SYSTEM-DESIGN.md` (sezioni 2, 6, 8, 9 e 10, regole 24–**40**) e `DIREZIONI.md` (sezione 4,
+sezione 6, sezione 5 per i file); controllare branch e PR.
+
+**Attenzione, le due trappole**: `scatta.js` e `prove/console.js` si reggono ancora su `section:nth-of-type(2)`
+per le consegne del Dipartimento — la prossima sezione che si aggiunge lì rompe tre prove e due catture. E
+**`DGT_DATI.modello(n)` costruisce un modello nuovo a ogni chiamata**: interrogarlo da una prova per sapere lo
+stato del canvas dice sempre lo stato di partenza. Si misura il **DOM**.
+
 ## Versione 23 — le decisioni sono prese, il disegno è da fare (2026-09-08, fine sessione)
 
 **Questa sessione si è fermata dopo le decisioni, per scelta dell'utente**: il contesto era lungo, e il lavoro di
