@@ -2873,6 +2873,13 @@ quello che dice. L'ha visto un sottoagente rileggendo il file prima di pubblicar
 Corretta con il **lime**, che è l'accento e segna l'unica cosa cliccabile della riga (misurato:
 `rgb(184,252,100)` contro `rgb(232,232,232)` dei referti; regola 4, nessun colore nuovo).
 
+E rileggendo è saltata fuori una **seconda riga morta dello stesso stampo**: la pillola dichiarava anche un
+`border-color` lime, ma la primitiva `.chip` **non ha bordo** — misurato, `border-style:none` e `border-width:0`.
+Quella riga, e la `border-color:transparent` del `:hover`, promettevano un cerchio che nessuno disegnava. Tolte
+tutte e due: **nessuna delle 82 catture è cambiata**, che è la prova che non disegnavano niente. Quello che resta
+è il testo all'accento, e basta: la primitiva non ha contorni, e dargliene uno solo qui avrebbe fatto della
+pillola una forma nuova invece che una pillola accesa.
+
 E adesso c'è una prova che prende **tutta la classe** di errore: nessuna variabile CSS usata **senza valore di
 ripiego** può essere mai definita. La distinzione conta: `var(--z,1)` e `var(--av-pupilla-bordo,0)` dichiarano da
 sé che la variabile può mancare, e infatti mancano di proposito; `var(--t1)` no. Sulla pagina viva, con le

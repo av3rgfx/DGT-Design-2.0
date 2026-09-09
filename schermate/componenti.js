@@ -410,9 +410,13 @@ window.DGT_COMPONENTI = (function () {
 /* La barra del canvas quando si compone: il conto a sinistra, gli acceleratori al centro. */
 .wbar .azioni-b .pill.picc{height:32px;padding:0 12px;font-size:12px}
 .wsc{position:absolute;left:16px;top:16px;z-index:6;display:flex;gap:6px;align-items:center;font-size:11px;color:var(--t2)}
-/* la riga in cima enuncia fatti e non si tocca: l'unica pillola che si clicca e' quella che propone (versione 30) */
-.wsc .chip.vai{cursor:pointer;border-color:rgb(184 252 100/.45);color:var(--lime)}
-.wsc .chip.vai:hover{background:var(--lime);color:var(--ink);border-color:transparent}
+/* La riga in cima enuncia fatti e non si tocca: l'unica pillola che si clicca e' quella che propone (versione 30).
+   Si distingue con il TESTO all'accento, non con un contorno: la primitiva .chip non ha bordo — misurato,
+   border-style none e border-width 0 — quindi una border-color qui sarebbe una riga che promette un cerchio che
+   nessuno disegna. Ce n'erano due, ed erano inerti: tolte. Misurato quello che resta: lime rgb(184,252,100)
+   contro il rgb(232,232,232) dei referti, sullo stesso fondo. */
+.wsc .chip.vai{cursor:pointer;color:var(--lime)}
+.wsc .chip.vai:hover{background:var(--lime);color:var(--ink)}
 .wsc .chip{height:24px;font-size:11px}
 `;
 
