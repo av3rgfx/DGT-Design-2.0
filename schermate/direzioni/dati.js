@@ -1450,8 +1450,14 @@ window.DGT_DATI = (function () {
         if (!da || da.titolare) return '';
         const g = out.RAMO_GRIGLIA;
         const id = 'p' + (++r.seq);
-        r.nodi.splice(r.nodi.length - 1, 0, { id, n: 0, nome: 'Passo nuovo', chi: w.chi, modello: 'standard', strumenti: [], stato: 'da fare', costo: 0, durata: '', esito: '', nato: true,
-          x: Math.max(0, Math.min(1008 - 208 - 8, Math.round(x / g) * g)), y: Math.max(0, Math.round(y / g) * g) });
+        /* Il rilascio cade dove cade, e puo' cadere **sopra un altro nodo**: misurato disegnando la decisione 71,
+           il passo nuovo copriva due nodi e con loro il proprio tag. Il gesto gemello (il «+» sul connettore) la
+           spinta giu' ce l'aveva gia' dalla versione 24 — qui mancava, e sono le stesse due righe. */
+        let nx = Math.max(0, Math.min(1008 - 208 - 8, Math.round(x / g) * g));
+        let ny = Math.max(0, Math.round(y / g) * g);
+        let guardia = 0;
+        while (out.ramoOccupato(r, nx, ny, null) && guardia++ < 40) ny += g * 2;
+        r.nodi.splice(r.nodi.length - 1, 0, { id, n: 0, nome: 'Passo nuovo', chi: w.chi, modello: 'standard', strumenti: [], stato: 'da fare', costo: 0, durata: '', esito: '', nato: true, x: nx, y: ny });
         r.archi.push({ id: 'a' + (++r.seq), da: daId, a: id, tipo: 'poi', se: '' });
         out.ramoNumera(r);
         return id;
@@ -1492,21 +1498,54 @@ window.DGT_DATI = (function () {
       ramoArco: (w, arcoId, k, v) => { const a = out.ramoDi(w).archi.find(x => x.id === arcoId); if (a) a[k] = v; },
       /* La clausola dell'innesco: `avvio` la chiede prima di partire (l'idea dell'utente), `uscita` prima di
          consegnare, `libera` e' il «fai pure» della firma anticipata. Chi autorizza in testa non deve far
-         convergere i rami in coda: e' la stessa decisione, vista dall'altro capo del flusso. */
+         convergere i rami in coda: e' la stessa decisione, vista dall'altro capo del flusso.
+         Dalla decisione 71 i due permessi che firmano in anticipo (`avvio` e `libera`) **dicono i tre freni**,
+         perche' da oggi li hanno davvero (`ramoFreni`): prima solo «Fai pure» li nominava, e nemmeno lui li
+         applicava. `uscita` non ne ha bisogno: chi esce passa dal titolare, che e' il freno. */
       RAMO_CLAUSOLE: [
-        { id: 'avvio', nome: 'Chiedi prima di partire', desc: 'Il titolare autorizza il flusso prima che cominci: i rami non devono convergere su una firma finale' },
+        { id: 'avvio', nome: 'Chiedi prima di partire', desc: 'Il titolare autorizza il flusso prima che cominci: i rami non devono convergere su una firma finale, e quello che esce sta entro i tre freni (soglia, perimetro, scadenza)' },
         { id: 'uscita', nome: 'Chiedi prima di consegnare', desc: 'Ogni ramo che esce dall\'azienda passa dalla firma in coda' },
         { id: 'libera', nome: 'Fai pure', desc: 'Firma anticipata: esce da solo entro i tre freni (soglia, perimetro, scadenza)' },
       ],
       /* Che cosa esce davvero: i nodi da cui non parte nessun arco. Se la clausola e' `uscita`, quelli che non
          arrivano al titolare **non escono dall'azienda** — e questo si dice, invece di vietarlo. */
       ramoTerminali: w => { const r = out.ramoDi(w); return r.nodi.filter(n => !n.innesco && !r.archi.some(a => a.da === n.id)); },
+      /* ---- I tre freni, in un posto solo (decisione 71, 2026-09-09) ----
+         La revisione incrociata della versione 24 ha trovato quello che nessuno dei cinque consiglieri aveva
+         visto: il permesso in testa al flusso (`clausola`) faceva uscire le consegne **senza nessun freno**,
+         mentre la firma anticipata (`w.firma`) ne dichiara tre. Due strade per la stessa cosa, una con i freni e
+         una senza — e la descrizione di «Fai pure» **prometteva gia'** i tre freni («esce da solo entro i tre
+         freni»), che il codice non applicava: la parola diceva una cosa e la funzione ne faceva un'altra.
+         Decisione dell'utente: **gli stessi tre freni**. Stanno qui una volta sola e li leggono la firma
+         anticipata, la clausola, la Console e il telefono; prima erano scritti a mano in due pagine e non
+         governavano niente. I numeri non sono nuovi: sono i tre campi che `workflowDi` calcola gia'. */
+      ramoFreni: w => [
+        { id: 'soglia', nome: 'Soglia di costo', valore: w.soglia, eur: true,
+          desc: `Questo workflow è costato ${(Math.round(w.costo * 10) / 10).toString().replace('.', ',')} € l'ultima volta. Sopra la soglia l'uscita torna in coda.` },
+        { id: 'perimetro', nome: 'Perimetro', valore: w.perimetro,
+          desc: 'Vale solo per questo cliente. Per un altro cliente la consegna aspetta te.' },
+        { id: 'scadenza', nome: 'Scadenza', valore: w.scadenza + ' esecuzioni',
+          desc: 'Poi torna in coda da sola, e anche prima se cambia il soul prompt del dipendente o il modello di un passo.' },
+      ],
+      /* Chi firma quello che esce, e con quali freni. I regimi sono **tre**, non due: la firma in coda
+         (`uscita`: ogni ramo che esce passa dal titolare), il permesso in testa (`avvio` e `libera`) e la firma
+         anticipata (`w.firma`). I due che firmano in anticipo prendono adesso gli stessi tre freni. */
+      ramoRegime: w => { const r = out.ramoDi(w), inn = r.nodi.find(n => n.innesco);
+        const cl = inn ? inn.clausola : 'uscita';
+        const da = cl !== 'uscita' ? 'clausola' : w.firma ? 'firma' : null;
+        return { clausola: cl, anticipata: !!da, da, freni: da ? out.ramoFreni(w) : [] };
+      },
       ramoEsce: w => { const r = out.ramoDi(w), inn = r.nodi.find(n => n.innesco); const cl = inn ? inn.clausola : 'uscita';
-        if (cl !== 'uscita') return { tutti: true, fuori: [] };
         const tit = r.nodi.find(n => n.titolare);
         const arriva = {}; if (tit) { const coda = [tit.id]; arriva[tit.id] = 1; let g = 0;
           while (coda.length && g++ < 999) { const id = coda.shift(); r.archi.filter(a => a.a === id).forEach(a => { if (!arriva[a.da]) { arriva[a.da] = 1; coda.push(a.da); } }); } }
-        return { tutti: false, fuori: out.ramoTerminali(w).filter(n => !n.titolare && !arriva[n.id]) };
+        /* I nodi terminali che non arrivano al titolare: **gli stessi** con ogni permesso. Quello che cambia non
+           e' quali sono, e' chi li firma — e prima il calcolo si fermava sopra, cosi' cambiando il permesso il
+           canvas smetteva di dirlo proprio quando serviva di piu'. */
+        const senzaTitolare = out.ramoTerminali(w).filter(n => !n.titolare && !arriva[n.id]);
+        return cl === 'uscita'
+          ? { tutti: false, clausola: cl, fuori: senzaTitolare, anticipata: [], freni: [] }
+          : { tutti: true, clausola: cl, fuori: [], anticipata: senzaTitolare, freni: out.ramoFreni(w) };
       },
       /* Il numero del passo non e' piu' la posizione nell'array: in un grafo e' **la distanza dall'inizio**, cioe'
          quanti passi al massimo si attraversano per arrivarci. Su una catena da' 1, 2, 3… come prima; su una

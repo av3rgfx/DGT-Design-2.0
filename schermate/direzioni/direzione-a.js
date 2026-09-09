@@ -1621,7 +1621,11 @@ window.DIREZIONE_A = (function () {
          arriva alla firma resta dentro, e la pagina lo **dice** invece di vietarlo (nessuna validazione impone la
          convergenza: era il timore dell'utente, e non era fondato). */
       const esce = m.ramoEsce(wOrig);
-      fuori = esce.fuori.map(nd => `<span class="wtag" style="left:${nd.x + W_W / 2}px;top:${nd.y - 14}px" title="Questo ramo non arriva alla tua firma: quello che produce resta in azienda">${ic('i-hand')}resta in azienda</span>`).join('');
+      fuori = esce.fuori.map(nd => `<span class="wtag" style="left:${nd.x + W_W / 2}px;top:${nd.y - 14}px" title="Questo ramo non arriva alla tua firma: quello che produce resta in azienda">${ic('i-hand')}resta in azienda</span>`).join('')
+        /* Con il permesso in testa gli stessi rami **escono**, senza passare dalla coda. Prima il canvas taceva
+           proprio qui (decisione 71): cambiando il permesso i tag sparivano e non restava niente a dire che quel
+           ramo consegnava da solo. Adesso lo dice, e dice entro che cosa. */
+        + esce.anticipata.map(nd => `<span class="wtag" style="left:${nd.x + W_W / 2}px;top:${nd.y - 14}px" title="Questo ramo consegna senza passare dalla coda: lo autorizza il permesso in testa, entro i tre freni">${ic('i-bolt')}esce senza la tua firma</span>`).join('');
     } else {
       archi = w.nodi.slice(0, -1).map((nd, i) => {
         const a = wpos(i, sp), b = wpos(i + 1, sp);
@@ -1665,8 +1669,10 @@ window.DIREZIONE_A = (function () {
     /* Il conto in cima a sinistra: quanti passi, quanti collegamenti, quanti rami restano dentro. E' la riga che
        legge il grafo, e sostituisce il nome che il gesto non ha. */
     const passiRamo = ramo ? w.nodi.filter(nd => !nd.innesco && !nd.titolare).length : 0;
-    const fuoriN = ramo ? m.ramoEsce(wOrig).fuori.length : 0;
-    const cima = ramo ? `<div class="wsc"><span class="chip">${ic('i-rows')}${passiRamo} passi · ${G.archi.length} collegamenti</span>${fuoriN ? `<span class="chip">${ic('i-hand')}${fuoriN} ${fuoriN === 1 ? 'ramo resta' : 'rami restano'} in azienda</span>` : ''}${G.ciclo ? `<span class="chip">${ic('i-warn')}il flusso si chiude ad anello</span>` : ''}</div>` : '';
+    const esceC = ramo ? m.ramoEsce(wOrig) : null;
+    const fuoriN = esceC ? esceC.fuori.length : 0;
+    const antN = esceC ? esceC.anticipata.length : 0;
+    const cima = ramo ? `<div class="wsc"><span class="chip">${ic('i-rows')}${passiRamo} passi · ${G.archi.length} collegamenti</span>${fuoriN ? `<span class="chip">${ic('i-hand')}${fuoriN} ${fuoriN === 1 ? 'ramo resta' : 'rami restano'} in azienda</span>` : ''}${antN ? `<span class="chip">${ic('i-bolt')}${antN} ${antN === 1 ? 'ramo esce' : 'rami escono'} senza la tua firma</span>` : ''}${G.ciclo ? `<span class="chip">${ic('i-warn')}il flusso si chiude ad anello</span>` : ''}</div>` : '';
     /* Lo spostamento della vista: serve solo quando il grafo ingrandito e' piu' largo della colonna (1008 px),
        cioe' da 1,25x in su. In verticale non serve: il canvas cresce in basso, come ogni altra sezione. */
     const px = ramo ? Math.max(Math.min(0, (pan && pan.x) || 0), -Math.max(0, 1008 * z - 1008)) : 0;
@@ -1837,16 +1843,30 @@ window.DIREZIONE_A = (function () {
         ${canvasWorkflow(m, w, sel, ramo, zoom, multi, opz.pan)}
         ${ramo ? `<p class="adesso" style="max-width:900px">Le scorciatoie: <b>R</b> rimette in ordine, <b>+</b> e <b>−</b> ingrandiscono, <b>0</b> torna al 100 %, <b>Canc</b> toglie i passi scelti, <b>Esc</b> lascia andare la scelta. Con <b>maiuscolo</b> premuto si sceglie più di un passo e si trascinano insieme.</p>` : ''}
       </section>
-      <section>
-        <div class="shead"><h3>La firma anticipata</h3><span class="cnt"><b>${w.firma ? 'Accesa' : 'Spenta'}</b><span>${w.firma ? 'le uscite a norma escono da sole' : 'ogni uscita passa dalla coda'}</span></span>
+      ${(() => {
+        /* ---- Chi firma quello che esce (decisione 71, 2026-09-09) ----
+           La sezione parlava della sola firma anticipata. Ma le strade per firmare in anticipo sono **due** — la
+           pillola qui e il permesso sul nodo d'innesco, che sta dentro il canvas — e la seconda usciva senza
+           freni, in un posto dove il titolare non guarda le approvazioni. Adesso la sezione dice il regime
+           **qualunque delle due sia accesa**, e i tre freni sono gli stessi perche' vengono da una funzione sola.
+           (Niente apici inversi in questo commento: sta dentro un template, e li' chiudono la stringa.) */
+        const reg = m.ramoRegime(w);
+        const daClausola = reg.da === 'clausola';
+        const cl = m.RAMO_CLAUSOLE.find(c => c.id === reg.clausola) || m.RAMO_CLAUSOLE[1];
+        const freni = m.ramoFreni(w);
+        return `<section>
+        <div class="shead"><h3>La firma anticipata</h3><span class="cnt"><b>${reg.anticipata ? (daClausola ? 'Dal permesso' : 'Accesa') : 'Spenta'}</b><span>${reg.anticipata ? 'entro i tre freni' : 'ogni uscita passa dalla coda'}</span></span>
           <div class="destra"><span class="pill${w.firma ? ' lime' : ''}" data-az="firma" data-id="${esc(w.id)}">${ic(w.firma ? 'i-check' : 'i-bell')}${w.firma ? 'Spegni la firma anticipata' : 'Accendi la firma anticipata'}</span></div></div>
-        <p class="adesso" style="max-width:900px">Accenderla vuol dire <b>firmare in anticipo le uscite che rispettano questo workflow</b>: stessi passi, stesso modello, strumenti dichiarati, entro la soglia. Tutto il resto continua a passare dalla coda. Oggi è spenta, e finché lo è la regola che vale è «${esc(ult.regola)}».</p>
+        <p class="adesso" style="max-width:900px">${daClausola
+          ? `Il permesso in testa al flusso è <b>«${esc(cl.nome)}»</b>, e con quel permesso le uscite non passano dalla coda: le autorizza il nodo d'innesco, nella <b>prossima volta</b>. Vale <b>entro gli stessi tre freni</b> della firma anticipata — prima non ne aveva nessuno, ed era una seconda strada per spegnere la firma, accesa dentro il canvas invece che qui. Per rimetterle in coda si riporta il permesso su «Chiedi prima di consegnare».`
+          : w.firma
+            ? `La firma anticipata è <b>accesa</b>: le uscite che rispettano questo workflow — stessi passi, stesso modello, strumenti dichiarati, entro la soglia — escono da sole. Tutto il resto continua a passare dalla coda.`
+            : `Accenderla vuol dire <b>firmare in anticipo le uscite che rispettano questo workflow</b>: stessi passi, stesso modello, strumenti dichiarati, entro la soglia. Tutto il resto continua a passare dalla coda. Oggi è spenta, e finché lo è la regola che vale è «${esc(ult.regola)}».`}</p>
         <div class="wfirma">
-          <div class="fcard"><span class="k">Soglia di costo</span><b>${eur(w.soglia)}</b><span class="d">Questo workflow è costato ${eur(w.costo)} l'ultima volta. Sopra la soglia l'uscita torna in coda anche con la firma accesa.</span></div>
-          <div class="fcard"><span class="k">Perimetro</span><b>${esc(w.perimetro)}</b><span class="d">Vale solo per questo cliente. Per un altro cliente la firma non si applica e la consegna aspetta te.</span></div>
-          <div class="fcard"><span class="k">Scadenza</span><b>${w.scadenza} esecuzioni</b><span class="d">Poi torna in coda da sola, e anche prima se cambia il soul prompt del dipendente o il modello di un passo.</span></div>
+          ${freni.map(f => `<div class="fcard"><span class="k">${esc(f.nome)}</span><b>${f.eur ? eur(f.valore) : esc(f.valore)}</b><span class="d">${esc(f.desc)}</span></div>`).join('')}
         </div>
-      </section>
+      </section>`;
+      })()}
       ${altri.length ? `
       <section>
         <div class="shead"><h3>Gli altri workflow di ${esc(d.nome)}</h3>${contoSez(altri.length, altri.length, 'Workflow')}

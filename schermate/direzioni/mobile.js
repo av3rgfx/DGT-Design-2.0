@@ -863,6 +863,12 @@ window.DGT_MOBILE = (function () {
        si vede da dove si firma non esiste. La tab e' la stessa della Console, con le stesse due parole. */
     const ramo = !!st.ramo;
     const G = ramo ? m.ramoDi(w) : null;
+    /* Chi firma quello che esce (decisione 71): il permesso in testa o la pillola qui sotto, e in tutti e due i
+       casi entro gli stessi tre freni. Il telefono li scriveva a mano; adesso li legge da `ramoFreni`, dove stanno
+       una volta sola, cosi' non possono piu' dire due cose diverse dalla Console. */
+    const reg = m.ramoRegime(w);
+    const esceR = ramo ? m.ramoEsce(w) : { fuori: [], anticipata: [] };
+    const anticipa = id => esceR.anticipata.some(n => n.id === id);
     /* L'ordine della colonna e' quello **topologico** (la distanza dall'inizio, che il modello calcola gia'), non
        l'ordine dell'array: in un grafo l'array non e' un percorso. */
     const lista = ramo ? G.nodi.slice().sort((a, b) => (a.n - b.n) || (a.y - b.y) || (a.x - b.x)) : w.nodi;
@@ -885,7 +891,12 @@ window.DGT_MOBILE = (function () {
       /* Quello che il grafo aggiunge, detto sul collegamento e non sul nodo (decisione 65). */
       const dopo = ramo ? (() => {
         const u = usc(nd.id);
-        if (!u.length) return `<div class="m-wgo"><span class="m-warc off"></span><span class="chip light">${ic('i-hand')}resta in azienda</span></div>`;
+        /* Un ramo che non arriva alla firma: con «chiedi prima di consegnare» **resta in azienda**, con il
+           permesso in testa **esce lo stesso**, senza passare dalla coda. Il chip diceva sempre la prima delle
+           due, anche quando il permesso era acceso (decisione 71: lo stesso silenzio trovato nella Console). */
+        if (!u.length) return anticipa(nd.id)
+          ? `<div class="m-wgo"><span class="m-warc"></span><span class="chip lime">${ic('i-bolt')}esce senza la tua firma</span></div>`
+          : `<div class="m-wgo"><span class="m-warc off"></span><span class="chip light">${ic('i-hand')}resta in azienda</span></div>`;
         const succ = lista[i + 1];
         const chip = [];
         if (u.length > 1) chip.push(`<span class="chip lime">${u.length} rami</span>`);
@@ -909,11 +920,10 @@ window.DGT_MOBILE = (function () {
         <div class="m-wtabs"><span class="pill${ramo ? ' olight' : ' lime'}" data-az="m-ramo" data-v="0">${ic('i-eye')}L'ultima volta</span><span class="pill${ramo ? ' lime' : ' olight'}" data-az="m-ramo" data-v="1">${ic('i-pen')}La prossima volta</span></div>
         <div class="m-sh"><h4>Il workflow</h4><span class="chip light">${ramo ? `l'innesco e ${lista.length - 2} passi` : `${w.passi} passi e la tua firma`}</span></div>
         <div class="m-wf">${lista.map(nodo).join('')}</div>
-        <div class="m-sh"><h4>La firma anticipata</h4><span class="chip light">${w.firma ? 'accesa' : 'spenta'}</span></div>
+        <div class="m-sh"><h4>La firma anticipata</h4><span class="chip light">${reg.anticipata ? (reg.da === 'clausola' ? 'dal permesso' : 'accesa') : 'spenta'}</span></div>
+        ${reg.da === 'clausola' ? `<div class="m-coda"><div class="qrow on"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-bolt')}</span><div class="tx"><b>${esc((m.RAMO_CLAUSOLE.find(c => c.id === reg.clausola) || {}).nome || '')}</b><span>il permesso in testa firma in anticipo, entro i tre freni</span></div></div></div>` : ''}
         <div class="m-coda">
-          <div class="qrow"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-euro')}</span><div class="tx"><b>Soglia ${eur(w.soglia)}</b><span>sopra la soglia torna in coda</span></div></div>
-          <div class="qrow"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-hand')}</span><div class="tx"><b>${esc(w.perimetro)}</b><span>vale solo per questo cliente</span></div></div>
-          <div class="qrow"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-clock')}</span><div class="tx"><b>${w.scadenza} esecuzioni</b><span>poi torna in coda da sola</span></div></div>
+          ${m.ramoFreni(w).map((f, i) => `<div class="qrow"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic(['i-euro', 'i-hand', 'i-clock'][i])}</span><div class="tx"><b>${f.id === 'soglia' ? 'Soglia ' + eur(f.valore) : esc(f.valore)}</b><span>${esc(['sopra la soglia torna in coda', 'vale solo per questo cliente', 'poi torna in coda da sola'][i])}</span></div></div>`).join('')}
         </div>
         <div class="m-azioni"><span class="pill${w.firma ? ' lime' : ''}" data-az="firma" data-id="${esc(w.id)}">${ic(w.firma ? 'i-check' : 'i-bell')}${w.firma ? 'Spegni la firma anticipata' : 'Accendi la firma anticipata'}</span></div>
       </div>

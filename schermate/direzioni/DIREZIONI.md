@@ -2404,6 +2404,35 @@ revisione ha corretto, perché è la parte che vale:
 6. **Il vincolo dei 56 px non si applicava.** Due consiglieri ci hanno appeso la risposta: 56 px è il budget
    dell'etichetta di una **porta**, non di un'etichetta sul filo. Uno solo l'ha visto, e aveva ragione.
 
+### Versione 25: le quattro decisioni, e il permesso che non aveva freni (2026-09-09)
+
+Le tre domande della versione 24 più la quarta della revisione incrociata sono **decise** (68-71), tutte e quattro
+sulla raccomandazione. Tre descrivono cose che nei dati non esistono ancora — le condizioni sui connettori sono
+**zero** e i flussi biforcati **zero** — e si costruiscono con la prima esecuzione biforcata. La quarta era un
+difetto vivo.
+
+**Il difetto (decisione 71).** Firmare in anticipo si poteva in due modi: la pillola «firma anticipata», con tre
+freni dichiarati (soglia, perimetro, scadenza), e il **permesso sul nodo d'innesco**, con nessuno. La seconda era
+la più nascosta — si accende dentro il canvas, non nel pannello delle approvazioni — ed era la più permissiva. E
+la descrizione di «Fai pure» prometteva già i tre freni che il codice non applicava.
+
+| | prima | adesso |
+|---|---|---|
+| i tre freni | scritti a mano in due pagine, non governavano niente | una funzione sola (`ramoFreni`), letta da Console, telefono, firma e permesso |
+| chi firma | la pagina diceva «Accesa» / «Spenta» e parlava solo della pillola | `ramoRegime` dice **quale** delle due strade, e la pagina stampa «Dal permesso» |
+| il ramo che non arriva alla firma | «resta in azienda» con un permesso, **niente** con gli altri due | «esce senza la tua firma» (148 px, dentro i 208 del nodo), e la riga in cima lo conta |
+| il passo nato dal rilascio nel vuoto | si posava **sopra** un altro nodo (ne copriva due) | scende finché trova posto, come il «+» sul connettore: **0 coppie sovrapposte** |
+
+**Due trappole del metodo, tutte e due costate poco perché la misura è arrivata prima del codice.**
+La prima: la prova nuova era **tautologica**. Nel grafo di partenza ogni nodo arriva al titolare, quindi i rami
+terminali sono zero, e «con il permesso escono tanti rami quanti ne restavano senza» era `0 === 0` — verde, e
+senza contenuto. La prova adesso costruisce il caso col gesto vero (si tira dalla presa, si rilascia nel vuoto) e
+i numeri diventano 1 contro 0.
+La seconda: la **diagnosi a occhio era falsa**. Guardando la cattura avevo scritto che il tag nuovo fosse troppo
+lungo e coprisse il nodo vicino. Misurato: «esce senza la tua firma» sta in 148 px contro i 208 del nodo, e non
+sborda; a coprire era il **nodo**, posato dove capita. Correggere il testo sarebbe stato lavoro inutile su una
+diagnosi sbagliata.
+
 ## 5. File
 
 | File | Ruolo |

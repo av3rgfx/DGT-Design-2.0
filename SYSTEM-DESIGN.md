@@ -635,6 +635,24 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     «0 €», quindi **uno zero non si stampa mai** su una cosa che non è successa — sul canvas come sul telefono,
     dove lo stesso zero era rimasto vivo.
 
+41. **Due strade per la stessa autorizzazione portano gli stessi freni, e la pagina dice quale delle due è
+    accesa** (2026-09-09, versione 25, decisione 71). Trovato dalla **revisione incrociata** della versione 24, e
+    da nessuno dei cinque pareri: firmare in anticipo si poteva già in due modi — la pillola «firma anticipata»,
+    che dichiara tre freni (soglia, perimetro, scadenza), e il **permesso sul nodo d'innesco**, che non ne aveva
+    nessuno. La seconda strada era la più nascosta delle due (si accende **dentro il canvas**, non nel pannello
+    dove il titolare guarda le approvazioni) ed era la più permissiva. Peggio: la descrizione di «Fai pure»
+    **prometteva già** i tre freni — «esce da solo entro i tre freni» — che il codice non applicava. La parola
+    diceva una cosa e la funzione ne faceva un'altra.
+    La regola che ne esce vale oltre questo caso: **dove due controlli diversi concedono la stessa cosa, i limiti
+    stanno in un posto solo e valgono per tutti e due**. Qui i tre freni sono una funzione sola (`ramoFreni`), che
+    leggono la firma anticipata, il permesso, la Console e il telefono; prima erano scritti a mano in due pagine e
+    non governavano niente. E la pagina **nomina la strada accesa** («Dal permesso», e non solo «Accesa»), perché
+    con due interruttori per la stessa luce dire che è accesa non basta a dire chi l'ha accesa.
+    Il corollario disegnato: cambiando permesso, il canvas **non smette di dire** che cosa succede a un ramo. Prima
+    con «chiedi prima di consegnare» un ramo che non arriva alla firma diceva «resta in azienda», e con gli altri
+    due permessi non diceva **niente** — l'informazione spariva proprio dove serviva di più. Ora dice «esce senza
+    la tua firma» (misurato: 148 px, dentro i 208 del nodo), e la riga in cima lo conta.
+
 Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in
 `schermate/direzioni/DIREZIONI.md`, sezione 1. Sorgenti in `schermate/direzioni/` (`dati.js`, `comune.js`,

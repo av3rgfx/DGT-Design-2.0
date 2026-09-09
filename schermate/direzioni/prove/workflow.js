@@ -496,6 +496,79 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   const latoTel = await page.evaluate(() => [...document.querySelectorAll('.m-scroll')].every(s => s.scrollWidth <= s.clientWidth));
   check(latoTel, 'e nessuno schermo scorre di lato');
 
+  /* ---- 24. i tre freni valgono anche per il permesso in testa (decisione 71, 2026-09-09) ----
+     La revisione incrociata della versione 24 aveva trovato che la clausola dell'innesco faceva uscire le
+     consegne senza nessuno dei tre freni che la firma anticipata dichiara — e che «Fai pure» li prometteva
+     gia' nella sua descrizione. La decisione dell'utente: gli stessi tre freni.
+     Attenzione al caso: nel grafo di partenza OGNI nodo arriva al titolare, quindi non esiste un ramo
+     terminale e i due conti sono zero contro zero. Un confronto fra zeri non prova niente: qui il ramo
+     terminale si crea prima, col gesto vero (si tira dalla presa e si rilascia nel vuoto). */
+  await page.goto(file('pagina=workflow&workflow=w1&ramo=1&tendina=chiusa')); await page.waitForTimeout(400);
+  const fr = await page.evaluate(() => {
+    const m = DGT_DATI.modello(11), w = m.workflowIdDi('w1');
+    const r = m.ramoDi(w), inn = r.nodi.find(n => n.innesco);
+    const padre = r.nodi.find(n => !n.innesco && !n.titolare);
+    m.ramoNuovo(w, padre.id, 700, 400);
+    const o = { terminali: m.ramoTerminali(w).filter(n => !n.titolare).length };
+    ['uscita', 'avvio', 'libera'].forEach(cl => {
+      inn.clausola = cl;
+      const e = m.ramoEsce(w);
+      o[cl] = { fuori: e.fuori.length, esce: e.anticipata.length, freni: e.freni.length, da: m.ramoRegime(w).da };
+    });
+    o.nomi = m.ramoFreni(w).map(f => f.id).join(',');
+    return o;
+  });
+  check(fr.terminali === 1, 'il rilascio nel vuoto crea un ramo che non arriva al titolare (' + fr.terminali + '): senza, i due conti sarebbero zero contro zero e non proverebbero niente');
+  check(fr.uscita.fuori === 1 && fr.uscita.esce === 0, 'con «chiedi prima di consegnare» quel ramo RESTA in azienda');
+  check(fr.avvio.esce === 1 && fr.avvio.fuori === 0, 'con «chiedi prima di partire» lo stesso ramo ESCE senza passare dalla coda');
+  check(fr.libera.esce === 1, 'e con «fai pure» anche');
+  check(fr.avvio.freni === 3 && fr.libera.freni === 3, 'e in tutti e due i casi porta i tre freni (' + fr.avvio.freni + ' e ' + fr.libera.freni + '): prima erano zero, ed era la seconda strada per spegnere la firma');
+  check(fr.nomi === 'soglia,perimetro,scadenza', 'i tre freni sono quelli della firma anticipata, dalla stessa funzione (' + fr.nomi + ')');
+  check(fr.avvio.da === 'clausola' && fr.libera.da === 'clausola', 'e il regime dice che a firmare e\' il permesso, non la pillola');
+
+  /* Lo stesso, disegnato: il gesto vero sulla pagina, non il modello. */
+  const presa = page.locator('.wio.usc').nth(1);
+  const bp = await presa.boundingBox();
+  await page.mouse.move(bp.x + bp.width / 2, bp.y + bp.height / 2);
+  await page.mouse.down(); await page.mouse.move(bp.x + 260, bp.y + 250, { steps: 12 }); await page.mouse.up();
+  await page.waitForTimeout(350);
+  const tagPrima = await page.locator('.wtag').allTextContents();
+  check(tagPrima.some(x => /resta in azienda/.test(x)), 'sul canvas il ramo nuovo dice «resta in azienda»');
+  await page.click('.wnode.inn'); await page.waitForTimeout(250);
+  await page.click('[data-az="ramo-clausola"]'); await page.waitForTimeout(350);
+  const tagDopo = await page.locator('.wtag').allTextContents();
+  check(tagDopo.some(x => /esce senza la tua firma/.test(x)), 'cambiato il permesso lo stesso ramo dice «esce senza la tua firma»: prima il canvas taceva, ed era il posto dove serviva di piu\'');
+  const cima = await page.locator('.wsc').first().innerText();
+  check(/senza la tua firma/.test(cima), 'e la riga in cima lo conta (' + cima.replace(/\n/g, ' · ') + ')');
+  const sezF = await page.locator('section').filter({ hasText: 'La firma anticipata' }).first().innerText();
+  check(/Dal permesso/.test(sezF), 'la sezione della firma dice che a firmare e\' il permesso, anche con la pillola spenta');
+  check(/tre freni/.test(sezF), 'e dice entro che cosa');
+  check(await conta('.wfirma .fcard') === 3, 'i tre freni restano disegnati con ogni permesso');
+
+  /* Il difetto trovato disegnando la 71: il rilascio nel vuoto posava il passo **sopra** un altro nodo, e con
+     lui il suo tag. Il gesto gemello (il «+» sul connettore) la spinta giu' ce l'aveva gia': adesso ce l'hanno
+     tutti e due. Si contano le coppie di nodi sovrapposti, escluso il nodo aperto — che e' l'editor e copre
+     per mestiere. */
+  const sovr = await page.evaluate(() => {
+    const nod = [...document.querySelectorAll('.wnode:not(.on)')].map(t => t.getBoundingClientRect());
+    let n = 0;
+    for (let i = 0; i < nod.length; i++) for (let j = i + 1; j < nod.length; j++) {
+      const a = nod[i], b = nod[j];
+      if (!(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom)) n++;
+    }
+    return n;
+  });
+  check(sovr === 0, 'e il passo nato dal rilascio non si posa sopra un altro nodo (' + sovr + ' coppie sovrapposte): prima ne copriva due, e con loro il proprio tag');
+  const largTag = await page.evaluate(() => [...document.querySelectorAll('.wtag')].map(t => Math.round(t.getBoundingClientRect().width)));
+  check(largTag.every(x => x <= 208), 'e il tag sta dentro la larghezza del nodo (' + largTag.join(', ') + ' su 208): misurato, non stimato');
+
+  /* E sul telefono, che e\' il posto da cui il titolare firma davvero. */
+  await page.goto(tel('schermata=10&dip=svi&workflow=w1&ramo=1')); await page.waitForTimeout(500);
+  const telFreni = await page.evaluate(() => [...document.querySelectorAll('.m-coda .qrow .tx b')].map(e => e.textContent.trim()));
+  check(telFreni.some(x => /^Soglia /.test(x)), 'il telefono legge i tre freni dalla stessa funzione della Console (' + telFreni.slice(0, 4).join(' · ') + ')');
+  const latoF = await page.evaluate(() => [...document.querySelectorAll('.m-scroll')].every(s => s.scrollWidth <= s.clientWidth));
+  check(latoF, 'e lo schermo non scorre di lato');
+
   if (!errors.length) ok++; else ko++;
   console.log('\n' + ok + ' ok, ' + ko + ' ko');
   await browser.close();

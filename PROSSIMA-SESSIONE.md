@@ -1,6 +1,86 @@
 # Prossima sessione — passaggio di consegne
 
-## Versione 24 — il grafo disegnato, e le tre domande che aspettano te (2026-09-08, fine sessione)
+## Versione 25 — le quattro decisioni prese, e il permesso che non aveva freni (2026-09-09)
+
+Le tre domande della versione 24 e la quarta che solo la revisione incrociata aveva sollevato sono **decise**
+dall'utente, tutte e quattro sulla raccomandazione del consiglio. Tre non toccano codice oggi; la quarta era un
+difetto vivo, ed è chiusa. **552 verifiche verdi** (erano 535), 79 catture.
+
+### Le quattro decisioni
+
+| n. | domanda | decisione |
+|---|---|---|
+| **68** | che aspetto ha un ramo mai percorso nell'«ultima volta» | **spento, e a dirlo è il collegamento**: il nodo resta quello che è (`.arc.off`, porte spente: zero stati nuovi) e il filo non percorso porta l'etichetta **«non è passato di qui»**. La parola separa «non ancora» da «mai», che sarebbero lo stesso grigio su 9 nodi a undici e 40 a quaranta |
+| **69** | un flusso biforcato produce una voce o *n* nella coda | ***n* voci, vicine e legate**: una per uscita, perché la responsabilità è per uscita; consecutive in coda, e ognuna dice «2 di 3 · stessa esecuzione». Prezzo misurato: da 4 voci a 6-8 a undici, da 7 a 10-12 a quaranta |
+| **70** | quale parola per il quarto tipo di connettore | **«se si ferma»**, la parola del modello. Misurata nel canvas vero, Urbanist 10 px: **65,67 px**, dentro i 150 dell'etichetta — e smonta l'obiezione di chi voleva portare il canvas da quattro colonne a tre stimandola ~95 |
+| **71** | la clausola dell'innesco prende i tre freni della firma anticipata | **sì, gli stessi tre** |
+
+### La 71 era un difetto vivo, e adesso è chiuso
+
+Firmare in anticipo si poteva in **due modi**: la pillola «firma anticipata», che dichiara soglia, perimetro e
+scadenza, e il **permesso sul nodo d'innesco**, che non aveva **nessun** freno. La seconda era la più nascosta
+(si accende dentro il canvas, non nel pannello dove il titolare guarda le approvazioni) ed era la più permissiva.
+E la descrizione di «Fai pure» **prometteva già** i tre freni che il codice non applicava: la parola diceva una
+cosa e la funzione ne faceva un'altra.
+
+Che cosa è cambiato:
+- i tre freni stanno in **una funzione sola** (`ramoFreni`), che leggono la firma anticipata, il permesso, la
+  Console e il telefono. Prima erano scritti a mano in due pagine e non governavano niente;
+- `ramoRegime(w)` dice **quale delle due strade** firma, e la sezione lo stampa («Dal permesso», non solo
+  «Accesa»): con due interruttori per la stessa luce, dire che è accesa non dice chi l'ha accesa;
+- `ramoEsce` **non tace più** cambiando permesso. Prima un ramo che non arriva alla firma diceva «resta in
+  azienda» con «chiedi prima di consegnare» e **niente** con gli altri due — l'informazione spariva dove serviva
+  di più. Ora dice «esce senza la tua firma», e la riga in cima lo conta.
+
+**La prova era tautologica, e me ne sono accorto solo eseguendola.** Nel grafo di partenza *ogni* nodo arriva al
+titolare, quindi i rami terminali sono **zero** e il confronto «con il permesso escono tanti rami quanti ne
+restavano senza» era `0 === 0`: verde, e non provava niente. La prova adesso **costruisce il caso** col gesto
+vero — si tira dalla presa e si rilascia nel vuoto — e allora i numeri sono 1 contro 0 e 0 contro 1.
+
+### Un secondo difetto, trovato disegnando
+
+Il rilascio nel vuoto posava il passo nuovo **sopra un altro nodo**: nella prima cattura ne copriva due, e con
+loro il proprio tag. Il gesto gemello (il «+» sul connettore) la spinta verso il basso ce l'aveva già dalla
+versione 24 (`ramoOccupato`); a `ramoNuovo` mancava, ed erano le stesse due righe. Adesso: **0 coppie di nodi
+sovrapposti**, e una prova lo fissa.
+
+Da segnalare: la prima diagnosi era **sbagliata** — avevo scritto che a coprire fosse il tag, troppo lungo.
+Misurato: «esce senza la tua firma» sta in **148 px** contro i 208 del nodo, quindi il tag non sborda affatto.
+A coprire era il nodo. La misura ha corretto la diagnosi prima che diventasse una correzione inutile.
+
+### Le tre decisioni che non toccano codice oggi, e perché
+
+68 e 69 descrivono cose che nei dati **non esistono ancora**: le condizioni sui connettori sono **zero** e i
+flussi biforcati sono **zero**, quindi non c'è un ramo mai percorso da spegnere né una biforcazione che produca
+più voci in coda. Si costruiscono insieme alla prima esecuzione biforcata, non prima (regola 26: non si promette
+quello che non c'è). La 70 era già in codice dalla versione 24, e la decisione la conferma.
+
+## Come riprendere (dalla versione 25)
+
+1. **Le decisioni 68 e 69 aspettano i dati, non una risposta.** Sono decise; quello che manca è la prima
+   esecuzione **biforcata** nel modello — oggi le condizioni sono zero e i flussi biforcati sono zero. Chi la
+   costruisce porta con sé: il filo mai percorso spento con l'etichetta «non è passato di qui» (68), e le *n*
+   voci consecutive in coda con «2 di 3 · stessa esecuzione» (69). Sono già scritte: non si ridiscutono, si
+   disegnano.
+2. **Il candidato 8, i connettori** — l'ultimo dei tre, e il più lungo. Aspetta ancora le sue risposte
+   (credenziale nominata per cliente, permesso d'uso del dipartimento, la parola «accesso», la sezione nel
+   Dipartimento). Prima del codice servono una regola di disegno nuova (l'accesso quadrato e monocromo, mai
+   tondo — la regola 19 vieta il disco in tinta per un oggetto che non è una persona) e due icone che nello
+   sprite non ci sono (**chiave**, **busta**).
+3. **Il candidato 5, la chat di dipartimento**: le due domande che lo bloccavano hanno risposta (decisioni 41 e
+   42). Non manca una decisione, manca il codice.
+4. **Il metodo non cambia**: font locali, sei prove e catture **prima** di toccare, e le stesse dopo. Due
+   trappole viste in questa sessione, tutte e due costate poco solo perché la misura è arrivata prima del codice:
+   una prova che confronta **zero con zero** è verde e non prova niente (costruisci il caso, poi misura), e una
+   **diagnosi a occhio** («il tag è troppo lungo») può essere falsa — 148 px contro 208, non sbordava.
+5. **Attenzione, ancora vera**: `scatta.js` e `prove/console.js` si reggono su `section:nth-of-type(2)` per le
+   consegne del Dipartimento. Aggiungere una sezione prima di quella le rompe tutte e due.
+
+---
+
+
+
+## Versione 24 — il grafo disegnato, e le tre domande (2026-09-08; le risposte sono nella versione 25)
 
 **Fatto tutto l'ordine di «Come riprendere»**, i sette punti: il grafo, il trascinamento, «Riordina», il collegare,
 lo zoom con la mini-mappa, il «+» sul connettore con la selezione multipla e le scorciatoie, e il telefono.
@@ -42,7 +122,7 @@ appena disposto stava *fra* i punti, uno trascinato *sopra*. La colonna regge: 9
 
 ---
 
-## Il consiglio sulle tre domande, e le tre decisioni che aspettano te
+## Il consiglio sulle tre domande — **tutte e quattro decise il 9 settembre** (decisioni 68-71)
 
 Cinque pareri indipendenti, cinque revisioni incrociate anonime. **Come sempre, la parte che ha cambiato la
 risposta è venuta dalla revisione**, e stavolta ha corretto anche me:
@@ -62,7 +142,7 @@ risposta è venuta dalla revisione**, e stavolta ha corretto anche me:
 **Voti**: 2 «spento», 2 «nascosto», 1 «un terzo aspetto». Ma **tutti e cinque** sono poi arrivati alla stessa
 terza strada, con cinque parole diverse: il fatto sta **sul collegamento**, non sul nodo.
 
-**Verdetto (da confermare)** — **lo si disegna spento, e a dirlo è il collegamento.** Il nodo resta quello che è
+**Verdetto, confermato dall'utente il 9 settembre** — **lo si disegna spento, e a dirlo è il collegamento.** Il nodo resta quello che è
 già (`.arc.off`, porte spente: bianco 38 %, tratteggio 3-5, niente bagliore: **zero stati nuovi**), e il
 collegamento non percorso porta l'etichetta **«non è passato di qui»**. Perché:
 - la strada «nascondere» aveva un prezzo che **è già pagato**: le due tab mostrano già grafi diversi (8 nodi
@@ -81,7 +161,7 @@ su ogni nodo.
 modello lo fa già»): **non lo fa** — oggi un'esecuzione produce **una** voce in coda, quindi *n* voci è una
 **capacità nuova**, non un riuso. Il verdetto non cambia, la ragione sì.
 
-**Verdetto (da confermare)** — **n voci, una per uscita, ma consecutive e riconoscibili.** La firma è per uscita
+**Verdetto, confermato dall'utente il 9 settembre** — **n voci, una per uscita, ma consecutive e riconoscibili.** La firma è per uscita
 perché la responsabilità è per uscita (spina dorsale 1: «il titolare approva ogni uscita», non ogni flusso), e
 raggrupparle in una voce sola creerebbe in coda un oggetto — «il flusso» — che il modello non ha e che non si può
 né aprire né consegnare. Quello che si aggiunge è: le uscite della stessa esecuzione stanno **vicine** in coda, e
@@ -109,7 +189,7 @@ consigliere aveva visto:
 | «collegamento» | è già il nome di una **consegna** dentro w1 (`Collegamento al magazzino`) |
 | «uscita» | `Uscita` è già un chip di `chipEsito`, col significato **opposto**: già uscita, senza la tua firma |
 
-**Verdetto (da confermare), e già in codice** perché senza parole non si poteva disegnare:
+**Verdetto, confermato dall'utente il 9 settembre, e già in codice** perché senza parole non si poteva disegnare:
 - **(b) i quattro tipi restano quelli**: `poi`, `se…`, `insieme`, `se si ferma`. Misurati nel canvas vero, in
   Urbanist a 10 px: 31,31 · 32,89 · 51,25 · **65,67 px** — tutti dentro i 150 px dichiarati dall'etichetta. E
   **«poi» non si stampa**: è il caso di tutti gli 8 archi di partenza;
@@ -126,10 +206,10 @@ affatto.
 
 ---
 
-## Come riprendere (dalla versione 24)
+## Come si riprendeva dalla versione 24 (fatto)
 
-1. **Le tre risposte qui sopra**, più la quarta che la revisione ha sollevato (i freni sulla clausola
-   dell'innesco). Finché non arrivano, sono **da confermare** e il codice porta i valori raccomandati.
+1. ~~Le tre risposte qui sopra, più la quarta che la revisione ha sollevato.~~ **Arrivate il 9 settembre**, tutte
+   e quattro sulla raccomandazione: decisioni 68-71, in cima a questo documento.
 2. **Il ramo mai percorso non è disegnabile finché non c'è**: nei dati le condizioni sono **zero**, quindi la
    domanda 1 si costruisce insieme alla prima esecuzione biforcata, non prima (regola 26: non si promette quello
    che non c'è).
