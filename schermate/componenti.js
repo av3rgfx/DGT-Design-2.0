@@ -410,6 +410,13 @@ window.DGT_COMPONENTI = (function () {
 /* La barra del canvas quando si compone: il conto a sinistra, gli acceleratori al centro. */
 .wbar .azioni-b .pill.picc{height:32px;padding:0 12px;font-size:12px}
 .wsc{position:absolute;left:16px;top:16px;z-index:6;display:flex;gap:6px;align-items:center;font-size:11px;color:var(--t2)}
+/* La riga in cima enuncia fatti e non si tocca: l'unica pillola che si clicca e' quella che propone (versione 30).
+   Si distingue con il TESTO all'accento, non con un contorno: la primitiva .chip non ha bordo — misurato,
+   border-style none e border-width 0 — quindi una border-color qui sarebbe una riga che promette un cerchio che
+   nessuno disegna. Ce n'erano due, ed erano inerti: tolte. Misurato quello che resta: lime rgb(184,252,100)
+   contro il rgb(232,232,232) dei referti, sullo stesso fondo. */
+.wsc .chip.vai{cursor:pointer;color:var(--lime)}
+.wsc .chip.vai:hover{background:var(--lime);color:var(--ink)}
 .wsc .chip{height:24px;font-size:11px}
 `;
 
@@ -437,7 +444,11 @@ window.DGT_COMPONENTI = (function () {
   const W_H_CHIUSO = 87;              /* 12+33+8+20+12 di riempimento e figli, piu' i due bordi */
   const W_FL = 20, W_FV = 32, W_GAP = 6, W_CAMPI_SU = 9;   /* etichetta, valore, spazio fra loro, bordo + spazio in cima */
   const W_AZ = 39;                    /* la riga delle azioni del gesto A: bordo, spazio, cerchi da 28 */
-  const altNodo = (nd, on, ramo) => {
+  /* `sl` (sola lettura) non e' un dettaglio: in sola lettura la riga delle azioni **non viene disegnata**
+     (`compone = ramo && !sl`), ma il conto la contava lo stesso. Misurato sul telefono: il conto diceva 311 px e
+     la resa ne faceva 263,4 — **47,6 px di scarto**, cioe' esattamente `W_GAP + 2 + W_AZ`. Da quel conto
+     dipendono l'altezza del canvas e il rettangolo della card aperta, quindi lo scarto si propagava. */
+  const altNodo = (nd, on, ramo, sl) => {
     if (!on) return W_H_CHIUSO;
     const righe = nd.titolare
       ? [W_FL, W_FV, W_FL, W_FV]                                  /* regola, firma anticipata */
@@ -447,15 +458,15 @@ window.DGT_COMPONENTI = (function () {
             [W_FL], (nd.strumenti && nd.strumenti.length ? nd.strumenti : ['x']).map(() => W_FV),
             nd.esito ? [W_FL, W_FV] : []);
     const campi = W_CAMPI_SU + righe.reduce((t, h) => t + h, 0) + W_GAP * (righe.length - 1);
-    const az = !nd.titolare && ramo ? W_GAP + 2 + W_AZ : 0;
+    const az = !nd.titolare && ramo && !sl ? W_GAP + 2 + W_AZ : 0;
     return W_H_CHIUSO + 8 + campi + az;
   };
   /* La spinta: di quanto scendono le righe sotto quella del nodo aperto. Vale solo per «l'ultima volta», dove le
      posizioni le calcola la serpentina; nel grafo le posizioni sono dell'utente e non le sposta nessuno. */
-  const spintaDi = (nodi, sel, ramo) => {
+  const spintaDi = (nodi, sel, ramo, sl) => {
     const i = nodi.findIndex(nd => nd.n === sel);
     if (i < 0) return { riga: -1, px: 0 };
-    return { riga: Math.floor(i / W_COL), px: Math.max(0, altNodo(nodi[i], true, ramo) - W_H_CHIUSO) };
+    return { riga: Math.floor(i / W_COL), px: Math.max(0, altNodo(nodi[i], true, ramo, sl) - W_H_CHIUSO) };
   };
   const wpos = (i, sp, nd) => {
     /* Nel grafo la posizione la porta il nodo (versione 23: e' libera, la sposta l'utente). Nell'ultima volta la
@@ -559,6 +570,28 @@ window.DGT_COMPONENTI = (function () {
       <div class="ft">${piede}</div>
       ${campi}${campiInn}${campiTit}</div>`;
   }
+  /* ---- Quanti nodi, se aperti, ne coprirebbero un altro (versione 30) ----
+     Il conto che accende la pillola. Non guarda lo stato di adesso ma un'ipotesi — «se lo apri» — perche' e'
+     quello che il titolare deve sapere **prima** di aprirlo, non dopo. Vale solo nel grafo: nell'«ultima volta»
+     la serpentina fa scendere le righe sotto quella aperta, quindi la copertura non puo' esistere.
+     Dopo il passo a 342 questo conto e' **zero** su tutti i disegni che dispone il prodotto: si accende solo se
+     il titolare ha stretto due nodi trascinandoli, che e' l'unico modo rimasto — e giustamente, perche' un freno
+     al trascinamento sposterebbe un nodo dove lui non l'ha messo (regola 42). */
+  function canvasCoperti(nodi, ramo, sl) {
+    if (!ramo) return { nodi: 0, coppie: 0 };
+    let quanti = 0, coppie = 0;
+    nodi.forEach(a => {
+      const h = altNodo(a, true, ramo, sl);
+      let n = 0;
+      nodi.forEach(b => {
+        if (a === b) return;
+        if (Math.min(a.x + W_W, b.x + W_W) - Math.max(a.x, b.x) > 2
+         && Math.min(a.y + h, b.y + W_H_CHIUSO) - Math.max(a.y, b.y) > 2) n++;
+      });
+      if (n) { quanti++; coppie += n; }
+    });
+    return { nodi: quanti, coppie };
+  }
   /* ---- Le misure del disegno (versione 27) ----
      Dove comincia e dove finisce il grafo, in coordinate del canvas. Serve allo scatto «tutto dentro» del
      telefono (decisione 73) e alle prove: e' un conto sulle posizioni, **non** una posizione ricalcolata —
@@ -606,9 +639,10 @@ window.DGT_COMPONENTI = (function () {
     w = Object.assign({}, w, { nodi: nodiFonte });
     const n = w.nodi.length;
     const righe = Math.ceil(n / W_COL);
-    const sp = ramo ? { riga: -1, px: 0 } : spintaDi(w.nodi, sel, ramo);
     opz = opz || {};
     const sl = !!opz.soloLettura;                 /* il telefono: si guarda, non si compone (decisione 72) */
+    /* la spinta si calcola **dopo** `sl`, perche' l'altezza del nodo aperto dipende da quale superficie lo mostra */
+    const sp = ramo ? { riga: -1, px: 0 } : spintaDi(w.nodi, sel, ramo, sl);
     const compone = ramo && !sl;
     const vista = opz.vista || 1008;              /* quanta larghezza si vede: 1008 nella Console, 278,4 sul telefono */
     const conBarra = opz.barra !== false, conChips = opz.chips !== false, conMappa = opz.mappa !== false;
@@ -621,23 +655,64 @@ window.DGT_COMPONENTI = (function () {
        cresce dietro a quello che l'utente ha disegnato), nell'ultima volta le righe della serpentina. 78: le porte
        sotto l'ultima riga. La barra in fondo (62) sta **fuori** dalla cornice che si scala: e' un comando, non
        disegno, e non si rimpicciolisce con lo zoom. */
-    const basso = ramo
-      ? Math.max(...w.nodi.map(nd => nd.y + altNodo(nd, nodoScelto(nd, sel, ramo), ramo))) + 78 + W_PAD
-      : W_PAD * 2 + (righe - 1) * W_PY + W_H + 78 + sp.px;
+    /* ---- La riserva in fondo, e la mini-mappa che non copre piu' un nodo (versione 29) ----
+       Trovato guardando l'anteprima del passo a 342 e poi misurato: la `.wmini` da 200x120 sta a
+       `left:16px; bottom:78px`, e con l'ultima riga a y=720 finiva **sopra il nodo del titolare** — 180x22 px,
+       il 22 % della card, proprio la striscia dove e' scritto «aspetterà la tua firma». Chiudere una copertura
+       aprendone un'altra, e per giunta sul nodo che dice chi firma, non e' un affare.
+       La mappa **non si sposta**: sta dove la mette il riferimento. Si riserva lo spazio, cosi' galleggia sul
+       vuoto. Quanto: la mappa e' alta 120 e sta 16 px sopra la barra da 62, quindi il suo bordo alto e' a
+       `basso - 136`; sotto l'ultima riga servono ancora le porte e le loro etichette (17 + 14). Da qui i 167.
+       Il conto si fa in due tempi perche' `serveMappa` guarda `basso`: prima la riserva normale, con quella si
+       decide se la mappa c'e', e solo allora si allarga. */
+    const RISERVA = 78 + W_PAD;            /* le porte sotto l'ultima riga, piu' il margine */
+    const RISERVA_MAPPA = 136 + 31;        /* la mappa con il suo stacco, piu' porte ed etichette dell'ultima riga */
+    const bassoNodi = ramo
+      ? Math.max(...w.nodi.map(nd => nd.y + altNodo(nd, nodoScelto(nd, sel, ramo), ramo, sl)))
+      : W_PAD + (righe - 1) * W_PY + W_H + sp.px;
+    const bassoProv = bassoNodi + RISERVA;
+    const serveMappa = conMappa && (z !== 1 || bassoProv > 820);
+    const basso = bassoNodi + (serveMappa ? Math.max(RISERVA, RISERVA_MAPPA) : RISERVA);
     const alt = Math.round(basso * z) + (conBarra ? 62 : 0);
     const nodi = w.nodi.map((nd, i) => nodoWorkflow(m, w, nd, i, sel, ramo, n, sp, multi || [], sl)).join('');
+    /* ---- Che cosa nasconde la card aperta (versione 29) ----
+       Il nodo aperto ha `z-index:3` e sfondo opaco: quello che gli finisce sotto **non si vede**. Ma tre cose
+       venivano disegnate lo stesso, e due di loro **sopra** di lui, perche' stanno piu' in alto nella pila:
+       le **prese** del collegamento (`.wio`, z-index 5) e i **tag** del contratto. Misurato col colpo del mouse:
+       aprendo un nodo, le due prese del nodo coperto erano disegnate sull'editor e **rispondevano al clic** —
+       da li' nasceva un collegamento **da un nodo che non si vede**, cioe' un passo, e quindi un euro, attribuito
+       a un dipendente che il titolare non ha visto. I «+» e le «x», che stanno piu' in basso nella pila, erano
+       gia' morti: quelli non cambiano.
+       La regola che ne esce, e vale per tutti e tre: **quello che appartiene a un nodo nascosto dalla card non si
+       disegna**. Non e' un velo ne' uno spegnimento — e' non disegnare qualcosa che gia' non si vede, ma che
+       rispondeva. Dalla versione 29 il caso e' comunque raro: col passo a 342 un nodo aperto non copre piu'
+       nessuno, e resta solo la disposizione stretta fatta a mano. */
+    const iOn = w.nodi.findIndex(nd => nodoScelto(nd, sel, ramo));
+    const cardOn = iOn < 0 ? null : (() => { const q = wpos(iOn, sp, ramo ? w.nodi[iOn] : null);
+      return { x: q.x, y: q.y, h: altNodo(w.nodi[iOn], true, ramo, sl) }; })();
+    /* il punto sta sotto la card aperta? (1 px di tolleranza: le prese stanno **sul** fianco del nodo) */
+    const nascosto = (x, y) => !!cardOn && x > cardOn.x - 1 && x < cardOn.x + W_W + 1 && y > cardOn.y && y < cardOn.y + cardOn.h;
     /* Le porte del riferimento: sotto ogni nodo che non e' il titolare, una per il modello e una per ogni
        strumento. Spente quando il passo non e' ancora stato fatto: una porta accesa dice che quello strumento e'
        stato davvero usato. Nel grafo l'innesco non ne ha — non usa modelli, dice quando si comincia. */
     const porte = w.nodi.map((nd, i) => {
       if (nd.titolare || nd.innesco) return '';
+      /* ---- Le porte del nodo **aperto** non si stampano (versione 29) ----
+         Scendevano con lui — altrimenti finivano dietro la sua stessa card — e cosi' andavano addosso alle
+         etichette del nodo sotto: misurate **cinque** coppie sovrapposte per 6 px. Ma mentre il nodo e' aperto
+         quelle porte non dicono niente di nuovo: sono la **prima parola tagliata** dei campi che la card stampa
+         per esteso («Archivio» per «Archivio del cliente»), e nel grafo sono per giunta sempre spente. Un
+         doppione piu' povero, che era anche l'unica cosa che si sovrapponeva: non stamparlo chiude cinque scontri
+         su cinque senza spostare una coordinata. Quando il nodo si richiude, tornano. */
+      if (nodoScelto(nd, sel, ramo)) return '';
       const p = wpos(i, sp, nd);
-      const giu = nodoScelto(nd, sel, ramo) ? altNodo(nd, true, ramo) - W_H_CHIUSO : 0;
+      const giu = 0;
       const corta = t => { const w0 = String(t).split(/[ ·]/)[0]; return w0.length > 11 ? w0.slice(0, 10) + '…' : w0; };
       const voci = [['Modello', true], ...nd.strumenti.slice(0, 2).map(s => [corta(s), true])];
       const spenta = ramo || nd.stato === 'da fare';
       return voci.map((v, k) => {
         const x = p.x + 34 + k * 62, y = p.y + W_H + giu;
+        if (nascosto(x, y)) return '';
         return `<span class="wport${spenta ? ' off' : ''}" style="left:${x}px;top:${y}px"></span><span class="wplab" style="left:${x}px;top:${y + 8}px">${esc(v[0])}</span>`;
       }).join('');
     }).join('');
@@ -667,18 +742,25 @@ window.DGT_COMPONENTI = (function () {
          lascia. L'innesco non ha entrata (prima di lui non c'e' lavoro) e il titolare non ha uscita (dopo la firma
          non c'e' altro lavoro): sono i due divieti del modello, disegnati. */
       if (!sl) w.nodi.forEach(nd => {
-        if (!nd.innesco) io += `<span class="wio ent" data-porta="ent" data-id="${esc(nd.id)}" style="left:${nd.x}px;top:${nd.y + W_MEZZO}px"></span>`;
-        if (!nd.titolare) io += `<span class="wio usc" data-az="ramo-tira" data-porta="usc" data-id="${esc(nd.id)}" style="left:${nd.x + W_W}px;top:${nd.y + W_MEZZO}px" title="Tira un collegamento da qui"></span>`;
+        /* La presa di un nodo che la card aperta nasconde non si disegna: stava a `z-index:5` contro il 3 della
+           card, quindi si vedeva **sopra** l'editor e rispondeva al clic. Le proprie restano: la card e' la sua. */
+        const suoi = nodoScelto(nd, sel, ramo);
+        if (!nd.innesco && (suoi || !nascosto(nd.x, nd.y + W_MEZZO))) io += `<span class="wio ent" data-porta="ent" data-id="${esc(nd.id)}" style="left:${nd.x}px;top:${nd.y + W_MEZZO}px"></span>`;
+        if (!nd.titolare && (suoi || !nascosto(nd.x + W_W, nd.y + W_MEZZO))) io += `<span class="wio usc" data-az="ramo-tira" data-porta="usc" data-id="${esc(nd.id)}" style="left:${nd.x + W_W}px;top:${nd.y + W_MEZZO}px" title="Tira un collegamento da qui"></span>`;
       });
       /* I rami che **non escono dall'azienda**: con il permesso «chiedi prima di consegnare» un ramo che non
          arriva alla firma resta dentro, e la pagina lo **dice** invece di vietarlo (nessuna validazione impone la
          convergenza: era il timore dell'utente, e non era fondato). */
       const esce = m.ramoEsce(wOrig);
-      fuori = esce.fuori.map(nd => `<span class="wtag" style="left:${nd.x + W_W / 2}px;top:${nd.y - 14}px" title="Questo ramo non arriva alla tua firma: quello che produce resta in azienda">${ic('i-hand')}resta in azienda</span>`).join('')
+      /* Anche i tag del **contratto** seguono la regola: non si stampano su una card che nasconde il nodo a cui
+         appartengono. Sono `pointer-events:none` e senza `z-index`, quindi finivano sotto la card senza nemmeno
+         il tooltip a recuperarli — la frase che dice che un ramo consegna **senza la firma del titolare**,
+         sparita proprio dove serve. Col passo a 342 il caso non nasce piu' da solo. */
+      fuori = esce.fuori.filter(nd => !nascosto(nd.x + W_W / 2, nd.y - 14)).map(nd => `<span class="wtag" style="left:${nd.x + W_W / 2}px;top:${nd.y - 14}px" title="Questo ramo non arriva alla tua firma: quello che produce resta in azienda">${ic('i-hand')}resta in azienda</span>`).join('')
         /* Con il permesso in testa gli stessi rami **escono**, senza passare dalla coda. Prima il canvas taceva
            proprio qui (decisione 71): cambiando il permesso i tag sparivano e non restava niente a dire che quel
            ramo consegnava da solo. Adesso lo dice, e dice entro che cosa. */
-        + esce.anticipata.map(nd => `<span class="wtag" style="left:${nd.x + W_W / 2}px;top:${nd.y - 14}px" title="Questo ramo consegna senza passare dalla coda: lo autorizza il permesso in testa, entro i tre freni">${ic('i-bolt')}esce senza la tua firma</span>`).join('');
+        + esce.anticipata.filter(nd => !nascosto(nd.x + W_W / 2, nd.y - 14)).map(nd => `<span class="wtag" style="left:${nd.x + W_W / 2}px;top:${nd.y - 14}px" title="Questo ramo consegna senza passare dalla coda: lo autorizza il permesso in testa, entro i tre freni">${ic('i-bolt')}esce senza la tua firma</span>`).join('');
     } else {
       archi = w.nodi.slice(0, -1).map((nd, i) => {
         const a = wpos(i, sp), b = wpos(i + 1, sp);
@@ -707,7 +789,6 @@ window.DGT_COMPONENTI = (function () {
        copre il disegno nei casi in cui il disegno si vede tutto. */
     /* La cornice sul telefono e' larga 278,4 px: la mappa da 200x120 ci coprirebbe il disegno, quindi li' non
        c'e' (`opz.mappa`). Nella Console vale su tutte e due le tab, come lo zoom. */
-    const serveMappa = conMappa && (z !== 1 || basso > 820);
     const mini = serveMappa ? (() => {
       const largo = 1008, altoC = basso;
       const k = Math.min(198 / largo, 118 / altoC);
@@ -730,7 +811,24 @@ window.DGT_COMPONENTI = (function () {
     const esceC = ramo ? m.ramoEsce(wOrig) : null;
     const fuoriN = esceC ? esceC.fuori.length : 0;
     const antN = esceC ? esceC.anticipata.length : 0;
-    const cima = ramo && conChips ? `<div class="wsc"><span class="chip">${ic('i-rows')}${passiRamo} passi · ${G.archi.length} collegamenti</span>${fuoriN ? `<span class="chip">${ic('i-hand')}${fuoriN} ${fuoriN === 1 ? 'ramo resta' : 'rami restano'} in azienda</span>` : ''}${antN ? `<span class="chip">${ic('i-bolt')}${antN} ${antN === 1 ? 'ramo esce' : 'rami escono'} senza la tua firma</span>` : ''}${G.ciclo ? `<span class="chip">${ic('i-warn')}il flusso si chiude ad anello</span>` : ''}</div>` : '';
+    /* ---- La pillola che lo dice, e il gesto che c'e' gia' (versione 30, decisione del titolare) ----
+       «Vorrei che il prodotto se ne accorgesse e me lo proponesse». Sta qui, nella riga che gia' enuncia i fatti
+       del grafo, ed e' la **sola** pillola della riga che si clicca: le altre sono referti, questa e' una
+       proposta, e l'icona `i-grid` — la stessa della pillola «Riordina» in fondo — dice che gesto innesca.
+       Il gesto e' **«Riordina»**, quello che esiste gia': rimette i nodi sulla griglia al passo nuovo, e col
+       passo a 342 questo **chiude la copertura**. Non si e' inventato un secondo gesto che riordina «solo un
+       po'»: una parola, un significato.
+       La parola dice «nodi» e non «passi», e non e' pignoleria: la barra distingue «l'innesco, 7 passi e la tua
+       firma», quindi il coperto puo' essere l'innesco o **la tua firma**, e chiamarlo «passo» mentirebbe proprio
+       nel caso piu' grave.
+       Sul telefono non c'e' (`chips: false`), ed e' voluto: li' non si trascina, quindi il caso non si puo'
+       creare, e non c'e' «Riordina» da premere. La striscia del telefono porta il **contratto**, e una faccenda
+       di disposizione accanto a «esce senza la tua firma» la svaluterebbe. */
+    const cop = ramo && conChips && !sl ? canvasCoperti(w.nodi, ramo, sl) : { nodi: 0 };
+    const chipCop = cop.nodi
+      ? `<span class="chip vai" data-az="ramo-riordina" title="Rimette i nodi in ordine sulla griglia: i collegamenti, i nomi e i numeri dei passi non cambiano">${ic('i-grid')}${cop.nodi === 1 ? '1 nodo ne copre un altro quando lo apri' : cop.nodi + ' nodi si coprono quando li apri'} · Riordina</span>`
+      : '';
+    const cima = ramo && conChips ? `<div class="wsc">${chipCop}<span class="chip">${ic('i-rows')}${passiRamo} passi · ${G.archi.length} collegamenti</span>${fuoriN ? `<span class="chip">${ic('i-hand')}${fuoriN} ${fuoriN === 1 ? 'ramo resta' : 'rami restano'} in azienda</span>` : ''}${antN ? `<span class="chip">${ic('i-bolt')}${antN} ${antN === 1 ? 'ramo esce' : 'rami escono'} senza la tua firma</span>` : ''}${G.ciclo ? `<span class="chip">${ic('i-warn')}il flusso si chiude ad anello</span>` : ''}</div>` : '';
     /* Lo spostamento della vista: serve quando il disegno ingrandito e' piu' largo di quello che si vede. Nella
        Console e' 1008 px, e allora serve da 1,25x in su; sul telefono sono 278,4, e allora serve **sempre** —
        sono i 632 px di scorrimento laterale che la decisione 72 ha accettato pur di non ricalcolare le posizioni
@@ -837,5 +935,5 @@ window.DGT_COMPONENTI = (function () {
   }
 
   return { css: prefissa(css, '.dirA'), variabili, av, pair, dots, chipStato, chipEsito, messaggio, iconaTipo, nomeTipo, eur, delta, differenze,
-    canvasWorkflow, canvasMisure, canvasTuttoDentro, canvasSuNodo, canvasStringi, W_METRICHE: { COL: W_COL, PX: W_PX, PY: W_PY, PAD: W_PAD, W: W_W, H: W_H, H_CHIUSO: W_H_CHIUSO } };
+    canvasWorkflow, canvasMisure, canvasTuttoDentro, canvasSuNodo, canvasStringi, canvasCoperti, W_METRICHE: { COL: W_COL, PX: W_PX, PY: W_PY, PAD: W_PAD, W: W_W, H: W_H, H_CHIUSO: W_H_CHIUSO } };
 })();

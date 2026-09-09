@@ -1346,8 +1346,24 @@ window.DGT_DATI = (function () {
          stanno sui fianchi del nodo (a destra si esce, a sinistra si entra), quindi una riga che va da destra a
          sinistra rende **ogni** suo arco un ritorno — misurato disegnandolo: 9 nodi, 8 collegamenti, di cui 4
          all'indietro, e il canvas diventa illeggibile. Qui le righe vanno tutte da sinistra a destra, come le
-         righe di un testo, e l'unico ritorno e' quello che va a capo. Le costanti sono quelle del canvas. */
-      ramoPosa: i => { const C = 4, PX = 234, PY = 216, PAD = 36; return { x: PAD + (i % C) * PX, y: PAD + Math.floor(i / C) * PY }; },
+         righe di un testo, e l'unico ritorno e' quello che va a capo.
+         ---- Il passo di riga: 342 e non piu' 216 (versione 29, decisione del titolare) ----
+         216 era `12x18`: scelto per far cadere i nodi sui punti della griglia, e tarato sul nodo **chiuso** (87
+         px). Ma il gesto piu' frequente del canvas e' **aprire** un nodo, e un nodo aperto e' alto fino a **311
+         px** — piu' della distanza fra due righe. Misurato: cinque nodi su nove coprivano quello sotto, tre per
+         intero, e cinque coppie di etichette di porta si sovrapponevano per 6 px.
+         **342 = 19x18**, quindi resta sulla griglia, ed e' il conto esatto di quello che un nodo aperto occupa:
+         311 di card + 17 fino alle sue porte + 14 di etichetta. Verificato trascinando i nodi col gesto vero:
+         **zero coperture, zero scontri**. Il prezzo, accettato dal titolare: il disegno passa da 669 a 921 px e
+         la mini-mappa diventa permanente (per questo si e' spostata: prima copriva il nodo del titolare).
+         **Qui e non in `W_PY`**: `wpos` (`componenti.js`) esce alla prima riga quando il nodo porta gia' la sua
+         `x`, e nel grafo la porta sempre — `W_PY` governa **solo** la serpentina dell'«ultima volta», dove il
+         difetto non esiste perche' li' le righe sotto quella aperta scendono da sole (`spintaDi`). E il passo non
+         vive piu' in tre posti con tre valori: `RAMO_PASSO` e' l'unico, e lo leggono `ramoPosa` e `ramoAggiungi`.
+         La regola 42 non si oppone: questo e' il **seme**, non la mano. Le posizioni che il titolare ha messo
+         trascinando (`ramoPosiziona`) non le tocca nessuno — «Riordina» resta l'unica eccezione, e la chiede lui. */
+      RAMO_PASSO: { X: 234, Y: 342, PAD: 36, COL: 4 },
+      ramoPosa: i => { const P = out.RAMO_PASSO; return { x: P.PAD + (i % P.COL) * P.X, y: P.PAD + Math.floor(i / P.COL) * P.Y }; },
       /* La griglia dell'aggancio: **18 px**, cioe' i punti che il canvas gia' disegna (`background-size:18px`).
          n8n aggancia a 16, ma la sua griglia e' invisibile: qui i nodi cadono sui punti che si vedono. */
       RAMO_GRIGLIA: 18,
@@ -1369,7 +1385,17 @@ window.DGT_DATI = (function () {
         const rif = prima ? (r.archi.find(a => a.a === dopo.id) || {}).da : dopo.id;
         const base = r.nodi.find(n => n.id === rif) || dopo;
         const id = 'p' + (++r.seq);
-        r.nodi.splice(r.nodi.length - 1, 0, { id, n: 0, nome: 'Passo nuovo', chi: w.chi, modello: 'standard', strumenti: [], stato: 'da fare', costo: 0, durata: '', esito: '', nato: true, x: base.x, y: base.y + 210 });
+        /* ---- Dove nasce il passo nuovo (corretto nella versione 29) ----
+           Era `base.y + 210`: **210 non e' multiplo di 18**, quindi il passo nuovo cadeva fra i punti della
+           griglia — contro la ragione stessa per cui la versione 24 scelse 234 e 216 — ed era **meno del passo di
+           riga**, quindi nasceva **sotto la card aperta che l'aveva appena creato**: il gesto piu' naturale del
+           canvas produceva un nodo invisibile. Adesso scende di un passo intero e, come il «+» sull'arco e il
+           rilascio nel vuoto, cede il posto se e' occupato. */
+        const g = out.RAMO_GRIGLIA;
+        let ny = Math.max(0, base.y + out.RAMO_PASSO.Y);
+        let guardiaA = 0;
+        while (out.ramoOccupato(r, base.x, ny, null, out.RAMO_ALT_APERTO) && guardiaA++ < 40) ny += g * 2;
+        r.nodi.splice(r.nodi.length - 1, 0, { id, n: 0, nome: 'Passo nuovo', chi: w.chi, modello: 'standard', strumenti: [], stato: 'da fare', costo: 0, durata: '', esito: '', nato: true, x: base.x, y: ny });
         /* i successori del nodo di riferimento passano dal nuovo */
         r.archi.filter(a => a.da === base.id).forEach(a => { a.da = id; });
         r.archi.push({ id: 'a' + (++r.seq), da: base.id, a: id, se: '' });
@@ -1435,7 +1461,7 @@ window.DGT_DATI = (function () {
         let x = Math.round(((da.x + ab.x) / 2) / g) * g, y = Math.round(((da.y + ab.y) / 2) / g) * g;
         x = Math.max(0, Math.min(1008 - 208 - 8, x)); y = Math.max(0, y);
         let guardia = 0;
-        while (out.ramoOccupato(r, x, y, null) && guardia++ < 40) y += g * 2;
+        while (out.ramoOccupato(r, x, y, null, out.RAMO_ALT_APERTO) && guardia++ < 40) y += g * 2;
         const id = 'p' + (++r.seq);
         r.nodi.splice(r.nodi.length - 1, 0, { id, n: 0, nome: 'Passo nuovo', chi: w.chi, modello: 'standard', strumenti: [], stato: 'da fare', costo: 0, durata: '', esito: '', nato: true, x, y });
         r.archi.push({ id: 'a' + (++r.seq), da: id, a: ab.id, tipo: 'poi', se: '' });
@@ -1456,14 +1482,27 @@ window.DGT_DATI = (function () {
         let nx = Math.max(0, Math.min(1008 - 208 - 8, Math.round(x / g) * g));
         let ny = Math.max(0, Math.round(y / g) * g);
         let guardia = 0;
-        while (out.ramoOccupato(r, nx, ny, null) && guardia++ < 40) ny += g * 2;
+        while (out.ramoOccupato(r, nx, ny, null, out.RAMO_ALT_APERTO) && guardia++ < 40) ny += g * 2;
         r.nodi.splice(r.nodi.length - 1, 0, { id, n: 0, nome: 'Passo nuovo', chi: w.chi, modello: 'standard', strumenti: [], stato: 'da fare', costo: 0, durata: '', esito: '', nato: true, x: nx, y: ny });
         r.archi.push({ id: 'a' + (++r.seq), da: daId, a: id, tipo: 'poi', se: '' });
         out.ramoNumera(r);
         return id;
       },
       /* Un posto e' occupato se ci sta sopra un nodo chiuso (208x87, piu' i 18 px della griglia di respiro). */
-      ramoOccupato: (r, x, y, escludi) => r.nodi.some(n => n.id !== escludi && Math.abs(n.x - x) < 208 + 18 && Math.abs(n.y - y) < 87 + 18),
+      /* ---- Un passo nuovo nasce **gia' aperto**, e il freno lo sapeva (corretto nella versione 29) ----
+         Il freno misurava sempre il nodo **chiuso** (87 + 18 = 105 px di respiro), ma i tre gesti che creano un
+         passo lo lasciano **aperto** — `st.nodo` diventa il suo id. Un passo nuovo aperto e' alto **273 px**
+         (87 di testata + 8 + 131 di campi + 47 della riga delle azioni: modello e un solo strumento, che e' quello
+         che ha appena nato). Misurato: il «+» sull'arco posava un passo a 162,144 che, aperto, ne copriva **due**;
+         il «+» dentro l'innesco ne copriva uno — il nodo del **titolare**. Il conto diceva «libero», la resa
+         copriva. Adesso `alt` dice quanto occupa davvero quello che si sta posando, e il confronto non e' piu'
+         simmetrico: sopra basta il nodo chiuso, sotto serve tutta la card aperta. */
+      RAMO_ALT_APERTO: 273,
+      ramoOccupato: (r, x, y, escludi, alt) => {
+        const h = alt || 87;
+        return r.nodi.some(n => n.id !== escludi && Math.abs(n.x - x) < 208 + 18
+          && y < n.y + 87 + 18 && n.y < y + h + 18);
+      },
       /* Togliere un passo ricuce la catena: i suoi entranti si attaccano ai suoi uscenti, cosi' non restano monconi. */
       ramoTogli: (w, id) => {
         const r = out.ramoDi(w), nd = r.nodi.find(n => n.id === id);
@@ -1562,7 +1601,18 @@ window.DGT_DATI = (function () {
           const id = coda.shift();
           (g[id] || []).forEach(v => { liv[v] = Math.max(liv[v] || 1, (liv[id] || 1) + 1); if (--resta[v] === 0) coda.push(v); });
         }
-        r.nodi.forEach(n => { n.n = liv[n.id] || 1; });
+        /* ---- L'innesco non e' un passo (corretto nella versione 30) ----
+           `liv` e' il livello topologico, e l'innesco — che non ha niente in entrata — sta al livello 1. Ma nel
+           prodotto l'innesco **non e' un passo**: la barra lo dice da sempre, «9 nodi · l'innesco, 7 passi e la
+           tua firma», e il conto in cima esclude innesco e titolare. Il risultato era che **premere «Riordina»
+           una volta rinumerava tutto**: «Passo 1» diventava «Passo 2», «Passo 3» diventava «Passo 4», a cascata
+           su tutti e sette — misurato, e poi si fermava. Un gesto che il titolare preme per rimettere in ordine
+           il **disegno** gli cambiava sotto gli occhi il **nome** di ogni passo.
+           Si tiene il livello (serve al grafo: due rami che partono dallo stesso nodo portano lo stesso numero,
+           decisione 65) e si toglie lo scalino dell'innesco. */
+        const inn = r.nodi.find(n => n.innesco);
+        const base = inn ? (liv[inn.id] || 1) : 0;
+        r.nodi.forEach(n => { n.n = Math.max(n.innesco ? 0 : 1, (liv[n.id] || 1) - base); });
         r.ciclo = Object.keys(resta).some(k => resta[k] > 0);   /* un ciclo si vede: n8n li ammette, qui si dice */
       },
       /* Quanti nodi entrano e quanti escono da un nodo: serve alle porte e a dire quando una porta si sdoppia. */

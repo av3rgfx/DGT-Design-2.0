@@ -227,7 +227,10 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
      intero** (18 096 px², cioe' tutti i 208×87 del nodo sotto), perche' il canvas aggiungeva 168 px in fondo
      invece di spostare in giu' le righe seguenti. Adesso le righe scendono di quanto il nodo cresce, e l'altezza
      del nodo aperto e' un conto fatto prima di stampare, non una misura presa dopo. */
-  console.log('\n11. il nodo aperto non copre nessuno, e nessun nodo finisce sotto la barra');
+  /* Il titolo diceva «il nodo aperto non copre nessuno» ma la misura sotto guarda `.wnode:not(.on)`, cioe' i
+     soli nodi **chiusi**: affermava piu' di quello che verificava, e nella versione 24 il nodo aperto ha davvero
+     cominciato a coprire. Corretto nella versione 29, dove il caso vero e' verificato dalla sezione 27. */
+  console.log('\n11. due nodi chiusi non si coprono mai, e nessun nodo finisce sotto la barra');
   let stati = 0, copertiN = 0, sottoBarra = 0;
   for (const n of ['11', '40']) {
     await page.goto(file('n=' + n + '&pagina=workflow&dip=svi&tendina=chiusa')); await page.waitForTimeout(200);
@@ -317,16 +320,36 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(g.piu === 8 && g.ics === 8, 'ogni collegamento porta il suo «+» e la sua «×»: ' + g.piu + ' e ' + g.ics);
   check(g.etichette.length === 0, '«poi» non si stampa: gli 8 archi di partenza sono tutti «poi», e scriverlo otto volte sarebbe rumore');
   check(g.incroci === 0, 'la disposizione di partenza non ha nessun incrocio (' + g.incroci + ')');
-  check(g.mappa === 0, 'e la mini-mappa non c\'è: il grafo si vede tutto, non c\'è niente da non vedere');
+  /* ---- La mini-mappa, dalla versione 29 ----
+     Fino alla 28 il grafo stava tutto nella cornice e la mappa non serviva. Col passo di riga a 342 il disegno
+     e' alto 974 px contro gli 820 della soglia, quindi la mappa **c'e' sempre**, anche al 100 %: e' il prezzo
+     che il titolare ha accettato per non avere piu' un nodo aperto sopra quello sotto. Quello che si verifica
+     adesso non e' piu' la sua assenza, ma che non **copra** niente: la riserva in fondo esiste apposta. */
+  check(g.mappa === 1, 'la mini-mappa c\'è anche al 100 %: col passo a 342 il grafo non sta più in una schermata (' + g.mappa + ')');
+  const mappaSopra = await page.evaluate(() => {
+    const mi = document.querySelector('.wmini'); if (!mi) return -1;
+    const M = mi.getBoundingClientRect(); let n = 0;
+    document.querySelectorAll('.wnode, .wplab, .wtag').forEach(e => { const q = e.getBoundingClientRect();
+      if (Math.min(M.right, q.right) - Math.max(M.left, q.left) > 0.5 && Math.min(M.bottom, q.bottom) - Math.max(M.top, q.top) > 0.5) n++; });
+    return n;
+  });
+  check(mappaSopra === 0, 'e non copre nessun nodo, nessuna etichetta e nessun tag: in fondo le è riservato lo spazio (' + mappaSopra + ')');
   const raggio = await page.evaluate(() => getComputedStyle(document.querySelector('.wnode.inn')).borderTopLeftRadius);
   check(parseInt(raggio, 10) >= 36, 'il nodo d\'innesco ha il fianco arrotondato, come il trigger di n8n (' + raggio + ')');
 
   console.log('\n13. il trascinamento: 1 px del canvas = zoom px di schermo, a ogni larghezza');
   const scatolaDi = sel => page.locator(sel).first().boundingBox();
+  /* Il canvas si porta **tutto** sotto gli occhi prima di trascinare. Dalla versione 29 il passo di riga e' 342
+     e il canvas e' piu' alto: un nodo della seconda riga puo' cadere fuori dalla finestra della prova, e un
+     rilascio fuori dalla finestra non trova nessun nodo — nasce un passo nel vuoto invece del collegamento. Non
+     e' un difetto del prodotto, e' la prova che deve guardare dove trascina. Si scorre **una volta sola**, prima
+     di prendere le misure: se si scorresse a ogni misura, le coordinate prese prima diventerebbero vecchie. */
+  const canvasInVista = async () => { await page.locator('.wcanvas').first().scrollIntoViewIfNeeded().catch(() => {}); await page.waitForTimeout(80); };
   let esatti = 0, agganci = 0;
   for (const [W, zo] of [[1440, '1'], [1920, '1'], [1024, '1'], [1440, '1.5'], [1440, '0.6']]) {
     await page.setViewportSize({ width: W, height: 1100 });
     await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&zoom=' + zo + '&tendina=chiusa')); await page.waitForTimeout(300);
+    await canvasInVista();
     const prima = (await grafo()).pos.p2;
     const b1 = await scatolaDi('.wnode[data-id="p2"]');
     /* il fattore composto si **misura**, non si indovina: e' il rapporto fra il rettangolo sullo schermo e la
@@ -366,6 +389,7 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
 
   console.log('\n15. collegare: dalla presa, e il rilascio nel vuoto che crea il passo già collegato');
   await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&tendina=chiusa')); await page.waitForTimeout(300);
+  await canvasInVista();
   const tira = async (daId, dove) => {
     const pu = await scatolaDi('.wio.usc[data-id="' + daId + '"]');
     await page.mouse.move(pu.x + pu.width / 2, pu.y + pu.height / 2); await page.mouse.down();
@@ -430,6 +454,7 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
 
   console.log('\n19. la selezione multipla e le scorciatoie');
   await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&tendina=chiusa')); await page.waitForTimeout(300);
+  await canvasInVista();
   await page.click('.wnode[data-id="p1"]');
   await page.click('.wnode[data-id="p2"]', { modifiers: ['Shift'] }); await page.waitForTimeout(250);
   check(await conta('.wnode.mult') === 2, 'col maiuscolo si scelgono due passi (' + await conta('.wnode.mult') + ')');
@@ -701,6 +726,21 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   await pt.waitForTimeout(250);
   const t3 = await statoT();
   check(Math.abs(t3.zoom - 278.4 / 910) < 0.002, 'e non si scende sotto «tutto dentro»: più in là non c\'è disegno da vedere (' + t3.zoom.toFixed(4) + ')');
+  console.log('\n27. il conto dell\'altezza combacia con la resa anche in sola lettura');
+  const scarti = [];
+  for (const nid of ['p1', 'p3', 'inn', 'tit']) {
+    await pt.goto(tel('schermata=10&dip=svi&workflow=w1&ramo=1&nodo=' + nid)); await pt.waitForTimeout(320);
+    const q = await pt.evaluate(() => {
+      const on = document.querySelector('.wnode.on'); if (!on) return null;
+      const C = window.DGT_COMPONENTI;
+      return { reso: +(on.getBoundingClientRect().height / 1.25).toFixed(1) };
+    });
+    if (q) scarti.push(nid + ':' + q.reso);
+  }
+  check(scarti.length === 4, 'i quattro nodi si aprono anche sul telefono (' + scarti.join(' ') + ')');
+  const altezzeTel = scarti.map(s => +s.split(':')[1]);
+  check(Math.max(...altezzeTel) === 263.4, 'e in sola lettura il nodo aperto è alto 263,4 px, non 311: la riga delle azioni non c\'è, e adesso il conto lo sa (' + Math.max(...altezzeTel) + ')');
+
   await ctxT.close();
 
   /* ---- 26. il canvas è uno solo, e adesso vive in componenti.js ---- */
@@ -729,6 +769,230 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   await page.click('.wzoombar [data-v="uno"]'); await page.waitForTimeout(300);
   const dopo42c = await page.evaluate(() => [...document.querySelectorAll('.wnode')].map(n => n.offsetLeft + ',' + n.offsetTop).join(' '));
   check(prima42c === dopo42c, 'e nemmeno nella Console lo zoom sposta un nodo di un pixel');
+
+  /* ================= versione 29: il nodo aperto non copre piu' quello sotto ================= */
+  console.log('\n28. il passo di riga a 342, e il nodo aperto che non copre più nessuno');
+  await page.setViewportSize({ width: 1440, height: 1100 });
+  let apCopre = 0, apScontri = 0, apStati = 0, altoMax = 0;
+  for (const n of ['11', '40']) {
+    await page.goto(file('n=' + n + '&pagina=workflow&dip=svi&tendina=chiusa')); await page.waitForTimeout(200);
+    const wids = await page.evaluate(() => [...document.querySelectorAll('[data-az="workflow"]')].map(e => e.dataset.id));
+    for (const wid of wids.slice(0, 3)) {
+      await page.goto(file('n=' + n + '&pagina=workflow&dip=svi&workflow=' + wid + '&ramo=1&tendina=chiusa')); await page.waitForTimeout(200);
+      const ids = await page.evaluate(() => [...document.querySelectorAll('.wnode')].map(e => e.dataset.id));
+      for (const nid of ids) {
+        await page.goto(file('n=' + n + '&pagina=workflow&dip=svi&workflow=' + wid + '&ramo=1&nodo=' + nid + '&tendina=chiusa'));
+        await page.waitForTimeout(50);
+        const r = await page.evaluate(() => {
+          const on = document.querySelector('.wnode.on'); if (!on) return null;
+          const A = on.getBoundingClientRect();
+          const ov = (a, b) => Math.min(a.right, b.right) - Math.max(a.left, b.left) > 0.5 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 0.5;
+          let c = 0; document.querySelectorAll('.wnode:not(.on)').forEach(e => { if (ov(A, e.getBoundingClientRect())) c++; });
+          const L = [...document.querySelectorAll('.wplab')].map(e => e.getBoundingClientRect());
+          let s = 0; for (let i = 0; i < L.length; i++) for (let j = i + 1; j < L.length; j++) if (ov(L[i], L[j])) s++;
+          return { c, s, h: Math.round(A.height) };
+        });
+        if (!r) continue;
+        apStati++; apCopre += r.c; apScontri += r.s; altoMax = Math.max(altoMax, r.h);
+      }
+    }
+  }
+  check(apStati >= 30, 'provati ' + apStati + ' nodi aperti, su sei workflow e due taglie');
+  check(apCopre === 0, 'il nodo aperto non copre nessun altro nodo: era 5 su 9, con 3 coperti per intero (' + apCopre + ')');
+  check(apScontri === 0, 'e nessuna etichetta di porta si sovrappone a un\'altra: erano 5 scontri da 6 px (' + apScontri + ')');
+  check(altoMax === 311, 'il nodo aperto più alto resta 311 px: si è mosso il passo, non il nodo (' + altoMax + ')');
+
+  console.log('\n29. le porte del nodo aperto, e quello che sta sotto la sua card');
+  await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&tendina=chiusa')); await page.waitForTimeout(300);
+  const porteChiuse = await conta('.wport');
+  await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&nodo=p3&tendina=chiusa')); await page.waitForTimeout(300);
+  const porteAperto = await conta('.wport');
+  check(porteChiuse === 16 && porteAperto === 13, 'aprendo un nodo le sue tre porte non si stampano: sono la prima parola tagliata dei campi che la card mostra per esteso (' + porteChiuse + ' → ' + porteAperto + ')');
+  /* La verifica giusta e' **posizionale**, non sulle parole: le etichette di porta di un nodo stanno al centro di
+     `x + 34 + 62k`, quindi si riconosce a chi appartengono senza indovinare. Nessuna deve essere del nodo aperto. */
+  const sue = await page.evaluate(() => {
+    const zw = document.querySelector('.wzoom').getBoundingClientRect();
+    const on = document.querySelector('.wnode.on'); const A = on.getBoundingClientRect();
+    const x0 = A.left - zw.left, y0 = A.top - zw.top;
+    /* La sola x non basta: i nodi della stessa **colonna** la condividono (p3 e p7 stanno tutti e due a 738).
+       L'etichetta di un nodo sta al centro di `x + 34 + 62k` **e** a `y + 104`: servono tutte e due. */
+    return [...document.querySelectorAll('.wplab')].filter(e => { const q = e.getBoundingClientRect();
+      const d = (q.left - zw.left) + q.width / 2 - 34 - x0;
+      const dy = (q.top - zw.top) - (y0 + 104);
+      return d > -1.5 && d < 190 && Math.abs(d - Math.round(d / 62) * 62) < 1.5 && Math.abs(dy) < 1.5; }).length;
+  });
+  check(sue === 0, 'e nessuna delle etichette rimaste appartiene al nodo aperto (' + sue + ')');
+
+  /* Il caso vero della copertura, dalla 29 in poi: non lo produce piu' il prodotto, lo produce la mano. Si
+     stringono due nodi trascinando, e si verifica che sotto la card non resti niente di cliccabile. */
+  await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&tendina=chiusa')); await page.waitForTimeout(300);
+  await canvasInVista();
+  const b7 = await scatolaDi('.wnode[data-id="p7"]');
+  const b3 = await scatolaDi('.wnode[data-id="p3"]');
+  await page.mouse.move(b7.x + 100, b7.y + 20); await page.mouse.down();
+  await page.mouse.move(b7.x + 100, b3.y + 20 + 108, { steps: 10 }); await page.mouse.up(); await page.waitForTimeout(250);
+  await page.click('.wnode[data-id="p3"]', { force: true }); await page.waitForTimeout(300);
+  const sotto = await page.evaluate(() => {
+    const on = document.querySelector('.wnode.on'); if (!on) return { err: 1 };
+    const A = on.getBoundingClientRect();
+    const dentro = e => { const q = e.getBoundingClientRect(); const cx = q.left + q.width / 2, cy = q.top + q.height / 2;
+      return cx > A.left - 1 && cx < A.right + 1 && cy > A.top && cy < A.bottom; };
+    const vivo = e => { const q = e.getBoundingClientRect(); const t2 = document.elementFromPoint(q.left + q.width / 2, q.top + q.height / 2);
+      return t2 === e || e.contains(t2); };
+    const coperti = [...document.querySelectorAll('.wnode:not(.on)')].filter(e => {
+      const q = e.getBoundingClientRect();
+      return Math.min(A.right, q.right) - Math.max(A.left, q.left) > 0.5 && Math.min(A.bottom, q.bottom) - Math.max(A.top, q.top) > 0.5;
+    }).length;
+    /* le prese del nodo **aperto** stanno dentro la sua stessa card ed e' giusto che restino: la card e' sua.
+       Quelle che non devono restare sono quelle di un nodo che lui nasconde. */
+    const mio = on.dataset.id;
+    const preseVive = [...document.querySelectorAll('.wio')].filter(e => e.dataset.id !== mio && dentro(e) && vivo(e)).length;
+    const tagSopra = [...document.querySelectorAll('.wtag')].filter(dentro).length;
+    const labSopra = [...document.querySelectorAll('.wplab')].filter(dentro).length;
+    return { coperti, preseVive, tagSopra, labSopra };
+  });
+  check(sotto.coperti > 0, 'trascinando un nodo sotto un altro la copertura si può ancora fare: le posizioni restano del titolare (' + sotto.coperti + ' coperto)');
+  check(sotto.preseVive === 0, 'ma nessuna presa di un nodo nascosto resta cliccabile sopra la card: prima ce n\'erano due, e da lì nasceva un collegamento da un nodo che non si vede (' + sotto.preseVive + ')');
+  check(sotto.tagSopra === 0 && sotto.labSopra === 0, 'e sulla card non finisce nessun tag né etichetta di un nodo che nasconde (' + sotto.tagSopra + '/' + sotto.labSopra + ')');
+
+  console.log('\n30. il passo nuovo nasce sulla griglia, e non sotto la card che lo ha creato');
+  await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&nodo=p3&tendina=chiusa')); await page.waitForTimeout(300);
+  const primaAgg = await page.evaluate(() => document.querySelectorAll('.wnode').length);
+  await page.click('.wnode.on [data-az="ramo-aggiungi"]'); await page.waitForTimeout(350);
+  const nato = await page.evaluate(() => {
+    const q = [...document.querySelectorAll('.wnode')];
+    const nuovo = q.find(e => (e.querySelector('.tt b') || {}).textContent === 'Passo nuovo');
+    if (!nuovo) return { err: 1 };
+    const zw = document.querySelector('.wzoom').getBoundingClientRect();
+    const b = nuovo.getBoundingClientRect();
+    const y = Math.round(b.top - zw.top), x = Math.round(b.left - zw.left);
+    return { x, y, n: q.length, grigliaX: x % 18, grigliaY: y % 18 };
+  });
+  check(nato.n === primaAgg + 1, 'il «+» dentro il nodo aperto crea un passo (' + primaAgg + ' → ' + nato.n + ')');
+  check(nato.grigliaX === 0 && nato.grigliaY === 0, 'e nasce **sui punti della griglia** da 18 px: era a +210, che multiplo di 18 non è (' + nato.x + ',' + nato.y + ')');
+  check(nato.y >= 36 + 342, 'e un passo di riga più in basso del suo riferimento, non sotto la card che lo ha creato (y ' + nato.y + ')');
+
+  /* ---- Il freno sa che il passo nuovo nasce **aperto** (versione 29) ----
+     I tre gesti che creano un passo lo lasciano aperto (`st.nodo` diventa il suo id), ma il freno misurava il
+     nodo **chiuso**: 87 + 18. Misurato prima della correzione: il «+» sull'arco posava un passo che, aperto, ne
+     copriva **due**; il «+» dentro l'innesco copriva il nodo del **titolare**. Adesso il posto e' libero solo se
+     ci sta la card aperta (273 px per un passo appena nato), e si verifica sui tre gesti. */
+  let natiCoprono = 0, natiProvati = 0, natoPiuLontano = 0;
+  for (const nid of ['inn', 'p1', 'p2', 'p3']) {
+    for (const modo of ['dentro', 'arco']) {
+      await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&nodo=' + nid + '&tendina=chiusa')); await page.waitForTimeout(260);
+      await canvasInVista();
+      let creato = false;
+      if (modo === 'dentro') { await page.click('.wnode.on [data-az="ramo-aggiungi"]', { force: true }); creato = true; }
+      else {
+        creato = await page.evaluate(() => { const e = [...document.querySelectorAll('.wplus')].find(x => {
+            const q = x.getBoundingClientRect(); const t2 = document.elementFromPoint(q.left + q.width / 2, q.top + q.height / 2);
+            return t2 === x || x.contains(t2); });
+          if (e) { e.click(); return true; } return false; });
+      }
+      if (!creato) continue;
+      await page.waitForTimeout(300);
+      const q = await page.evaluate(() => {
+        const tutti = [...document.querySelectorAll('.wnode')];
+        const nuovo = tutti.find(e => (e.querySelector('.tt b') || {}).textContent === 'Passo nuovo');
+        if (!nuovo) return null;
+        const B = nuovo.getBoundingClientRect();
+        const zw = document.querySelector('.wzoom').getBoundingClientRect();
+        const copre = tutti.filter(e => e !== nuovo).filter(e => { const A = e.getBoundingClientRect();
+          return Math.min(A.right, B.right) - Math.max(A.left, B.left) > 0.5 && Math.min(A.bottom, B.bottom) - Math.max(A.top, B.top) > 0.5; }).length;
+        return { copre, y: Math.round(B.top - zw.top), aperto: nuovo.classList.contains('on') };
+      });
+      if (!q) continue;
+      natiProvati++; natiCoprono += q.copre; natoPiuLontano = Math.max(natoPiuLontano, q.y);
+    }
+  }
+  check(natiProvati >= 6, 'provati ' + natiProvati + ' modi di creare un passo, con un nodo già aperto');
+  check(natiCoprono === 0, 'il passo appena nato — che nasce **aperto** — non ne copre nessun altro: il freno misura la card aperta, non il nodo chiuso (' + natiCoprono + ')');
+  /* Il prezzo, dichiarato: il posto libero si cerca scendendo di 36 px alla volta, quindi con un grafo fitto il
+     passo nuovo puo' nascere lontano da dove si e' premuto. Il numero sta qui perche' si veda, non per farlo passare. */
+  check(natoPiuLontano <= 900, 'e il più lontano nasce a y ' + natoPiuLontano + ': il posto libero si cerca scendendo, e con un grafo fitto è lontano da dove hai premuto');
+
+  /* ================= versione 30: il prodotto se ne accorge e lo propone ================= */
+  /* il contesto del telefono di prima e' stato chiuso: se ne apre uno per l'ultima verifica */
+  const ctxT2 = await browser.newContext({ viewport: { width: 430, height: 932 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
+  const pt2 = await ctxT2.newPage();
+  await pt2.route('https://fonts.googleapis.com/**', r => r.fulfill({ status: 200, contentType: 'text/css', body: css }));
+  console.log('\n31. la pillola che dice che due nodi si coprono, e «Riordina» che la chiude');
+  await page.setViewportSize({ width: 1440, height: 1600 });
+  await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&tendina=chiusa')); await page.waitForTimeout(350);
+  const rigaCima = () => page.evaluate(() => ({
+    testi: [...document.querySelectorAll('.wsc .chip')].map(e => e.textContent.trim()),
+    cliccabili: document.querySelectorAll('.wsc .chip[data-az]').length,
+    largo: Math.round([...document.querySelectorAll('.wsc .chip')].reduce((s, e) => s + e.getBoundingClientRect().width + 6, -6)),
+  }));
+  const c0 = await rigaCima();
+  check(c0.cliccabili === 0, 'su un disegno disposto dal prodotto la pillola non c\'è: col passo a 342 non c\'è niente da dire (' + c0.cliccabili + ')');
+  check(c0.testi.every(x => !/copr/.test(x)), 'e la riga in cima resta quella dei fatti del grafo: ' + JSON.stringify(c0.testi));
+
+  /* il caso vero: lo crea la mano del titolare, non il prodotto */
+  await canvasInVista();
+  const q7 = await scatolaDi('.wnode[data-id="p7"]');
+  const q3 = await scatolaDi('.wnode[data-id="p3"]');
+  await page.mouse.move(q7.x + 100, q7.y + 20); await page.mouse.down();
+  await page.mouse.move(q7.x + 100, q3.y + 20 + 108, { steps: 10 }); await page.mouse.up(); await page.waitForTimeout(280);
+  await page.keyboard.press('Escape'); await page.waitForTimeout(250);
+  const c1 = await rigaCima();
+  check(c1.cliccabili === 1, 'stringendo due nodi a mano la pillola compare, ed è l\'unica della riga che si clicca (' + c1.cliccabili + ')');
+  check(/^1 nodo ne copre un altro quando lo apri · Riordina$/.test(c1.testi[0]), 'e dice il fatto al singolare, in «nodi» e non in «passi» — perché il coperto può essere l\'innesco o la tua firma: «' + c1.testi[0] + '»');
+  check(c1.largo <= 992, 'la riga in cima ci sta: ' + c1.largo + ' px sui 992 utili');
+  const tinte = await page.evaluate(() => {
+    const vai = document.querySelector('.wsc .chip.vai');
+    const altra = document.querySelector('.wsc .chip:not(.vai)');
+    return { vai: getComputedStyle(vai).color, altra: getComputedStyle(altra).color, cursore: getComputedStyle(vai).cursor };
+  });
+  check(tinte.vai === 'rgb(184, 252, 100)' && tinte.vai !== tinte.altra && tinte.cursore === 'pointer',
+    'e si distingue dai referti con l\'accento, non con un colore nuovo: ' + tinte.vai + ' contro ' + tinte.altra);
+
+  /* ---- Nessuna variabile CSS usata e mai definita ----
+     Questa prova nasce da un errore vero: la pillola era scritta `color:var(--t1)`, e `--t1` **non esiste** in
+     tutto il repository — esistono `--t2` e `--t2-light`. Senza valore di ripiego il colore cadeva
+     sull'ereditato, quindi la pillola era identica alle altre e non si vedeva che era l'unica da cliccare.
+     Un errore muto: nessun avviso, nessuna prova rossa, solo un disegno che non fa quello che dice. */
+  const varMancanti = await page.evaluate(() => {
+    const testo = [...document.querySelectorAll('style')].map(e => e.textContent).join('\n');
+    /* Le definizioni stanno nei fogli **e** negli attributi `style` degli elementi (il canvas ne scrive parecchie). */
+    const inline = [...document.querySelectorAll('[style]')].map(e => e.getAttribute('style')).join(';');
+    const definite = new Set(((testo + ';' + inline).match(/--[a-zA-Z0-9-]+\s*:/g) || []).map(s => s.replace(/\s*:$/, '')));
+    /* Si guardano solo gli usi **senza valore di ripiego**: `var(--x,1)` dichiara da sé che --x può mancare,
+       `var(--x)` no — e se manca, il valore cade sull'ereditato in silenzio. È il caso di `--t1`. */
+    const senzaRipiego = new Set((testo.match(/var\(\s*--[a-zA-Z0-9-]+\s*\)/g) || [])
+      .map(s => s.replace(/var\(\s*/, '').replace(/\s*\)$/, '')));
+    return [...senzaRipiego].filter(v => !definite.has(v));
+  });
+  check(varMancanti.length === 0, 'nessuna variabile CSS usata **senza valore di ripiego** e mai definita: quelle cadono sull\'ereditato in silenzio (' + (varMancanti.join(', ') || 'zero') + ')');
+
+  /* i numeri dei passi **prima** di premere: è la cosa che «Riordina» non deve toccare */
+  const numeriPrima = await page.evaluate(() => { const o = {}; document.querySelectorAll('.wnode').forEach(e => {
+    o[e.dataset.id] = ((e.querySelector('.tt span') || {}).textContent || '').split(' · ')[0]; }); return o; });
+  const archiPrima = await page.evaluate(() => [...document.querySelectorAll('path.arc')].map(e => e.dataset.da + '→' + e.dataset.a).sort().join(','));
+  await page.click('.wsc .chip[data-az="ramo-riordina"]'); await page.waitForTimeout(400);
+  const c2 = await rigaCima();
+  check(c2.cliccabili === 0, 'premendola, «Riordina» rimette i nodi sulla griglia e la copertura sparisce (' + c2.cliccabili + ')');
+  const numeriDopo = await page.evaluate(() => { const o = {}; document.querySelectorAll('.wnode').forEach(e => {
+    o[e.dataset.id] = ((e.querySelector('.tt span') || {}).textContent || '').split(' · ')[0]; }); return o; });
+  const archiDopo = await page.evaluate(() => [...document.querySelectorAll('path.arc')].map(e => e.dataset.da + '→' + e.dataset.a).sort().join(','));
+  check(JSON.stringify(numeriPrima) === JSON.stringify(numeriDopo), '«Riordina» non tocca i numeri dei passi: prima lo faceva, e Passo 1 diventava Passo 2 a cascata su tutti e sette');
+  check(archiPrima === archiDopo, 'e non tocca nessun collegamento: sposta il disegno, non il flusso');
+
+  /* la rinumerazione, verificata dove nasce: l'innesco non e' un passo */
+  await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&tendina=chiusa')); await page.waitForTimeout(300);
+  const n1 = await page.evaluate(() => [...document.querySelectorAll('.wnode')].map(e => ((e.querySelector('.tt span') || {}).textContent || '').split(' · ')[0]).join('|'));
+  await page.click('[data-az="ramo-riordina"]'); await page.waitForTimeout(350);
+  const n2 = await page.evaluate(() => [...document.querySelectorAll('.wnode')].map(e => ((e.querySelector('.tt span') || {}).textContent || '').split(' · ')[0]).join('|'));
+  check(n1 === n2, 'e su un grafo intonso premere «Riordina» non cambia una parola: l\'innesco non è un passo, e non ruba più il numero 1');
+  check(/Passo 1\|Passo 2\|Passo 3\|Passo 4\|Passo 5\|Passo 6\|Passo 7/.test(n2), 'i sette passi si chiamano da 1 a 7, come dice la barra («l\'innesco, 7 passi e la tua firma»)');
+
+  /* sul telefono la pillola non c'e', ed e' voluto */
+  await pt2.goto(tel('schermata=10&dip=svi&workflow=w1&ramo=1')); await pt2.waitForTimeout(400);
+  const telFin = await pt2.evaluate(() => ({ wsc: document.querySelectorAll('.wsc').length,
+    contratto: [...document.querySelectorAll('.m-wcon .chip')].map(e => e.textContent.trim()) }));
+  check(telFin.wsc === 0, 'sul telefono la riga in cima non c\'è, quindi nemmeno la pillola: lì non si trascina, e non c\'è «Riordina» da premere');
+  check(telFin.contratto.length >= 1, 'e la striscia del telefono resta quella del contratto, senza faccende di disposizione accanto: ' + JSON.stringify(telFin.contratto));
 
   if (!errors.length) ok++; else ko++;
   console.log('\n' + ok + ' ok, ' + ko + ' ko');

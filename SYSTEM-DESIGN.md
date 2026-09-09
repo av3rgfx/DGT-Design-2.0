@@ -659,6 +659,17 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     stesso oggetto mostra al titolare **una disposizione che lui non ha scelto**, e gli fa perdere l'unica cosa che
     il canvas gli aveva dato: la memoria di dove ha messo le cose. È la stessa malattia della regola 41 — due
     strade per la stessa cosa, con regole diverse — spostata dalla creazione alla forma.
+
+    **Chiarimento della versione 28** (2026-09-09; non è una decisione nuova, è una misura che evita un errore già
+    fatto due volte). La regola protegge la **mano**, non il **seme**, e nel codice sono due funzioni diverse:
+    `ramoPosa` (`dati.js`) **semina** le posizioni quando un grafo nasce e quando si preme «Riordina»;
+    `ramoPosiziona` (`dati.js`) scrive quelle che il titolare ha messo **trascinando**. Cambiare il seme non
+    ricalcola niente di nessuno — è proprio la distinzione che la regola già enuncia («guardare se quel valore è
+    generato o è stato messo lì da qualcuno»); cambiare quelle del titolare è vietato. Corollario per chi cerca
+    il passo della griglia: quello del **grafo** è in `ramoPosa`, mentre `W_PY` in `componenti.js` governa
+    **solo** la serpentina dell'«ultima volta», perché `wpos` esce alla prima riga quando il nodo porta già la sua
+    `x` — e nel grafo la porta sempre. Un consiglio di cinque, nella versione 28, ha proposto due volte di
+    correggere il grafo cambiando `W_PY`: non avrebbe toccato un solo nodo del grafo.
     Il criterio generale: **prima di ricalcolare una posizione, una scelta o un ordine su una superficie nuova,
     guardare se quel valore è generato o è stato messo lì da qualcuno.** Se è stato messo, si trasporta; non si
     rifà. Il corollario pratico che ne discende: il telefono mostra il canvas **così com'è**, e paga i 632 px di
@@ -740,6 +751,34 @@ sono dell'utente e sono ancora da prendere.**
   scadute» **non è attaccato a nessuna connessione**; il permesso «Strumenti e connessioni» ce l'hanno **2 dipendenti
   su 11**. E lo sprite **non ha** busta, chiave, nuvola né immagine, mentre la scorciatoia delle iniziali in un disco
   colorato è vietata dalla regola 19: serve una regola nuova per disegnare un servizio senza il suo marchio.
+
+44. **Quello che appartiene a un oggetto nascosto non si disegna sopra ciò che lo nasconde** (2026-09-09,
+    versione 29). Nel canvas il nodo aperto ha `z-index:3` e sfondo opaco: quello che gli finisce sotto non si
+    vede. Ma tre cose venivano disegnate lo stesso, e **due sopra di lui**, perché stavano più in alto nella pila:
+    le **prese** del collegamento (`z-index:5`) e i **tag** del contratto. Misurato col colpo del mouse: le due
+    prese del nodo coperto erano disegnate sull'editor e **rispondevano al clic** — e da lì nasceva un
+    collegamento **da un nodo che non si vede**, cioè un passo, e quindi un euro, attribuito a un dipendente che
+    il titolare non ha mai visto. Un comando che appartiene a qualcosa di invisibile è peggio di un comando
+    assente: promette un'azione su un oggetto che chi clicca non sta guardando.
+    La regola non è «velare» né «spegnere» — è **non disegnare**: se un oggetto è coperto, quello che è suo
+    (porte, prese, etichette, tag) non compare finché resta coperto, e torna appena si scopre. Il prezzo va
+    dichiarato dove tocca la spina dorsale: se il coperto porta un tag del contratto, quel tag sparisce dal
+    disegno — ma **il conto in cima continua a dirlo** («1 ramo resta in azienda»), quindi si perde *quale*, non
+    *che c'è*. Quando un'informazione della spina dorsale può sparire dal disegno, deve restare detta **fuori** dal
+    disegno: è lo stesso corollario della regola 43 sulle etichette del contratto.
+    Il corollario delle **parole** (2026-09-09, versione 30, trovato da una domanda del titolare): **quando due
+    parti del prodotto contano la stessa cosa, devono contarla nello stesso modo.** Il canvas dichiara «9 nodi ·
+    l'innesco, 7 passi e la tua firma» — cioè l'innesco **non** è un passo — ma la funzione che numera i passi
+    usava il livello topologico, dove l'innesco sta al primo posto e ruba il numero al primo passo. Il risultato:
+    premere «Riordina», che è un gesto sul **disegno**, rinominava ogni passo («Passo 1» → «Passo 2», a cascata su
+    tutti e sette). Un gesto sulla forma non deve mai cambiare i nomi, e un nome che il titolare legge non deve
+    dipendere da un conto che serve a un'altra cosa.
+    Il corollario dei conti: **un conto che decide una posizione deve misurare quello che si disegna davvero.**
+    Due errori dello stesso stampo, trovati insieme: `altNodo` contava la riga delle azioni anche dove la sola
+    lettura non la disegna (47,6 px di scarto sul telefono), e il freno che cerca un posto libero misurava il nodo
+    **chiuso** mentre i tre gesti che creano un passo lo lasciano **aperto** — così il prodotto stesso posava un
+    passo che, aperto, ne copriva due, e in un caso copriva il nodo del titolare. Il conto diceva «libero», la
+    resa copriva.
 
 ## 11. Collegamenti
 

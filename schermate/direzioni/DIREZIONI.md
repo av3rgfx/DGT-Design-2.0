@@ -2579,6 +2579,318 @@ volta. **Non è stato toccato**: le strade per chiuderlo (l'editor in un pannell
 che si spengono sotto il nodo aperto; il nodo aperto che si stringe) cambiano come si usa il prodotto, quindi è
 un dubbio progettuale e passa dal consiglio e poi dall'utente.
 
+> **Corretto dalla versione 28**, che l'ha rimisurato su tutti e nove i nodi: non è un nodo, sono **cinque su
+> nove** (tre coperti per intero); e le due etichette di porta non sono «a 8 px l'una dall'altra» — gli 8 px sono
+> lo scarto fra i bordi superiori, ma le etichette sono alte 14, quindi **si sovrappongono per 6 px**, e gli
+> scontri sono **cinque**. I numeri buoni stanno nella «Versione 28», qui sotto.
+
+### Versione 28: il consiglio sul nodo che copre, e nessun codice scritto (2026-09-09)
+
+**Nessuna riga toccata.** Il difetto del §8 della versione 27 è un dubbio progettuale, quindi è passato dal
+consiglio e la decisione è dell'utente: il verdetto e i punti ciechi stanno in `PROSSIMA-SESSIONE.md`, marcati
+**da confermare**. Prove **587 verdi, 0 ko**; catture **81**. Qui restano le misure, che valgono comunque.
+
+#### 1. Il §8 era annotato per difetto: sono cinque nodi, non uno
+
+Misurato su **tutti e nove** i nodi di `w1`, e non sul solo `p3`.
+
+| nodo aperto | alto (Console) | copre | alto (telefono) | copre |
+|---|---|---|---|---|
+| `inn` | 273 px | `p4` per 208×57 | 225 px | `p4` per 208×9 |
+| `p1` | 311 px | `p5` per **208×87 — il nodo INTERO** | 263 px | `p5` per 208×47 |
+| `p2` | 311 px | `p6` per **208×87 — INTERO** | 263 px | `p6` per 208×47 |
+| `p3` | 311 px | `p7` per **208×87 — INTERO** | 263 px | `p7` per 208×47 |
+| `p4` | 273 px | `tit` per 208×57 | 225 px | `tit` per 208×9 |
+| `p5` `p6` `p7` `tit` | 273 / 226 px | nessuno | 225 px | nessuno |
+
+**5 nodi su 9 coprono qualcuno, 3 per intero.** E le etichette di porta non sono «a 8 px l'una dall'altra»: gli 8
+px sono lo scarto fra i due bordi superiori, ma le etichette sono alte 14, quindi **si sovrappongono per 6 px**. E
+sono **5 scontri**, non uno: 2 aprendo `p1`, 2 aprendo `p2`, 1 aprendo `p3`.
+
+Il contorno, misurato: nell'**«ultima volta» il difetto non esiste** (0 coperture — lì `spintaDi` si applica); è
+**indipendente dalla scala** (0,5x, 0,8x, 1x, 1,25x, 1,5x: copre sempre, è geometria); alla scala d'ingresso del
+telefono **non si vede**, perché a 0,306 nessun nodo è aperto. Il nodo aperto più alto di **tutto il modello** — 6
+workflow, 37 nodi, tutte e due le taglie — è **311 px**, e **tutti e 37 superano sia 216 sia 185**.
+
+#### 2. Le due soglie, e perché (c) non basta
+
+Perché il nodo aperto non copra quello sotto serve **alto ≤ 216** (il passo della griglia). Perché non ci vadano
+nemmeno le sue etichette di porta — che stanno 17 px sotto il suo piede e sono alte 14 — serve **alto ≤ 185**.
+
+Misurato iniettando il CSS sulla pagina viva, senza toccare nessun file:
+
+| variante | il più alto (Console) | il più alto (telefono) | esito |
+|---|---|---|---|
+| com'è oggi | 311 px | 263 px | copre ancora **95 px** |
+| campi su una riga sola | 259 px | 211 px | copre ancora 43 px |
+| una riga sola + via le azioni | 212 px | (già così) | nodo salvo, **etichette no**: mancano 27 px |
+| **solo il campo «Modello»** | 171 px | 123 px | **chiude tutto** |
+
+L'unica variante che chiude toglie **Strumenti**, cioè il campo che dice quali strumenti aziendali un dipendente
+AI ha davvero usato. Sul telefono la riga delle azioni è già via (sola lettura) e non basta lo stesso.
+
+#### 3. Il pannello di fianco: il prezzo è la larghezza, e sul telefono non c'è
+
+| pannello | canvas che resta | colonne intere | nodi interi | «tutto dentro» | il testo da 14 px |
+|---|---|---|---|---|---|
+| nessuno (oggi) | 1008 px | 4/4 | **9/9** | 1,026 | 14,4 px |
+| 280 px | 728 px | 3/4 | 7/9 | 0,741 | 10,4 px |
+| 320 px | 688 px | 2/4 | **5/9** | 0,701 | 9,8 px |
+| 360 px | 648 px | 2/4 | 5/9 | 0,660 | 9,2 px |
+
+Sul telefono non ci sta: 278,4 − 280 = **−1,6 px**. E non si compensa con una lastra sovrapposta: misurato,
+`canvasStringi(px, z, vista) = max(min(0,px), min(0, vista − 1008·z))` dà **0 px di scorrimento** nella Console a
+vista 1008 e zoom 1 (ne dà 252 solo da 1,25x). Una lastra che copre 320 px li fa perdere e basta.
+
+#### 4. Il passo verticale: dove sta davvero, e la finestra che non c'è
+
+**`W_PY` (`componenti.js:428`) non dispone un solo nodo del grafo.** `wpos` esce alla prima riga —
+`if (nd && nd.x !== undefined) return { x: nd.x, y: nd.y… }` — e nel grafo tutti i nodi portano `x` e `y`. `W_PY`
+governa **solo la serpentina** dell'«ultima volta», cioè l'unico posto dove il difetto non c'è. Il passo del grafo
+è **`ramoPosa` in `dati.js:1350`** (`PX = 234, PY = 216`).
+
+E lì la regola 42 non si oppone: la 42 chiede di *«guardare se quel valore è generato o è stato messo lì da
+qualcuno»*, e `ramoPosa` lo **semina**; la mano del titolare passa da `ramoPosiziona`. Le tre prove della 42
+confrontano prima e dopo un **gesto**: cambiare il seme non ne rompe nessuna.
+
+Ma la finestra è vuota, ed è il compromesso vero. `basso = 2·PY + 237` (verificato: a PY 216 fa **669 px**,
+esattamente la misura della pagina), e la mini-mappa compare quando `basso > 820`, cioè **da PY 292**:
+
+| passo | canvas | mini-mappa | copre ancora | etichette |
+|---|---|---|---|---|
+| 216 (oggi) | 669 px | nascosta | 95 px | 126 px |
+| 288 | 813 px | nascosta | 23 px | 54 px |
+| 324 | 885 px | **sempre visibile** | 0 px | 18 px |
+| **342** | 921 px | **sempre visibile** | **0 px** | **0 px** |
+
+**Verificato sul vivo**, trascinando i nodi col gesto vero fino a passo 342: **0 coperture, 0 scontri**, canvas
+983 px, mini-mappa permanente. Non esiste un passo che chiuda il difetto e lasci la mappa nascosta.
+
+E la mappa permanente ha un prezzo suo, trovato **guardando l'anteprima** e poi misurato: la `.wmini` da 200×120
+sta a `left:16px; bottom:78px`, e a passo 342 il nodo del **titolare** finisce proprio lì. Misurato: la mappa ne
+copre **180×22 px, il 22 % della card** — la striscia in basso, dove sta scritto «aspetterà la tua firma». Il
+centro della card resta cliccabile, ma è una copertura che nasce mentre se ne chiude un'altra, e sul nodo che
+dice chi firma. Se la parte 2 passa, la mappa va spostata o il canvas va allungato sotto l'ultima riga.
+
+#### 5. Cinque cose trovate misurando, che non sono un dubbio progettuale
+
+Vengono dalla revisione incrociata, e si chiudono comunque, qualunque strada si scelga.
+
+1. **Le porte del nodo aperto sono un doppione troncato dei suoi campi.** Aperto `p1`: etichette di porta
+   `[Modello, Archivio, Repository]`, campi della card `Modello → Rapido`, `Strumenti → Archivio del cliente,
+   Repository`. L'etichetta è la prima parola tagliata del valore che la card stampa per esteso. E nel grafo le
+   porte sono **sempre spente** (`const spenta = ramo || nd.stato === 'da fare'`). Sono esattamente quelle che
+   vanno addosso al nodo sotto: non stamparle mentre il nodo è aperto chiude **5 scontri su 5**.
+2. **Le prese galleggiano sopra la card aperta, e rispondono al clic.** `.wio` sta a `z-index:5`, `.wnode.on` a
+   **3**. Misurato col colpo del mouse: aprendo `p1`, `p2` o `p3`, le **due prese del nodo coperto** sono disegnate
+   sopra l'editor e sono cliccabili. Tirando da lì nasce un collegamento **da un nodo che non si vede** — cioè un
+   passo, e quindi un euro, attribuito a un dipendente che il titolare non ha visto. Invece i «+» e le «×» finiti
+   sotto la card sono **già morti** (`z-index:2` sotto 3, sfondo della card opaco).
+3. **Il `wtag` della spina dorsale finisce sotto la card.** «esce senza la tua firma» e «resta in azienda» hanno
+   `pointer-events:none` e **nessuno `z-index`**: appena si biforca, la frase che dichiara che un ramo consegna
+   senza la firma del titolare sparisce sotto il nodo aperto, senza nemmeno il tooltip.
+4. **Il «+» del prodotto ricrea il difetto.** `ramoAggiungi` (`dati.js:1372`) posa il passo nuovo a
+   `base.y + 210`: **210 non è multiplo di 18** — contro la ragione stessa per cui la 24 scelse 216 e 234 — ed è
+   meno del passo, quindi il passo nuovo nasce **sotto la card aperta che l'ha creato**.
+5. **Il trascinamento del titolare non ha freni.** `ramoOccupato` (`dati.js:1466`) misura con `87 + 18`, cioè sul
+   nodo **chiuso**, e lo chiamano `ramoInserisci` e `ramoNuovo` — **ma non `ramoPosiziona`**.
+
+E una sesta, sul repository: la sezione 11 di `prove/workflow.js` si intitola **«il nodo aperto non copre
+nessuno»** ma misura `.wnode:not(.on)`, cioè i soli nodi chiusi, e un commento della versione 23 dichiara che il
+nodo aperto «galleggia sopra gli altri». Il titolo afferma più di quello che la prova verifica, e va corretto.
+
+### Versione 29: il passo di riga a 342, e il nodo aperto che non copre più (2026-09-09)
+
+**Decisa dall'utente**, dopo il consiglio della versione 28: i grafi nascono con le righe a **342 px** invece che a
+216, e il prodotto deve accorgersi da sé quando due nodi si coprono e proporre di rimediare. La prima metà è
+disegnata; la seconda è passata da un secondo consiglio e il verdetto sta in `PROSSIMA-SESSIONE.md`, marcato **da
+confermare**. Prove: **605 verdi, 0 ko** (erano 587). Catture: **81**, di cui 10 cambiate.
+
+#### 1. Il passo sta in `ramoPosa`, non in `W_PY`
+
+`W_PY` (`componenti.js`) **non dispone un solo nodo del grafo**: `wpos` esce alla prima riga quando il nodo porta
+già la sua `x`, e nel grafo la porta sempre. Governa **solo** la serpentina dell'«ultima volta», dove il difetto
+non esiste perché lì le righe sotto quella aperta scendono da sole. Il passo del grafo è **`RAMO_PASSO` in
+`dati.js`**, che adesso è la sola costante: la leggono `ramoPosa` e `ramoAggiungi`, e non vive più in tre posti con
+tre valori.
+
+**342 = 19×18**, quindi resta sulla griglia, ed è il conto di quello che un nodo aperto occupa: 311 di card + 17
+fino alle porte + 14 di etichetta. La regola 42 non si oppone perché questo è il **seme**, non la mano: le
+posizioni messe trascinando (`ramoPosiziona`) non le tocca nessuno.
+
+| | prima (216) | adesso (342) |
+|---|---|---|
+| nodi che, aperti, ne coprono un altro | **5 su 9** | **0** |
+| coperti per intero | 3 | 0 |
+| scontri fra etichette di porta | 5 (sovrapposte per 6 px) | 0 |
+| altezza del canvas | 731 px | 1036 px |
+| mini-mappa | compare solo ingrandendo | **sempre** |
+
+Misurato su **31 nodi aperti**, sei workflow, due taglie.
+
+#### 2. La mini-mappa non si sposta: le si riserva lo spazio
+
+Trovato **guardando l'anteprima** e poi misurato: a 342 la `.wmini` da 200×120 (`left:16px; bottom:78px`) finiva
+sopra il nodo del titolare — **180×22 px, il 22 % della card**, proprio la striscia dove è scritto «aspetterà la
+tua firma». Chiudere una copertura aprendone un'altra, e sul nodo che dice chi firma, non è un affare.
+
+La mappa resta dove la mette il riferimento; è il canvas che riserva in fondo **167 px** invece di 114 quando la
+mappa c'è (120 di mappa + 16 di stacco, più 17+14 per le porte dell'ultima riga). Il conto si fa in due tempi
+perché la soglia guarda l'altezza: prima la riserva normale, con quella si decide se la mappa serve, e solo allora
+si allarga. Una prova verifica che la mappa non copra **nessun** nodo, etichetta o tag.
+
+#### 3. Quello che appartiene a un nodo nascosto non si disegna
+
+Il nodo aperto ha `z-index:3` e sfondo opaco. Ma tre cose venivano disegnate lo stesso, e **due sopra di lui**:
+
+- **le prese del collegamento** (`.wio`, `z-index:5`). Misurato col colpo del mouse: aprendo un nodo, le due prese
+  del nodo coperto erano disegnate sull'editor e **rispondevano al clic** — da lì nasceva un collegamento **da un
+  nodo che non si vede**, cioè un passo, e quindi un euro, attribuito a un dipendente che il titolare non ha
+  visto. È il difetto che il consiglio della 28 non aveva nominato, e che un consigliere aveva dichiarato inesistente;
+- **i tag del contratto** (`.wtag`, `pointer-events:none`, nessuno `z-index`): «esce senza la tua firma» finiva
+  sotto la card senza nemmeno il tooltip;
+- **le porte del nodo aperto**, che scendevano con lui — ed è da lì che nascevano i cinque scontri.
+
+I «+» e le «×», che stanno più in basso nella pila, erano **già morti**: lì non si è tolto niente.
+
+La regola: **quello che appartiene a un nodo nascosto dalla card non si disegna.** Non è un velo né uno
+spegnimento — è non disegnare qualcosa che già non si vedeva ma rispondeva. Misurato dopo: 0 prese vive, 0 tag,
+0 etichette sopra la card.
+
+**Il prezzo, dichiarato**: se il titolare trascina un nodo col tag del contratto sotto un altro e lo apre, quel tag
+sparisce dal disegno. Il conto in cima però **continua a dirlo** — verificato: «1 ramo resta in azienda» resta
+stampato. Si perde *quale*, non *che c'è*.
+
+#### 4. Le porte del nodo aperto erano un doppione
+
+Aperto `p1`: etichette di porta `[Modello, Archivio, Repository]`; campi della card: `Modello → Rapido`,
+`Strumenti → Archivio del cliente, Repository`. L'etichetta è la **prima parola tagliata** del valore che la card
+stampa per esteso, e nel grafo le porte sono **sempre spente**. Finché il nodo è aperto non aggiungono niente, e
+sono esattamente quelle che andavano addosso al nodo sotto: non stamparle chiude **cinque scontri su cinque**
+senza spostare una coordinata. Quando il nodo si richiude, tornano. Misurato: 16 porte → 13.
+
+#### 5. Tre conti che non tornavano, trovati dalla revisione incrociata
+
+1. **`ramoAggiungi` posava a `base.y + 210`**: 210 non è multiplo di 18 — contro la ragione stessa per cui la 24
+   scelse 234 e 216 — ed era **meno del passo**, quindi il passo nuovo nasceva **sotto la card che l'aveva appena
+   creato**. Adesso scende di un passo intero, sulla griglia.
+2. **`altNodo` contava la riga delle azioni anche in sola lettura**: sul telefono il conto diceva 311 px e la resa
+   ne faceva **263,4** — 47,6 px di scarto, cioè esattamente `W_GAP + 2 + W_AZ`. Da quel conto dipendono l'altezza
+   del canvas e il rettangolo della card: lo scarto si propagava. Adesso `altNodo` sa se le azioni si disegnano.
+3. **Il freno non sapeva che un passo nuovo nasce aperto.** `ramoOccupato` misurava sempre il nodo **chiuso**
+   (87 + 18), ma i tre gesti che creano un passo lo lasciano **aperto**: un passo appena nato è alto **273 px**.
+   Misurato: il «+» sull'arco posava un passo che, aperto, ne copriva **due**; il «+» dentro l'innesco copriva il
+   nodo del **titolare**. Il conto diceva «libero», la resa copriva. Adesso il posto è libero solo se ci sta la
+   card aperta, e il confronto non è più simmetrico: sopra basta il nodo chiuso, sotto serve tutta la card.
+   **Il prezzo, misurato e dichiarato in una prova**: il posto si cerca scendendo di 36 px alla volta, quindi con
+   un grafo fitto il passo nuovo può nascere **a y 846**, lontano da dove si è premuto.
+
+#### 6. Che cosa resta possibile, e di proposito
+
+**`ramoPosiziona` non ha nessun freno**: il titolare può ancora trascinare un nodo sotto un altro, e impilarne due
+anche da chiusi. Non è una dimenticanza — mettere un freno che sposta il nodo dove il titolare non l'ha messo è
+esattamente quello che la regola 42 vieta. Una prova lo fa apposta e verifica che, in quel caso, sotto la card non
+resti niente di cliccabile. **È il caso per cui serve la seconda metà della decisione**, quella che aspetta.
+
+### Versione 30: il prodotto se ne accorge e lo propone (2026-09-09)
+
+**Decisa dall'utente**, che ha risposto alle tre domande della 29: *«si costruiamolo»*, *«riusiamo riordina che già
+esiste no?»*, e — sulla terza — *«Perché riordina dovrebbe riscrivere tutto? Non sposta semplicemente la posizione
+e l'ordine dei nodi?»*. **Quella terza domanda ha scoperto un difetto**, ed è la parte migliore di questa versione.
+Prove **619 verdi, 0 ko** (erano 605). Catture **82** (era 81).
+
+#### 1. La domanda dell'utente aveva ragione, e ha trovato un difetto
+
+Nella 29 avevo scritto che «Riordina» **riscrive tutte le posizioni**, e detto così suonava come «ti disfa il
+flusso». Misurato invece di raccontato — spostando due nodi a mano e confrontando **tutto** prima e dopo:
+
+- i **collegamenti** non cambiano: identici;
+- i **nomi** dei passi non cambiano: identici;
+- si muovono **solo le posizioni**, e solo quelle fuori posto: nella prova, **1 nodo su 9**.
+
+Quindi l'utente aveva ragione: «Riordina» sposta la posizione dei nodi, non riscrive il lavoro. La mia parola era
+imprecisa e allarmante.
+
+**Ma la verifica ha trovato una cosa che nessuno aveva visto: premere «Riordina» una volta rinumerava tutti i
+passi.** «Passo 1» diventava «Passo 2», «Passo 3» diventava «Passo 4», a cascata su tutti e sette — e poi si
+fermava, quindi la seconda pressione non faceva più niente. Misurato su un grafo **intonso**, senza toccare nulla.
+
+La causa: `ramoNumera` calcola il **livello topologico** di ogni nodo, e il nodo d'innesco — che non ha niente in
+entrata — sta al livello 1, rubando il numero al primo passo. Ma nel prodotto **l'innesco non è un passo**: lo
+dice la barra da sempre, «9 nodi · l'innesco, 7 passi e la tua firma», e il conto in cima esclude innesco e
+titolare. Due sistemi di numerazione che si contraddicevano, e chi premeva «Riordina» per rimettere in ordine il
+**disegno** si vedeva cambiare sotto gli occhi il **nome** di ogni passo.
+
+Corretto togliendo lo scalino dell'innesco. Il livello resta — serve al grafo, perché due rami che partono dallo
+stesso nodo portano lo stesso numero (decisione 65).
+
+#### 2. La pillola, e il gesto che c'era già
+
+Sta nella **riga in cima al canvas**, quella che già enuncia i fatti del grafo, ed è la **sola** pillola della riga
+che si clicca: le altre sono referti, questa è una proposta. L'icona è `i-grid`, la stessa della pillola
+«Riordina» in fondo, così porta addosso il gesto che innesca.
+
+> **1 nodo ne copre un altro quando lo apri · Riordina**
+> (al plurale: «2 nodi si coprono quando li apri»)
+
+**La parola dice «nodi» e non «passi»**, e non è pignoleria: la barra distingue «l'innesco, 7 passi e la tua
+firma», quindi il coperto può essere l'innesco o **la firma del titolare**, e chiamarlo «passo» mentirebbe proprio
+nel caso più grave. Il `title` dice che cosa succede premendo: «Rimette i nodi in ordine sulla griglia: i
+collegamenti, i nomi e i numeri dei passi non cambiano».
+
+**Il gesto è «Riordina», quello che esiste già** — la scelta dell'utente. Col passo a 342 rimettere i nodi sulla
+griglia **chiude** la copertura: non si è inventato un secondo gesto che riordina «solo un po'», e la parola resta
+una sola con un significato solo. Misurato: premendola, la pillola sparisce, i numeri dei passi non si muovono e
+i collegamenti restano gli otto di prima.
+
+**Il conto è un'ipotesi, non uno stato**: dice «se lo apri», perché è quello che il titolare deve sapere **prima**
+di aprirlo. Sta in `canvasCoperti`, accanto a `canvasMisure`, ed è esportato.
+
+#### 3. Quando compare, e quanto poco
+
+| | pillola |
+|---|---|
+| grafo appena aperto, disposto dal prodotto | **non c'è** — col passo a 342 non c'è niente da dire |
+| dopo aver trascinato `p7` sotto `p3` | **c'è**, ed è l'unica cliccabile della riga |
+| dopo averla premuta | **non c'è più** |
+
+La riga in cima con la pillola è larga **422 px sui 992 utili**: ci sta con abbondanza. E il conto delle pillole
+non arriva a cinque come si temeva: `ramoEsce` rende «resta in azienda» e «esce senza la tua firma» **mutuamente
+esclusive**, quindi il massimo era tre, e con questa fa quattro.
+
+**Sul telefono non c'è**, e non è una dimenticanza: lì `chips` è spento, non si trascina — quindi il caso non si
+può creare — e non c'è nessun «Riordina» da premere. La striscia del telefono porta il **contratto** («esce senza
+la tua firma», «aspetterà la tua firma»), ed è l'unica riga di quello schermo che parla di firma: una faccenda di
+disposizione lì accanto la svaluterebbe.
+
+#### 4. Un errore muto, e la prova che adesso lo prende
+
+La pillola era scritta `color:var(--t1)`. **`--t1` non esiste in tutto il repository** — ci sono `--t2` e
+`--t2-light`. Senza valore di ripiego il colore cadeva sull'**ereditato**, quindi la pillola era identica alle
+altre e non si vedeva che era l'unica da cliccare. Nessun avviso, nessuna prova rossa: solo un disegno che non fa
+quello che dice. L'ha visto un sottoagente rileggendo il file prima di pubblicarlo.
+
+Corretta con il **lime**, che è l'accento e segna l'unica cosa cliccabile della riga (misurato:
+`rgb(184,252,100)` contro `rgb(232,232,232)` dei referti; regola 4, nessun colore nuovo).
+
+E rileggendo è saltata fuori una **seconda riga morta dello stesso stampo**: la pillola dichiarava anche un
+`border-color` lime, ma la primitiva `.chip` **non ha bordo** — misurato, `border-style:none` e `border-width:0`.
+Quella riga, e la `border-color:transparent` del `:hover`, promettevano un cerchio che nessuno disegnava. Tolte
+tutte e due: **nessuna delle 82 catture è cambiata**, che è la prova che non disegnavano niente. Quello che resta
+è il testo all'accento, e basta: la primitiva non ha contorni, e dargliene uno solo qui avrebbe fatto della
+pillola una forma nuova invece che una pillola accesa.
+
+E adesso c'è una prova che prende **tutta la classe** di errore: nessuna variabile CSS usata **senza valore di
+ripiego** può essere mai definita. La distinzione conta: `var(--z,1)` e `var(--av-pupilla-bordo,0)` dichiarano da
+sé che la variabile può mancare, e infatti mancano di proposito; `var(--t1)` no. Sulla pagina viva, con le
+definizioni prese dai fogli **e** dagli attributi `style`: **zero**.
+
+#### 5. La cattura che non si poteva fare
+
+La pillola non è raggiungibile da un indirizzo: col passo a 342 nessun grafo **seminato** ha due nodi che si
+coprono, e nel modello nessuno è mai stato trascinato. Quindi `a-grafo-coperti.png` **trascina davvero** — `p7`
+sotto `p3`, con eventi del mouse veri, come farebbe una mano — e poi scatta. È la 82ª cattura.
+
 ## 5. File
 
 | File | Ruolo |
