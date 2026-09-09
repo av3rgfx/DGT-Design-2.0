@@ -1900,6 +1900,9 @@ un modo di lavorare da ripetere. Costo e durata sono **sommati dai passi**, e un
 la regola del telefono dice che non deve poter scorrere di lato: quindi gli stessi nodi, uno sopra l'altro, con lo
 stesso connettore lime, le porte come chip e in fondo il nodo del titolare. Non è un canvas ridotto, è lo stesso
 oggetto letto in colonna. La firma si accende anche da lì, ed è lo stesso stato della Console.
+*(Caduto nella **versione 27**: il titolare ha giudicato che quella colonna dava «un'anteprima del workflow
+sbagliata», e le due catture gli hanno dato ragione. Adesso il telefono porta il canvas vero, in sola lettura —
+vedi la versione 27 più sotto, e la regola 43.)*
 
 #### 5. La sezione 07 dello specimen, ripuntata
 
@@ -2465,6 +2468,117 @@ disposizione che lui non ha scelto — diventata la **regola 42**; lo zoom oggi 
 prossima volta» (`const z = ramo ? zoom : 1`); il canvas è una **card** e non una schermata, il che smonta
 l'unica obiezione forte contro la strada scelta.
 
+### Versione 27: il canvas passa al telefono, e diventa un componente (2026-09-09)
+
+**Disegnata.** Le decisioni 72-74 della versione 26 erano prese ma non toccavano codice: adesso ci sono. La 75
+(il modo semplificato per creare routine con inneschi) resta ferma dove la versione 26 l'ha lasciata — aspetta i
+dati, e i dati non ci sono.
+
+#### 1. Il canvas si sposta, non si riscrive
+
+`canvasWorkflow` e tutto il suo CSS erano dentro `direzione-a.js`, cioè dentro la Console. Sono passati in
+`schermate/componenti.js`, che `mobile.html` carica già. Il **CSS non è stato riscritto**: tutti e due i file
+fanno `prefissa(css, '.dirA')`, quindi le 148 righe sono le stesse, spostate. Con loro il conto della griglia
+(`W_COL`, `W_PX`, `W_PY`…), `altNodo`, `wpos`, `arcoVia`, `nodoWorkflow` e le tre funzioni nuove che le due
+superfici condividono: `canvasMisure` (dove comincia e dove finisce il grafo), `canvasTuttoDentro` (lo scatto
+d'ingresso) e `canvasSuNodo` (la seconda scala). Nella Console restano la pagina e i suoi gesti.
+
+Una prova lo verifica dove conta: `DGT_COMPONENTI.canvasWorkflow` è una funzione, il CSS del canvas sta nel
+foglio dei componenti (`css-componenti`) e **non più** in quello della Console (`css-a`).
+
+#### 2. `soloLettura`: un interruttore, non un secondo canvas
+
+| gesto | Console | telefono |
+|---|---|---|
+| prese sui fianchi del nodo (`.wio`) | 16 | **0** |
+| «+» che infila un passo sull'arco | 8 | **0** |
+| «×» che toglie il collegamento | 8 | **0** |
+| trascinare un nodo (`.wnode.presa`) | 9 | **0** |
+| «Riordina» e «Aggiungi» | 2 | **0** |
+| il nodo che si apre coi suoi campi | sì | **sì** — è lettura, non modifica |
+| zoom e spostamento della vista | sì | **sì** |
+
+La classe lo dichiara: `.wcanvas.comp` si compone, `.wcanvas.sl` si legge. Sul telefono cadono anche la barra in
+fondo (porta il conto e i due acceleratori: a 278,4 px sarebbe una riga di puntini), il conto in cima e la
+mini-mappa da 200×120, che su quella cornice coprirebbe proprio il disegno che dovrebbe aiutare a leggere.
+
+#### 3. Le due scale, misurate
+
+| | ingrandimento | testo da 14 px | altezza della card |
+|---|---|---|---|
+| **tutto dentro** (scatto d'ingresso) | 278,4 / 910 = **0,306** | 4,3 px | 205 px |
+| **scala 1** (tocco su un nodo) | **1** | 14 px | 669 px |
+
+«Tutto dentro» vuol dire tutto: misurato sulla pagina viva, il grafo va da **0 a 348 px di schermo** su 348, cioè
+tocca tutti e due i fianchi. La seconda scala centra il nodo toccato in orizzontale (misurato: 0,0 px dal centro)
+e in verticale — e il verticale è la pagina che scorre, non il canvas che si sposta, perché la card è alta
+`basso × zoom` e in verticale non resta mai niente fuori dalla cornice.
+
+Due misure che era facile sbagliare, e che si vedono solo col righello: i rettangoli della pagina sono in pixel
+di **schermo** (i telefoni stanno dentro `zoom:1.25`) mentre `scrollTop` è in pixel **CSS**, quindi si divide; e
+il centro non è quello della cornice ma quello della parte che si **vede**, perché in basso la navigazione ne
+copre una fascia — che è esattamente il `padding-bottom` che lo scorrevole già dichiara.
+
+Una scelta e uno schermo: `?nodo=p3` nell'indirizzo lascia **la stessa schermata** di un dito che tocca quel
+nodo. Se no la cattura della seconda scala non sarebbe la schermata, sarebbe la schermata scorsa a caso.
+
+#### 4. I due gesti del dito — e prima non ce n'era nessuno
+
+Nel repository non esisteva **nessun** ascoltatore `touch` o `pointer`: era tutto mouse, perché fino alla 26 sul
+telefono non c'era niente da spostare. Adesso ce ne sono due, e non uno di più.
+
+- **Trascina-la-vista**, in orizzontale. Misurato: 160 px di dito muovono la vista di **128 px di disegno**, cioè
+  160 / 1,25 — se il conto non dividesse per la scala della cornice, la vista correrebbe più del dito.
+- **Pinch**. Due dita che si avvicinano a un terzo portano l'ingrandimento a un terzo (misurato: 0,333), e il
+  punto del disegno che sta **fra** le dita resta fermo. Non si scende sotto «tutto dentro»: più in là non c'è
+  disegno, c'è vuoto.
+
+Il verticale non è un gesto del canvas: `touch-action:pan-y` lo lascia alla pagina. Una prova verifica che un
+dito in su **non** muove la vista.
+
+Le prove usano `TouchEvent` costruito a mano e non `page.touchscreen`, perché il pinch vuole **due** dita insieme
+e la scorciatoia di Playwright ne muove una sola.
+
+#### 5. La colonna cade, le etichette del contratto restano
+
+Spariti `.m-wf`, `.m-wn`, `.m-warc`, `.m-wgo` — la colonna di card della versione 20 — e con loro i chip che
+dicevano la **topologia** («2 rami», «arriva da 2», «→ Pagina del carrello»), che adesso è disegno. Restano
+quelli che dicono il **contratto**, fuori dal canvas così non si rimpiccioliscono con lui: misurato, 10 px e non
+i 4,3 px che avrebbero dentro il disegno a 0,306.
+
+Misurato prima di scriverlo, e ha cambiato il disegno: su `w1` — il grafo di partenza, una catena — `ramoEsce`
+ritorna **zero e zero**, e una striscia costruita sulle sole eccezioni sarebbe rimasta **vuota**. Il contratto
+però c'è lo stesso, ed è il più forte dei tre: tutto arriva alla firma. Quando non ci sono eccezioni la striscia
+dice la **regola**, con le parole che il nodo del titolare stampa già dentro il canvas: «aspetterà la tua firma».
+
+#### 6. Lo zoom esteso alla seconda tab
+
+Fino alla 26 era `const z = ramo ? zoom : 1`: «L'ultima volta» — la tab dove stanno costi, durate e «aspetta la
+tua firma» — era a scala fissa, senza zoom e senza mappa. Ogni parere del consiglio della versione 26 era scritto
+per metà della pagina. Adesso lo zoom è del **canvas**, non della tab: 208 px di nodo diventano 260 a 1,25x, e la
+mini-mappa compare anche lì quando c'è qualcosa fuori dalla cornice. Nella Console si vede nelle catture
+`a-workflow*.png` e `a-ramo-ultima.png`, che sono le sole sei cambiate fuori dal telefono.
+
+#### 7. Regola 42, verificata due volte
+
+Tre prove confrontano le posizioni dei nodi (`offsetLeft`, `offsetTop`) **prima e dopo**: dopo lo zoom sul
+telefono, dopo il trascinamento della vista, dopo il pinch, e dopo lo zoom nella Console. Sono le stesse, al
+pixel. Il prezzo si vede in faccia e sta scritto in una prova: a scala 1 il disegno esce di **730 px** dalla
+cornice del telefono, e si raggiunge trascinando.
+
+#### 8. Un difetto misurato che **non** è di questa versione, e resta aperto
+
+Aprendo un nodo a scala 1 si vede che il nodo aperto **copre quello sotto**. Misurato: nella Console
+`p3` aperto copre `p7` per **208×87 px**, cioè il nodo intero; sul telefono per 208×47 (meno, perché la sola
+lettura toglie la riga delle azioni). Due etichette di porte finiscono a **8 px** l'una dall'altra.
+
+È un difetto della **versione 24**, non della 27: nel grafo le posizioni sono libere e la spinta che nella
+serpentina fa scendere le righe (`spintaDi`, versione 22) lì non si applica — a ragione, perché spostare i nodi
+violerebbe la regola 42. La versione 27 lo rende solo più visibile, perché sul telefono si guarda un nodo alla
+volta. **Non è stato toccato**: le strade per chiuderlo (l'editor in un pannello invece che nel nodo; le porte
+che si spengono sotto il nodo aperto; il nodo aperto che si stringe) cambiano come si usa il prodotto, quindi è
+un dubbio progettuale e passa dal consiglio e poi dall'utente.
+
 ## 5. File
 
 | File | Ruolo |
@@ -2473,9 +2587,9 @@ l'unica obiezione forte contro la strada scelta.
 | `prove/routine.js` (versione 22) | La sesta prova cliccata: le sei conferme — «Uscita» al posto di «Approvata», la precedenza fra routine e regola, `g4` accesa col suo conto, la pagina delle routine, l'intestazione a due righe |
 | `dati.js` | modello sintetico (11 e 40) condiviso; dalla versione 17 anche i gruppi del giorno (`gruppiOggi`), letti dalla barra della Console e dal quadro del telefono; dal 2026-09-04 anche il dossier del dipendente (`dossierDi`, `revisioneDi`, `decidiRevisione`, `MODELLI`), le richieste di tipo `revisione` e l'esecuzione (`esecuzioneDi`: sei scritte a mano, le altre generate); dal 2026-09-05 la decisione del titolare (`decidi`), condivisa fra Console e telefono; `azienda.scadenzaMese` per la linea del tempo del mobile; dalla versione 19 le **consegne del dipartimento** (`consegneDi(dip)`, `consegnaDi(id)`: gli `output` delle esecuzioni con il passo che li ha prodotti e le sue voci di log; l'aiutante che le *conta* per i costi si chiama adesso `contaConsegne`); dal 2026-09-06 l'aggregatore dei costi (`costi(periodo, dip)`, `spesaDi`) per la pagina Costi e la sezione «Spesa del mese», e (versione 15) l'agenda (`giornata`, `settimana`, `scadenze`) e i fili della chat (`filoDi`, `scrivi`, `fili`, `nonLetti`) per la Console e per il telefono |
 | `comune.js` | sprite di icone di DGT, prefisso CSS, utilità |
-| `../componenti.js` (`schermate/componenti.js`) | dal 2026-09-06 (versione 14) i componenti della Console condivisi con il telefono e con le pagine degli avatar: il CSS delle primitive (`.rb`, `.av`, `.pair`, `.pill`, `.chip`, `.dots`, `.badge`, `.ncard`/`.nt`, `.lead`, `.task`, `.crow`, `.hrow`, `.erow`, `.qrow`, `.dcard`, `.ripart`/`.leg`, e dalla versione 15 le bolle della chat `.msg`/`.bub`), `variabili`, e `av`, `pair`, `dots`, `chipStato`, `chipEsito`, `messaggio`, `iconaTipo`, `nomeTipo`, `eur`, `delta`, `differenze`; `window.DGT_COMPONENTI`, va caricato dopo `comune.js` e il suo CSS messo in pagina prima di quello della Console |
+| `../componenti.js` (`schermate/componenti.js`) | dal 2026-09-06 (versione 14) i componenti della Console condivisi con il telefono e con le pagine degli avatar: il CSS delle primitive (`.rb`, `.av`, `.pair`, `.pill`, `.chip`, `.dots`, `.badge`, `.ncard`/`.nt`, `.lead`, `.task`, `.crow`, `.hrow`, `.erow`, `.qrow`, `.dcard`, `.ripart`/`.leg`, e dalla versione 15 le bolle della chat `.msg`/`.bub`), `variabili`, e `av`, `pair`, `dots`, `chipStato`, `chipEsito`, `messaggio`, `iconaTipo`, `nomeTipo`, `eur`, `delta`, `differenze`; dalla **versione 27** anche il **canvas del workflow** — CSS (`.wcanvas`, `.wnode`, `.wport`, `.wio`, `.warcl`, `.wmini`, `.wzoombar`…) e codice (`canvasWorkflow`, `nodoWorkflow`, `altNodo`, `wpos`, `arcoVia`, il conto della griglia, più `canvasMisure`, `canvasTuttoDentro`, `canvasSuNodo`, `canvasStringi`, `W_METRICHE`), trasportato da `direzione-a.js` e non riscritto perché tutti e due i file fanno `prefissa(css, '.dirA')`: da lì lo prendono la Console (che lo compone) e il telefono (che lo legge, con `soloLettura`); `window.DGT_COMPONENTI`, va caricato dopo `comune.js` e il suo CSS messo in pagina prima di quello della Console |
 | `direzione-a.js` / `.html` | Console (direzione scelta): home, due tendine del titolare, pagina Richieste, pagina Dipartimento, tendina Dipendente (creazione e modifica), pagina Dipendente con la revisione di performance e la tendina delle versioni, pagina Esecuzione (passi, log, output, costo), pagina Costi (per dipartimento, dipendente, cliente, modello, strumento, con le pillole del periodo per sezione; `?pagina=costi`), pagina Agenda (barra del giorno, eventi, scadenze, settimana; `?pagina=agenda`) e pagina Chat (fili, filo aperto, barra di scrittura; `?pagina=chat&filo=4`, versione 15); dalla versione 16 la barra «Oggi in azienda» è il quadro del giorno in caselle contate (`barraStato`, che legge `m.gruppiOggi()`; `?barra=0` rimette quella di prima) e la barra dei passi si stringe da sola; dalla versione 17 i controlli delle intestazioni di sezione seguono la regola «un controllo si vede solo se fa quello che promette» (`cercaSez`, `filtraCerca`, `pilleSez`, `filtraSez`, `contoSez`, stato in `st.cerca` e `st.sez`) e dalla versione 18 la stessa regola vale per le **frecce di riga** (regola 26: la freccia sta solo dove la riga ha una destinazione; `soloDecise`, `logSolo` e `versoConfronto` dicono per lista se la colonna da 32 px cade, classe `nofr`); dalla versione 19 la sezione **«Consegne di oggi»** della pagina Dipartimento (`cardConsegna`, `PILLE_CONSEGNE`) e la **pagina della consegna** (`paginaConsegna`, `testataConsegna`, `chipPassoStato`, azione `consegna`, `?pagina=consegna&consegna=c1-0`: la tendina resta l'anteprima delle approvazioni, la pagina è dove si legge); cliccabile; dalla versione 14 prende le primitive da `../componenti.js` e tiene la cornice, le pagine, le tendine e `monta` |
-| `mobile.js` / `.html` | il telefono del titolare: le approvazioni (versioni 11 e 12, schermate «Da approvare», «Richiesta» — anche la revisione di performance con le due versioni a confronto e le quattro decisioni — e «Riepilogo di oggi», con il rifiuto con motivo e lo stato vuoto a coda finita) e, dalla versione 15, le due tab «Chat» (elenco dei fili e conversazione con la barra di scrittura) e «Agenda» (la giornata sulla linea del tempo, i prossimi giorni, le scadenze); dalla versione 17 il **quadro del giorno** in cima alla schermata 1 (`quadroGiorno`, tre forme dietro `?quadro=0|1|2|3`, la 2 è quella scelta) e la tab **Dipartimenti** (schermate 7 e 8: l'elenco e il dipartimento aperto); dalla versione 19 la sezione **«Consegne di oggi»** anche nella schermata 8, in righe (`rigaConsegna`; la riga della richiesta in coda si chiama adesso `rigaRichiesta`), e la **schermata 9**, la pagina della consegna (`consegna(m, tel, st)`, `?schermata=9&consegna=c1-0`); nove telefoni affiancati che condividono il modello, la richiesta corrente, il filo aperto e il dipartimento scelto; `DGT_MOBILE.monta`, `coda`; `?schermata=1…8&richiesta=0&filo=4&dip=mkt&quadro=`, `?n=40`; dalla versione 14 carica `../componenti.js` e non più `direzione-a.js` |
+| `mobile.js` / `.html` | il telefono del titolare: le approvazioni (versioni 11 e 12, schermate «Da approvare», «Richiesta» — anche la revisione di performance con le due versioni a confronto e le quattro decisioni — e «Riepilogo di oggi», con il rifiuto con motivo e lo stato vuoto a coda finita) e, dalla versione 15, le due tab «Chat» (elenco dei fili e conversazione con la barra di scrittura) e «Agenda» (la giornata sulla linea del tempo, i prossimi giorni, le scadenze); dalla versione 17 il **quadro del giorno** in cima alla schermata 1 (`quadroGiorno`, tre forme dietro `?quadro=0|1|2|3`, la 2 è quella scelta) e la tab **Dipartimenti** (schermate 7 e 8: l'elenco e il dipartimento aperto); dalla versione 19 la sezione **«Consegne di oggi»** anche nella schermata 8, in righe (`rigaConsegna`; la riga della richiesta in coda si chiama adesso `rigaRichiesta`), e la **schermata 9**, la pagina della consegna (`consegna(m, tel, st)`, `?schermata=9&consegna=c1-0`); nove telefoni affiancati che condividono il modello, la richiesta corrente, il filo aperto e il dipartimento scelto; dalla **versione 27** la **schermata 10** è il canvas vero in sola lettura (`canvasWorkflow` con `soloLettura`, `vista: 278.4`, senza barra, conto e mappa), con lo scatto d'ingresso «tutto dentro» (`entraCanvas`), il tocco sul nodo che porta a scala 1 centrato (`toccaNodo`, `centraNodo`), la barra dello zoom (`zoomM`) e i **due soli gesti touch del repository** — trascina-la-vista e pinch — più la striscia delle etichette del contratto (`.m-wcon`); `DGT_MOBILE.monta`, `coda`; `?schermata=1…10&richiesta=0&filo=4&dip=mkt&quadro=&workflow=w1&ramo=1&nodo=p3`, `?n=40`; dalla versione 14 carica `../componenti.js` e non più `direzione-a.js` |
 | `avatar/avatar-dgt.js` | involucro degli avatar nel linguaggio della Console (colori, stati, simboli statici, animazione); `usa('orbe'|'kit')` sceglie la famiglia |
 | `avatar/avatar-orbe.js` | la famiglia «orbe» (versioni 5b, 5c, 7, 7b, 7c): cerchi dal seme con le pupille e lo sguardo del kit, un solo motore `requestAnimationFrame` con funzioni continue del tempo, sguardo che segue il puntatore; senza disco, con le pelli (`pelle('perla'|'grigio'|'chiaro'|'alone'|'disco')`, solo variabili CSS; perla predefinita); `fermo(t)`, `riprendi()`, `fotogramma(svg, t)` per gli screenshot |
 | `confronto-avatar.html` | le due famiglie a confronto nelle viste della Console |

@@ -46,6 +46,14 @@ window.DGT_MOBILE = (function () {
   const { ic, esc, prefissa } = window.DGT_UI;
   const C = window.DGT_COMPONENTI;
   const { av, pair, iconaTipo, nomeTipo, chipStato, chipEsito, eur, differenze } = C;   // i componenti condivisi con la Console (schermate/componenti.js)
+  /* Il canvas del workflow (versione 27, decisione 72): **lo stesso** della Console, in sola lettura. Sta in
+     componenti.js e non è una seconda resa — il telefono passa `soloLettura` e la larghezza che ha. */
+  const { canvasWorkflow, canvasTuttoDentro, canvasSuNodo, canvasStringi, W_METRICHE } = C;
+  /* Quanto è larga la colonna del telefono, in px CSS. Misurato: la cornice `.m-tel` è 300 px con 10 px di
+     riempimento, quindi `.m-scroll` ne misura **278,4**; sullo schermo se ne vedono 348 perché i telefoni stanno
+     dentro `zoom:1.25`. È il numero su cui la decisione 73 ha scelto lo scatto d'ingresso (278,4 / 910 = 0,306),
+     e una prova lo rimisura a ogni giro invece di lasciarlo qui a memoria. */
+  const M_VISTA = 278.4;
 
   const css = `
 /* la pagina: nero, come la Console; le variabili dei componenti (DGT_COMPONENTI.variabili) più --light e --light-card del telefono; i telefoni affiancati come nello specimen */
@@ -234,33 +242,27 @@ window.DGT_MOBILE = (function () {
 /* le azioni in fondo alla schermata della consegna (versione 19): in linea con lo scorrimento, non la barra fissa
    della decisione — qui non si decide sempre, si decide solo quando la consegna aspetta il titolare */
 .m-azioni{display:flex;gap:8px;margin-top:4px}
-/* Il workflow in colonna (versione 20): gli stessi nodi del canvas della Console, girati di novanta gradi. Il
-   connettore fra due nodi e' una barretta lime, non una curva: a 268 px di larghezza una curva non si vede. */
-.m-wf{display:grid;justify-items:stretch;gap:0}
-.m-wn{background:var(--card);color:var(--white);border-radius:18px;border:1px solid rgb(255 255 255/.10);padding:12px 14px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:4px 10px}
-.m-wn .tt{min-width:0}
-.m-wn .tt b{display:block;font-weight:400;font-size:14px;line-height:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.m-wn .tt span{display:block;font-size:11px;line-height:15px;color:var(--t2)}
-.m-wn .eur{font-size:12px;color:var(--white)}
-.m-wn.off{opacity:.6}
-.m-wn.tit{border-style:dashed}
-.m-wn.tit.att{border-style:solid;border-color:var(--lime);box-shadow:0 0 0 1px var(--lime),0 0 26px rgb(184 252 100/.22)}
-.m-wn .porte{grid-column:1/3;display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
-.m-wn .porte .chip{height:20px;font-size:10px;padding:0 8px}
-.m-warc{width:2px;height:16px;background:var(--lime);box-shadow:0 0 8px rgb(184 252 100/.55);margin:0 auto;display:block}
-.m-warc.off{background:rgb(255 255 255/.30);box-shadow:none}
-/* ---- Il grafo in colonna (versione 24) ----
-   Misurato: lo schermo e' largo **348 px** e la card .m-wn ne prende **348** — ce ne sta **una**, quindi due
-   rami non si affiancano mai, e un canvas a nodi qui non esiste. La colonna resta una colonna: i nodi in ordine
-   topologico, uno sopra l'altro. Quello che il grafo aggiunge — piu' di un collegamento in uscita, un
-   collegamento che non e' un semplice «poi», un passo che riceve da piu' parti — si dice **sul collegamento**,
-   con i chip che il telefono ha gia'. Nessun componente nuovo: il canvas girato di novanta gradi resta la forma
-   giusta di uno schermo alto e stretto. */
-.m-wgo{display:flex;flex-direction:column;align-items:center;gap:4px;padding:2px 0}
-.m-wgo .chip{height:20px;font-size:10px;padding:0 8px}
-.m-wgo .chip.lime{background:var(--lime);color:var(--ink);border-color:transparent}
-.m-wn.inn{border-radius:26px 18px 18px 26px}
-.m-wn.inn .av{background:var(--lime);color:var(--ink)}
+/* ---- Il canvas del workflow, in sola lettura (versione 27, decisioni 72-74) ----
+   La colonna di card («.m-wf», «.m-wn», «.m-warc», «.m-wgo») non c'e' piu': al suo posto c'e' **il canvas
+   vero**, che sta in schermate/componenti.js insieme a tutto il suo CSS. Qui non si ridisegna niente — si dice
+   soltanto come quella card sta dentro una pagina chiara e stretta:
+   - il testo torna al bianco, perche' «.m-scr.chiara» lo porta all'inchiostro e i nodi sono scuri;
+   - «touch-action:pan-y» lascia al telefono lo scorrimento verticale della pagina (il canvas cresce in altezza,
+     quindi in verticale non c'e' niente da spostare) e tiene per noi il trascinamento orizzontale e il pinch;
+   - la barra dello zoom scende in basso a destra: senza la barra del canvas sotto di lei, i 78 px erano il vuoto.
+   La card prende tutta la larghezza della colonna (278,4 px): e' il numero su cui e' scelto lo scatto d'ingresso,
+   e restringerla lo cambierebbe. */
+.m-wcv .wcanvas{color:var(--white);touch-action:pan-y;-webkit-user-select:none;user-select:none}
+.m-wcv .wcanvas .wzoombar{right:10px;bottom:10px;gap:5px}
+.m-wcv .wcanvas .wzoombar .rb{width:28px;height:28px}
+.m-wcv .wcanvas .wzoombar .rb svg{width:12px;height:12px}
+.m-wcv .wcanvas .wzoombar .zv{height:28px;padding:0 9px;font-size:10px}
+/* Le etichette del contratto (decisione 74): stanno **fuori** dal canvas, cosi' non si rimpiccioliscono con lui.
+   Sono i chip che il telefono ha gia', con le parole che la Console stampa nel suo conto in cima al canvas. */
+.m-wcon{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px 0}
+.m-wcon .chip{height:22px;font-size:10px;padding:0 9px}
+.m-wcon .chip.lime{background:var(--lime);color:var(--ink);border-color:transparent}
+.m-wnota{margin:8px 14px 0;font-size:11px;line-height:15px;color:var(--t2-light)}
 .m-wtabs{display:flex;gap:6px;margin:8px 0 2px}
 .m-wtabs .pill{height:32px;font-size:11px;padding:0 10px;gap:6px;flex:1 1 0;min-width:0;justify-content:center;white-space:nowrap}
 .m-wtabs .pill svg{width:13px;height:13px;flex:none}
@@ -847,79 +849,92 @@ window.DGT_MOBILE = (function () {
     </div>`;
   }
 
-  /* ---------- schermata 10: il workflow (versione 20, 2026-09-08) ----------
-     Il canvas della Console non puo' esistere qui: lo schermo e' 300x620 px dentro `zoom:1.25`, il canvas e' largo
-     1 312 px, e la regola del telefono dice che lo schermo non deve poter scorrere di lato. Quindi il workflow **si
-     gira di novanta gradi**: gli stessi nodi, uno sopra l'altro, con lo stesso connettore lime fra l'uno e l'altro,
-     le stesse porte come chip sotto il nodo, e in fondo il nodo del titolare. Non e' un canvas ridotto: e' lo stesso
-     oggetto letto in colonna, che su uno schermo alto e stretto e' la forma giusta.
-     Nessuno dei cinque consiglieri aveva nominato il telefono: se l'e' ricordato la revisione incrociata. */
+  /* ---------- schermata 10: il workflow (versione 27, 2026-09-09) ----------
+     ---- Che cosa c'era, e perche' e' caduto ----
+     Fino alla 26 il workflow sul telefono era una **colonna di card**: gli stessi nodi girati di novanta gradi,
+     un connettore dritto fra l'uno e l'altro, le porte come chip dentro la card. Giudizio del titolare sulla
+     schermata: «da' un'anteprima del workflow sbagliata», e guardando le due catture e' vero — telefono e Console
+     non erano lo stesso oggetto a due misure, erano **due disegni**: fondo chiaro contro notte, card da 348 px
+     contro nodo da 208, una colonna dritta contro una serpentina su tre righe, chip dentro la card contro porte
+     con l'etichetta sotto il nodo, barretta dritta contro curva luminosa.
+     ---- Che cosa c'e' adesso (decisioni 72-74) ----
+     Il **canvas vero, in sola lettura**, come card dentro la pagina che scorre: stessa funzione della Console
+     (`canvasWorkflow` in componenti.js), stessi nodi, stessa notte, stessi connettori, stesse porte. Non e' una
+     riduzione: e' lo stesso oggetto **a due scale**. Si entra a «tutto dentro» (278,4 / 910 = 0,306, tutto il
+     grafo nella larghezza che c'e') e il tocco su un nodo porta a scala 1 centrato su quello, dove il testo
+     torna a 14 px e il nodo apre i suoi campi.
+     Resta una card e non diventa una schermata intera, cosi' la firma, i tre freni e le tab non si spostano.
+     Le posizioni dei nodi **non si ricalcolano mai** (regola 42): sono dati del titolare, e il prezzo accettato
+     sono 632 px di scorrimento laterale a scala 1.
+     La colonna sparisce e con lei i chip che dicevano la topologia («2 rami», «arriva da 2»), che adesso e'
+     disegno. Restano quelli che dicono il **contratto** («esce senza la tua firma», «resta in azienda»): dicono
+     la firma, e la firma non si legge a 4,3 px. Stanno sotto il canvas, alla misura in cui si leggono. */
+  /* Lo scatto d'ingresso, e il ritorno. Sta qui e non nel canvas perché è **stato della pagina**: il canvas
+     disegna quello che gli si passa e non si ricorda niente da un giro all'altro.
+     Le due scale della decisione 73 hanno una strada sola: senza un nodo scelto si entra a «tutto dentro», con
+     un nodo scelto si entra a scala 1 centrati su quello — e non importa se il nodo l'ha scelto un dito o
+     l'indirizzo (`?nodo=`), perché lo schermo dev'essere lo stesso. */
+  const entraCanvas = (m, w, ramo, st) => {
+    const q = (st.nodo && canvasSuNodo(m, w, ramo, st.nodo, M_VISTA)) || canvasTuttoDentro(m, w, ramo, M_VISTA);
+    st.zoom = q.zoom; st.pan = q.pan; return q;
+  };
+
   function workflow(m, tel, st) {
     const w = m.workflowIdDi(st.workflow) || (m.workflowDi(st.dip) || [])[0];
     if (!w) return dipartimento(m, tel, st);
     const e = m.byId[w.chi], d = m.dipDi(e);
-    const ult = w.nodi[w.nodi.length - 1];
     /* La prossima volta si guarda anche dal telefono (versione 24): il titolare firma da qui, e un flusso che non
-       si vede da dove si firma non esiste. La tab e' la stessa della Console, con le stesse due parole. */
+       si vede da dove si firma non esiste. La tab è la stessa della Console, con le stesse due parole. */
     const ramo = !!st.ramo;
     const G = ramo ? m.ramoDi(w) : null;
+    const nodi = ramo ? G.nodi : w.nodi;
     /* Chi firma quello che esce (decisione 71): il permesso in testa o la pillola qui sotto, e in tutti e due i
-       casi entro gli stessi tre freni. Il telefono li scriveva a mano; adesso li legge da `ramoFreni`, dove stanno
-       una volta sola, cosi' non possono piu' dire due cose diverse dalla Console. */
+       casi entro gli stessi tre freni. Il telefono li legge da `ramoFreni`, dove stanno una volta sola, così non
+       possono dire due cose diverse dalla Console. */
     const reg = m.ramoRegime(w);
-    const esceR = ramo ? m.ramoEsce(w) : { fuori: [], anticipata: [] };
-    const anticipa = id => esceR.anticipata.some(n => n.id === id);
-    /* L'ordine della colonna e' quello **topologico** (la distanza dall'inizio, che il modello calcola gia'), non
-       l'ordine dell'array: in un grafo l'array non e' un percorso. */
-    const lista = ramo ? G.nodi.slice().sort((a, b) => (a.n - b.n) || (a.y - b.y) || (a.x - b.x)) : w.nodi;
-    const usc = id => (ramo ? G.archi.filter(a => a.da === id) : []);
-    const ent = id => (ramo ? G.archi.filter(a => a.a === id) : []);
-    const TIPI = {}; (m.RAMO_TIPI || []).forEach(t => { TIPI[t.id] = t; });
-    const nodo = (nd, i) => {
-      const ultimo = i === lista.length - 1;
-      const cls = (nd.innesco ? 'm-wn inn' : nd.titolare ? `m-wn tit${nd.stato === 'attesa' ? ' att' : ''}` : `m-wn${!ramo && nd.stato === 'da fare' ? ' off' : ''}`);
-      const porte = nd.titolare ? [] : nd.innesco ? [(m.RAMO_CLAUSOLE.find(c => c.id === nd.clausola) || {}).nome || ''] : ['Modello: ' + ((m.MODELLI[nd.modello] || {}).nome || nd.modello), ...nd.strumenti.slice(0, 2)];
-      /* Il piede della card. Lo zero non si stampa mai: un passo che deve ancora succedere non ha un costo, e
-         `eur(0)` scriveva «0 €» su quattro card su otto (versione 24, difetto trovato misurando). */
-      const coda = nd.innesco
-        ? `<span class="chip light">${ic('i-bolt')}</span>`
-        : nd.titolare
-          ? `<span class="chip${nd.stato === 'attesa' && !ramo ? ' lime' : ' light'}">${ic(nd.stato === 'attesa' && !ramo ? 'i-bell' : 'i-check')}${ramo ? 'aspetterà te' : nd.stato === 'attesa' ? 'aspetta te' : nd.stato === 'fatto' ? 'firmata' : 'non ancora'}</span>`
-          : ramo ? `<span class="chip light">${nd.nato ? 'passo nuovo' : "come l'ultima volta"}</span>`
-            : nd.stato === 'da fare' ? `<span class="chip light">non ancora</span>`
-              : `<span class="eur">${eur(nd.costo)}</span>`;
-      /* Quello che il grafo aggiunge, detto sul collegamento e non sul nodo (decisione 65). */
-      const dopo = ramo ? (() => {
-        const u = usc(nd.id);
-        /* Un ramo che non arriva alla firma: con «chiedi prima di consegnare» **resta in azienda**, con il
-           permesso in testa **esce lo stesso**, senza passare dalla coda. Il chip diceva sempre la prima delle
-           due, anche quando il permesso era acceso (decisione 71: lo stesso silenzio trovato nella Console). */
-        if (!u.length) return anticipa(nd.id)
-          ? `<div class="m-wgo"><span class="m-warc"></span><span class="chip lime">${ic('i-bolt')}esce senza la tua firma</span></div>`
-          : `<div class="m-wgo"><span class="m-warc off"></span><span class="chip light">${ic('i-hand')}resta in azienda</span></div>`;
-        const succ = lista[i + 1];
-        const chip = [];
-        if (u.length > 1) chip.push(`<span class="chip lime">${u.length} rami</span>`);
-        u.forEach(a => { const t = TIPI[a.tipo || 'poi']; if (a.tipo && a.tipo !== 'poi') chip.push(`<span class="chip light">${esc(t.nome)}${a.se ? ' ' + esc(a.se) : ''} → ${esc(((G.nodi.find(x => x.id === a.a)) || {}).nome || '')}</span>`); });
-        const dritto = u.length === 1 && succ && u[0].a === succ.id;
-        return `<div class="m-wgo"><span class="m-warc"></span>${chip.join('')}${dritto || chip.length ? '' : `<span class="chip light">→ ${esc((G.nodi.find(x => x.id === u[0].a) || {}).nome || '')}</span>`}</div>`;
-      })() : (ultimo ? '' : `<span class="m-warc${nd.stato === 'da fare' ? ' off' : ''}"></span>`);
-      const arrivi = ramo && ent(nd.id).length > 1 ? `<span class="chip light">arriva da ${ent(nd.id).length}</span>` : '';
-      return `<div class="${cls}">
-        <div class="tt"><b>${esc(nd.nome)}</b><span>${nd.innesco ? esc(nd.testo) : nd.titolare ? esc(nd.regola) : 'Passo ' + nd.n + (nd.durata ? ' · ' + esc(nd.durata) : '')}</span></div>
-        ${coda}
-        ${porte.length || arrivi ? `<div class="porte">${arrivi}${porte.map(x => `<span class="chip light">${esc(x)}</span>`).join('')}</div>` : ''}
-      </div>${ultimo && !ramo ? '' : dopo}`;
-    };
+    if (st.zoom == null) entraCanvas(m, w, ramo, st);
+    /* ---- Il canvas ----
+       È la stessa funzione della Console. Quello che cambia sono le **opzioni**, non il disegno:
+       `soloLettura` spegne prese, «+» sull'arco, «×», trascinamento del nodo, «Riordina» e «Aggiungi»;
+       `vista` dice quanta larghezza c'è (278,4 px), e serve allo spostamento della vista e allo scatto d'ingresso;
+       `barra: false` — la barra sotto il canvas porta il conto, i due acceleratori e «Vedi l'esecuzione»: i primi
+       tre non esistono in sola lettura, e a 278,4 px la riga sarebbe fatta di puntini;
+       `chips: false` e `mappa: false` — il conto in cima sta già nell'intestazione della sezione, e una mappa da
+       200×120 su una cornice larga 278 coprirebbe proprio il disegno che deve aiutare a leggere. */
+    const sel = ramo ? (st.nodo || '') : (+st.nodo || 0);
+    const cv = canvasWorkflow(m, w, sel, ramo, st.zoom, [], st.pan,
+      { soloLettura: true, vista: M_VISTA, barra: false, chips: false, mappa: false });
+    /* ---- Le etichette che restano (decisione 74) ----
+       La colonna sparisce, e con lei i chip che dicevano la **topologia**: «2 rami», «arriva da 2», «→ Pagina del
+       carrello». Quella adesso è disegno, e si legge dal disegno. Restano quelli che dicono il **contratto** —
+       dove finisce quello che il flusso produce, e chi lo firma — perché quella è la firma, e la firma non si
+       legge a 4,3 px. Le parole sono quelle che la Console già stampa nel suo conto in cima al canvas. */
+    const esce = ramo ? m.ramoEsce(w) : null;
+    const ultimo = w.nodi[w.nodi.length - 1];
+    /* Misurato prima di scriverlo: su `w1` — il grafo di partenza, una catena — `ramoEsce` ritorna **zero e
+       zero**, e una striscia costruita sulle sole eccezioni sarebbe rimasta vuota. Il contratto però c'è lo
+       stesso, ed è il più forte dei tre: tutto arriva alla firma. Quindi quando non ci sono eccezioni la striscia
+       dice la **regola**, con le parole che il nodo del titolare stampa già dentro il canvas. */
+    const contratto = (ramo
+      ? (esce.fuori.length || esce.anticipata.length
+          ? [esce.fuori.length ? `<span class="chip light">${ic('i-hand')}${esce.fuori.length} ${esce.fuori.length === 1 ? 'ramo resta' : 'rami restano'} in azienda</span>` : '',
+             esce.anticipata.length ? `<span class="chip lime">${ic('i-bolt')}${esce.anticipata.length} ${esce.anticipata.length === 1 ? 'ramo esce' : 'rami escono'} senza la tua firma</span>` : '']
+          : [`<span class="chip lime">${ic('i-bell')}aspetterà la tua firma</span>`]
+        ).concat(G.ciclo ? [`<span class="chip light">${ic('i-warn')}il flusso si chiude ad anello</span>`] : [])
+      : [ultimo.stato === 'attesa' ? `<span class="chip lime">${ic('i-bell')}aspetta la tua firma</span>`
+          : `<span class="chip light">${ic(ultimo.stato === 'fatto' ? 'i-check' : 'i-clock')}${ultimo.stato === 'fatto' ? 'firmata' : 'non ancora consegnata'}</span>`]
+    ).filter(Boolean).join('');
     return `<div class="m-scr chiara rie" data-schermata="10">
       ${barraStato(m)}
       <div class="m-scroll">
-        <div class="m-nav"><span class="rb olight" data-az="indietro" data-s="8" title="${esc(d.nome)}">${ic('i-left')}</span><span class="chip light">${ic('i-rows')}${lista.length} nodi</span></div>
+        <div class="m-nav"><span class="rb olight" data-az="indietro" data-s="8" title="${esc(d.nome)}">${ic('i-left')}</span><span class="chip light">${ic('i-rows')}${nodi.length} nodi</span></div>
         <h3 class="m-h1${w.nome.length > 12 ? ' stretta' : ''}">${esc(w.nome.toUpperCase())}</h3>
         <div class="m-coda"><div class="qrow" data-az="filo" data-id="${e.id}">${av(m, e, 'xs')}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(w.perimetro)} · ${eur(w.costo)} · ${w.minuti} min</span></div><span class="rb xs">${ic('i-chevr')}</span></div></div>
         <div class="m-wtabs"><span class="pill${ramo ? ' olight' : ' lime'}" data-az="m-ramo" data-v="0">${ic('i-eye')}L'ultima volta</span><span class="pill${ramo ? ' lime' : ' olight'}" data-az="m-ramo" data-v="1">${ic('i-pen')}La prossima volta</span></div>
-        <div class="m-sh"><h4>Il workflow</h4><span class="chip light">${ramo ? `l'innesco e ${lista.length - 2} passi` : `${w.passi} passi e la tua firma`}</span></div>
-        <div class="m-wf">${lista.map(nodo).join('')}</div>
+        <div class="m-sh"><h4>Il workflow</h4><span class="chip light">${ramo ? `l'innesco e ${nodi.length - 2} passi` : `${w.passi} passi e la tua firma`}</span></div>
+        <div class="m-wcv">${cv}</div>
+        ${contratto ? `<div class="m-wcon">${contratto}</div>` : ''}
+        <p class="m-wnota">Tocca un passo per aprirlo a grandezza intera. Trascina per spostare il disegno, avvicina due dita per ingrandirlo.</p>
         <div class="m-sh"><h4>La firma anticipata</h4><span class="chip light">${reg.anticipata ? (reg.da === 'clausola' ? 'dal permesso' : 'accesa') : 'spenta'}</span></div>
         ${reg.da === 'clausola' ? `<div class="m-coda"><div class="qrow on"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic('i-bolt')}</span><div class="tx"><b>${esc((m.RAMO_CLAUSOLE.find(c => c.id === reg.clausola) || {}).nome || '')}</b><span>il permesso in testa firma in anticipo, entro i tre freni</span></div></div></div>` : ''}
         <div class="m-coda">
@@ -946,7 +961,10 @@ window.DGT_MOBILE = (function () {
      quello che si decide su uno si vede subito sugli altri (e nella Console, che legge lo stesso modello). */
   function monta(radice, m, opz) {
     opz = opz || {};
-    const st = { richiesta: opz.richiesta || 0, filo: opz.filo || ((m.fili()[0] || {}).e || m.dipendenti[0]).id, quadro: opz.quadro === undefined ? QUADRO : opz.quadro, conta: opz.conta === undefined ? CONTA : opz.conta, dip: opz.dip || m.dipartimenti[0].id, consegna: opz.consegna || '', workflow: opz.workflow || '', ramo: opz.ramo === '1' || opz.ramo === 1 ? 1 : 0, cerca: undefined };
+    const st = { richiesta: opz.richiesta || 0, filo: opz.filo || ((m.fili()[0] || {}).e || m.dipendenti[0]).id, quadro: opz.quadro === undefined ? QUADRO : opz.quadro, conta: opz.conta === undefined ? CONTA : opz.conta, dip: opz.dip || m.dipartimenti[0].id, consegna: opz.consegna || '', workflow: opz.workflow || '', ramo: opz.ramo === '1' || opz.ramo === 1 ? 1 : 0, cerca: undefined,
+      /* Lo stato del canvas della schermata 10 (versione 27). `zoom: null` vuol dire «non ancora entrato»: lo
+         scatto d'ingresso «tutto dentro» si calcola alla prima resa, quando si sa qual è il workflow. */
+      nodo: opz.nodo || 0, zoom: null, pan: { x: 0, y: 0 } };
     const tels = (opz.schermate && opz.schermate.length ? opz.schermate : [1, 2, 3, 4, 5, 6, 7, 8]).map((s, i) => ({ n: i + 1, schermata: s >= 2 && s <= 10 ? s : 1, motivo: false }));
     const n = () => coda(m).length;
     radice.innerHTML = `<div class="m-page">
@@ -975,6 +993,124 @@ window.DGT_MOBILE = (function () {
       if (inp) inp.focus({ preventScroll: true });   // il fuoco non deve far scorrere lo schermo del telefono
     };
     tutto();
+
+    /* ================= I gesti del canvas sul telefono (versione 27, decisioni 72-73) =================
+       Prima di oggi in tutto il repository non c'era **nessun** ascoltatore `touch` o `pointer`: era tutto mouse,
+       perché fino alla 26 il telefono non aveva niente da spostare. Adesso ne servono due, e non uno di più:
+       **trascina-la-vista** e **pinch**. Il resto — aprire un nodo, cambiare tab, firmare — resta un tocco, cioè
+       un clic, e passa dal gestore che c'è già.
+
+       Quello che il canvas **non** fa qui: spostare un nodo. Le posizioni sono dati del titolare (regola 42), e
+       la sola lettura non le tocca. Per questo il trascinamento a un dito muove la vista e mai il disegno.
+
+       Il verticale non è un gesto: la card cresce in altezza con l'ingrandimento (`alt = basso × z`), quindi in
+       verticale non c'è mai niente fuori dalla cornice, e a scorrere ci pensa la pagina. È `touch-action:pan-y`
+       nel CSS a dividere i due mestieri: il telefono si tiene il verticale, noi ci teniamo l'orizzontale e le
+       due dita. */
+    const M_ZOOMI = [0.5, 0.75, 1, 1.5, 2];
+    const wDiSt = () => m.workflowIdDi(st.workflow) || (m.workflowDi(st.dip) || [])[0];
+    /* I fattori di scala, misurati sulla pagina viva e non indovinati: `s` è lo zoom della cornice dei telefoni
+       (1,25 nello specimen), e serve a convertire i pixel del dito in pixel del disegno. */
+    const fattoreM = cv => cv.getBoundingClientRect().width / cv.offsetWidth;
+    const vistaDi = cv => +cv.dataset.vista || M_VISTA;
+    /* Lo stringimento è quello del canvas, preso da lì e non riscritto: la vista non esce mai dal disegno. */
+    const stringi = canvasStringi;
+    const dentroDi = () => canvasTuttoDentro(m, wDiSt(), !!st.ramo, M_VISTA).zoom;
+    /* Mentre il dito è giù non si ridisegna niente: si muove la sola cornice che si scala, che è esattamente
+       quello che il disegno farebbe. Il conto vero si scrive nello stato al rilascio. */
+    const vivo = (cv, z, px) => {
+      const zl = cv.querySelector('.wzoom'); if (!zl) return;
+      zl.style.transform = `translate(${px}px,0) scale(${z})`;
+      cv.style.height = Math.round(zl.offsetHeight * z) + 'px';
+      const zv = cv.querySelector('.wzoombar .zv'); if (zv) zv.textContent = Math.round(z * 100) + ' %';
+    };
+    const posa = (z, px) => { st.zoom = z; st.pan = { x: px, y: 0 }; tutto(); };
+    /* Il tocco su un nodo: scala 1 centrato su quello. Le coordinate del nodo si leggono da `offsetLeft` e
+       `offsetTop`, che sono le sue posizioni **nel disegno** — la `transform` della cornice non le tocca — quindi
+       è una lettura, non una misura presa dopo il disegno per rifare il disegno. */
+    /* Centrare in verticale è la pagina che scorre, non il canvas che si sposta: la card cresce in altezza con
+       l'ingrandimento, quindi in verticale non c'è mai niente fuori dalla cornice. Due misure che era facile
+       sbagliare, e che si vedono solo col righello: i rettangoli sono in pixel di **schermo** (i telefoni stanno
+       dentro `zoom:1.25`) mentre `scrollTop` è in pixel **CSS**, quindi si divide; e il centro non è quello della
+       cornice ma quello della parte che si vede, perché in basso la navigazione ne copre una fascia — che è
+       esattamente il `padding-bottom` che lo scorrevole già dichiara. */
+    const centraNodo = telN => {
+      const sc = cont.querySelector(`.m-tel[data-n="${telN}"] .m-scroll`); if (!sc) return;
+      const nd = sc.querySelector('.wnode.on'); if (!nd) return;
+      const a = nd.getBoundingClientRect(), b = sc.getBoundingClientRect();
+      const s = b.width / sc.clientWidth || 1;
+      const riserva = (parseFloat(getComputedStyle(sc).paddingBottom) || 0) * s;
+      sc.scrollTop += ((a.top + a.height / 2) - (b.top + (b.height - riserva) / 2)) / s;
+    };
+    const toccaNodo = (el, tel) => {
+      if (mosso) { mosso = false; return; }          /* un trascinamento non deve diventare anche un tocco */
+      const cv = el.closest('.wcanvas'); if (!cv) return;
+      const chiave = st.ramo ? el.dataset.id : +el.dataset.n || 0;
+      if (!chiave) return;
+      if (String(st.nodo) === String(chiave)) { st.nodo = 0; st.zoom = null; tutto(); return; }
+      st.nodo = chiave; st.zoom = null;      /* la stessa strada dell'ingresso: una scelta, uno schermo */
+      tutto();
+      centraNodo(tel.n);
+    };
+    /* La barra dello zoom. Il tasto di mezzo riporta a **tutto dentro**, che sul telefono è lo scatto d'ingresso
+       (nella Console lo stesso tasto riporta al 100 %: in tutti e due i casi «rimetti come l'hai trovato»). */
+    const zoomM = (v, el) => {
+      const cv = el.closest('.wcanvas'); if (!cv) return;
+      const vista = vistaDi(cv), z0 = +cv.dataset.zoom || 1, px0 = +cv.dataset.pan || 0, zt = dentroDi();
+      if (v === 'uno') { st.nodo = 0; st.zoom = null; tutto(); return; }
+      const scala = [zt].concat(M_ZOOMI.filter(x => x > zt + 0.01));
+      let i = 0; while (i < scala.length - 1 && scala[i] < z0 - 0.01) i++;
+      const z1 = v === 'piu' ? scala[Math.min(scala.length - 1, i + 1)] : scala[Math.max(0, i - 1)];
+      const centro = (vista / 2 - px0) / z0;
+      posa(z1, stringi(vista / 2 - centro * z1, z1, vista));
+    };
+    let mosso = false, tocco = null;
+    const dist = ts => Math.hypot(ts[0].clientX - ts[1].clientX, ts[0].clientY - ts[1].clientY);
+    const mezzo = ts => (ts[0].clientX + ts[1].clientX) / 2;
+    radice.addEventListener('touchstart', ev => {
+      const cv = ev.target.closest ? ev.target.closest('.wcanvas') : null; if (!cv) return;
+      const t = [...ev.touches];
+      tocco = { cv, vista: vistaDi(cv), s: fattoreM(cv), z0: +cv.dataset.zoom || 1, px0: +cv.dataset.pan || 0,
+                x0: t[0].clientX, y0: t[0].clientY, modo: '', zt: dentroDi(),
+                d0: t.length > 1 ? dist(t) : 0, m0: t.length > 1 ? mezzo(t) : 0 };
+      if (t.length > 1) tocco.modo = 'pinch';
+    }, { passive: true });
+    radice.addEventListener('touchmove', ev => {
+      if (!tocco) return;
+      const t = [...ev.touches], g = tocco;
+      if (t.length > 1) {
+        /* Pinch: l'ingrandimento segue le due dita, e il punto del disegno che sta **fra** le dita resta fermo —
+           se no ingrandire sposta il flusso e si perde il pezzo che si stava guardando. Non si scende sotto
+           «tutto dentro»: più in là non c'è disegno, c'è vuoto. */
+        if (g.modo !== 'pinch') { g.modo = 'pinch'; g.d0 = dist(t); g.m0 = mezzo(t); g.z0 = +g.cv.dataset.zoom || 1; g.px0 = +g.cv.dataset.pan || 0; }
+        if (!g.d0) return;
+        ev.preventDefault(); mosso = true;
+        const z1 = Math.max(g.zt, Math.min(2, g.z0 * (dist(t) / g.d0)));
+        const sx = (mezzo(t) - g.cv.getBoundingClientRect().left) / g.s;
+        const fisso = (sx - g.px0) / g.z0;                 /* il punto del disegno sotto le dita */
+        g.z1 = z1; g.px1 = stringi(sx - fisso * z1, z1, g.vista);
+        vivo(g.cv, g.z1, g.px1);
+        return;
+      }
+      const dx = t[0].clientX - g.x0, dy = t[0].clientY - g.y0;
+      if (!g.modo) {
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        g.modo = Math.abs(dx) > Math.abs(dy) ? 'vista' : 'pagina';   /* di lato la vista, in su e in giù la pagina */
+      }
+      if (g.modo !== 'vista') return;
+      ev.preventDefault(); mosso = true;
+      g.z1 = g.z0; g.px1 = stringi(g.px0 + dx / g.s, g.z0, g.vista);
+      vivo(g.cv, g.z1, g.px1);
+    }, { passive: false });
+    radice.addEventListener('touchend', () => {
+      const g = tocco; tocco = null;
+      if (!g || g.z1 === undefined) return;
+      posa(g.z1, g.px1);
+    });
+    /* Un indirizzo con un nodo scelto (`?nodo=`) deve lasciare **lo stesso schermo** di un dito che tocca quel
+       nodo: stessa scala, stesso centro, anche in verticale. Senza questa riga la cattura della seconda scala non
+       sarebbe la schermata, sarebbe la schermata scorsa a caso. */
+    tels.forEach(t => { if (t.schermata === 10 && st.nodo) centraNodo(t.n); });
     radice.addEventListener('keydown', ev => {
       if (ev.key === 'Escape' && ev.target.closest('input[data-mcerca]')) { ev.preventDefault(); st.cerca = undefined; tutto(); return; }
       const chat = ev.target.closest('input[data-campo="mchat"]');
@@ -997,9 +1133,15 @@ window.DGT_MOBILE = (function () {
       else if (az === 'consegna') { ev.stopPropagation(); st.consegna = el.dataset.id; tel.schermata = 9; tel.motivo = false; tutto(); }
       /* i workflow (versione 20): la schermata 10, e la firma anticipata che si accende dal telefono come dalla
          Console — e' lo stesso `m.firme`, quindi quello che si accende qui si vede subito anche li' */
-      else if (az === 'workflow') { ev.stopPropagation(); st.workflow = el.dataset.id; tel.schermata = 10; tel.motivo = false; tutto(); }
+      else if (az === 'workflow') { ev.stopPropagation(); st.workflow = el.dataset.id; st.nodo = 0; st.zoom = null; tel.schermata = 10; tel.motivo = false; tutto(); }
       /* Le due tab della schermata 10 (versione 24): le stesse due parole della Console. */
-      else if (az === 'm-ramo') { ev.stopPropagation(); st.ramo = el.dataset.v === '1' ? 1 : 0; tutto(); }
+      else if (az === 'm-ramo') { ev.stopPropagation(); st.ramo = el.dataset.v === '1' ? 1 : 0; st.nodo = 0; st.zoom = null; tutto(); }
+      /* ---- I due gesti del canvas che passano da un clic (versione 27) ----
+         Il tocco su un nodo porta a **scala 1 centrato su quello** (decisione 73): è la seconda delle due scale,
+         quella in cui il testo torna a 14 px e il nodo apre i suoi campi. Toccarlo di nuovo lascia andare la
+         scelta e rimette tutto dentro, che è lo stato in cui la pagina si apre. */
+      else if (az === 'nodo') { ev.stopPropagation(); toccaNodo(el, tel); }
+      else if (az === 'ramo-zoom') { ev.stopPropagation(); zoomM(el.dataset.v, el); }
       else if (az === 'firma') { ev.stopPropagation(); m.firme[el.dataset.id] = !m.firme[el.dataset.id]; tutto(); }
       /* la chat (versione 15): la riga apre il filo, la barra di scrittura ci scrive dentro (`m.scrivi`, lo stesso filo della Console) */
       else if (az === 'filo') { ev.stopPropagation(); st.filo = +el.dataset.id; tel.schermata = 5; tel.motivo = false; tutto(); }

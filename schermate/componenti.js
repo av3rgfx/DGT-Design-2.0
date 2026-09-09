@@ -263,7 +263,494 @@ window.DGT_COMPONENTI = (function () {
 .msg.io .bub .ora{color:var(--t2-light);text-align:right}
 .msg.sistema{justify-content:center}
 .msg.sistema .chip{height:28px;max-width:100%}.msg.sistema .chip span{overflow:hidden;text-overflow:ellipsis}
+/* ---- Il canvas del workflow (versione 20) ----
+   Il secondo riferimento portato dentro il prodotto: griglia puntinata, nodi con riflesso, connettori luminosi,
+   nodo selezionato acceso, porte con l'etichetta. Due cose cambiano rispetto alla figura, e sono tutte e due
+   regole gia' scritte: il verde luminoso diventa il **lime** (regola 4, un solo accento — la figura aveva sei
+   verdi che non erano il lime), e **non c'e' pan ne' zoom** (regola 17: la Console si scala gia' con zoom alla
+   larghezza della finestra, e due zoom annidati litigano). Il canvas non si trascina: si stende, e cresce in
+   basso come tutte le altre sezioni. */
+.wcanvas{position:relative;margin-top:24px;border-radius:var(--r-inner);background:var(--dots-box);overflow:hidden}
+.wcanvas .grid{position:absolute;inset:0;background-image:radial-gradient(rgb(255 255 255/.14) 1px,transparent 1.4px);background-size:18px 18px;background-position:9px 9px;pointer-events:none;mask-image:radial-gradient(ellipse at 45% 35%,#000 55%,transparent 100%)}
+.wcanvas svg.edges{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.wcanvas .edges path.arc{fill:none;stroke:var(--lime);stroke-width:2.2;filter:drop-shadow(0 0 6px rgb(184 252 100/.55))}
+.wcanvas .edges path.arc.att{stroke-dasharray:7 6}
+.wcanvas .edges path.arc.off{stroke:rgb(255 255 255/.38);stroke-dasharray:3 5;filter:none}
+.wnode{position:absolute;width:208px;box-sizing:border-box;padding:12px 14px;border-radius:18px;background:var(--card);border:1px solid rgb(255 255 255/.10);box-shadow:inset 0 1px 0 rgb(255 255 255/.07),0 10px 30px rgb(0 0 0/.35);display:grid;gap:8px;align-content:start;cursor:pointer}
+.wnode .hd{display:flex;align-items:center;gap:10px;min-width:0}
+.wnode .nic{width:32px;height:32px;border-radius:11px;background:rgb(255 255 255/.07);display:grid;place-items:center;flex:none}
+.wnode .nic svg{width:16px;height:16px;color:var(--white)}
+.wnode .tt{min-width:0}
+.wnode .tt b{display:block;font-weight:400;font-size:14px;line-height:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wnode .tt span{display:block;font-size:11px;line-height:15px;color:var(--t2)}
+.wnode .ft{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--t2);white-space:nowrap;overflow:hidden}
+.wnode .ft .eur{margin-left:auto;color:var(--white)}
+.wnode.on{border-color:var(--lime);box-shadow:0 0 0 1px var(--lime),0 0 44px rgb(184 252 100/.28),inset 0 1px 0 rgb(255 255 255/.18);z-index:3}
+.wnode.on .nic{background:var(--lime)}.wnode.on .nic svg{color:var(--ink)}
+.wnode.tit{border-style:dashed}
+.wnode.tit.att{border-color:var(--lime);border-style:solid;box-shadow:0 0 0 1px var(--lime),0 0 40px rgb(184 252 100/.22)}
+/* Le altezze dei campi sono **fisse** e il testo sta su una riga sola (versione 22). Prima un'etichetta o un
+   valore lunghi andavano a capo — «Regola che ferma qui la consegna» su due righe, «Ambiente di test · staging»
+   su tre — e il nodo aperto cresceva di un'altezza che nessuno poteva prevedere. Serviva prevederla: le posizioni
+   della serpentina si calcolano nella funzione che stampa, senza misurare niente dopo il disegno (regola del
+   canvas, versione 20), quindi l'altezza del nodo aperto dev'essere un conto, non una scoperta. */
+.wnode .campi{display:grid;gap:6px;border-top:1px solid rgb(255 255 255/.08);padding-top:8px}
+.wnode .campi .fl{height:20px;line-height:20px;font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wnode .campi .fv{height:32px;box-sizing:border-box;display:flex;align-items:center;gap:6px;font-size:12px;background:rgb(255 255 255/.06);border-radius:9px;padding:0 9px}
+.wnode .campi .fv>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wnode .campi .fv svg{width:12px;height:12px;margin-left:auto;flex:none;color:var(--t2)}
+.wnode .hd{height:33px}
+.wnode .ft{height:20px}
+.wport{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--lime);box-shadow:0 0 10px rgb(184 252 100/.55);transform:translate(-50%,-50%);pointer-events:none}
+.wport.off{background:rgb(255 255 255/.28);box-shadow:none}
+.wplab{position:absolute;transform:translateX(-50%);font-size:10px;line-height:14px;color:var(--t2);white-space:nowrap;pointer-events:none}
+.wtag{position:absolute;transform:translate(-50%,-50%);height:22px;display:inline-flex;align-items:center;gap:5px;padding:0 9px;border-radius:9999px;background:var(--round);border:1px solid rgb(255 255 255/.14);font-size:11px;color:var(--t2);white-space:nowrap;pointer-events:none}
+.wtag svg{width:11px;height:11px}
+.wtag.lime{border-color:var(--lime);color:var(--lime)}
+/* la barra sotto il canvas: la stessa della figura (chat a sinistra, azioni a destra), ma i suoi controlli fanno
+   davvero quello che dicono — regola 25 */
+.wbar{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:16px;padding:14px 20px;border-top:1px solid rgb(255 255 255/.08);background:rgb(10 10 10/.72);backdrop-filter:blur(10px);z-index:4}
+.wbar .tx{flex:1;min-width:0}
+.wbar .tx b{display:block;font-weight:400;font-size:14px}
+.wbar .tx span{display:block;font-size:11px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* ---- Comporre (versione 22): il ramo e i tre gesti ----
+   La tab a pillola sopra il canvas e' quella del riferimento, gia' copiata nello specimen: due voci, l'attiva
+   piena. Non e' un componente nuovo. */
+.wtabs{display:flex;gap:8px;margin-top:24px}
+.wtabs .pill{height:40px;font-size:14px}
+/* gesto A — il nodo aperto e' l'editor: le azioni stanno dentro il nodo, sotto i suoi campi */
+.wnode .azioni-n{display:flex;gap:6px;border-top:1px solid rgb(255 255 255/.08);padding-top:8px;margin-top:2px}
+.wnode .azioni-n .rb{width:28px;height:28px}
+.wnode .azioni-n .rb svg{width:13px;height:13px}
+.wnode .azioni-n .rb.pieno{background:var(--lime);color:var(--ink);border-color:transparent}
+.wnode .azioni-n .rb[aria-disabled="true"]{opacity:.35}
+/* gesto B — la barra sotto il canvas: il conto a sinistra, le azioni al centro, l'uscita a destra */
+.wbar .azioni-b{display:flex;align-items:center;gap:8px}
+.wbar .azioni-b .pill{height:36px;padding:0 14px;font-size:13px;gap:7px}
+.wbar .azioni-b .pill svg{width:14px;height:14px}
+.wbar .azioni-b .pill[aria-disabled="true"]{opacity:.4}
+/* gesto C — il «+» sul connettore. Il bersaglio non e' il cerchio: e' tutto il tratto libero dell'arco, che
+   misurato fa 34 px fra due nodi della stessa riga e 123 px nel salto di riga. Il cerchio si accende al
+   passaggio, il bersaglio invisibile e' largo 34 e alto 40 perche' 34×2 non si centra col mouse. */
+.wplus{position:absolute;transform:translate(-50%,-50%);width:38px;height:40px;display:grid;place-items:center;z-index:2;cursor:pointer}
+.wplus i{width:22px;height:22px;border-radius:50%;background:var(--round);border:1px solid rgb(255 255 255/.22);display:grid;place-items:center;opacity:.55;transition:opacity .12s,background .12s}
+.wplus svg{width:11px;height:11px;color:var(--white)}
+.wplus:hover i{opacity:1;background:var(--lime);border-color:transparent}
+.wplus:hover svg{color:var(--ink)}
+/* I due comandi del collegamento (versione 24): il «+» infila un passo in mezzo, la «×» toglie il collegamento.
+   La «×» si vede solo quando il mouse e' sul filo — se no ogni connettore porterebbe due cerchi, che a otto
+   collegamenti fanno sedici pastiglie su un disegno che deve restare quello del riferimento. */
+.warcz{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:2px;z-index:2}
+.warcz .wplus{position:static;transform:none}
+.warcz .wdel{width:38px;height:40px;display:grid;place-items:center;cursor:pointer;opacity:0;transition:opacity .12s}
+.warcz:hover .wdel{opacity:1}
+.warcz .wdel i{width:22px;height:22px;border-radius:50%;background:var(--round);border:1px solid rgb(255 255 255/.22);display:grid;place-items:center}
+.warcz .wdel:hover i{background:var(--white);border-color:transparent}
+.warcz .wdel svg{width:11px;height:11px;color:var(--white)}
+.warcz .wdel:hover svg{color:var(--ink)}
+/* ---- Il grafo (versione 24) ----
+   Dalla decisione 64 il canvas della prossima volta non e' piu' una catena disposta da sola: e' un **grafo** con
+   posizioni libere, fan-out e fan-in illimitati, e il significato **sul connettore**. Quello che cambia nel CSS e'
+   soltanto quello che il grafo aggiunge — la cornice che si scala («.wzoom»), le due prese del nodo («.wio»),
+   l'etichetta sul collegamento («.warcl»), la mini-mappa («.wmini») e i comandi dello zoom («.wzoombar»).
+   Nodo, griglia puntinata, porte con l'etichetta e bagliore restano quelli del riferimento. */
+.wcanvas.comp{cursor:grab}
+.wcanvas.comp.trascina{cursor:grabbing}
+/* La cornice che si scala: «transform», non «zoom». La regola 17 vietava due zoom annidati perche' litigano — ed
+   e' vero per «zoom»; misurato: «transform: scale()» compone esattamente (nodo 208 -> 312 a 1,5x, -> 124,8 a 0,6x,
+   a 1440, 1920 e 1024) e le tendine »position:fixed« restano al bordo dello schermo. La griglia sta **dentro**, cosi'
+   i punti si scalano con i nodi e l'aggancio a 18 px continua a cadere sui punti che si vedono. */
+.wcanvas .wzoom{position:absolute;left:0;top:0;transform-origin:0 0}
+.wcanvas .wzoom .grid{inset:0}
+/* Le due prese del nodo: da quella di destra si tira un collegamento, in quella di sinistra lo si lascia. Sono la
+   stessa pastiglia delle porte del riferimento (10 px, lime, bagliore), messa sul fianco invece che sotto. */
+.wio{position:absolute;width:11px;height:11px;border-radius:50%;background:rgb(255 255 255/.22);border:1px solid rgb(255 255 255/.30);box-sizing:border-box;transform:translate(-50%,-50%);z-index:5;cursor:crosshair}
+.wio.usc{background:var(--lime);border-color:transparent;box-shadow:0 0 10px rgb(184 252 100/.55)}
+.wio:hover{background:var(--lime);border-color:transparent;box-shadow:0 0 16px rgb(184 252 100/.85);width:15px;height:15px}
+.wio.ent{cursor:default}
+.wcanvas.collega .wio.ent{cursor:crosshair;background:var(--lime);box-shadow:0 0 12px rgb(184 252 100/.6)}
+/* Il collegamento che si sta tirando: lo stesso filo, tratteggiato finche' non ha un capo. */
+.wcanvas .edges path.tira{fill:none;stroke:var(--lime);stroke-width:2.2;stroke-dasharray:6 5;opacity:.85}
+.wcanvas .edges path.arc.se{stroke-dasharray:9 6}
+.wcanvas .edges path.arc.insieme{stroke-width:3.4}
+/* L'errore **non cambia colore**: l'emendamento dell'8 settembre ha portato al lime l'unico secondo accento che
+   restava nel repository, e rimetterne uno qui — il rosa degli errori — lo riaprirebbe. Il significato lo dice
+   l'etichetta sul collegamento (decisione 65), la tinta resta una sola: il tratteggio fine dice «e' una strada
+   che si prende solo se qualcosa va storto», la parola dice quale. */
+.wcanvas .edges path.arc.errore{stroke-dasharray:2 5;opacity:.75}
+.wcanvas .edges path.arc.scelto{stroke-width:3.6}
+.wcanvas .edges path.presa{fill:none;stroke:transparent;stroke-width:16;pointer-events:stroke;cursor:pointer}
+/* L'etichetta sul collegamento: e' li' che sta il significato (decisione 65), non nelle porte del nodo. La pillola
+   e' la ».wtag« gia' disegnata, rimpicciolita: nessun componente nuovo. */
+.warcl{position:absolute;transform:translate(-50%,-50%);height:20px;display:inline-flex;align-items:center;gap:5px;padding:0 8px;border-radius:9999px;background:var(--round);border:1px solid rgb(255 255 255/.16);font-size:10px;line-height:20px;color:var(--t2);white-space:nowrap;z-index:3;cursor:pointer;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.warcl:hover{border-color:var(--lime);color:var(--lime)}
+.warcl.se{color:var(--lime);border-color:rgb(184 252 100/.45)}
+.warcl.errore{color:var(--t2-light);border-color:rgb(255 255 255/.28)}
+/* Il nodo d'innesco, in testa (idea dell'utente, decisione 66): n8n da' al trigger l'angolo arrotondato: qui il
+   fianco sinistro diventa un semicerchio da 36 px, come nel loro canvas, e la presa d'entrata non c'e' — prima
+   dell'innesco non c'e' lavoro. */
+.wnode.inn{border-radius:44px 18px 18px 44px;padding-left:16px}
+.wnode.inn .nic{border-radius:50%;background:var(--lime)}
+.wnode.inn .nic svg{color:var(--ink)}
+.wnode.inn.on .nic{background:var(--lime)}
+/* Il nodo scelto quando ce n'e' piu' d'uno (selezione multipla): l'anello lime senza i campi aperti. */
+.wnode.mult{border-color:var(--lime);box-shadow:0 0 0 1px var(--lime),0 0 26px rgb(184 252 100/.18)}
+.wnode.presa{cursor:grab}
+.wnode.presa:active{cursor:grabbing}
+/* I comandi dello zoom e la mini-mappa: il secondo riferimento ce li ha tutti e due. */
+.wzoombar{position:absolute;right:16px;bottom:78px;display:flex;align-items:center;gap:6px;z-index:6}
+.wzoombar .rb{width:32px;height:32px;background:rgb(10 10 10/.72);backdrop-filter:blur(10px)}
+.wzoombar .rb svg{width:13px;height:13px}
+.wzoombar .zv{height:32px;padding:0 10px;border-radius:9999px;background:rgb(10 10 10/.72);backdrop-filter:blur(10px);border:1px solid rgb(255 255 255/.14);font-size:11px;color:var(--t2);display:flex;align-items:center;cursor:pointer}
+.wmini{position:absolute;left:16px;bottom:78px;width:200px;height:120px;border-radius:14px;background:rgb(10 10 10/.72);backdrop-filter:blur(10px);border:1px solid rgb(255 255 255/.12);z-index:6;overflow:hidden;cursor:pointer}
+.wmini i{position:absolute;background:rgb(255 255 255/.28);border-radius:2px}
+.wmini i.tit{background:rgb(255 255 255/.5)}
+.wmini i.inn{background:var(--lime);opacity:.75}
+.wmini b{position:absolute;border:1px solid var(--lime);border-radius:3px;background:rgb(184 252 100/.10);pointer-events:none}
+/* La barra del canvas quando si compone: il conto a sinistra, gli acceleratori al centro. */
+.wbar .azioni-b .pill.picc{height:32px;padding:0 12px;font-size:12px}
+.wsc{position:absolute;left:16px;top:16px;z-index:6;display:flex;gap:6px;align-items:center;font-size:11px;color:var(--t2)}
+.wsc .chip{height:24px;font-size:11px}
 `;
+
+  /* Quattro colonne, non cinque (versione 21). Il consiglio aveva concesso al canvas l'eccezione alla banda
+     riservata perche' la stima diceva «togliendo la banda si passa da 5 colonne a 3, e il workflow di Sviluppo
+     cresce del 41 %». La stima toglieva 354 px; la banda vera ne toglie 304, e il passo fra i nodi bastava
+     stringerlo di 6 px: 36·2 + 3·242 + 208 = **1006 px**, dentro i 1008 della colonna. Misurato il prezzo vero:
+     **un workflow su sei cresce di 210 px a undici, due su ventisei a quaranta**. Niente eccezione, quindi:
+     nessuna pagina larga, nessun nodo che nasce sotto la tendina, e il prodotto resta uno. */
+  /* ---- Il passo della griglia (versione 24: 234x216, non 242x210) ----
+     Il canvas aggancia i nodi ogni **18 px**, che sono i punti della griglia puntinata: i nodi cadono sui punti
+     che si vedono. Ma il passo della disposizione — 242x210 — **non era un multiplo di 18**, quindi un nodo
+     appena disposto (o appena riordinato) stava fra i punti, e uno trascinato ci cadeva sopra: due regole diverse
+     per la stessa cosa, e una prova che non poteva passare. 234 = 13x18 e 216 = 12x18 le mettono d'accordo.
+     La colonna riservata regge lo stesso: 36x2 + 3x234 + 208 = **982 px** dentro i 1008 (prima erano 1006). */
+  const W_COL = 4, W_PX = 234, W_PY = 216, W_PAD = 36, W_W = 208, W_H = 96;
+  /* ---- Quanto e' alto un nodo, e dove finisce quello che gli sta sotto (versione 22) ----
+     Difetto trovato misurando, ed e' della versione 20: **il nodo aperto copriva per intero il nodo sotto di se'**
+     — 18 096 px², cioe' 208×87, tutta la sua superficie. Il canvas aggiungeva 168 px in fondo, dove non servivano,
+     invece di spostare in giu' le righe seguenti. Con una figura da leggere era gia' sbagliato; con una figura da
+     **comporre** e' insostenibile, perche' il gesto che si usa di piu' e' proprio aprire un nodo.
+     Adesso le righe sotto quella del nodo aperto scendono di quanto il nodo cresce. L'altezza si calcola qui, con
+     le costanti che rispecchiano il CSS, e una prova verifica che il conto e la resa coincidano su ogni nodo di
+     ogni workflow: se il CSS cambia, la prova se ne accorge invece di lasciar tornare le sovrapposizioni. */
+  const W_H_CHIUSO = 87;              /* 12+33+8+20+12 di riempimento e figli, piu' i due bordi */
+  const W_FL = 20, W_FV = 32, W_GAP = 6, W_CAMPI_SU = 9;   /* etichetta, valore, spazio fra loro, bordo + spazio in cima */
+  const W_AZ = 39;                    /* la riga delle azioni del gesto A: bordo, spazio, cerchi da 28 */
+  const altNodo = (nd, on, ramo) => {
+    if (!on) return W_H_CHIUSO;
+    const righe = nd.titolare
+      ? [W_FL, W_FV, W_FL, W_FV]                                  /* regola, firma anticipata */
+      : nd.innesco
+        ? [W_FL, W_FV, W_FL, W_FV]                                /* quando parte, permesso */
+        : [W_FL, W_FV].concat(                                     /* modello */
+            [W_FL], (nd.strumenti && nd.strumenti.length ? nd.strumenti : ['x']).map(() => W_FV),
+            nd.esito ? [W_FL, W_FV] : []);
+    const campi = W_CAMPI_SU + righe.reduce((t, h) => t + h, 0) + W_GAP * (righe.length - 1);
+    const az = !nd.titolare && ramo ? W_GAP + 2 + W_AZ : 0;
+    return W_H_CHIUSO + 8 + campi + az;
+  };
+  /* La spinta: di quanto scendono le righe sotto quella del nodo aperto. Vale solo per «l'ultima volta», dove le
+     posizioni le calcola la serpentina; nel grafo le posizioni sono dell'utente e non le sposta nessuno. */
+  const spintaDi = (nodi, sel, ramo) => {
+    const i = nodi.findIndex(nd => nd.n === sel);
+    if (i < 0) return { riga: -1, px: 0 };
+    return { riga: Math.floor(i / W_COL), px: Math.max(0, altNodo(nodi[i], true, ramo) - W_H_CHIUSO) };
+  };
+  const wpos = (i, sp, nd) => {
+    /* Nel grafo la posizione la porta il nodo (versione 23: e' libera, la sposta l'utente). Nell'ultima volta la
+       calcola la serpentina, come sempre: quello che e' avvenuto non si dispone. */
+    if (nd && nd.x !== undefined) return { x: nd.x, y: nd.y, r: -1, c: -1 };
+    const r = Math.floor(i / W_COL); const c = r % 2 ? W_COL - 1 - (i % W_COL) : i % W_COL;
+    const giu = sp && sp.riga >= 0 && r > sp.riga ? sp.px : 0;
+    return { x: W_PAD + c * W_PX, y: W_PAD + r * W_PY + giu, r, c };
+  };
+  /* ---- La geometria di un collegamento (versione 24) ----
+     Esce dal fianco destro del nodo che parte, entra nel fianco sinistro del nodo che arriva, sempre all'altezza
+     del nodo **chiuso** (43,5 px). Cosi' un nodo che si apre non fa saltare i suoi collegamenti: le posizioni si
+     calcolano prima di stampare, mai misurando la pagina dopo averla disegnata (regola del canvas, versione 20).
+     Quando il nodo d'arrivo sta **a sinistra** di quello di partenza — e con le posizioni libere succede — il filo
+     esce a destra, gira e rientra da sinistra: e' la forma che n8n da' ai ritorni, e senza di essa un arco
+     all'indietro passerebbe dritto sopra i due nodi. */
+  const W_MEZZO = W_H_CHIUSO / 2;
+  const arcoVia = (a, b) => {
+    const x1 = a.x + W_W, y1 = a.y + W_MEZZO, x2 = b.x, y2 = b.y + W_MEZZO;
+    if (x2 >= x1 + 24) {
+      const d = Math.max(38, Math.min(150, (x2 - x1) * 0.55));
+      return { d: 'M' + x1 + ' ' + y1 + ' C ' + (x1 + d) + ' ' + y1 + ', ' + (x2 - d) + ' ' + y2 + ', ' + x2 + ' ' + y2, mx: (x1 + x2) / 2, my: (y1 + y2) / 2 };
+    }
+    /* Il ritorno **di riga**: il nodo d'arrivo sta a sinistra ma piu' in basso — e' il capoverso del disegno. Una
+       S sola, con le maniglie tenute dentro la colonna (1008 px) perche' il canvas non scorre di lato e quello che
+       esce dal bordo lo taglia `overflow:hidden`. */
+    if (Math.abs(y2 - y1) >= 12) {
+      /* La maniglia non va tenuta dentro la colonna: misurato, una S da (970, 79) a (36, 289) con maniglia 110
+         sfonda a destra di **6 px** soli, perche' il punto d'arrivo tira la curva subito a sinistra. Tenerla corta
+         faceva una diagonale dritta, che di una curva non ha niente: misurato, con maniglia 250 il punto piu' a
+         destra della curva e' **996 px** e il piu' a sinistra **10**, cioe' dentro la colonna da 1008. */
+      const h = Math.max(40, Math.min(150, (x1 - x2) * 0.18));
+      return { d: 'M' + x1 + ' ' + y1 + ' C ' + (x1 + h) + ' ' + y1 + ', ' + (x2 - h) + ' ' + y2 + ', ' + x2 + ' ' + y2,
+               mx: (x1 + x2) / 2, my: (y1 + y2) / 2 };
+    }
+    /* Il ritorno **sulla stessa riga**: dritto passerebbe sopra i due nodi, quindi scende e rientra da sotto —
+       la forma che n8n da' ai suoi anelli. */
+    const h = Math.min(90, Math.max(40, (x1 - x2) * 0.2));
+    const my = Math.max(y1, y2) + 92, mx = (x1 + x2) / 2;
+    return { d: 'M' + x1 + ' ' + y1 + ' C ' + (x1 + h) + ' ' + y1 + ', ' + (mx + h) + ' ' + my + ', ' + mx + ' ' + my
+              + ' C ' + (mx - h) + ' ' + my + ', ' + (x2 - h) + ' ' + y2 + ', ' + x2 + ' ' + y2, mx, my };
+  };
+  const ICONA_NODO = { rapido: 'i-bolt', standard: 'i-bot', esperto: 'i-star' };
+  /* Il numero del passo non e' piu' un identificatore: in un grafo due rami che partono dallo stesso nodo portano
+     **lo stesso numero** (sono lo stesso momento del lavoro). Quindi nel grafo il nodo si sceglie dal suo `id`, e
+     nell'ultima volta — che e' una catena — dal numero, come prima. */
+  const nodoScelto = (nd, sel, ramo) => (ramo ? String(sel) === String(nd.id) : sel === nd.n);
+  /* ---- Il flag `soloLettura` (versione 27, decisione 72) ----
+     Il telefono mostra **lo stesso canvas** della Console, ma non lo compone: si guarda e si firma. Il flag non e'
+     una seconda resa — e' lo stesso disegno con i **gesti spenti**: niente prese, niente «+» sull'arco, niente
+     «x», niente trascinamento del nodo, niente «Riordina» ne' «Aggiungi». Restano il nodo che si apre (che e'
+     lettura: dice modello, strumenti ed esito), lo zoom e lo spostamento della vista. Cosi' non ci sono due
+     canvas da tenere allineati: c'e' un canvas e un interruttore. */
+  function nodoWorkflow(m, w, nd, i, sel, ramo, tot, sp, multi, sl) {
+    const p = wpos(i, sp, nd);
+    const on = nodoScelto(nd, sel, ramo);
+    const inMulti = ramo && multi.length > 1 && multi.indexOf(nd.id) >= 0;
+    const compone = ramo && !sl;
+    const cls = (nd.innesco ? 'wnode inn' : nd.titolare ? 'wnode tit' + (nd.stato === 'attesa' ? ' att' : '') : 'wnode')
+      + (on ? ' on' : '') + (inMulti ? ' mult' : '') + (compone ? ' presa' : '');
+    const icona = nd.innesco ? 'i-bolt' : nd.titolare ? 'i-hand' : ICONA_NODO[nd.modello] || 'i-bot';
+    const clau = nd.innesco ? (m.RAMO_CLAUSOLE.find(c => c.id === nd.clausola) || m.RAMO_CLAUSOLE[1]) : null;
+    const sotto = nd.innesco ? esc(nd.testo) : nd.titolare ? esc(nd.regola) : `Passo ${nd.n} · ${esc(nd.modello)}`;
+    /* Le azioni del nodo aperto (decisione 64: «il nodo aperto e' l'editor»). Stanno dentro il nodo, sotto i suoi
+       campi, e ci sono solo nella prossima volta — l'ultima volta e' successa e non si modifica. Il nodo del
+       titolare non si scavalca, non si sposta e non si toglie: il divieto sta nel modello, non nel gesto. */
+    const azA = on && compone && !nd.titolare ? `<div class="azioni-n">
+        <span class="rb pieno" data-az="ramo-aggiungi" data-id="${esc(nd.id)}" title="Aggiungi un passo dopo questo">${ic('i-plus')}</span>
+        <span class="rb"${!nd.innesco && tot > 3 ? ` data-az="ramo-togli" data-id="${esc(nd.id)}"` : ' aria-disabled="true"'} title="Toglilo">${ic('i-x')}</span>
+      </div>` : '';
+    const campi = on && !nd.titolare && !nd.innesco ? `<div class="campi">
+        <span class="fl">Modello</span><span class="fv"${compone ? ` data-az="ramo-modello" data-id="${esc(nd.id)}" title="Cambia il modello"` : ''}><span>${esc((m.MODELLI[nd.modello] || {}).nome || nd.modello)}</span>${ic('i-chev')}</span>
+        <span class="fl">Strumenti</span>${(nd.strumenti.length ? nd.strumenti : ['Nessuno']).map(s => `<span class="fv"><span>${esc(s)}</span>${ic('i-chev')}</span>`).join('')}
+        ${nd.esito ? `<span class="fl">Esito dell'ultima volta</span><span class="fv"><span>${esc(nd.esito)}</span></span>` : ''}
+      </div>${azA}` : '';
+    /* Il nodo d'innesco apre due campi soli: quando parte, e il permesso. Il permesso e' la `clausola` che il
+       modello ha gia' (decisione 66): chi autorizza in testa non deve far convergere i rami in coda. */
+    const campiInn = on && nd.innesco ? `<div class="campi">
+        <span class="fl">Quando parte</span><span class="fv"><span>${esc(nd.testo)}</span></span>
+        <span class="fl">Permesso</span><span class="fv"${compone ? ` data-az="ramo-clausola" data-id="${esc(nd.id)}" title="${esc(clau.desc)}"` : ''}><span>${esc(clau.nome)}</span>${ic('i-chev')}</span>
+      </div>${azA}` : '';
+    const campiTit = on && nd.titolare ? `<div class="campi">
+        <span class="fl">Regola che ferma qui la consegna</span><span class="fv"><span>${esc(nd.regola)}</span>${ic('i-chev')}</span>
+        <span class="fl">Firma anticipata</span><span class="fv"><span>${w.firma ? 'Accesa' : 'Spenta — ogni uscita passa da te'}</span>${ic('i-chev')}</span>
+      </div>` : '';
+    /* Il piede. Nella prossima volta non porta numeri: di un passo che deve ancora succedere non si sa ne' il
+       costo ne' la durata. **E nell'ultima volta nemmeno** (versione 24): fino a ieri un passo `da fare` stampava
+       la sua **stima** sotto la parola «misurati» — 33,20 € su 71,20 nel primo workflow. Adesso dice «non ancora»,
+       che e' la verita' e non costa un numero inventato. */
+    const piede = nd.innesco
+      ? `<span>${esc(ramo ? clau.nome.toLowerCase() : nd.testo)}</span>`
+      : nd.titolare
+        ? `<span>${esc(ramo ? 'aspetterà la tua firma' : nd.quando || 'non ancora consegnata')}</span>`
+        : ramo
+          ? `<span>${nd.nato ? 'passo nuovo' : 'come l\'ultima volta'}</span>`
+          : nd.stato === 'da fare'
+            ? `<span>non ancora${nd.stima ? ' · ≈ ' + esc(nd.stima) : ''}</span>`
+            : `<span>${esc(nd.durata || '—')}</span><span class="eur">${eur(nd.costo)}</span>`;
+    return `<div class="${cls}" style="left:${p.x}px;top:${p.y}px" data-az="nodo" data-n="${nd.n}"${nd.id ? ` data-id="${esc(nd.id)}"` : ''} title="${esc(nd.nome)}">
+      <div class="hd"><span class="nic">${ic(icona)}</span><div class="tt"><b>${esc(nd.nome)}</b><span>${sotto}</span></div></div>
+      <div class="ft">${piede}</div>
+      ${campi}${campiInn}${campiTit}</div>`;
+  }
+  /* ---- Le misure del disegno (versione 27) ----
+     Dove comincia e dove finisce il grafo, in coordinate del canvas. Serve allo scatto «tutto dentro» del
+     telefono (decisione 73) e alle prove: e' un conto sulle posizioni, **non** una posizione ricalcolata —
+     regola 42, le posizioni sono dati del titolare e non le tocca nessuno. */
+  function canvasMisure(m, w, ramo) {
+    const nodi = ramo ? m.ramoDi(w).nodi : w.nodi;
+    const pos = nodi.map((nd, i) => wpos(i, { riga: -1, px: 0 }, ramo ? nd : null));
+    const sinistra = Math.min(...pos.map(p => p.x)), destra = Math.max(...pos.map(p => p.x)) + W_W;
+    const alto = Math.min(...pos.map(p => p.y)), basso = Math.max(...pos.map(p => p.y)) + W_H_CHIUSO;
+    return { sinistra, destra, alto, basso, largo: destra - sinistra, alto_: basso - alto };
+  }
+  /* Lo scatto d'ingresso «tutto dentro» (decisione 73): l'ingrandimento che fa stare **tutto il grafo** nella
+     larghezza che si ha, e lo spostamento che ne appoggia il fianco sinistro al bordo. Sul telefono la larghezza
+     utile e' 278,4 px e il grafo ne misura 910: 278,4 / 910 = **0,306**. Non e' una disposizione nuova — e' la
+     stessa, guardata da piu' lontano. */
+  const canvasTuttoDentro = (m, w, ramo, vista) => {
+    const q = canvasMisure(m, w, ramo);
+    const z = Math.min(1, vista / q.largo);
+    return { zoom: z, pan: { x: -q.sinistra * z, y: 0 } };
+  };
+  /* Lo stringimento della vista, scritto una volta sola: lo usano `canvasWorkflow` per stampare, la seconda
+     scala qui sotto e i gesti del telefono. Se stessero in tre posti finirebbero per dire tre cose. */
+  const canvasStringi = (px, z, vista) => Math.max(Math.min(0, px), Math.min(0, vista - 1008 * z));
+  /* La seconda scala (decisione 73): scala 1 centrata su un nodo. È lo stato in cui porta il tocco sul telefono,
+     ed è anche quello in cui `?nodo=` apre la pagina — un indirizzo e un dito devono lasciare lo stesso schermo,
+     se no la cattura non è la schermata. La posizione del nodo si legge da dov'è: nel grafo la porta il nodo
+     (regola 42), nell'ultima volta la calcola la serpentina. */
+  const canvasSuNodo = (m, w, ramo, chiave, vista) => {
+    const nodi = ramo ? m.ramoDi(w).nodi : w.nodi;
+    const i = nodi.findIndex(nd => (ramo ? String(nd.id) === String(chiave) : String(nd.n) === String(chiave)));
+    if (i < 0) return null;
+    const p = wpos(i, { riga: -1, px: 0 }, ramo ? nodi[i] : null);
+    return { zoom: 1, pan: { x: canvasStringi(vista / 2 - (p.x + W_W / 2), 1, vista), y: 0 } };
+  };
+  /* opz = { soloLettura, vista (la larghezza che si vede, 1008 nella Console), barra, chips, mappa } */
+  function canvasWorkflow(m, w, sel, ramo, zoom, multi, pan, opz) {
+    /* ---- Un canvas, due tempi (versione 22), e dalla 24 due **forme** ----
+       «L'ultima volta» e' una catena avvenuta: la serpentina la dispone da sola, gli archi vanno da un nodo al
+       seguente, e non si tocca. «La prossima volta» e' il **grafo** che l'utente ha chiesto: posizioni libere,
+       archi da `G.archi`, fan-out e fan-in illimitati, il significato sul collegamento e il nodo d'innesco in
+       testa. Le due strade condividono nodo, griglia, porte e barra: e' lo stesso canvas, non due disegni. */
+    const G = ramo ? m.ramoDi(w) : null;
+    const nodiFonte = ramo ? G.nodi : w.nodi;
+    const wOrig = w;
+    w = Object.assign({}, w, { nodi: nodiFonte });
+    const n = w.nodi.length;
+    const righe = Math.ceil(n / W_COL);
+    const sp = ramo ? { riga: -1, px: 0 } : spintaDi(w.nodi, sel, ramo);
+    opz = opz || {};
+    const sl = !!opz.soloLettura;                 /* il telefono: si guarda, non si compone (decisione 72) */
+    const compone = ramo && !sl;
+    const vista = opz.vista || 1008;              /* quanta larghezza si vede: 1008 nella Console, 278,4 sul telefono */
+    const conBarra = opz.barra !== false, conChips = opz.chips !== false, conMappa = opz.mappa !== false;
+    /* ---- Lo zoom vale su tutte e due le tab (versione 27, decisione 72) ----
+       Fino alla 26 era `ramo ? zoom : 1`: «L'ultima volta» — la tab dove stanno i costi, le durate e «aspetta la
+       tua firma» — era a scala fissa, senza zoom e senza mappa. Se il telefono entra a 0,306 su una tab sola, la
+       stessa pagina avrebbe due misure: qui lo zoom e' del canvas, non della tab. */
+    const z = zoom || 1;
+    /* Quanto e' alto il contenuto: nel grafo lo dice il nodo piu' in basso (le posizioni sono libere, il canvas
+       cresce dietro a quello che l'utente ha disegnato), nell'ultima volta le righe della serpentina. 78: le porte
+       sotto l'ultima riga. La barra in fondo (62) sta **fuori** dalla cornice che si scala: e' un comando, non
+       disegno, e non si rimpicciolisce con lo zoom. */
+    const basso = ramo
+      ? Math.max(...w.nodi.map(nd => nd.y + altNodo(nd, nodoScelto(nd, sel, ramo), ramo))) + 78 + W_PAD
+      : W_PAD * 2 + (righe - 1) * W_PY + W_H + 78 + sp.px;
+    const alt = Math.round(basso * z) + (conBarra ? 62 : 0);
+    const nodi = w.nodi.map((nd, i) => nodoWorkflow(m, w, nd, i, sel, ramo, n, sp, multi || [], sl)).join('');
+    /* Le porte del riferimento: sotto ogni nodo che non e' il titolare, una per il modello e una per ogni
+       strumento. Spente quando il passo non e' ancora stato fatto: una porta accesa dice che quello strumento e'
+       stato davvero usato. Nel grafo l'innesco non ne ha — non usa modelli, dice quando si comincia. */
+    const porte = w.nodi.map((nd, i) => {
+      if (nd.titolare || nd.innesco) return '';
+      const p = wpos(i, sp, nd);
+      const giu = nodoScelto(nd, sel, ramo) ? altNodo(nd, true, ramo) - W_H_CHIUSO : 0;
+      const corta = t => { const w0 = String(t).split(/[ ·]/)[0]; return w0.length > 11 ? w0.slice(0, 10) + '…' : w0; };
+      const voci = [['Modello', true], ...nd.strumenti.slice(0, 2).map(s => [corta(s), true])];
+      const spenta = ramo || nd.stato === 'da fare';
+      return voci.map((v, k) => {
+        const x = p.x + 34 + k * 62, y = p.y + W_H + giu;
+        return `<span class="wport${spenta ? ' off' : ''}" style="left:${x}px;top:${y}px"></span><span class="wplab" style="left:${x}px;top:${y + 8}px">${esc(v[0])}</span>`;
+      }).join('');
+    }).join('');
+    /* ---- Gli archi ---- */
+    let archi = '', prese = '', etic = '', piu = '', io = '', fuori = '';
+    if (ramo) {
+      const perId = {}; w.nodi.forEach(nd => { perId[nd.id] = nd; });
+      const TIPI = {}; m.RAMO_TIPI.forEach(t => { TIPI[t.id] = t; });
+      G.archi.forEach(a => {
+        const da = perId[a.da], ab = perId[a.a];
+        if (!da || !ab) return;
+        const v = arcoVia(da, ab), tipo = a.tipo || 'poi';
+        archi += `<path class="arc ${tipo}" data-arco="${esc(a.id)}" data-da="${esc(a.da)}" data-a="${esc(a.a)}" d="${v.d}"/>`;
+        /* il bersaglio del clic e' un tratto invisibile largo 16 px sopra il filo: un filo da 2,2 px non si prende */
+        if (!sl) prese += `<path class="presa" data-az="ramo-tipo" data-arco="${esc(a.id)}" data-da="${esc(a.da)}" data-a="${esc(a.a)}" d="${v.d}"><title>${esc(TIPI[tipo].nome + ' — ' + TIPI[tipo].desc)}</title></path>`;
+        /* L'etichetta sta **sul collegamento**, ed e' li' che vive il significato (decisione 65): il nodo non
+           cresce di porte, e il fan-out illimitato resta gratis. «poi» non si stampa: e' il caso di tutti gli
+           archi di partenza (8 su 8), e scriverlo otto volte sarebbe rumore, non informazione. */
+        if (tipo !== 'poi') etic += `<span class="warcl ${tipo}" style="left:${v.mx}px;top:${v.my - 20}px"${sl ? '' : ` data-az="ramo-tipo" data-arco="${esc(a.id)}"`} title="${esc(TIPI[tipo].desc)}">${esc(TIPI[tipo].nome)}${a.se ? ' ' + esc(a.se) : ''}</span>`;
+        /* I due comandi del collegamento: il «+» (acceleratore 3 di n8n) infila un passo in mezzo, la «×» toglie
+           il collegamento — senza di lei `ramoScollega` non aveva nessun gesto che la chiamasse. Il bersaglio e'
+           38x40 px sul punto di mezzo del filo; il resto del filo (16 px di presa) gira fra i quattro
+           significati, e l'etichetta sta 20 px piu' su, per non finire sotto i due cerchi. */
+        if (!sl) piu += `<span class="warcz" style="left:${v.mx}px;top:${v.my}px"><span class="wplus" data-az="ramo-inserisci" data-arco="${esc(a.id)}" title="Infila un passo qui"><i>${ic('i-plus')}</i></span><span class="wdel" data-az="ramo-scollega" data-arco="${esc(a.id)}" title="Togli il collegamento"><i>${ic('i-x')}</i></span></span>`;
+      });
+      /* Le due prese di ogni nodo: da quella di destra si tira un collegamento nuovo, in quella di sinistra lo si
+         lascia. L'innesco non ha entrata (prima di lui non c'e' lavoro) e il titolare non ha uscita (dopo la firma
+         non c'e' altro lavoro): sono i due divieti del modello, disegnati. */
+      if (!sl) w.nodi.forEach(nd => {
+        if (!nd.innesco) io += `<span class="wio ent" data-porta="ent" data-id="${esc(nd.id)}" style="left:${nd.x}px;top:${nd.y + W_MEZZO}px"></span>`;
+        if (!nd.titolare) io += `<span class="wio usc" data-az="ramo-tira" data-porta="usc" data-id="${esc(nd.id)}" style="left:${nd.x + W_W}px;top:${nd.y + W_MEZZO}px" title="Tira un collegamento da qui"></span>`;
+      });
+      /* I rami che **non escono dall'azienda**: con il permesso «chiedi prima di consegnare» un ramo che non
+         arriva alla firma resta dentro, e la pagina lo **dice** invece di vietarlo (nessuna validazione impone la
+         convergenza: era il timore dell'utente, e non era fondato). */
+      const esce = m.ramoEsce(wOrig);
+      fuori = esce.fuori.map(nd => `<span class="wtag" style="left:${nd.x + W_W / 2}px;top:${nd.y - 14}px" title="Questo ramo non arriva alla tua firma: quello che produce resta in azienda">${ic('i-hand')}resta in azienda</span>`).join('')
+        /* Con il permesso in testa gli stessi rami **escono**, senza passare dalla coda. Prima il canvas taceva
+           proprio qui (decisione 71): cambiando il permesso i tag sparivano e non restava niente a dire che quel
+           ramo consegnava da solo. Adesso lo dice, e dice entro che cosa. */
+        + esce.anticipata.map(nd => `<span class="wtag" style="left:${nd.x + W_W / 2}px;top:${nd.y - 14}px" title="Questo ramo consegna senza passare dalla coda: lo autorizza il permesso in testa, entro i tre freni">${ic('i-bolt')}esce senza la tua firma</span>`).join('');
+    } else {
+      archi = w.nodi.slice(0, -1).map((nd, i) => {
+        const a = wpos(i, sp), b = wpos(i + 1, sp);
+        const suc = w.nodi[i + 1];
+        const cls = suc.titolare && suc.stato === 'attesa' ? 'arc att' : nd.stato === 'da fare' ? 'arc off' : 'arc';
+        if (a.r === b.r) {
+          const x1 = a.x + W_W, y1 = a.y + W_H / 2, x2 = b.x, y2 = b.y + W_H / 2;
+          return `<path class="${cls}" d="M${x1} ${y1} C ${x1 + 22} ${y1}, ${x2 - 22} ${y2}, ${x2} ${y2}"/>`;
+        }
+        const x1 = a.x + W_W / 2, y1 = a.y + W_H, x2 = b.x + W_W / 2, y2 = b.y;
+        return `<path class="${cls}" d="M${x1} ${y1} C ${x1} ${y1 + 74}, ${x2} ${y2 - 74}, ${x2} ${y2}"/>`;
+      }).join('');
+    }
+    /* L'etichetta sull'arco che entra nel titolare: e' il numero che il canvas era stato scelto per far vedere —
+       dove il lavoro si ferma ad aspettare una firma. */
+    const ult = w.nodi[w.nodi.length - 1];
+    const pb = wpos(w.nodi.length - 1, sp, ramo ? ult : null);
+    const tag = !ramo && ult.stato === 'attesa'
+      ? `<span class="wtag lime" style="left:${pb.x + W_W / 2}px;top:${pb.y - 15}px">${ic('i-bell')}aspetta la tua firma</span>` : '';
+    /* ---- La mini-mappa (acceleratore 4) ----
+       200x120 come quella di n8n. Non e' una figura: e' l'unico modo di sapere dove si e' quando il grafo esce
+       dalla cornice, ed e' il secondo riferimento ad averla. Ogni nodo e' un rettangolo in scala, e il riquadro
+       lime e' quello che si vede adesso. */
+    /* La mini-mappa **compare quando serve** e non prima: n8n la fa comparire e sparire dopo 1 s, qui la regola e'
+       che c'e' quando c'e' qualcosa da non vedere — il grafo ingrandito, o piu' alto della schermata. Cosi' non
+       copre il disegno nei casi in cui il disegno si vede tutto. */
+    /* La cornice sul telefono e' larga 278,4 px: la mappa da 200x120 ci coprirebbe il disegno, quindi li' non
+       c'e' (`opz.mappa`). Nella Console vale su tutte e due le tab, come lo zoom. */
+    const serveMappa = conMappa && (z !== 1 || basso > 820);
+    const mini = serveMappa ? (() => {
+      const largo = 1008, altoC = basso;
+      const k = Math.min(198 / largo, 118 / altoC);
+      const q = w.nodi.map((nd, i) => { const p = wpos(i, sp, ramo ? nd : null); return `<i class="${nd.innesco ? 'inn' : nd.titolare ? 'tit' : ''}" style="left:${(1 + p.x * k).toFixed(1)}px;top:${(1 + p.y * k).toFixed(1)}px;width:${Math.max(3, W_W * k).toFixed(1)}px;height:${Math.max(2, W_H_CHIUSO * k).toFixed(1)}px"></i>`; }).join('');
+      const px0 = canvasStringi((pan && pan.x) || 0, z, vista);
+      const vw = Math.min(198, vista * k / z), vh = 118;
+      return `<div class="wmini" title="La mappa del flusso: il riquadro è quello che vedi">${q}<b style="left:${(1 + (-px0 / z) * k).toFixed(1)}px;top:1px;width:${vw.toFixed(1)}px;height:${vh.toFixed(1)}px"></b></div>`;
+    })() : '';
+    /* La barra dello zoom. Il tasto di mezzo dice l'ingrandimento e riporta allo **scatto d'ingresso**: nella
+       Console e' il 100 %, sul telefono e' «tutto dentro» (decisione 73), che li' e' lo stato in cui la pagina si
+       apre. Una parola sola, due significati veri: il tasto rimette le cose come le hai trovate. */
+    const zoomBar = `<div class="wzoombar">
+      <span class="rb" data-az="ramo-zoom" data-v="meno" title="Rimpicciolisci (−)">${ic('i-dn')}</span>
+      <span class="zv" data-az="ramo-zoom" data-v="uno" title="${sl ? 'Rimetti tutto dentro' : 'Torna al 100 % (0)'}">${Math.round(z * 100)} %</span>
+      <span class="rb" data-az="ramo-zoom" data-v="piu" title="Ingrandisci (+)">${ic('i-up')}</span>
+    </div>`;
+    /* Il conto in cima a sinistra: quanti passi, quanti collegamenti, quanti rami restano dentro. E' la riga che
+       legge il grafo, e sostituisce il nome che il gesto non ha. */
+    const passiRamo = ramo ? w.nodi.filter(nd => !nd.innesco && !nd.titolare).length : 0;
+    const esceC = ramo ? m.ramoEsce(wOrig) : null;
+    const fuoriN = esceC ? esceC.fuori.length : 0;
+    const antN = esceC ? esceC.anticipata.length : 0;
+    const cima = ramo && conChips ? `<div class="wsc"><span class="chip">${ic('i-rows')}${passiRamo} passi · ${G.archi.length} collegamenti</span>${fuoriN ? `<span class="chip">${ic('i-hand')}${fuoriN} ${fuoriN === 1 ? 'ramo resta' : 'rami restano'} in azienda</span>` : ''}${antN ? `<span class="chip">${ic('i-bolt')}${antN} ${antN === 1 ? 'ramo esce' : 'rami escono'} senza la tua firma</span>` : ''}${G.ciclo ? `<span class="chip">${ic('i-warn')}il flusso si chiude ad anello</span>` : ''}</div>` : '';
+    /* Lo spostamento della vista: serve quando il disegno ingrandito e' piu' largo di quello che si vede. Nella
+       Console e' 1008 px, e allora serve da 1,25x in su; sul telefono sono 278,4, e allora serve **sempre** —
+       sono i 632 px di scorrimento laterale che la decisione 72 ha accettato pur di non ricalcolare le posizioni
+       (regola 42). In verticale non serve: il canvas cresce in basso e il verticale lo fa la pagina. */
+    const px = canvasStringi((pan && pan.x) || 0, z, vista);
+    return `<div class="wcanvas${compone ? ' comp' : ''}${sl ? ' sl' : ''}" style="height:${alt}px" data-zoom="${z}" data-pan="${px}" data-vista="${vista}">
+      <div class="wzoom" style="width:1008px;height:${basso}px;transform:translate(${px}px,0) scale(${z})">
+        <div class="grid" aria-hidden="true"></div>
+        <svg class="edges" viewBox="0 0 1008 ${basso}" width="1008" height="${basso}" aria-hidden="true">${archi}<path class="tira" d="" style="display:none"/>${prese}</svg>
+        ${porte}${piu}${nodi}${etic}${io}${fuori}${tag}
+      </div>
+      ${cima}${mini}${zoomBar}
+      ${conBarra ? `<div class="wbar"><div class="tx"><b>${ramo ? `${n} nodi · l'innesco, ${passiRamo} passi e la tua firma` : `${n} nodi · ${n - 1} passi e la tua firma`}</b><span>${ramo ? `${esc(w.nome)} · ${esc(w.perimetro)} · quello che succederà la prossima volta: nessun costo misurato, perché non è ancora successo` : `${esc(w.nome)} · ${esc(w.perimetro)} · ${eur(w.costo)} · ${w.minuti} min, misurati sui passi già avvenuti`}</span></div>
+        ${compone ? `<div class="azioni-b">
+          <span class="pill picc" data-az="ramo-riordina" title="Rimetti in ordine il disegno (R)">${ic('i-grid')}Riordina</span>
+          <span class="pill picc" data-az="ramo-aggiungi" data-id="${esc((multi && multi.length === 1 ? multi[0] : '') || 'inn')}" title="Aggiungi un passo">${ic('i-plus')}Aggiungi</span>
+        </div>` : ''}
+        <span class="pill" data-az="pagina" data-pagina="esecuzione" data-id="${w.chi}">Vedi l'esecuzione ${ic('i-ne')}</span></div>` : ''}
+    </div>`;
+  }
 
   /* ---------- i componenti in HTML ---------- */
   const S = n => `<i></i>`.repeat(n);
@@ -349,5 +836,6 @@ window.DGT_COMPONENTI = (function () {
     return [L.join(''), R.join('')];
   }
 
-  return { css: prefissa(css, '.dirA'), variabili, av, pair, dots, chipStato, chipEsito, messaggio, iconaTipo, nomeTipo, eur, delta, differenze };
+  return { css: prefissa(css, '.dirA'), variabili, av, pair, dots, chipStato, chipEsito, messaggio, iconaTipo, nomeTipo, eur, delta, differenze,
+    canvasWorkflow, canvasMisure, canvasTuttoDentro, canvasSuNodo, canvasStringi, W_METRICHE: { COL: W_COL, PX: W_PX, PY: W_PY, PAD: W_PAD, W: W_W, H: W_H, H_CHIUSO: W_H_CHIUSO } };
 })();

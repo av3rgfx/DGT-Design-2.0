@@ -125,7 +125,7 @@ Urbanist (Google Fonts), pesi 300–600. I titoli non sono mai bold.
 | Card sfida | `#4D4D4D` r30, icona in cerchio contornato 80 (lime), testo 14/20 centrato; una lime |
 | Passo del processo | cerchio contornato 64 con icona + pillola `#4D4D4D` 64; il primo lime; frecce tratteggiate |
 | Editor a nodi (specimen, sezione 07) | rail di tessere 44 r14 (attiva lime luminosa), titolo 26 con percorso e tag rosso, tab a pillola, canvas puntinato 18, nodi 96 r18 con riflesso, nodo agente 208×100, nodo selezionato lime con i campi e il testo all'inchiostro, nodo disattivato con cestino, connettori `#B8FC64` con bagliore, mini-mappa, zoom, pillole in basso a destra, barra chat con ID monospazio |
-| **Canvas del workflow** (prodotto, versioni 20 e 24) | il precedente portato dentro la Console. Griglia puntinata 18 su `--dots-box`; nodi 208×96 r18 su `--card` con riflesso; porte 10 px con l'etichetta 10/14 sotto il nodo (spente se il passo non è ancora stato fatto); nodo aperto con l'orlo lime e i suoi campi — altezza **calcolata**; ultimo nodo **il titolare**, orlo tratteggiato, lime pieno quando aspetta; sopra il canvas la **tab a pillola dei due tempi**; barra in fondo con il conto e l'uscita all'esecuzione. **Due forme, un canvas**: «l'ultima volta» è una catena avvenuta, disposta da sola su una **serpentina** di quattro nodi per riga (la riga dispari all'indietro), connettori da un nodo al seguente, punteggiati e chiari per i passi da fare, tratteggiati verso il titolare. «La prossima volta» è un **grafo** (versione 24): **posizioni libere** agganciate a 18 px, righe tutte da sinistra a destra (passo **234**×216, multipli dei 18 px della griglia), **nodo d'innesco** in testa col fianco arrotondato a 44 e senza presa d'entrata, **prese sui fianchi** (a destra si esce, a sinistra si entra; il titolare non ha uscita), archi da `G.archi` con l'etichetta **sul connettore** e i due comandi «+» e «×» sul punto di mezzo, chip del conto in alto a sinistra, **zoom interno** (0,6–1,5 con `transform`) e **mini-mappa** 200×120 che compare quando serve. Sul telefono la stessa cosa **in colonna**, con le due tab e i chip del grafo sul connettore: misurato, la colonna è 348 px e una card ne prende 348, quindi due rami non si affiancano mai |
+| **Canvas del workflow** (prodotto, versioni 20, 24 e 27) | il precedente portato dentro la Console. Griglia puntinata 18 su `--dots-box`; nodi 208×96 r18 su `--card` con riflesso; porte 10 px con l'etichetta 10/14 sotto il nodo (spente se il passo non è ancora stato fatto); nodo aperto con l'orlo lime e i suoi campi — altezza **calcolata**; ultimo nodo **il titolare**, orlo tratteggiato, lime pieno quando aspetta; sopra il canvas la **tab a pillola dei due tempi**; barra in fondo con il conto e l'uscita all'esecuzione. **Due forme, un canvas**: «l'ultima volta» è una catena avvenuta, disposta da sola su una **serpentina** di quattro nodi per riga (la riga dispari all'indietro), connettori da un nodo al seguente, punteggiati e chiari per i passi da fare, tratteggiati verso il titolare. «La prossima volta» è un **grafo** (versione 24): **posizioni libere** agganciate a 18 px, righe tutte da sinistra a destra (passo **234**×216, multipli dei 18 px della griglia), **nodo d'innesco** in testa col fianco arrotondato a 44 e senza presa d'entrata, **prese sui fianchi** (a destra si esce, a sinistra si entra; il titolare non ha uscita), archi da `G.archi` con l'etichetta **sul connettore** e i due comandi «+» e «×» sul punto di mezzo, chip del conto in alto a sinistra, **zoom interno** (0,6–1,5 con `transform`) e **mini-mappa** 200×120 che compare quando serve. Dalla **versione 27** lo zoom e la mappa valgono su **tutte e due le tab** (prima erano `ramo ? zoom : 1`, cioè metà pagina senza zoom), e il canvas ha un interruttore **`soloLettura`** che spegne prese, «+» e «×» sull'arco, trascinamento del nodo, «Riordina» e «Aggiungi» lasciando in piedi il nodo che si apre, lo zoom e lo spostamento della vista. **Sul telefono è lo stesso canvas**, in sola lettura, come card dentro la pagina che scorre: si entra a «tutto dentro» (278,4 / 910 = **0,306**, tutto il grafo nella larghezza che c'è) e il tocco su un nodo porta a **scala 1 centrato su quello**, dove il testo torna a 14 px e il nodo apre i suoi campi. Due gesti del dito: trascina-la-vista in orizzontale e pinch (`touch-action:pan-y` lascia il verticale alla pagina, perché la card è alta `basso × zoom` e in verticale non resta mai niente fuori). Le posizioni **non si ricalcolano mai** (regola 42): il prezzo è 632 px di scorrimento laterale a scala 1 |
 
 ## 7. Schermate
 
@@ -667,6 +667,28 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     con «chiedi prima di consegnare» un ramo che non arriva alla firma diceva «resta in azienda», e con gli altri
     due permessi non diceva **niente** — l'informazione spariva proprio dove serviva di più. Ora dice «esce senza
     la tua firma» (misurato: 148 px, dentro i 208 del nodo), e la riga in cima lo conta.
+
+43. **Lo stesso oggetto su due schermi è lo stesso componente con i gesti spenti, non un secondo disegno**
+    (2026-09-09, versione 27, decisioni 72-74). Il workflow sul telefono era una **colonna di card**: gli stessi
+    dati, un disegno diverso. Giudizio del titolare: «dà un'anteprima del workflow sbagliata». Verificato guardando
+    le due catture, ed era vero — fondo chiaro contro notte, card da 348 px contro nodo da 208, una colonna dritta
+    contro una serpentina su tre righe, chip dentro la card contro porte con l'etichetta sotto il nodo, barretta
+    dritta contro curva luminosa. Chi guardava il telefono si figurava *un elenco di cinque passi*, poi apriva la
+    Console e trovava *una lavagna notturna*.
+    La regola: quando una superficie stretta deve mostrare quello che una larga già mostra, **la prima strada da
+    provare è lo stesso componente a un'altra scala**, non un secondo componente con gli stessi dati. Qui il
+    canvas si è spostato in `schermate/componenti.js` — codice **e** CSS, trasportati e non riscritti, perché
+    Console e telefono fanno tutti e due `prefissa(css, '.dirA')` — e il telefono lo chiama con un interruttore
+    (`soloLettura`) e la larghezza che ha. Un canvas e un interruttore, non due canvas da tenere allineati: se un
+    giorno divergessero, il conto dei `.wnode` nelle prove sarebbe il primo a saperlo.
+    Il corollario delle **due scale**: se a scala d'insieme il testo scende sotto il leggibile (misurato: 4,3 px),
+    non si rimpicciolisce la scrittura che conta — si dà un secondo ingrandimento (il tocco sul nodo porta a scala
+    1) e si tirano **fuori dal disegno** le poche etichette che devono restare leggibili sempre. Quali: quelle che
+    dicono il **contratto** — dove finisce quello che il flusso produce e chi lo firma («esce senza la tua firma»,
+    «resta in azienda») — non quelle che dicono la topologia («2 rami», «arriva da 2»), che il disegno mostra da sé.
+    Il corollario dei **gesti**: sola lettura non vuol dire una resa più povera, vuol dire meno gesti. Il nodo che
+    si apre resta (è lettura: dice modello, strumenti ed esito), spariscono prese, «+», «×», trascinamento del
+    nodo e «Riordina» — cinque, contati da una prova.
 
 Mappa dei componenti sui concetti di DGT (barra agenda → esecuzioni del giorno, card attività → esecuzione, card lead →
 dipartimento e dipendente, videochiamata → approvazione, Riepilogo → consegne/spesa/obiettivo): tabella in
