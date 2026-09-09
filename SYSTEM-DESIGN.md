@@ -766,6 +766,13 @@ sono dell'utente e sono ancora da prendere.**
     disegno — ma **il conto in cima continua a dirlo** («1 ramo resta in azienda»), quindi si perde *quale*, non
     *che c'è*. Quando un'informazione della spina dorsale può sparire dal disegno, deve restare detta **fuori** dal
     disegno: è lo stesso corollario della regola 43 sulle etichette del contratto.
+    Il corollario delle **parole** (2026-09-09, versione 30, trovato da una domanda del titolare): **quando due
+    parti del prodotto contano la stessa cosa, devono contarla nello stesso modo.** Il canvas dichiara «9 nodi ·
+    l'innesco, 7 passi e la tua firma» — cioè l'innesco **non** è un passo — ma la funzione che numera i passi
+    usava il livello topologico, dove l'innesco sta al primo posto e ruba il numero al primo passo. Il risultato:
+    premere «Riordina», che è un gesto sul **disegno**, rinominava ogni passo («Passo 1» → «Passo 2», a cascata su
+    tutti e sette). Un gesto sulla forma non deve mai cambiare i nomi, e un nome che il titolare legge non deve
+    dipendere da un conto che serve a un'altra cosa.
     Il corollario dei conti: **un conto che decide una posizione deve misurare quello che si disegna davvero.**
     Due errori dello stesso stampo, trovati insieme: `altNodo` contava la riga delle azioni anche dove la sola
     lettura non la disegna (47,6 px di scarto sul telefono), e il freno che cerca un posto libero misurava il nodo

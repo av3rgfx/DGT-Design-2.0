@@ -2792,6 +2792,83 @@ anche da chiusi. Non è una dimenticanza — mettere un freno che sposta il nodo
 esattamente quello che la regola 42 vieta. Una prova lo fa apposta e verifica che, in quel caso, sotto la card non
 resti niente di cliccabile. **È il caso per cui serve la seconda metà della decisione**, quella che aspetta.
 
+### Versione 30: il prodotto se ne accorge e lo propone (2026-09-09)
+
+**Decisa dall'utente**, che ha risposto alle tre domande della 29: *«si costruiamolo»*, *«riusiamo riordina che già
+esiste no?»*, e — sulla terza — *«Perché riordina dovrebbe riscrivere tutto? Non sposta semplicemente la posizione
+e l'ordine dei nodi?»*. **Quella terza domanda ha scoperto un difetto**, ed è la parte migliore di questa versione.
+Prove **617 verdi, 0 ko** (erano 605). Catture **82** (era 81).
+
+#### 1. La domanda dell'utente aveva ragione, e ha trovato un difetto
+
+Nella 29 avevo scritto che «Riordina» **riscrive tutte le posizioni**, e detto così suonava come «ti disfa il
+flusso». Misurato invece di raccontato — spostando due nodi a mano e confrontando **tutto** prima e dopo:
+
+- i **collegamenti** non cambiano: identici;
+- i **nomi** dei passi non cambiano: identici;
+- si muovono **solo le posizioni**, e solo quelle fuori posto: nella prova, **1 nodo su 9**.
+
+Quindi l'utente aveva ragione: «Riordina» sposta la posizione dei nodi, non riscrive il lavoro. La mia parola era
+imprecisa e allarmante.
+
+**Ma la verifica ha trovato una cosa che nessuno aveva visto: premere «Riordina» una volta rinumerava tutti i
+passi.** «Passo 1» diventava «Passo 2», «Passo 3» diventava «Passo 4», a cascata su tutti e sette — e poi si
+fermava, quindi la seconda pressione non faceva più niente. Misurato su un grafo **intonso**, senza toccare nulla.
+
+La causa: `ramoNumera` calcola il **livello topologico** di ogni nodo, e il nodo d'innesco — che non ha niente in
+entrata — sta al livello 1, rubando il numero al primo passo. Ma nel prodotto **l'innesco non è un passo**: lo
+dice la barra da sempre, «9 nodi · l'innesco, 7 passi e la tua firma», e il conto in cima esclude innesco e
+titolare. Due sistemi di numerazione che si contraddicevano, e chi premeva «Riordina» per rimettere in ordine il
+**disegno** si vedeva cambiare sotto gli occhi il **nome** di ogni passo.
+
+Corretto togliendo lo scalino dell'innesco. Il livello resta — serve al grafo, perché due rami che partono dallo
+stesso nodo portano lo stesso numero (decisione 65).
+
+#### 2. La pillola, e il gesto che c'era già
+
+Sta nella **riga in cima al canvas**, quella che già enuncia i fatti del grafo, ed è la **sola** pillola della riga
+che si clicca: le altre sono referti, questa è una proposta. L'icona è `i-grid`, la stessa della pillola
+«Riordina» in fondo, così porta addosso il gesto che innesca.
+
+> **1 nodo ne copre un altro quando lo apri · Riordina**
+> (al plurale: «2 nodi si coprono quando li apri»)
+
+**La parola dice «nodi» e non «passi»**, e non è pignoleria: la barra distingue «l'innesco, 7 passi e la tua
+firma», quindi il coperto può essere l'innesco o **la firma del titolare**, e chiamarlo «passo» mentirebbe proprio
+nel caso più grave. Il `title` dice che cosa succede premendo: «Rimette i nodi in ordine sulla griglia: i
+collegamenti, i nomi e i numeri dei passi non cambiano».
+
+**Il gesto è «Riordina», quello che esiste già** — la scelta dell'utente. Col passo a 342 rimettere i nodi sulla
+griglia **chiude** la copertura: non si è inventato un secondo gesto che riordina «solo un po'», e la parola resta
+una sola con un significato solo. Misurato: premendola, la pillola sparisce, i numeri dei passi non si muovono e
+i collegamenti restano gli otto di prima.
+
+**Il conto è un'ipotesi, non uno stato**: dice «se lo apri», perché è quello che il titolare deve sapere **prima**
+di aprirlo. Sta in `canvasCoperti`, accanto a `canvasMisure`, ed è esportato.
+
+#### 3. Quando compare, e quanto poco
+
+| | pillola |
+|---|---|
+| grafo appena aperto, disposto dal prodotto | **non c'è** — col passo a 342 non c'è niente da dire |
+| dopo aver trascinato `p7` sotto `p3` | **c'è**, ed è l'unica cliccabile della riga |
+| dopo averla premuta | **non c'è più** |
+
+La riga in cima con la pillola è larga **422 px sui 992 utili**: ci sta con abbondanza. E il conto delle pillole
+non arriva a cinque come si temeva: `ramoEsce` rende «resta in azienda» e «esce senza la tua firma» **mutuamente
+esclusive**, quindi il massimo era tre, e con questa fa quattro.
+
+**Sul telefono non c'è**, e non è una dimenticanza: lì `chips` è spento, non si trascina — quindi il caso non si
+può creare — e non c'è nessun «Riordina» da premere. La striscia del telefono porta il **contratto** («esce senza
+la tua firma», «aspetterà la tua firma»), ed è l'unica riga di quello schermo che parla di firma: una faccenda di
+disposizione lì accanto la svaluterebbe.
+
+#### 4. La cattura che non si poteva fare
+
+La pillola non è raggiungibile da un indirizzo: col passo a 342 nessun grafo **seminato** ha due nodi che si
+coprono, e nel modello nessuno è mai stato trascinato. Quindi `a-grafo-coperti.png` **trascina davvero** — `p7`
+sotto `p3`, con eventi del mouse veri, come farebbe una mano — e poi scatta. È la 82ª cattura.
+
 ## 5. File
 
 | File | Ruolo |

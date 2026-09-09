@@ -1601,7 +1601,18 @@ window.DGT_DATI = (function () {
           const id = coda.shift();
           (g[id] || []).forEach(v => { liv[v] = Math.max(liv[v] || 1, (liv[id] || 1) + 1); if (--resta[v] === 0) coda.push(v); });
         }
-        r.nodi.forEach(n => { n.n = liv[n.id] || 1; });
+        /* ---- L'innesco non e' un passo (corretto nella versione 30) ----
+           `liv` e' il livello topologico, e l'innesco — che non ha niente in entrata — sta al livello 1. Ma nel
+           prodotto l'innesco **non e' un passo**: la barra lo dice da sempre, «9 nodi · l'innesco, 7 passi e la
+           tua firma», e il conto in cima esclude innesco e titolare. Il risultato era che **premere «Riordina»
+           una volta rinumerava tutto**: «Passo 1» diventava «Passo 2», «Passo 3» diventava «Passo 4», a cascata
+           su tutti e sette — misurato, e poi si fermava. Un gesto che il titolare preme per rimettere in ordine
+           il **disegno** gli cambiava sotto gli occhi il **nome** di ogni passo.
+           Si tiene il livello (serve al grafo: due rami che partono dallo stesso nodo portano lo stesso numero,
+           decisione 65) e si toglie lo scalino dell'innesco. */
+        const inn = r.nodi.find(n => n.innesco);
+        const base = inn ? (liv[inn.id] || 1) : 0;
+        r.nodi.forEach(n => { n.n = Math.max(n.innesco ? 0 : 1, (liv[n.id] || 1) - base); });
         r.ciclo = Object.keys(resta).some(k => resta[k] > 0);   /* un ciclo si vede: n8n li ammette, qui si dice */
       },
       /* Quanti nodi entrano e quanti escono da un nodo: serve alle porte e a dire quando una porta si sdoppia. */

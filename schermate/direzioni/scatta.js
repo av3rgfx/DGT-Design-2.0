@@ -110,6 +110,11 @@ const CATTURE = [
          l'innesco col suo permesso e il canvas ingrandito con la mini-mappa. --- */
   { g: 'grafo', nome: 'a-grafo', q: 'pagina=workflow&workflow=w1&ramo=1&tendina=chiusa', sel: '.a-main > section:nth-of-type(2)', h: 1400 },
   { g: 'grafo', nome: 'a-grafo-nodo', q: 'pagina=workflow&workflow=w1&ramo=1&nodo=p2&tendina=chiusa', sel: '.a-main > section:nth-of-type(2)', h: 1400 },
+  /* La pillola della versione 30 non e' fotografabile da un indirizzo: col passo a 342 nessun grafo **seminato**
+     ha due nodi che si coprono, e nel modello nessuno e' mai stato trascinato. Quindi qui si trascina davvero —
+     `p7` sotto `p3`, con eventi veri come farebbe una mano — e poi si scatta. */
+  { g: 'grafo', nome: 'a-grafo-coperti', q: 'pagina=workflow&workflow=w1&ramo=1&tendina=chiusa', sel: '.a-main > section:nth-of-type(2)', h: 1400,
+    eval: "(()=>{const n=document.querySelector('.wnode[data-id=\"p7\"]'),t=document.querySelector('.wnode[data-id=\"p3\"]');const a=n.getBoundingClientRect(),b=t.getBoundingClientRect();const o=(x,y)=>({bubbles:true,cancelable:true,clientX:x,clientY:y,view:window});n.dispatchEvent(new MouseEvent('mousedown',o(a.left+100,a.top+20)));window.dispatchEvent(new MouseEvent('mousemove',o(a.left+100,b.top+20+40)));window.dispatchEvent(new MouseEvent('mousemove',o(a.left+100,b.top+20+108)));window.dispatchEvent(new MouseEvent('mouseup',o(a.left+100,b.top+20+108)));window.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}))})()" },
   { g: 'grafo', nome: 'a-grafo-innesco', q: 'pagina=workflow&workflow=w1&ramo=1&nodo=inn&tendina=chiusa', sel: '.wcanvas', h: 1400 },
   { g: 'grafo', nome: 'a-grafo-zoom', q: 'pagina=workflow&workflow=w1&ramo=1&zoom=1.5&tendina=chiusa', sel: '.wcanvas', h: 1400 },
   { g: 'grafo', nome: 'a-ramo-ultima', q: 'pagina=workflow&workflow=w1&nodo=2&tendina=chiusa', sel: '.a-main > section:nth-of-type(2)', h: 1400 },

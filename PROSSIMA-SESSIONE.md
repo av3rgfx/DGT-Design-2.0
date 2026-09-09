@@ -1,4 +1,85 @@
 # Prossima sessione — passaggio di consegne
+## Versione 30 — il prodotto se ne accorge e lo propone (2026-09-09)
+
+**Le tre risposte dell'utente alla versione 29 sono disegnate**, e la terza ha scoperto un difetto che nessuno
+aveva visto. **617 verifiche verdi**, 0 ko (erano 605). **82 catture** (era 81). Il canvas del workflow è chiuso:
+non resta niente di misurato e aperto.
+
+### Le tre risposte, e che cosa ne è uscito
+
+| domanda | risposta | fatto |
+|---|---|---|
+| il segnale lo costruiamo? | **«si costruiamolo»** | pillola nella riga in cima al canvas |
+| che gesto? | **«riusiamo riordina che già esiste no?»** | la pillola chiama `ramo-riordina`, nessun gesto nuovo |
+| perché Riordina riscriverebbe tutto? | *«Non sposta semplicemente la posizione e l'ordine dei nodi?»* | **aveva ragione**, e la verifica ha trovato un difetto |
+
+### La terza domanda ha trovato un difetto
+
+Nella 29 avevo scritto che «Riordina» **riscrive tutte le posizioni**, e detto così suonava come «ti disfa il
+flusso». Misurato spostando due nodi a mano e confrontando tutto prima e dopo: **i collegamenti non cambiano, i
+nomi non cambiano, si muove solo la posizione dei nodi fuori posto** — nella prova, 1 su 9. L'utente aveva ragione
+e la mia parola era imprecisa.
+
+**Ma la verifica ha trovato altro: premere «Riordina» una volta rinumerava tutti i passi.** «Passo 1» → «Passo 2»,
+a cascata su tutti e sette, su un grafo **intonso**; poi si fermava. La causa: `ramoNumera` dà il livello
+topologico, e l'innesco — che non ha niente in entrata — sta al livello 1 e ruba il numero al primo passo. Ma nel
+prodotto **l'innesco non è un passo**: lo dice la barra, «9 nodi · l'innesco, 7 passi e la tua firma». Due
+numerazioni che si contraddicevano, e un gesto che serviva a rimettere in ordine il **disegno** cambiava il
+**nome** di ogni passo. Corretto togliendo lo scalino dell'innesco; il livello resta, perché serve al grafo
+(due rami dallo stesso nodo portano lo stesso numero, decisione 65).
+
+### La pillola
+
+> **1 nodo ne copre un altro quando lo apri · Riordina** — al plurale «2 nodi si coprono quando li apri»
+
+Nella riga in cima, con l'icona `i-grid`, **unica cliccabile della riga**: le altre sono referti, questa è una
+proposta. Dice **«nodi» e non «passi»** perché il coperto può essere l'innesco o **la tua firma**, e «passo»
+mentirebbe nel caso più grave. Il conto è un'ipotesi — «se lo apri» — perché è quello che serve sapere **prima**.
+
+- grafo appena aperto: **non c'è** (col passo a 342 non c'è niente da dire);
+- dopo aver stretto due nodi a mano: **c'è**;
+- dopo averla premuta: **non c'è più**, e numeri e collegamenti sono intatti.
+
+Riga in cima con la pillola: **422 px sui 992 utili**. **Sul telefono non c'è**, ed è voluto: lì non si trascina,
+il caso non si può creare, non c'è «Riordina» da premere, e la striscia di quello schermo porta il **contratto**.
+
+### La cattura che non si poteva fare
+
+`a-grafo-coperti.png` **trascina davvero** `p7` sotto `p3` con eventi del mouse veri, poi scatta: col passo a 342
+nessun grafo seminato si copre, e nel modello nessuno è mai stato trascinato, quindi da un indirizzo la pillola
+non è raggiungibile.
+
+## Come riprendere (dalla versione 30)
+
+1. **Il canvas del workflow è chiuso.** Il difetto della versione 24 è finito, e con lui i cinque conti sbagliati
+   che ha fatto emergere. Non c'è niente di misurato che resti aperto lì.
+2. **Il prossimo passo lo sceglie l'utente**, fra quello che resta: la **decisione 75** (il modo semplificato per
+   le routine con inneschi) aspetta i dati — tutti e 3 gli inneschi sono di tipo `ora`, nessuna routine ha un
+   workflow dietro, e il vero primo passo è che un workflow possa **nascere dal nulla** (oggi nasce solo da
+   un'esecuzione riuscita); le **decisioni 68 e 69** aspettano le biforcazioni (nel modello: 0); la **pagina
+   Impostazioni** (decisione 56) non esiste; restano il **candidato 8** (connettori) e il **candidato 5** (chat di
+   dipartimento, decisioni 41 e 42). E i numeri che il prodotto dice ma non sa ancora usare: la **soglia di `g4`**,
+   i **due contrasti a quaranta**, il **tetto giornaliero già sfondato** (3 dipendenti su 11, l'azienda al 108 %).
+3. **Attenzione**, come sempre: `scatta.js` e `prove/console.js` si reggono su `section:nth-of-type(2)` per le
+   consegne del Dipartimento; le sezioni 25, 26 e 31 di `prove/workflow.js` vogliono un contesto `hasTouch` o un
+   telefono a parte; e dalla 29 le prove che trascinano chiamano `canvasInVista()` prima di prendere le misure.
+4. **Gli indirizzi del canvas**, che il consiglio ha sbagliato due volte: il passo del **grafo** è `RAMO_PASSO` in
+   `dati.js`; `W_PY` in `componenti.js` governa **solo** la serpentina dell'«ultima volta».
+
+## Stato alla fine della versione 30
+
+- **Branch**: `claude/node-overlap-issue-ccwwgu`, **PR #22**.
+- **Prove**: **617 verdi, 0 ko** — Console 160, mobile 83, Costi 50, Agenda e Chat 56, Workflow **219**, Routine 49.
+- **Catture**: **82**, con `a-grafo-coperti.png` nuova.
+- **Codice toccato nella 30**: `dati.js` (`ramoNumera`: l'innesco non è un passo), `componenti.js`
+  (`canvasCoperti`, la pillola nella riga in cima, il suo CSS, l'export), `prove/workflow.js` (sezione 31),
+  `scatta.js` (la cattura che trascina).
+- **Artefatti**: **da ripubblicare** allo stesso indirizzo — la Console
+  (https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34) e il telefono
+  (https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9). Lo strumento rifiuta la pubblicazione
+  finché non si è letta per intero la copia salvata della versione viva: conviene farlo fare a un sottoagente.
+- **Quello che resta aperto**: niente sul canvas. Il resto è nell'elenco di «Come riprendere», punto 2.
+
 ## Versione 29 — il passo a 342, e il consiglio su come il prodotto lo dice (2026-09-09)
 
 **Le due decisioni dell'utente della versione 28 sono in opera per la metà che non era un dubbio.** I grafi nascono
@@ -39,7 +120,12 @@ Il dettaglio sta in `DIREZIONI.md`, «Versione 29». Le cose che contano:
 dimenticanza — un freno che sposta il nodo dove lui non l'ha messo è quello che la regola 42 vieta. **È il caso
 per cui serve la decisione che aspetta.**
 
-## Il verdetto del secondo consiglio — **DA CONFERMARE**
+## Il verdetto del secondo consiglio — **CONFERMATO nella versione 30**
+
+> L'utente ha risposto: **«si costruiamolo»**, **«riusiamo riordina che già esiste no?»**, e sulla terza domanda
+> *«Perché riordina dovrebbe riscrivere tutto? Non sposta semplicemente la posizione e l'ordine dei nodi?»* —
+> aveva ragione, e la verifica che ne è seguita ha trovato un difetto. Tutto disegnato: vedi «Versione 30».
+
 
 Domanda: **che forma prende «il prodotto se ne accorge e te lo propone»?** Tre strade: (a) una pillola nella riga
 in cima al canvas; (b) un segno sui nodi interessati; (c) il prodotto lo dice solo al momento dell'apertura.

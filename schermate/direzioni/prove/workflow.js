@@ -912,6 +912,63 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
      passo nuovo puo' nascere lontano da dove si e' premuto. Il numero sta qui perche' si veda, non per farlo passare. */
   check(natoPiuLontano <= 900, 'e il più lontano nasce a y ' + natoPiuLontano + ': il posto libero si cerca scendendo, e con un grafo fitto è lontano da dove hai premuto');
 
+  /* ================= versione 30: il prodotto se ne accorge e lo propone ================= */
+  /* il contesto del telefono di prima e' stato chiuso: se ne apre uno per l'ultima verifica */
+  const ctxT2 = await browser.newContext({ viewport: { width: 430, height: 932 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
+  const pt2 = await ctxT2.newPage();
+  await pt2.route('https://fonts.googleapis.com/**', r => r.fulfill({ status: 200, contentType: 'text/css', body: css }));
+  console.log('\n31. la pillola che dice che due nodi si coprono, e «Riordina» che la chiude');
+  await page.setViewportSize({ width: 1440, height: 1600 });
+  await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&tendina=chiusa')); await page.waitForTimeout(350);
+  const rigaCima = () => page.evaluate(() => ({
+    testi: [...document.querySelectorAll('.wsc .chip')].map(e => e.textContent.trim()),
+    cliccabili: document.querySelectorAll('.wsc .chip[data-az]').length,
+    largo: Math.round([...document.querySelectorAll('.wsc .chip')].reduce((s, e) => s + e.getBoundingClientRect().width + 6, -6)),
+  }));
+  const c0 = await rigaCima();
+  check(c0.cliccabili === 0, 'su un disegno disposto dal prodotto la pillola non c\'è: col passo a 342 non c\'è niente da dire (' + c0.cliccabili + ')');
+  check(c0.testi.every(x => !/copr/.test(x)), 'e la riga in cima resta quella dei fatti del grafo: ' + JSON.stringify(c0.testi));
+
+  /* il caso vero: lo crea la mano del titolare, non il prodotto */
+  await canvasInVista();
+  const q7 = await scatolaDi('.wnode[data-id="p7"]');
+  const q3 = await scatolaDi('.wnode[data-id="p3"]');
+  await page.mouse.move(q7.x + 100, q7.y + 20); await page.mouse.down();
+  await page.mouse.move(q7.x + 100, q3.y + 20 + 108, { steps: 10 }); await page.mouse.up(); await page.waitForTimeout(280);
+  await page.keyboard.press('Escape'); await page.waitForTimeout(250);
+  const c1 = await rigaCima();
+  check(c1.cliccabili === 1, 'stringendo due nodi a mano la pillola compare, ed è l\'unica della riga che si clicca (' + c1.cliccabili + ')');
+  check(/^1 nodo ne copre un altro quando lo apri · Riordina$/.test(c1.testi[0]), 'e dice il fatto al singolare, in «nodi» e non in «passi» — perché il coperto può essere l\'innesco o la tua firma: «' + c1.testi[0] + '»');
+  check(c1.largo <= 992, 'la riga in cima ci sta: ' + c1.largo + ' px sui 992 utili');
+
+  /* i numeri dei passi **prima** di premere: è la cosa che «Riordina» non deve toccare */
+  const numeriPrima = await page.evaluate(() => { const o = {}; document.querySelectorAll('.wnode').forEach(e => {
+    o[e.dataset.id] = ((e.querySelector('.tt span') || {}).textContent || '').split(' · ')[0]; }); return o; });
+  const archiPrima = await page.evaluate(() => [...document.querySelectorAll('path.arc')].map(e => e.dataset.da + '→' + e.dataset.a).sort().join(','));
+  await page.click('.wsc .chip[data-az="ramo-riordina"]'); await page.waitForTimeout(400);
+  const c2 = await rigaCima();
+  check(c2.cliccabili === 0, 'premendola, «Riordina» rimette i nodi sulla griglia e la copertura sparisce (' + c2.cliccabili + ')');
+  const numeriDopo = await page.evaluate(() => { const o = {}; document.querySelectorAll('.wnode').forEach(e => {
+    o[e.dataset.id] = ((e.querySelector('.tt span') || {}).textContent || '').split(' · ')[0]; }); return o; });
+  const archiDopo = await page.evaluate(() => [...document.querySelectorAll('path.arc')].map(e => e.dataset.da + '→' + e.dataset.a).sort().join(','));
+  check(JSON.stringify(numeriPrima) === JSON.stringify(numeriDopo), '«Riordina» non tocca i numeri dei passi: prima lo faceva, e Passo 1 diventava Passo 2 a cascata su tutti e sette');
+  check(archiPrima === archiDopo, 'e non tocca nessun collegamento: sposta il disegno, non il flusso');
+
+  /* la rinumerazione, verificata dove nasce: l'innesco non e' un passo */
+  await page.goto(file('pagina=workflow&dip=svi&workflow=w1&ramo=1&tendina=chiusa')); await page.waitForTimeout(300);
+  const n1 = await page.evaluate(() => [...document.querySelectorAll('.wnode')].map(e => ((e.querySelector('.tt span') || {}).textContent || '').split(' · ')[0]).join('|'));
+  await page.click('[data-az="ramo-riordina"]'); await page.waitForTimeout(350);
+  const n2 = await page.evaluate(() => [...document.querySelectorAll('.wnode')].map(e => ((e.querySelector('.tt span') || {}).textContent || '').split(' · ')[0]).join('|'));
+  check(n1 === n2, 'e su un grafo intonso premere «Riordina» non cambia una parola: l\'innesco non è un passo, e non ruba più il numero 1');
+  check(/Passo 1\|Passo 2\|Passo 3\|Passo 4\|Passo 5\|Passo 6\|Passo 7/.test(n2), 'i sette passi si chiamano da 1 a 7, come dice la barra («l\'innesco, 7 passi e la tua firma»)');
+
+  /* sul telefono la pillola non c'e', ed e' voluto */
+  await pt2.goto(tel('schermata=10&dip=svi&workflow=w1&ramo=1')); await pt2.waitForTimeout(400);
+  const telFin = await pt2.evaluate(() => ({ wsc: document.querySelectorAll('.wsc').length,
+    contratto: [...document.querySelectorAll('.m-wcon .chip')].map(e => e.textContent.trim()) }));
+  check(telFin.wsc === 0, 'sul telefono la riga in cima non c\'è, quindi nemmeno la pillola: lì non si trascina, e non c\'è «Riordina» da premere');
+  check(telFin.contratto.length >= 1, 'e la striscia del telefono resta quella del contratto, senza faccende di disposizione accanto: ' + JSON.stringify(telFin.contratto));
+
   if (!errors.length) ok++; else ko++;
   console.log('\n' + ok + ' ok, ' + ko + ' ko');
   await browser.close();

@@ -410,6 +410,9 @@ window.DGT_COMPONENTI = (function () {
 /* La barra del canvas quando si compone: il conto a sinistra, gli acceleratori al centro. */
 .wbar .azioni-b .pill.picc{height:32px;padding:0 12px;font-size:12px}
 .wsc{position:absolute;left:16px;top:16px;z-index:6;display:flex;gap:6px;align-items:center;font-size:11px;color:var(--t2)}
+/* la riga in cima enuncia fatti e non si tocca: l'unica pillola che si clicca e' quella che propone (versione 30) */
+.wsc .chip.vai{cursor:pointer;border-color:rgb(184 252 100/.45);color:var(--t1)}
+.wsc .chip.vai:hover{background:var(--lime);color:var(--ink);border-color:transparent}
 .wsc .chip{height:24px;font-size:11px}
 `;
 
@@ -562,6 +565,28 @@ window.DGT_COMPONENTI = (function () {
       <div class="hd"><span class="nic">${ic(icona)}</span><div class="tt"><b>${esc(nd.nome)}</b><span>${sotto}</span></div></div>
       <div class="ft">${piede}</div>
       ${campi}${campiInn}${campiTit}</div>`;
+  }
+  /* ---- Quanti nodi, se aperti, ne coprirebbero un altro (versione 30) ----
+     Il conto che accende la pillola. Non guarda lo stato di adesso ma un'ipotesi — «se lo apri» — perche' e'
+     quello che il titolare deve sapere **prima** di aprirlo, non dopo. Vale solo nel grafo: nell'«ultima volta»
+     la serpentina fa scendere le righe sotto quella aperta, quindi la copertura non puo' esistere.
+     Dopo il passo a 342 questo conto e' **zero** su tutti i disegni che dispone il prodotto: si accende solo se
+     il titolare ha stretto due nodi trascinandoli, che e' l'unico modo rimasto — e giustamente, perche' un freno
+     al trascinamento sposterebbe un nodo dove lui non l'ha messo (regola 42). */
+  function canvasCoperti(nodi, ramo, sl) {
+    if (!ramo) return { nodi: 0, coppie: 0 };
+    let quanti = 0, coppie = 0;
+    nodi.forEach(a => {
+      const h = altNodo(a, true, ramo, sl);
+      let n = 0;
+      nodi.forEach(b => {
+        if (a === b) return;
+        if (Math.min(a.x + W_W, b.x + W_W) - Math.max(a.x, b.x) > 2
+         && Math.min(a.y + h, b.y + W_H_CHIUSO) - Math.max(a.y, b.y) > 2) n++;
+      });
+      if (n) { quanti++; coppie += n; }
+    });
+    return { nodi: quanti, coppie };
   }
   /* ---- Le misure del disegno (versione 27) ----
      Dove comincia e dove finisce il grafo, in coordinate del canvas. Serve allo scatto «tutto dentro» del
@@ -782,7 +807,24 @@ window.DGT_COMPONENTI = (function () {
     const esceC = ramo ? m.ramoEsce(wOrig) : null;
     const fuoriN = esceC ? esceC.fuori.length : 0;
     const antN = esceC ? esceC.anticipata.length : 0;
-    const cima = ramo && conChips ? `<div class="wsc"><span class="chip">${ic('i-rows')}${passiRamo} passi · ${G.archi.length} collegamenti</span>${fuoriN ? `<span class="chip">${ic('i-hand')}${fuoriN} ${fuoriN === 1 ? 'ramo resta' : 'rami restano'} in azienda</span>` : ''}${antN ? `<span class="chip">${ic('i-bolt')}${antN} ${antN === 1 ? 'ramo esce' : 'rami escono'} senza la tua firma</span>` : ''}${G.ciclo ? `<span class="chip">${ic('i-warn')}il flusso si chiude ad anello</span>` : ''}</div>` : '';
+    /* ---- La pillola che lo dice, e il gesto che c'e' gia' (versione 30, decisione del titolare) ----
+       «Vorrei che il prodotto se ne accorgesse e me lo proponesse». Sta qui, nella riga che gia' enuncia i fatti
+       del grafo, ed e' la **sola** pillola della riga che si clicca: le altre sono referti, questa e' una
+       proposta, e l'icona `i-grid` — la stessa della pillola «Riordina» in fondo — dice che gesto innesca.
+       Il gesto e' **«Riordina»**, quello che esiste gia': rimette i nodi sulla griglia al passo nuovo, e col
+       passo a 342 questo **chiude la copertura**. Non si e' inventato un secondo gesto che riordina «solo un
+       po'»: una parola, un significato.
+       La parola dice «nodi» e non «passi», e non e' pignoleria: la barra distingue «l'innesco, 7 passi e la tua
+       firma», quindi il coperto puo' essere l'innesco o **la tua firma**, e chiamarlo «passo» mentirebbe proprio
+       nel caso piu' grave.
+       Sul telefono non c'e' (`chips: false`), ed e' voluto: li' non si trascina, quindi il caso non si puo'
+       creare, e non c'e' «Riordina» da premere. La striscia del telefono porta il **contratto**, e una faccenda
+       di disposizione accanto a «esce senza la tua firma» la svaluterebbe. */
+    const cop = ramo && conChips && !sl ? canvasCoperti(w.nodi, ramo, sl) : { nodi: 0 };
+    const chipCop = cop.nodi
+      ? `<span class="chip vai" data-az="ramo-riordina" title="Rimette i nodi in ordine sulla griglia: i collegamenti, i nomi e i numeri dei passi non cambiano">${ic('i-grid')}${cop.nodi === 1 ? '1 nodo ne copre un altro quando lo apri' : cop.nodi + ' nodi si coprono quando li apri'} · Riordina</span>`
+      : '';
+    const cima = ramo && conChips ? `<div class="wsc">${chipCop}<span class="chip">${ic('i-rows')}${passiRamo} passi · ${G.archi.length} collegamenti</span>${fuoriN ? `<span class="chip">${ic('i-hand')}${fuoriN} ${fuoriN === 1 ? 'ramo resta' : 'rami restano'} in azienda</span>` : ''}${antN ? `<span class="chip">${ic('i-bolt')}${antN} ${antN === 1 ? 'ramo esce' : 'rami escono'} senza la tua firma</span>` : ''}${G.ciclo ? `<span class="chip">${ic('i-warn')}il flusso si chiude ad anello</span>` : ''}</div>` : '';
     /* Lo spostamento della vista: serve quando il disegno ingrandito e' piu' largo di quello che si vede. Nella
        Console e' 1008 px, e allora serve da 1,25x in su; sul telefono sono 278,4, e allora serve **sempre** —
        sono i 632 px di scorrimento laterale che la decisione 72 ha accettato pur di non ricalcolare le posizioni
@@ -889,5 +931,5 @@ window.DGT_COMPONENTI = (function () {
   }
 
   return { css: prefissa(css, '.dirA'), variabili, av, pair, dots, chipStato, chipEsito, messaggio, iconaTipo, nomeTipo, eur, delta, differenze,
-    canvasWorkflow, canvasMisure, canvasTuttoDentro, canvasSuNodo, canvasStringi, W_METRICHE: { COL: W_COL, PX: W_PX, PY: W_PY, PAD: W_PAD, W: W_W, H: W_H, H_CHIUSO: W_H_CHIUSO } };
+    canvasWorkflow, canvasMisure, canvasTuttoDentro, canvasSuNodo, canvasStringi, canvasCoperti, W_METRICHE: { COL: W_COL, PX: W_PX, PY: W_PY, PAD: W_PAD, W: W_W, H: W_H, H_CHIUSO: W_H_CHIUSO } };
 })();
