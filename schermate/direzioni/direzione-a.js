@@ -571,6 +571,17 @@ window.DIREZIONE_A = (function () {
   const livelloOggi = e => ({ lavoro: e.att.da <= '09:00' ? 5 : 4, attesa: 3, errore: 1, pianificato: 0, libero: 0 })[e.stato];
 
   /* ---------- pezzi della home ---------- */
+  /* Il tetto di spesa del giorno accanto al numero che lo consuma (versione 31, decisione dell'utente).
+     Non e' una forma nuova: e' **la stessa** che la card «Spesa» della pagina Costi stampa gia' per l'azienda
+     (`cardCostoAzienda`), portata dove il titolare guarda. Fino alla 31 la home stampava lo stesso numero della
+     pagina Costi con un badge `↓12%` **scritto a mano** — nel modello `costi('oggi').prima` e' `null`, non
+     esiste nessun ieri — mentre i Costi lo marcavano «oltre»: due pagine, lo stesso numero, due verdetti
+     opposti, e il numero della home era per giunta cliccabile proprio verso la pagina che lo smentiva.
+     Il badge di `.stat` e' `position:absolute` (vedi il CSS): cambiargli il testo costa **zero px**. */
+  const chipTetto = (speso, tetto) => speso > tetto
+    ? `<span class="badge down">${ic('i-warn')}oltre il limite</span>`
+    : `<span class="badge flat">${ic('i-check')}nel limite</span>`;
+
   function cardAttivita(m, e, i) {
     const pend = m.richiesteDi('attesa').some(a => a.chi === e.id);
     const tono = pend ? 'lime' : (i % 2 ? 'dark' : 'gray');
@@ -726,7 +737,7 @@ window.DIREZIONE_A = (function () {
           <div class="thumb"><div class="pg"><i class="h"></i><i class="b"></i><i class="w1"></i><i class="w3"></i><i class="w2"></i><i class="b"></i><i class="w1"></i><i class="w4"></i></div><span class="lb">Piano ottobre</span></div>
         </div>
         <div class="kv"><span>Approvate oggi</span><b>${oggi}</b></div>
-        <div class="kv"><span>Spesa di oggi</span><b>${m.costoOggi} €</b></div>
+        <div class="kv"><span>Spesa di oggi</span><b>${m.costoOggi} € su ${m.tettoAzienda().giorno} €</b></div>
       </div>
       <div class="dcard"><div class="nt"><span class="rb sm">${ic('i-pen')}</span></div><h5>Obiettivo del mese:</h5><p class="goal">${m.azienda.obiettivoMese}</p></div>
       <div class="dcard"><h5>Ultime voci del diario:</h5><div style="margin-top:10px">${ultime.map(x => `<div class="drow"><span>${esc(x.ora)}</span><div><b>${esc(m.etichetta(m.byId[x.chi]))}</b> ${esc(x.testo)}</div></div>`).join('')}</div></div>`;
@@ -889,9 +900,10 @@ window.DIREZIONE_A = (function () {
     const lavF = filtraSez(opz, 'home.lavoro', lav, PILLE_LAVORO(m));
     const dipa = filtraSez(opz, 'home.dipartimenti', m.dipartimenti, PILLE_DIPART(m));
     const att = m.richiesteDi('attesa').length;
-    const stats = `<div class="stat"><b>${lav.length}</b><span>al lavoro</span><span class="badge up">${ic('i-up')}1</span></div>
-      <div class="stat"><b>${att}</b><span>da approvare</span><span class="badge down">${ic('i-bell')}${Math.min(2, att)}</span></div>
-      <div class="stat" data-az="pagina" data-pagina="costi" title="I costi dell'azienda"><b>${m.costoOggi} €</b><span>spesi oggi</span><span class="badge down">${ic('i-dn')}12%</span></div>`;
+    const tettoOggi = m.tettoAzienda().giorno;
+    const stats = `<div class="stat"><b>${lav.length}</b><span>al lavoro</span></div>
+      <div class="stat"><b>${att}</b><span>da approvare</span></div>
+      <div class="stat" data-az="pagina" data-pagina="costi" title="I costi dell'azienda"><b>${m.costoOggi} €</b><span>su ${tettoOggi} € al giorno</span>${chipTetto(m.costoOggi, tettoOggi)}</div>`;
     const corpo = `
       <section>
         <div class="shead"><h3>Al lavoro adesso</h3>${contoSez(lavF.length, lav.length, 'Esecuzioni')}
@@ -1025,9 +1037,9 @@ window.DIREZIONE_A = (function () {
     const storico = tutte.filter(r => r.stato !== 'attesa').sort((a, b) => (a.giorno - b.giorno) || (b.min - a.min));
     const oggiOk = m.richieste.filter(r => r.giorno === 0 && r.stato === 'approvata').length;
     const daRifare = m.richieste.filter(r => r.giorno <= 7 && (r.stato === 'modifiche' || r.stato === 'rifiutata')).length;
-    const stats = `<div class="stat"><b>${m.richiesteDi('attesa').length}</b><span>da approvare</span><span class="badge down">${ic('i-bell')}${Math.min(2, m.richiesteDi('attesa').length)}</span></div>
-      <div class="stat"><b>${oggiOk}</b><span>approvate oggi</span><span class="badge up">${ic('i-up')}${oggiOk}</span></div>
-      <div class="stat"><b>${daRifare}</b><span>da rifare</span><span class="badge down">${ic('i-dn')}${daRifare}</span></div>
+    const stats = `<div class="stat"><b>${m.richiesteDi('attesa').length}</b><span>da approvare</span></div>
+      <div class="stat"><b>${oggiOk}</b><span>approvate oggi</span></div>
+      <div class="stat"><b>${daRifare}</b><span>da rifare</span></div>
       <div class="stat"><b>${m.richieste.length}</b><span>in tutto</span></div>`;
     /* lo storico: la ricerca sul nome della consegna, del dipendente e del cliente; le tre pillole raggruppano (per giorno,
        per dipendente, per cliente) — sono l'unico posto della Console dove una pillola cambia il raggruppamento e non il filtro */
@@ -1084,8 +1096,8 @@ window.DIREZIONE_A = (function () {
     const ob = m.obiettiviDi(d.id);
     const costoOggi = lst.reduce((t, e) => t + (e.att.costo || 0), 0);
     const lav = lst.filter(e => e.stato === 'lavoro').length;
-    const stats = `<div class="stat"><b>${lav}</b><span>al lavoro</span><span class="badge up">${ic('i-up')}${lav}</span></div>
-      <div class="stat"><b>${att.length}</b><span>da approvare</span>${att.length ? `<span class="badge down">${ic('i-bell')}${att.length}</span>` : ''}</div>
+    const stats = `<div class="stat"><b>${lav}</b><span>al lavoro</span></div>
+      <div class="stat"><b>${att.length}</b><span>da approvare</span></div>
       <div class="stat" data-az="pagina" data-pagina="costi" title="I costi dell'azienda"><b>${costoOggi} €</b><span>spesi oggi</span></div>`;
     const esecF = filtraSez(opz, 'dip.oggi', esec, PILLE_ESEC);
     /* L'ingresso ai workflow e' una pillola nell'intestazione della prima sezione, non una settima sezione: una
@@ -1665,7 +1677,7 @@ window.DIREZIONE_A = (function () {
     const att = inAttesa(m).filter(r => r.chi === e.id);
     const oggiN = m.richieste.filter(r => r.chi === e.id && r.giorno === 0).length + (e.stato === 'lavoro' || e.stato === 'errore' ? 1 : 0);
     const stats = `<div class="stat"><b>${oggiN}</b><span>task oggi</span></div>
-      <div class="stat"><b>${att.length}</b><span>da approvare</span>${att.length ? `<span class="badge down">${ic('i-bell')}${att.length}</span>` : ''}</div>
+      <div class="stat"><b>${att.length}</b><span>da approvare</span></div>
       <div class="stat" data-az="pagina" data-pagina="costi" title="I costi dell'azienda"><b>${e.att.costo || 0} €</b><span>spesi oggi</span></div>`;
     const rev = d.revisioni.find(r => r.stato === 'attesa');
     const revF = filtraSez(opz, 'dipendente.revisione', rev ? [rev] : [], PILLE_REVISIONE)[0] || null;
@@ -2136,7 +2148,7 @@ window.DIREZIONE_A = (function () {
     const daLeggere = tutti.filter(x => x.nuovi > 0).length;
     const messaggi = tutti.reduce((t, x) => t + m.filoDi(x.e).length, 0);
     const stats = `<div class="stat"><b>${tutti.length}</b><span>conversazioni</span></div>
-      <div class="stat"><b>${daLeggere}</b><span>da leggere</span>${daLeggere ? `<span class="badge down">${ic('i-bell')}${daLeggere}</span>` : ''}</div>
+      <div class="stat"><b>${daLeggere}</b><span>da leggere</span></div>
       <div class="stat"><b>${messaggi}</b><span>messaggi oggi</span></div>`;
     const pill = (v, testo) => `<span class="pill${f === v ? ' on' : ''}" data-az="chat-filtro" data-v="${v}">${testo}</span>`;
     const corpo = `

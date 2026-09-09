@@ -101,6 +101,11 @@ faceva, e le altre consegne intorno. Studio e misure in `DIREZIONI.md`, «Versio
   superficie di crash (`m.STATI[e.stato].breve` lancia; 42 punti in 5 file; e «ferma» è già la parola dell'errore,
   in rosa); e **nessun limite è scrivibile oggi** — l'editor ha tre chiavi e le penne sulle card dei budget sono
   `rb ghost` senza `data-az`.
+  **Quello che le decisioni hanno chiuso è disegnato**: la home dice «124 € su 115 € al giorno · oltre il limite»
+  (la stessa forma della card che i Costi stampavano già per l'azienda, copiata invece che inventata), il telefono
+  porta il denominatore nella riga «Spesa di oggi» della schermata 3 — 228 px, la forma ne chiede 180,5 — e i
+  **quattordici** badge delle intestazioni che mentivano o ripetevano il numero accanto sono spariti. Prove
+  **638 verdi** (erano 619): le 19 nuove tengono due **invarianti**, non due elementi.
 - **Il prodotto se ne accorge e lo propone** (versione 30, decisa dall'utente): se due nodi si coprono quando li
   apri, la riga in cima al canvas lo dice — «1 nodo ne copre un altro quando lo apri · Riordina» — ed è l'unica
   pillola della riga che si clicca. Il gesto è **«Riordina»**, quello che c'era già. Dice «nodi» e non «passi»

@@ -363,6 +363,16 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     (`direzione-a.js:140` e `:143`). **Il badge non occupa larghezza**: cambiargli il testo costa **zero px**,
     con qualunque parola, e il terzo numero della home resta 236,0 px a undici e 251,1 a quaranta. Chi calcola
     quanto «costa» un badge sta misurando un oggetto fuori dal flusso.
+
+    **Chiuso nella stessa versione, dopo la decisione dell'utente.** I quattordici badge (cinque che mentivano e
+    nove che ripetevano, telefono compreso) sono stati tolti, e il terzo numero della home porta adesso la
+    **stessa forma** che la card «Spesa» della pagina Costi stampava già per l'azienda:
+    **«124 € su 115 € al giorno · ⚠ oltre il limite»**, «427 € su 400 €» a quaranta. Non è un componente nuovo né
+    una parola nuova: è quella, copiata dove il titolare guarda. Nella home resta **un badge solo**, e gli altri
+    del prodotto non sono stati toccati perché sono onesti — i due confronti veri dei Costi, i quattro a 30 giorni
+    del Dipendente, i due dell'Agenda, e i due del telefono, che dicono numeri **diversi** da quello accanto.
+    La 16a adesso è **tenuta da una prova**, e non sul caso singolo: «nessun badge dell'intestazione ripete il
+    numero che gli sta accanto», su dieci pagine per due taglie.
 25. **Un controllo si vede solo se fa quello che promette, con i dati che ci sono già** (2026-09-07, versione 17). Due prove:
     *serve* in questa sezione? *si può fare* col modello? Chi le passa diventa vero, chi ne fallisce una sparisce; non ci
     sono controlli per figura. Nella Console valeva per 263 elementi contati (non 61 come diceva la lista: mancavano le

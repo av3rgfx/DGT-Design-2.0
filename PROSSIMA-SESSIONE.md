@@ -1,10 +1,12 @@
 # Prossima sessione — passaggio di consegne
-## Versione 31 — il consiglio sul tetto sfondato, e nessun codice scritto (2026-09-09)
+## Versione 31 — il tetto sfondato che la home diceva al contrario (2026-09-09)
 
-**Sessione di solo consiglio, come la 28.** La domanda era «che cosa dice la home quando 3 dipendenti su 11 hanno
-sfondato il tetto del giorno». La risposta è arrivata, ma la revisione incrociata ha spostato la domanda: **la home
-non tace, parla e dice il falso**, e il tetto che dovrebbe fermare non ferma. Prove **619 verdi, 0 ko** e **82
-catture**, rifatte prima e dopo: **nessuna riga di codice toccata**, la decisione è dell'utente.
+**Due consigli, cinque decisioni dell'utente, e la parte decisa disegnata.** La domanda era «che cosa dice la home
+quando 3 dipendenti su 11 hanno sfondato il tetto del giorno». La revisione incrociata l'ha spostata: **la home non
+tace, parla e dice il falso**, e il tetto che dovrebbe fermare non ferma. L'utente ha deciso, e quello che le sue
+risposte hanno chiuso è stato scritto: **638 verifiche verdi, 0 ko** (erano 619), **82 catture** di cui 28 rifatte,
+artefatti ripubblicati. Resta aperta **la disposizione dei limiti**, su cui il consiglio è passato una seconda
+volta e il verdetto aspetta conferma.
 
 ### Quello che c'era da misurare, misurato
 
@@ -388,10 +390,45 @@ committato è quello che esce 9 volte su 11, e non è stato toccato. Ma è una c
 finché resta così un prima/dopo su di lei non prova niente: va aspettata la fine della transizione invece di
 contare 300 ms.
 
+### Che cosa è stato disegnato, dopo le decisioni
+
+Le quattro risposte dell'utente hanno chiuso il dubbio, quindi la parte che era **il lavoro di questa sessione**
+è stata scritta. Prove **638 verdi, 0 ko** (erano 619: **+19**), catture **82**, di cui **28 rifatte**.
+
+**1. La home dice quello che la pagina Costi dice già.** Il terzo numero dell'intestazione passa da
+
+> «124 € **spesi oggi** · `↓ 12 %`»  →  «124 € **su 115 € al giorno** · ⚠ **oltre il limite**»
+
+ed è **la stessa forma** che `cardCostoAzienda` stampa già per l'azienda nella pagina Costi (`direzione-a.js:1912`):
+non è stato inventato né un componente né una parola. A quaranta dice «427 € su 400 € al giorno · oltre il limite».
+Il badge di `.stat` è `position:absolute`, quindi **il cambio è costato zero px**: il terzo numero resta 236,0 px a
+undici e 251,1 a quaranta, e l'intestazione ha 269,8 px liberi (229,1 a quaranta). Il ramo opposto («nel limite»,
+`badge flat`) esiste e regge, anche se nel modello di oggi non si vede mai.
+
+**2. I quattordici badge che mentivano o ripetevano se ne sono andati.** Cinque **mentivano** (`↑1` scritto a mano;
+`Math.min(2, att)` nella home, nelle Richieste e sul telefono; `↓12%`) e nove **ripetevano il numero che gli stava
+accanto** — «2 approvate oggi ↑2», «4 da rifare ↓4», «3 al lavoro ↑3», «40 da leggere ↓40» — cioè violavano la
+regola della versione 16 in quattro pagine della Console e in tre schermate del telefono. Nella home ne resta
+**uno solo**: quello che dice il tetto. Gli altri badge del prodotto non sono stati toccati, perché sono onesti:
+i due confronti veri dei Costi, i quattro a 30 giorni del Dipendente, i due dell'Agenda, e i due del telefono
+(«3» al lavoro su 11 dipendenti, «15:00» del prossimo) — che sono numeri **diversi** da quello accanto.
+
+**3. Il telefono porta il denominatore dove ci sta.** La riga `.kv` della card Consegne della schermata 3 dice
+adesso «Spesa di oggi **124 € su 115 €**»: 228 px di riga, e la forma ne chiede 180,5 — non tagliata, e nessuno
+degli otto telefoni scorre di lato. **Non** fra i tre numeri grandi, dove ogni forma sfora (da −9 a −78 px su
+278 px di colonna). La stessa riga del **Riepilogo della Console** è stata allineata: cambiarne una sola avrebbe
+creato una nuova incoerenza fra le due superfici.
+
+**4. Le prove non verificano l'elemento, verificano l'invariante.** Le +19 verifiche chiedono due cose: che la
+home e i Costi dicano **la stessa cosa dello stesso numero** (se un giorno divergono, la prova cade) e che
+**nessun badge dell'intestazione ripeta il numero accanto**, su dieci pagine per due taglie. Il difetto non era il
+singolo badge: era la classe, ed è la classe che adesso è tenuta — come per gli errori muti del CSS.
+
 ## Come riprendere (dalla versione 31)
 
-1. **Non è stato scritto codice di prodotto**, di proposito: erano dubbi progettuali e la decisione è dell'utente.
-   Prove **619 verdi, 0 ko** e **82 catture**, rifatte prima e dopo per accertarsene.
+1. **La parte decisa è disegnata**: la home dice «124 € su 115 € al giorno · oltre il limite», il telefono porta
+   il denominatore nella riga della schermata 3, e i quattordici badge che mentivano o ripetevano sono spariti.
+   Prove **638 verdi, 0 ko**, catture **82** (28 rifatte), artefatti ripubblicati.
 2. **Quattro domande hanno risposta, una è aperta** (vedi «Le risposte dell'utente»): la forma è
    **«124 € su 115 € al giorno · oltre il limite»**; il posto sul telefono è la **riga `.kv` della schermata 3**;
    il tetto **FERMA**, e la scelta si cambia dalle **Impostazioni**; il **tetto d'azienda lo pone il titolare**.
@@ -404,9 +441,8 @@ contare 300 ms.
    già fatta.
    **(b)** i soffitti di dipartimento sono **due e si contraddicono**: **30 €** disegnati dalla pagina Costi (la
    somma dei budget dei suoi) contro i **69 €** del modello (la quota del 60 %) — 2,3 volte, e dicono cose opposte.
-4. **Il gruppo (a) della prima decisione non aspetta**: i quattro badge che mentono e i sei che ripetono il numero
-   accanto sono numeri inventati, e la regola del repository li chiama difetti. Ma **il primo di quei badge è
-   proprio quello in discussione**, quindi conviene farli tutti insieme, in una versione sola.
+4. **Il gruppo (a) è fatto**: i cinque badge che mentivano e i nove che ripetevano il numero accanto (quattordici
+   in tutto, telefono compreso) sono spariti, e due prove nuove tengono la **classe** invece del caso singolo.
 5. **Attenzione**, come sempre: `scatta.js` e `prove/console.js` si reggono su `section:nth-of-type(2)` per le
    consegne del Dipartimento; le sezioni 25, 26 e 31 di `prove/workflow.js` vogliono `hasTouch` o un telefono a
    parte; le prove che trascinano chiamano `canvasInVista()`; e c'è la prova che prende gli errori muti del CSS.
@@ -430,16 +466,20 @@ contare 300 ms.
 ## Stato alla fine della versione 31
 
 - **Branch**: `claude/home-daily-limit-display-9v2v1b`, ripartito da `main` dopo l'unione della PR #22.
-- **Prove**: **619 verdi, 0 ko** — Console 160, mobile 83, Costi 50, Agenda e Chat 56, Workflow 221, Routine 49.
-  Identiche prima e dopo: non è stato toccato niente.
-- **Catture**: **82**, invariate. Rifatte prima e dopo e confrontate una a una: 81 identiche al byte, e la
-  restante (`a-workflow-firma.png`) è **instabile di suo** — vedi qui sopra. Il file committato non è stato
-  toccato.
-- **Codice di prodotto toccato**: **nessuno**. Toccati sei documenti, e in uno c'era un conto fermo alla
-  versione 27: `prove/README.md` dichiarava **587** verifiche («Workflow 189») invece di **619** («Workflow 221»).
-- **Artefatti**: **non ripubblicati**, e non serve: le pagine non sono cambiate di un pixel. Restano la Console
+- **Prove**: **638 verdi, 0 ko** (erano 619) — Console **171**, mobile **91**, Costi 50, Agenda e Chat 56,
+  Workflow 221, Routine 49. Le 19 nuove verificano due **invarianti**, non due elementi.
+- **Catture**: **82**, di cui **28 rifatte**. Prima di toccare il codice erano state rifatte e confrontate una a
+  una col «prima»: 81 identiche al byte, e la restante (`a-workflow-firma.png`) è **instabile di suo** — vedi
+  sopra.
+- **Codice toccato**: `direzione-a.js` (l'aiutante `chipTetto`, il terzo numero della home, i dieci badge tolti,
+  la riga del Riepilogo), `mobile.js` (i quattro badge tolti, la riga della schermata 3), `prove/console.js`
+  (sezione 14) e `prove/mobile.js`. In `prove/README.md` c'era anche un conto fermo alla versione 27: dichiarava
+  **587** verifiche («Workflow 189») invece di 619.
+- **Artefatti**: **ripubblicati allo stesso indirizzo** — la Console
   (https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34) e il telefono
-  (https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9) alla versione 30.
+  (https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9). Lo strumento rifiuta la pubblicazione
+  finché non si è letta per intero la copia salvata della versione viva (7 639 righe la Console): conviene farlo
+  fare a un sottoagente, come questa nota dice da tre versioni.
 - **Due consigli in una sessione**: il primo sul tetto sfondato che la home non dice, il secondo sulla
   disposizione dei limiti. Tutti e due con la revisione incrociata, che ha corretto **tre numeri del contesto**
   scritti da me e ha trovato quattro cose che i pareri non avevano visto.

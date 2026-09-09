@@ -1,7 +1,7 @@
 # Prove cliccate
 
-**Sei** prove con Playwright che aprono le pagine da `file://`, cliccano e verificano il DOM, il modello e la console — **619
-verifiche in tutto** (Console 160, mobile 83, Costi 50, Agenda e Chat 56, Workflow 221, Routine 49). Tutte leggono
+**Sei** prove con Playwright che aprono le pagine da `file://`, cliccano e verificano il DOM, il modello e la console — **638
+verifiche in tutto** (Console 171, mobile 91, Costi 50, Agenda e Chat 56, Workflow 221, Routine 49). Tutte leggono
 le stesse variabili d'ambiente:
 
 - `LOCAL_FONT_CSS` — il CSS con Urbanist incorporata (`design-system/tools/fetch-fonts.py`), servito al posto di Google Fonts;
@@ -74,3 +74,24 @@ due limiti che vale la pena conoscere prima di riscriverlo:
 
 Il conto, prima della cura, su dieci pagine per due taglie e due stati della tendina: **66 controlli coperti** e
 **40 in una striscia che non scorreva**. Adesso zero e zero, e le cinque suite lo rifanno a ogni giro.
+
+
+## Il tetto del giorno accanto al numero che lo consuma (2026-09-09, versione 31)
+
+Dalla versione 31 `console.js` ha una **sezione 14** e `mobile.js` una sezione in coda: **+19 verifiche**
+(Console 160 → 171, mobile 83 → 91). Non verificano un elemento, verificano **due invarianti**:
+
+1. **La home e la pagina Costi dicono la stessa cosa dello stesso numero.** Fino alla 30 la home stampava
+   «124 € spesi oggi» con un badge `↓ 12 %` **scritto a mano** — nel modello `costi('oggi').prima` è `null`, non
+   esiste nessun ieri — mentre i Costi marcavano lo stesso identico numero «oltre». Due pagine, un numero, due
+   verdetti opposti, e il numero della home era per giunta **cliccabile proprio verso la pagina che lo
+   smentiva**. Adesso le due forme si confrontano una con l'altra: se un giorno divergono, la prova cade.
+2. **Nessun badge dell'intestazione ripete il numero che gli sta accanto**, su dieci pagine per due taglie. È la
+   regola della versione 16 («non si aggiunge un numero che ne ripete un altro sulla stessa schermata»), già
+   costata una correzione chiesta dall'utente, che però **nessuna prova teneva**: ne aveva presi sei, in quattro
+   pagine — «2 approvate oggi ↑2», «4 da rifare ↓4», «3 al lavoro ↑3», «40 da leggere ↓40». Con i cinque che
+   mentivano (`↑1` letterale e `Math.min(2, att)` in tre posti, telefono compreso) fanno **quattordici**.
+
+Le due prove sono scritte come invarianti proprio perché il difetto non era il singolo badge: era la classe.
+Come per gli errori muti del CSS, quello che si conta si conta su **tutte** le pagine e a **tutte e due** le
+taglie, non sull'esempio che ha fatto scoprire il problema.

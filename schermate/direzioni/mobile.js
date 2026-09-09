@@ -478,7 +478,7 @@ window.DGT_MOBILE = (function () {
       <div class="dcard"><div class="nt"><span class="rb sm">${ic('i-down')}</span></div><h5>Consegne:</h5>
         <div class="thumbs">${thumb(consegne[0], 0)}${thumb(consegne[1], 1)}</div>
         <div class="kv"><span>Approvate oggi</span><b>${approvateOggi(m)}</b></div>
-        <div class="kv"><span>Spesa di oggi</span><b>${m.costoOggi} €</b></div>
+        <div class="kv"><span>Spesa di oggi</span><b>${m.costoOggi} € su ${m.tettoAzienda().giorno} €</b></div>
       </div>
       ${marker(m.azienda.scadenzaMese || '', 'ink', 'i-target')}
       <div class="dcard lime"><div class="nt"><span class="rb sm">${ic('i-pen')}</span></div><h5>Obiettivo del mese:</h5><p class="goal">${m.azienda.obiettivoMese}</p></div>
@@ -562,8 +562,8 @@ window.DGT_MOBILE = (function () {
           ? `<h3 class="m-h1 conta${st.conta === 2 ? ' grande' : ''}">DA APPROVARE<b>${c.length}</b></h3>`
           : `<h3 class="m-h1">DA APPROVARE</h3>
         <div class="m-stats">
-          <div class="m-stat"><span class="num">${c.length}${c.length ? `<span class="badge down">${ic('i-bell')}${Math.min(2, c.length)}</span>` : ''}</span><span>da approvare</span></div>
-          <div class="m-stat"><span class="num">${oggiOk}${oggiOk ? `<span class="badge up">${ic('i-up')}${oggiOk}</span>` : ''}</span><span>approvate oggi</span></div>
+          <div class="m-stat"><span class="num">${c.length}</span><span>da approvare</span></div>
+          <div class="m-stat"><span class="num">${oggiOk}</span><span>approvate oggi</span></div>
         </div>`}
         ${r ? cardCorrente(m, r, idx, c.length) : ''}
         ${codaHtml}
@@ -675,7 +675,7 @@ window.DGT_MOBILE = (function () {
         <h3 class="m-h1">CHAT</h3>
         <div class="m-stats">
           <div class="m-stat"><span class="num">${lst.length === tutti.length ? tutti.length : lst.length + ' di ' + tutti.length}</span><span>conversazioni</span></div>
-          <div class="m-stat"><span class="num">${daLeggere}${daLeggere ? `<span class="badge down">${ic('i-bell')}${daLeggere}</span>` : ''}</span><span>da leggere</span></div>
+          <div class="m-stat"><span class="num">${daLeggere}</span><span>da leggere</span></div>
         </div>
         <div class="m-sh"><h4>Dipendenti</h4><span class="chip light">${lst.length}</span></div>
         <div class="m-coda">${lst.length ? lst.map(x => { const e = x.e, u = x.ultimo; return `<div class="qrow filo${x.e.id === st.filo ? ' on' : ''}" data-az="filo" data-id="${e.id}">${av(m, e, 'xs')}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${u ? (u.da === 'io' ? 'Tu: ' : '') + esc(u.testo) : 'Nessun messaggio'}</span></div><span class="dx"><span class="ora">${u ? esc(u.ora) : ''}</span>${x.nuovi ? `<span class="n">${x.nuovi}</span>` : `<span class="rb xs">${ic('i-chevr')}</span>`}</span></div>`; }).join('') : `<div class="qrow"><div class="tx"><b>Nessuna conversazione</b><span>con «${esc(st.cerca || '')}»</span></div></div>`}</div>
@@ -802,7 +802,7 @@ window.DGT_MOBILE = (function () {
         <h3 class="m-h1${d.nome.length > 12 ? ' stretta' : ''}">${esc(d.nome.toUpperCase())}</h3>
         <div class="m-stats">
           <div class="m-stat"><span class="num">${lav}</span><span>al lavoro</span></div>
-          <div class="m-stat"><span class="num">${att.length}${att.length ? `<span class="badge down">${ic('i-bell')}${att.length}</span>` : ''}</span><span>da approvare</span></div>
+          <div class="m-stat"><span class="num">${att.length}</span><span>da approvare</span></div>
           <div class="m-stat"><span class="num">${oggi} €</span><span>spesi oggi</span></div>
         </div>
         ${sez('Oggi in ' + d.nome, esec.length, `<div class="m-lista">${esec.map(cardEsec).join('')}</div>`, 'Nessuna esecuzione oggi')}

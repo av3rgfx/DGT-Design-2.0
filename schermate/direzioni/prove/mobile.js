@@ -266,6 +266,39 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   }
   check(copM === 0, 'nessun controllo del telefono nasce sotto la navigazione in basso, sugli otto schermi per due taglie (' + copM + ')');
 
+  /* ---- il tetto del giorno sul telefono, e i badge che ripetevano (versione 31) ----
+     Il telefono e' la superficie da cui il titolare firma, e la schermata 3 stampava il numero della spesa
+     **due volte** senza mai dire quanto fosse il tetto. La decisione dell'utente: il denominatore va nella riga
+     `.kv` della card Consegne — non fra i tre numeri grandi, dove ogni forma sfora (misurato: da -9 a -78 px su
+     278 px di colonna). E i badge che ripetevano il numero accanto se ne vanno, come nella Console. */
+  console.log('\nil tetto del giorno sul telefono, e i badge inventati');
+  for (const n of ['11', '40']) {
+    await page.goto(file('n=' + n)); await page.waitForTimeout(500);
+    const m = await page.evaluate(nn => { const q = DGT_DATI.modello(+nn); return { speso: q.costoOggi, tetto: q.tettoAzienda().giorno }; }, n);
+    const riga = await page.evaluate(() => {
+      const s = [...document.querySelectorAll('.m-scr')].find(x => x.dataset.schermata === '3');
+      const kv = [...s.querySelectorAll('.kv')].find(e => /Spesa di oggi/.test(e.textContent));
+      return kv ? { t: kv.innerText.replace(/\s+/g, ' '), tagliato: kv.scrollWidth > kv.clientWidth + 0.5,
+                    w: +kv.getBoundingClientRect().width.toFixed(1) } : null;
+    });
+    check(!!riga && riga.t.includes(m.speso + ' € su ' + m.tetto + ' €'),
+      `a ${n} la riga della schermata 3 porta il tetto: «${riga && riga.t}»`);
+    check(!!riga && !riga.tagliato, `e ci sta nei ${riga && riga.w} px della colonna, senza puntini`);
+    /* nessun badge del telefono ripete il numero che gli sta accanto */
+    const rip = await page.evaluate(() => [...document.querySelectorAll('.m-stat')].map(s => {
+      const b = s.querySelector('.badge'); if (!b) return null;
+      const num = ((s.querySelector('.num') || {}).firstChild || {}).textContent;
+      return b.textContent.trim() === String(num || '').trim() ? s.innerText.replace(/\s+/g, ' ') : null;
+    }).filter(Boolean));
+    check(rip.length === 0, `a ${n} nessun badge del telefono ripete il numero accanto (${rip.length})` + (rip.length ? ': ' + rip.join(' | ') : ''));
+    /* e il numero della spesa non e' piu' stampato due volte senza il suo tetto */
+    const nudi = await page.evaluate(sp => {
+      const s = [...document.querySelectorAll('.m-scr')].find(x => x.dataset.schermata === '3');
+      return (s.innerText.match(new RegExp(sp + ' €(?! su)', 'g')) || []).length;
+    }, m.speso);
+    check(nudi === 1, `e a ${n} la schermata 3 stampa il numero senza tetto una volta sola, fra i tre numeri grandi (${nudi})`);
+  }
+
   check(errors.length === 0, 'nessun errore in console: ' + JSON.stringify(errors));
   console.log(`\n${ok} ok, ${ko} ko`);
   await browser.close(); process.exit(ko ? 1 : 0);

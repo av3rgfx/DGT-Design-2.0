@@ -471,6 +471,56 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check((await txt('.a-title')).toUpperCase() === nomeRt.trim().toUpperCase(), 'e apre proprio quella: «' + (await txt('.a-title')) + '»');
   check(await conta('.a-rail .rb') === 6, 'il rail resta a sei cerchi: con tre routine la pagina non ne merita un settimo (conferma e)');
 
+  /* ---- 14. il tetto del giorno accanto al numero che lo consuma, e i badge che mentivano (versione 31) ----
+     Fino alla 30 la home stampava «124 € spesi oggi» con un badge `↓12%` **scritto a mano** (nel modello
+     `costi('oggi').prima` e' `null`: non esiste nessun ieri) mentre la pagina Costi marcava lo stesso identico
+     numero «oltre»: due pagine, un numero, due verdetti opposti — e il numero della home era cliccabile proprio
+     verso la pagina che lo smentiva. Adesso la home porta la **stessa forma** che la card «Spesa» dei Costi
+     stampa gia' per l'azienda. Il badge di `.stat` e' `position:absolute`: il cambio costa zero px, e la prova
+     lo rimisura invece di lasciarlo a memoria. */
+  console.log('\n14. il tetto del giorno nella home, e i badge inventati');
+  for (const n of ['11', '40']) {
+    await vai('n=' + n + '&tendina=chiusa');
+    const m = await page.evaluate(nn => { const q = DGT_DATI.modello(+nn); return { speso: q.costoOggi, tetto: q.tettoAzienda().giorno }; }, n);
+    const terzo = await txt('.a-stats .stat:nth-child(3)');
+    check(terzo.includes(m.speso + ' €') && terzo.includes('su ' + m.tetto + ' € al giorno'),
+      `a ${n} la home dice il numero col suo tetto, presi dal modello: «${terzo}»`);
+    check(m.speso > m.tetto && terzo.includes('oltre il limite'),
+      `e quando e' oltre lo dice con la parola della pagina Costi (${m.speso} € su ${m.tetto} €)`);
+    check(!/12\s*%/.test(await txt('.a-stats')), `a ${n} il «12 %» scritto a mano non c'e' piu'`);
+    /* la stessa forma su due pagine: se un giorno divergono, questa cade */
+    await vai('pagina=costi&n=' + n + '&tendina=chiusa');
+    const card = await txt('.ncard.regola.spesa .st');
+    check(card.includes(m.speso + ' € su ' + m.tetto + ' € al giorno') && card.includes('oltre il limite'),
+      `e la card dei Costi dice la stessa cosa con le stesse parole: «${card.slice(0, 60)}…»`);
+  }
+  /* L'invariante, non il caso singolo: **nessun badge dell'intestazione ripete il numero che gli sta accanto**.
+     E' la regola gia' costata una correzione nella versione 16 («non si aggiunge un numero che ne ripete un
+     altro sulla stessa schermata»), che pero' nessuna prova teneva: ne aveva presi sei, in quattro pagine. */
+  const PAGINE_31 = ['', 'pagina=richieste', 'pagina=dipartimento&dip=svi', 'pagina=dipendente&id=4',
+    'pagina=costi', 'pagina=agenda', 'pagina=chat', 'pagina=esecuzione&id=4', 'pagina=workflow', 'pagina=routine'];
+  const ripetuti = [];
+  for (const n of ['11', '40']) for (const q of PAGINE_31) {
+    await vai((q ? q + '&' : '') + 'n=' + n + '&tendina=chiusa', 250);
+    const r = await page.evaluate(() => [...document.querySelectorAll('.a-stats .stat')].map(s => {
+      const b = s.querySelector('.badge'); if (!b) return null;
+      const num = ((s.querySelector('b') || {}).textContent || '').replace(/\s*€$/, '').trim();
+      return b.textContent.trim() === num ? (num + ' / ' + s.innerText.replace(/\s+/g, ' ')) : null;
+    }).filter(Boolean));
+    r.forEach(x => ripetuti.push((q || 'home') + ' @' + n + ': ' + x));
+  }
+  check(ripetuti.length === 0, 'nessun badge dell\'intestazione ripete il numero che gli sta accanto, su dieci pagine per due taglie (' + ripetuti.length + ')' + (ripetuti.length ? ': ' + ripetuti.join(' | ') : ''));
+  /* e nessun badge dell'intestazione e' un letterale che il modello non conosce */
+  await vai('');
+  const badgeHome = await page.evaluate(() => [...document.querySelectorAll('.a-stats .badge')].map(b => b.textContent.trim()));
+  check(badgeHome.length === 1 && badgeHome[0] === 'oltre il limite',
+    'e nella home ne resta uno solo, quello che dice il tetto: ' + JSON.stringify(badgeHome));
+  /* il Riepilogo del titolare: lo stesso numero porta lo stesso tetto (era «124 €» e basta) */
+  await vai('pannello=riepilogo');
+  const kvRie = await page.evaluate(() => [...document.querySelectorAll('.a-tend.aperta .kv')].map(e => e.innerText.replace(/\s+/g, ' ')));
+  const mm = await page.evaluate(() => { const q = DGT_DATI.modello(11); return q.costoOggi + ' € su ' + q.tettoAzienda().giorno + ' €'; });
+  check(kvRie.some(x => x.includes(mm)), 'e il Riepilogo del titolare dice lo stesso numero con lo stesso tetto: ' + JSON.stringify(kvRie));
+
   check(errors.length === 0, 'nessun errore in console: ' + JSON.stringify(errors));
   console.log(`\n${ok} ok, ${ko} ko`);
   await browser.close(); process.exit(ko ? 1 : 0);

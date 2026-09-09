@@ -2891,13 +2891,14 @@ La pillola non è raggiungibile da un indirizzo: col passo a 342 nessun grafo **
 coprono, e nel modello nessuno è mai stato trascinato. Quindi `a-grafo-coperti.png` **trascina davvero** — `p7`
 sotto `p3`, con eventi del mouse veri, come farebbe una mano — e poi scatta. È la 82ª cattura.
 
-### Versione 31: il consiglio sul tetto sfondato, e nessun codice scritto (2026-09-09)
+### Versione 31: il tetto sfondato che la home diceva al contrario (2026-09-09)
 
-**Sessione di solo consiglio, come la 28.** Domanda: che cosa dice la home quando 3 dipendenti su 11 hanno
-sfondato il tetto del giorno e l'azienda è al 108 %. Cinque pareri, revisione incrociata su cinque angoli
-(i fatti nel codice, il costo su prove e catture, le regole e la lingua, la spina dorsale, il righello a undici
-e a quaranta), verdetto **da confermare** in `PROSSIMA-SESSIONE.md`. Prove **619 verdi, 0 ko**, catture **82**,
-rifatte prima e dopo: **nessuna riga toccata**.
+**Due consigli, cinque decisioni dell'utente, e la parte decisa disegnata.** Domanda di partenza: che cosa dice la
+home quando 3 dipendenti su 11 hanno sfondato il tetto del giorno e l'azienda è al 108 %. Cinque pareri, revisione
+incrociata su cinque angoli (i fatti nel codice, il costo su prove e catture, le regole e la lingua, la spina
+dorsale, il righello a undici e a quaranta); poi le risposte dell'utente, un **secondo** consiglio sulla
+disposizione dei limiti, e il disegno di quello che era stato deciso. Prove **638 verdi, 0 ko** (erano 619),
+catture **82** di cui 28 rifatte, artefatti ripubblicati.
 
 **La domanda era mal posta, e la revisione incrociata l'ha spostata.** La home non tace: stampa già
 «124 € spesi oggi» con il badge **`↓ 12 %`** — freccia in giù, tono «calo» — mentre la pagina Costi stampa lo
@@ -3098,6 +3099,40 @@ quaranta**.
    limite non ha dove stare.
 6. **Nessun limite è scrivibile**: la pagina Impostazioni non è un contorno, è il primo posto del prodotto dove si
    scrive un numero.
+
+### Che cosa è stato disegnato, dopo le decisioni
+
+Le quattro risposte dell'utente hanno chiuso il dubbio, quindi la parte che era **il lavoro di questa sessione**
+è stata scritta. Prove **638 verdi, 0 ko** (erano 619: **+19**), catture **82**, di cui **28 rifatte**.
+
+**1. La home dice quello che la pagina Costi dice già.** Il terzo numero dell'intestazione passa da
+
+> «124 € **spesi oggi** · `↓ 12 %`»  →  «124 € **su 115 € al giorno** · ⚠ **oltre il limite**»
+
+ed è **la stessa forma** che `cardCostoAzienda` stampa già per l'azienda nella pagina Costi (`direzione-a.js:1912`):
+non è stato inventato né un componente né una parola. A quaranta dice «427 € su 400 € al giorno · oltre il limite».
+Il badge di `.stat` è `position:absolute`, quindi **il cambio è costato zero px**: il terzo numero resta 236,0 px a
+undici e 251,1 a quaranta, e l'intestazione ha 269,8 px liberi (229,1 a quaranta). Il ramo opposto («nel limite»,
+`badge flat`) esiste e regge, anche se nel modello di oggi non si vede mai.
+
+**2. I quattordici badge che mentivano o ripetevano se ne sono andati.** Cinque **mentivano** (`↑1` scritto a mano;
+`Math.min(2, att)` nella home, nelle Richieste e sul telefono; `↓12%`) e nove **ripetevano il numero che gli stava
+accanto** — «2 approvate oggi ↑2», «4 da rifare ↓4», «3 al lavoro ↑3», «40 da leggere ↓40» — cioè violavano la
+regola della versione 16 in quattro pagine della Console e in tre schermate del telefono. Nella home ne resta
+**uno solo**: quello che dice il tetto. Gli altri badge del prodotto non sono stati toccati, perché sono onesti:
+i due confronti veri dei Costi, i quattro a 30 giorni del Dipendente, i due dell'Agenda, e i due del telefono
+(«3» al lavoro su 11 dipendenti, «15:00» del prossimo) — che sono numeri **diversi** da quello accanto.
+
+**3. Il telefono porta il denominatore dove ci sta.** La riga `.kv` della card Consegne della schermata 3 dice
+adesso «Spesa di oggi **124 € su 115 €**»: 228 px di riga, e la forma ne chiede 180,5 — non tagliata, e nessuno
+degli otto telefoni scorre di lato. **Non** fra i tre numeri grandi, dove ogni forma sfora (da −9 a −78 px su
+278 px di colonna). La stessa riga del **Riepilogo della Console** è stata allineata: cambiarne una sola avrebbe
+creato una nuova incoerenza fra le due superfici.
+
+**4. Le prove non verificano l'elemento, verificano l'invariante.** Le +19 verifiche chiedono due cose: che la
+home e i Costi dicano **la stessa cosa dello stesso numero** (se un giorno divergono, la prova cade) e che
+**nessun badge dell'intestazione ripeta il numero accanto**, su dieci pagine per due taglie. Il difetto non era il
+singolo badge: era la classe, ed è la classe che adesso è tenuta — come per gli errori muti del CSS.
 
 ### Una cattura instabile, trovata rifacendo il prima/dopo
 
