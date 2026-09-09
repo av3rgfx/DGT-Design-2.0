@@ -2664,8 +2664,13 @@ esattamente la misura della pagina), e la mini-mappa compare quando `basso > 820
 | **342** | 921 px | **sempre visibile** | **0 px** | **0 px** |
 
 **Verificato sul vivo**, trascinando i nodi col gesto vero fino a passo 342: **0 coperture, 0 scontri**, canvas
-983 px con un nodo aperto, mini-mappa permanente. Non esiste un passo che chiuda il difetto e lasci la mappa
-nascosta.
+983 px, mini-mappa permanente. Non esiste un passo che chiuda il difetto e lasci la mappa nascosta.
+
+E la mappa permanente ha un prezzo suo, trovato **guardando l'anteprima** e poi misurato: la `.wmini` da 200×120
+sta a `left:16px; bottom:78px`, e a passo 342 il nodo del **titolare** finisce proprio lì. Misurato: la mappa ne
+copre **180×22 px, il 22 % della card** — la striscia in basso, dove sta scritto «aspetterà la tua firma». Il
+centro della card resta cliccabile, ma è una copertura che nasce mentre se ne chiude un'altra, e sul nodo che
+dice chi firma. Se la parte 2 passa, la mappa va spostata o il canvas va allungato sotto l'ultima riga.
 
 #### 5. Cinque cose trovate misurando, che non sono un dubbio progettuale
 

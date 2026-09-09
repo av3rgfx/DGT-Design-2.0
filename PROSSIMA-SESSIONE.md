@@ -118,7 +118,12 @@ si misurano, e vanno chiuse comunque, qualunque strada scegli.
 
 > Il passo verticale del grafo (oggi 216, seminato da `ramoPosa`) va portato a **342**, così che un nodo aperto non
 > copra mai più quello sotto? Il prezzo misurato è che **la mini-mappa diventa permanente** (il canvas passa da
-> 669 a 921 px e supera la soglia degli 820) e che il grafo non sta più in una schermata sola.
+> 669 a 921 px e supera la soglia degli 820) e che il grafo non sta più in una schermata sola. E la mappa
+> permanente, misurata sull'anteprima, **copre il 22 % del nodo del titolare** (180×22 px: la striscia dove sta
+> scritto «aspetterà la tua firma»), perché sta a `left:16px; bottom:78px` e a passo 342 l'ultima riga arriva
+> proprio lì. Il centro della card resta cliccabile. Se la parte 2 passa, la mappa va spostata o il canvas
+> allungato sotto l'ultima riga: è una correzione piccola, ma va fatta insieme, se no si chiude una copertura e
+> se ne apre un'altra proprio sul nodo che dice chi firma.
 
 E, attaccata a quella, una seconda domanda che nessuno ti ha ancora messo davanti: **i grafi che hai già disposto a
 mano restano al passo vecchio** — la regola 42 li trasporta e non li tocca. L'unico modo per portarli al passo
