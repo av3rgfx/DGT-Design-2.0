@@ -2797,7 +2797,7 @@ resti niente di cliccabile. **È il caso per cui serve la seconda metà della de
 **Decisa dall'utente**, che ha risposto alle tre domande della 29: *«si costruiamolo»*, *«riusiamo riordina che già
 esiste no?»*, e — sulla terza — *«Perché riordina dovrebbe riscrivere tutto? Non sposta semplicemente la posizione
 e l'ordine dei nodi?»*. **Quella terza domanda ha scoperto un difetto**, ed è la parte migliore di questa versione.
-Prove **617 verdi, 0 ko** (erano 605). Catture **82** (era 81).
+Prove **619 verdi, 0 ko** (erano 605). Catture **82** (era 81).
 
 #### 1. La domanda dell'utente aveva ragione, e ha trovato un difetto
 
@@ -2863,7 +2863,22 @@ può creare — e non c'è nessun «Riordina» da premere. La striscia del telef
 la tua firma», «aspetterà la tua firma»), ed è l'unica riga di quello schermo che parla di firma: una faccenda di
 disposizione lì accanto la svaluterebbe.
 
-#### 4. La cattura che non si poteva fare
+#### 4. Un errore muto, e la prova che adesso lo prende
+
+La pillola era scritta `color:var(--t1)`. **`--t1` non esiste in tutto il repository** — ci sono `--t2` e
+`--t2-light`. Senza valore di ripiego il colore cadeva sull'**ereditato**, quindi la pillola era identica alle
+altre e non si vedeva che era l'unica da cliccare. Nessun avviso, nessuna prova rossa: solo un disegno che non fa
+quello che dice. L'ha visto un sottoagente rileggendo il file prima di pubblicarlo.
+
+Corretta con il **lime**, che è l'accento e segna l'unica cosa cliccabile della riga (misurato:
+`rgb(184,252,100)` contro `rgb(232,232,232)` dei referti; regola 4, nessun colore nuovo).
+
+E adesso c'è una prova che prende **tutta la classe** di errore: nessuna variabile CSS usata **senza valore di
+ripiego** può essere mai definita. La distinzione conta: `var(--z,1)` e `var(--av-pupilla-bordo,0)` dichiarano da
+sé che la variabile può mancare, e infatti mancano di proposito; `var(--t1)` no. Sulla pagina viva, con le
+definizioni prese dai fogli **e** dagli attributi `style`: **zero**.
+
+#### 5. La cattura che non si poteva fare
 
 La pillola non è raggiungibile da un indirizzo: col passo a 342 nessun grafo **seminato** ha due nodi che si
 coprono, e nel modello nessuno è mai stato trascinato. Quindi `a-grafo-coperti.png` **trascina davvero** — `p7`

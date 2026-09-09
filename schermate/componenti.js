@@ -411,7 +411,7 @@ window.DGT_COMPONENTI = (function () {
 .wbar .azioni-b .pill.picc{height:32px;padding:0 12px;font-size:12px}
 .wsc{position:absolute;left:16px;top:16px;z-index:6;display:flex;gap:6px;align-items:center;font-size:11px;color:var(--t2)}
 /* la riga in cima enuncia fatti e non si tocca: l'unica pillola che si clicca e' quella che propone (versione 30) */
-.wsc .chip.vai{cursor:pointer;border-color:rgb(184 252 100/.45);color:var(--t1)}
+.wsc .chip.vai{cursor:pointer;border-color:rgb(184 252 100/.45);color:var(--lime)}
 .wsc .chip.vai:hover{background:var(--lime);color:var(--ink);border-color:transparent}
 .wsc .chip{height:24px;font-size:11px}
 `;

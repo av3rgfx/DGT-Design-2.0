@@ -940,6 +940,31 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(c1.cliccabili === 1, 'stringendo due nodi a mano la pillola compare, ed è l\'unica della riga che si clicca (' + c1.cliccabili + ')');
   check(/^1 nodo ne copre un altro quando lo apri · Riordina$/.test(c1.testi[0]), 'e dice il fatto al singolare, in «nodi» e non in «passi» — perché il coperto può essere l\'innesco o la tua firma: «' + c1.testi[0] + '»');
   check(c1.largo <= 992, 'la riga in cima ci sta: ' + c1.largo + ' px sui 992 utili');
+  const tinte = await page.evaluate(() => {
+    const vai = document.querySelector('.wsc .chip.vai');
+    const altra = document.querySelector('.wsc .chip:not(.vai)');
+    return { vai: getComputedStyle(vai).color, altra: getComputedStyle(altra).color, cursore: getComputedStyle(vai).cursor };
+  });
+  check(tinte.vai === 'rgb(184, 252, 100)' && tinte.vai !== tinte.altra && tinte.cursore === 'pointer',
+    'e si distingue dai referti con l\'accento, non con un colore nuovo: ' + tinte.vai + ' contro ' + tinte.altra);
+
+  /* ---- Nessuna variabile CSS usata e mai definita ----
+     Questa prova nasce da un errore vero: la pillola era scritta `color:var(--t1)`, e `--t1` **non esiste** in
+     tutto il repository — esistono `--t2` e `--t2-light`. Senza valore di ripiego il colore cadeva
+     sull'ereditato, quindi la pillola era identica alle altre e non si vedeva che era l'unica da cliccare.
+     Un errore muto: nessun avviso, nessuna prova rossa, solo un disegno che non fa quello che dice. */
+  const varMancanti = await page.evaluate(() => {
+    const testo = [...document.querySelectorAll('style')].map(e => e.textContent).join('\n');
+    /* Le definizioni stanno nei fogli **e** negli attributi `style` degli elementi (il canvas ne scrive parecchie). */
+    const inline = [...document.querySelectorAll('[style]')].map(e => e.getAttribute('style')).join(';');
+    const definite = new Set(((testo + ';' + inline).match(/--[a-zA-Z0-9-]+\s*:/g) || []).map(s => s.replace(/\s*:$/, '')));
+    /* Si guardano solo gli usi **senza valore di ripiego**: `var(--x,1)` dichiara da sé che --x può mancare,
+       `var(--x)` no — e se manca, il valore cade sull'ereditato in silenzio. È il caso di `--t1`. */
+    const senzaRipiego = new Set((testo.match(/var\(\s*--[a-zA-Z0-9-]+\s*\)/g) || [])
+      .map(s => s.replace(/var\(\s*/, '').replace(/\s*\)$/, '')));
+    return [...senzaRipiego].filter(v => !definite.has(v));
+  });
+  check(varMancanti.length === 0, 'nessuna variabile CSS usata **senza valore di ripiego** e mai definita: quelle cadono sull\'ereditato in silenzio (' + (varMancanti.join(', ') || 'zero') + ')');
 
   /* i numeri dei passi **prima** di premere: è la cosa che «Riordina» non deve toccare */
   const numeriPrima = await page.evaluate(() => { const o = {}; document.querySelectorAll('.wnode').forEach(e => {

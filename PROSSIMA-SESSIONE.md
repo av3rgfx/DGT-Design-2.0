@@ -2,7 +2,7 @@
 ## Versione 30 — il prodotto se ne accorge e lo propone (2026-09-09)
 
 **Le tre risposte dell'utente alla versione 29 sono disegnate**, e la terza ha scoperto un difetto che nessuno
-aveva visto. **617 verifiche verdi**, 0 ko (erano 605). **82 catture** (era 81). Il canvas del workflow è chiuso:
+aveva visto. **619 verifiche verdi**, 0 ko (erano 605). **82 catture** (era 81). Il canvas del workflow è chiuso:
 non resta niente di misurato e aperto.
 
 ### Le tre risposte, e che cosa ne è uscito
@@ -69,7 +69,7 @@ non è raggiungibile.
 ## Stato alla fine della versione 30
 
 - **Branch**: `claude/node-overlap-issue-ccwwgu`, **PR #22**.
-- **Prove**: **617 verdi, 0 ko** — Console 160, mobile 83, Costi 50, Agenda e Chat 56, Workflow **219**, Routine 49.
+- **Prove**: **619 verdi, 0 ko** — Console 160, mobile 83, Costi 50, Agenda e Chat 56, Workflow **221**, Routine 49.
 - **Catture**: **82**, con `a-grafo-coperti.png` nuova.
 - **Codice toccato nella 30**: `dati.js` (`ramoNumera`: l'innesco non è un passo), `componenti.js`
   (`canvasCoperti`, la pillola nella riga in cima, il suo CSS, l'export), `prove/workflow.js` (sezione 31),
