@@ -65,8 +65,12 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(soloSuUscite, 'e sta solo su righe che dicono «Uscita»: un contrasto è per definizione una cosa uscita senza firma');
   /* ogni richiesta è governata da una regola sola, e la somma torna: nessuna scoperta, nessuna contata due volte */
   for (const n of [11, 40]) {
-    const r = await modello(n, m => ({ tot: m.richieste.length, somma: m.regole.reduce((t, g) => t + m.contaRegola(g), 0), senza: m.richieste.filter(x => !m.regolaPer(x)).length }));
-    check(r.somma === r.tot && r.senza === 0, 'a ' + n + ' ogni richiesta ha una regola e una sola: ' + r.somma + ' su ' + r.tot);
+    /* Versione 32: il conto si fa sulle **uscite**. La richiesta del tetto non è un'uscita verso un cliente — è una
+       decisione sull'azienda — e nessuna regola d'approvazione la governa: senza questa distinzione cadrebbe su
+       «Report interni: automatica», e la pagina Richieste stamperebbe che un rendiconto governa il tetto di spesa. */
+    const r = await modello(n, m => ({ tot: m.richieste.filter(x => x.tipo !== 'tetto').length, tetto: m.richieste.filter(x => x.tipo === 'tetto').length, somma: m.regole.reduce((t, g) => t + m.contaRegola(g), 0), senza: m.richieste.filter(x => x.tipo !== 'tetto' && !m.regolaPer(x)).length }));
+    check(r.somma === r.tot && r.senza === 0, 'a ' + n + ' ogni uscita ha una regola e una sola: ' + r.somma + ' su ' + r.tot);
+    check(r.tetto === 1, 'e la richiesta del tetto non ne ha nessuna, perché non è un\'uscita: è una decisione sull\'azienda');
   }
 
   console.log('\n3. conferma d: g4 accesa, e il numero che dice che cosa trattiene');
@@ -135,7 +139,7 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(Math.min(...aria) >= 64, 'l\'aria fra intestazione e prima sezione non scende sotto i 64 px di prima (minimo ' + Math.min(...aria) + ')');
   /* il prezzo, misurato e non stimato: la stima diceva 64 px, la misura ne dice 68 */
   await vai('pagina=dipartimento&dip=svi&tendina=chiusa');
-  check(await alto() === 3198, 'Sviluppo è alta 3 198 px: 3 130 più i 68 px dell\'intestazione a due righe (' + await alto() + ')');
+  check(await alto() === 3396, 'Sviluppo è alta 3 396 px: i 3 198 di prima più i 198 della card della richiesta del tetto (' + await alto() + ')');
   await vai('tendina=chiusa');
   check(await alto() === 2388, 'la home 2 388: 2 320 più gli stessi 68 (' + await alto() + ')');
 

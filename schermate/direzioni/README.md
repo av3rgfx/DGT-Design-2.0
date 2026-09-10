@@ -67,7 +67,7 @@ faceva, e le altre consegne intorno. Studio e misure in `DIREZIONI.md`, «Versio
   il CSS delle primitive, le variabili e le funzioni che le stampano (`av`, `pair`, `chipStato`, `iconaTipo`, `eur`,
   `differenze`…). Ogni pagina lo carica subito dopo `comune.js` e mette in pagina `DGT_COMPONENTI.css` prima del CSS della
   Console (`direzione-a.js`, che tiene la cornice, le pagine, le tendine e `monta`).
-- **Sei** prove cliccate in `prove/` (con il `README.md` che dice il comando), **619 verifiche in tutto** (dalla versione 30; erano 605 alla 29, 587 alla 27, 552 alla 24, 478 alla 22, 421 alla 21 e 385 alla 20): la quinta è `workflow.js` (221: il perimetro delle consegne, il canvas dei workflow, la firma anticipata, la schermata 10 del telefono, i 120 stati del canvas in cui nessun nodo ne copre un altro e — dalla versione 24 — **il grafo e i suoi sette gesti**: che gli archi vengano da `G.archi` e non dall'ordine dell'array, che i due capi di ogni filo cadano sulle prese, che il trascinamento sia esatto a cinque combinazioni di larghezza e zoom, che «Riordina» porti a zero gli incroci, che il rilascio nel vuoto crei il passo già collegato, che lo zoom interno componga con quello della cornice, e che nessun nodo stampi «0 €»; dalla **versione 27** il canvas sul telefono — che sia lo stesso componente e non una copia, i cinque gesti spenti dalla sola lettura, lo scatto d'ingresso «tutto dentro» col grafo che tocca tutti e due i fianchi, il tocco sul nodo che porta a scala 1 centrato, le etichette del contratto fuori dal disegno e leggibili, i **due gesti del dito** costruiti a mano con `TouchEvent` perché il pinch vuole due dita, e la **regola 42** verificata prima e dopo ogni ingrandimento) e la sesta è `routine.js` (49: le sei conferme della versione 22, cioè «Uscita» al posto di «Approvata», la precedenza fra routine e regola, `g4` accesa col suo conto, la pagina delle routine e l'intestazione a due righe). Stanno in un file loro perché `console.js` sceglie tre sezioni con `nth-of-type`. `console.js` (160 verifiche: tendine, Richieste, editor del
+- **Sei** prove cliccate in `prove/` (con il `README.md` che dice il comando), **675 verifiche in tutto** (dalla versione 30; erano 605 alla 29, 587 alla 27, 552 alla 24, 478 alla 22, 421 alla 21 e 385 alla 20): la quinta è `workflow.js` (221: il perimetro delle consegne, il canvas dei workflow, la firma anticipata, la schermata 10 del telefono, i 120 stati del canvas in cui nessun nodo ne copre un altro e — dalla versione 24 — **il grafo e i suoi sette gesti**: che gli archi vengano da `G.archi` e non dall'ordine dell'array, che i due capi di ogni filo cadano sulle prese, che il trascinamento sia esatto a cinque combinazioni di larghezza e zoom, che «Riordina» porti a zero gli incroci, che il rilascio nel vuoto crei il passo già collegato, che lo zoom interno componga con quello della cornice, e che nessun nodo stampi «0 €»; dalla **versione 27** il canvas sul telefono — che sia lo stesso componente e non una copia, i cinque gesti spenti dalla sola lettura, lo scatto d'ingresso «tutto dentro» col grafo che tocca tutti e due i fianchi, il tocco sul nodo che porta a scala 1 centrato, le etichette del contratto fuori dal disegno e leggibili, i **due gesti del dito** costruiti a mano con `TouchEvent` perché il pinch vuole due dita, e la **regola 42** verificata prima e dopo ogni ingrandimento) e la sesta è `routine.js` (49: le sei conferme della versione 22, cioè «Uscita» al posto di «Approvata», la precedenza fra routine e regola, `g4` accesa col suo conto, la pagina delle routine e l'intestazione a due righe). Stanno in un file loro perché `console.js` sceglie tre sezioni con `nth-of-type`. `console.js` (160 verifiche: tendine, Richieste, editor del
   dipendente, esecuzione, 40, la barra «Oggi in azienda», la barra dei passi, i controlli delle intestazioni, le frecce di
   riga e — dalla versione 21 — le **asserzioni di visibilità** su nove pagine per due taglie e due stati della tendina,
   più l'invariante «chi ha deciso al posto del titolare risolve a un record che esiste»), `mobile.js` (83: le otto
@@ -98,8 +98,8 @@ faceva, e le altre consegne intorno. Studio e misure in `DIREZIONI.md`, «Versio
   sono due e si contraddicono**: **30 €** disegnati dalla pagina Costi (la somma dei budget dei suoi) contro i
   **69 €** del modello (la quota del 60 %), 2,3 volte. Altre tre note misurate: col tetto che ferma davvero **il
   prodotto si apre fermo** (6 esecuzioni a undici, 20 a quaranta); un **sesto stato** non è un chip ma una
-  superficie di crash (`m.STATI[e.stato].breve` lancia; 42 punti in 5 file; e «ferma» è già la parola dell'errore,
-  in rosa); e **nessun limite è scrivibile oggi** — l'editor ha tre chiavi e le penne sulle card dei budget sono
+  superficie di crash (`m.STATI[e.stato].breve` lancia; 42 punti in 5 file — **numero poi risultato falso: è uno
+  solo, in un file solo**, ricontato nella versione 32; e «ferma» è già la parola dell'errore, in rosa); e **nessun limite è scrivibile oggi** — l'editor ha tre chiavi e le penne sulle card dei budget sono
   `rb ghost` senza `data-az`.
   **Quello che le decisioni hanno chiuso è disegnato**: la home dice «124 € su 115 € al giorno · oltre il limite»
   (la stessa forma della card che i Costi stampavano già per l'azienda, copiata invece che inventata), il telefono
@@ -111,6 +111,29 @@ faceva, e le altre consegne intorno. Studio e misure in `DIREZIONI.md`, «Versio
   obbligatoria; **ferma solo l'azienda** e nessuno stato nuovo; il dipartimento parte **senza** soffitto. Il
   prodotto **si aprirà fermo** (6 esecuzioni a undici, 20 a quaranta) ed è voluto. Costruirlo è la prossima
   sessione, e comincia da **Impostazioni** (decisione 56): oggi nessun limite è scrivibile da nessuna parte.
+- **I limiti di spesa, e il prodotto che si apre fermo** (versione 32, 2026-09-09). Il tetto d'azienda **lo pone
+  il titolare**: era `sommaBudget()`, cioè un numero che nessuno aveva scelto, e adesso è quello che ha scritto
+  lui — la somma resta solo come **proposta** della prima apertura, e assumere un dipendente muove la proposta e
+  non il tetto. Nasce la pagina **Impostazioni** (decisione 56), che è **il primo posto del prodotto dove si
+  scrive un numero**: diciotto campi a undici, e ci si entra dal «124 € su 115 €» della home e dai Costi, senza
+  nessun settimo cerchio nel rail. I limiti sono tutti in **euro**, e la percentuale è un **gesto**: si scrive
+  «60 %» e il prodotto la fissa in euro in quel momento, con la riga che dice da dove viene («60 % di 115 € al
+  giorno»). Spariscono `tetti.dip` in percentuale, `soffittoDi`, `sommaSoffitti` e `avvisoSopra100`, che non
+  avrebbe potuto scattare mai. Il dipartimento parte **senza** budget, e la pagina Costi smette di stampare «su
+  30 €» — la somma dei budget dei suoi, che si contraddiceva col 60 % del modello.
+  **E il freno è cablato davvero**: `fermaPrimaDelPasso` non lo leggeva nessuna pagina, adesso lo legge il
+  prodotto, e siccome il tetto è già consumato all'apertura (124 € su 115 a undici, 427 su 400 a quaranta) **il
+  prodotto si apre fermo** — 3 esecuzioni su 3 a undici, 12 su 12 a quaranta. **Nessuno stato nuovo**: chi è
+  fermo non cambia `e.stato`, prende `e.pausa` con `pausaPer: 'tetto'`, cioè il concetto che il prodotto aveva
+  già (il chip «In pausa» lo stampa `componenti.js` per tutte e due le superfici, il punto dell'avatar si spegne
+  da sé, la pagina Esecuzione aveva già la frase e il log). La barra «Oggi in azienda» **non prende una quinta
+  casella**: la seconda dice l'altra verità con la stessa forma — «3 in pausa · tetto» invece di «3 al lavoro»,
+  stessi avatar, stesso conto — perché sul telefono lo stesso quadro è una griglia due per due con quattro
+  caselle esatte e l'etichetta ha 53 px. Lo sblocco è **uno solo**: la richiesta lime «Tetto del giorno
+  raggiunto», che porta una **cifra** (`m.decidi` ha imparato il quinto parametro) e che è il costo dichiarato
+  del passo che sfonderebbe — 21 € a undici, 29 a quaranta — non una stima della giornata (che farebbe +89 e
+  **+566**). La coda passa da 4 a 5 e da 7 a 8, non da 4 a 10 e da 7 a 27. Prove **675 verdi** (erano 638),
+  catture **84**.
 - **Il prodotto se ne accorge e lo propone** (versione 30, decisa dall'utente): se due nodi si coprono quando li
   apri, la riga in cima al canvas lo dice — «1 nodo ne copre un altro quando lo apri · Riordina» — ed è l'unica
   pillola della riga che si clicca. Il gesto è **«Riordina»**, quello che c'era già. Dice «nodi» e non «passi»

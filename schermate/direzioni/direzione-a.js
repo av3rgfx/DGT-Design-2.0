@@ -480,6 +480,26 @@ window.DIREZIONE_A = (function () {
 .crow.sp .bud .prog.oltre i{background:var(--badge-red)}
 .crow.sp .eur .badge{margin-right:10px;vertical-align:3px}
 .task.spesa.dpt .who{padding-right:72px}
+/* ===== pagina Impostazioni (versione 32, decisione 56): il primo posto del prodotto dove si SCRIVE un numero =====
+   Fino alla 31 nessun limite era modificabile da nessuna parte: le penne sulle card dei budget erano rb ghost
+   senza data-az, cioè decorazione, e i 22 numeri a undici (44 a quaranta) erano assegnati senza che il titolare
+   li vedesse mai. Il campo è la pillola del sistema, scura come la superficie che lo ospita (la pillola bianca di
+   .campo vive nel pannello chiaro della tendina e qui sarebbe un pezzo di un'altra stanza). */
+.lim{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.lim input{width:104px;height:44px;border-radius:var(--r-pill);background:var(--round);border:1px solid rgb(255 255 255/.14);padding:0 14px;font:400 17px/22px var(--font);color:var(--white);outline:none;-webkit-font-smoothing:antialiased;text-align:right}
+.lim input:focus{border-color:var(--white)}
+.lim input::placeholder{color:var(--t2);font-size:14px}
+.lim .eu{color:var(--t2);font-size:15px}
+.wfirma.due{grid-template-columns:repeat(2,1fr)}
+.wfirma .fcard .lim{justify-content:flex-start}
+.wfirma .fcard .lim input{width:132px;height:48px;font-size:22px}
+.traccia{font-size:12px;line-height:17px;color:var(--t2)}
+.crow.lrow{height:78px;grid-template-columns:40px minmax(0,1fr) 150px 150px 130px 32px}
+.crow.lrow.tre{grid-template-columns:40px minmax(0,1fr) 138px 138px 138px 118px 32px}
+.crow.lrow .campi{display:grid;gap:4px;justify-items:end}
+.crow.lrow .campi .k{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--t2);line-height:12px}
+.crow.lrow .lim input{width:96px;height:40px;font-size:16px;padding:0 12px}
+.crow.lrow.tre .lim input{width:86px}
 /* ===== pagina Agenda (versione 15, 2026-09-06): la barra agenda del riferimento allargata al giorno (blocchi su corsie),
    le card degli eventi, le righe della settimana ===== */
 .giorno{border-radius:var(--r-card);background:var(--white);color:var(--ink);padding:20px 22px;margin-top:-8px}
@@ -578,19 +598,28 @@ window.DIREZIONE_A = (function () {
      esiste nessun ieri — mentre i Costi lo marcavano «oltre»: due pagine, lo stesso numero, due verdetti
      opposti, e il numero della home era per giunta cliccabile proprio verso la pagina che lo smentiva.
      Il badge di `.stat` e' `position:absolute` (vedi il CSS): cambiargli il testo costa **zero px**. */
+  /* La parola per un gruppo di esecuzioni aperte (versione 32): «al lavoro» finche' lavorano davvero, «in pausa»
+     quando il tetto d'azienda le ha fermate tutte. Un numero che dice «al lavoro» mentre nessuno lavora e' lo
+     stesso difetto che la versione 31 e' servita a togliere dalla home. */
+  const parolaLavoro = lst => lst.length > 0 && lst.every(e => e.pausaPer === 'tetto') ? 'in pausa' : 'al lavoro';
   const chipTetto = (speso, tetto) => speso > tetto
     ? `<span class="badge down">${ic('i-warn')}oltre il limite</span>`
     : `<span class="badge flat">${ic('i-check')}nel limite</span>`;
 
   function cardAttivita(m, e, i) {
     const pend = m.richiesteDi('attesa').some(a => a.chi === e.id);
+    /* Fermo per il tetto (versione 32): il chip lime «In corso» direbbe il contrario del vero, e il **punto lime**
+       dell'avatar pure — la regola 19 dice lime = al lavoro, e da fermo niente punto. Il chip «In pausa» non e'
+       nuovo: lo stampa `chipStato` in `componenti.js`, quindi Console e telefono dicono la stessa parola. Il tono
+       lime della card resta solo a chi ha davvero una consegna che aspetta la firma. */
+    const fermo = e.pausa && e.pausaPer === 'tetto';
     const tono = pend ? 'lime' : (i % 2 ? 'dark' : 'gray');
     const d = m.dipDi(e);
     return `<div class="ncard task ${tono}">
-      <div class="who">${av(m, e, '', null, 'data-anima="1"')}<div><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div></div>
+      <div class="who">${av(m, e, '', e.pausa ? 'libero' : null, 'data-anima="1"')}<div><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div></div>
       <div class="nt"><span class="rb ghost">${ic('i-bell')}${pend ? '<i class="dot"></i>' : ''}</span><span class="rb ghost" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Apri l'esecuzione">${ic('i-ne')}</span></div>
       <div class="body"><span class="ico">${ic(iconaDip[e.dip])}</span><div><div class="tt">${esc(e.att.titolo)}</div><div class="meta"><b>${esc(e.att.cliente)}</b><span>da</span><b>${esc(e.att.da)}</b></div></div></div>
-      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel"><span class="chip lime">${ic('i-play')}In corso</span><span>Passo ${e.att.passo[0]} di ${e.att.passo[1]}</span>${ic('i-chev')}</span><span class="rb ghost" data-az="pagina" data-pagina="chat" data-id="${e.id}" title="Scrivi a ${esc(m.etichetta(e))}">${ic('i-chat')}</span><span class="rb black" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Passi, log e output">${ic('i-eye')}</span></div></div>
+      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${fermo ? `<span class="chip">${ic('i-pause')}In pausa</span>` : `<span class="chip lime">${ic('i-play')}In corso</span>`}<span>Passo ${e.att.passo[0]} di ${e.att.passo[1]}</span>${ic('i-chev')}</span><span class="rb ghost" data-az="pagina" data-pagina="chat" data-id="${e.id}" title="Scrivi a ${esc(m.etichetta(e))}">${ic('i-chat')}</span><span class="rb black" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Passi, log e output">${ic('i-eye')}</span></div></div>
     </div>`;
   }
   function cardEsecuzione(m, e, i) {
@@ -700,7 +729,16 @@ window.DIREZIONE_A = (function () {
   function barraStato(m) {
     const g = m.gruppiOggi(), q = [], largo = m.n <= 16;
     if (g.fatte) q.push(`<span class="qua" data-az="pagina" data-pagina="richieste" title="Le richieste al titolare"><span class="ico">${ic('i-check')}</span><b>${g.fatte}</b><span>approvate</span></span>`);
-    q.push(`<span class="qua viva" data-az="pagina" data-pagina="agenda" title="L'agenda dell'azienda">${pair(m, g.corso.map(e => e.id), 'xs', largo ? 3 : 2)}<b>${g.corso.length}</b><span>al lavoro</span></span>`);
+    /* La seconda casella dice **l'altra verita' con la stessa forma** (versione 32). Quando il tetto d'azienda ha
+       fermato tutte le esecuzioni aperte, «al lavoro» sarebbe falso — ed e' esattamente il difetto che la versione
+       31 e' servita a togliere. Non nasce una **quinta** casella: quella misura 163,4 px su 188 liberi a undici
+       (entra, ma di poco) e soprattutto **spaccherebbe il telefono**, dove lo stesso quadro e' una griglia due per
+       due e una prova asserisce quattro caselle esatte; e ripeterebbe un numero che la barra ha gia'. Cambia la
+       parola, non il posto: stessi avatar, stesso conto, +32,5 px su 188. La casella porta a Impostazioni, che e'
+       dove il tetto si alza. */
+    const fermiT = g.corso.filter(e => e.pausaPer === 'tetto');
+    const tuttiFermi = g.corso.length > 0 && fermiT.length === g.corso.length;
+    q.push(`<span class="qua viva" data-az="pagina" data-pagina="${tuttiFermi ? 'impostazioni' : 'agenda'}" title="${tuttiFermi ? 'Il tetto d\'azienda le ha fermate' : 'L\'agenda dell\'azienda'}">${pair(m, g.corso.map(e => e.id), 'xs', largo ? 3 : 2)}<b>${g.corso.length}</b><span>${tuttiFermi ? 'in pausa · tetto' : 'al lavoro'}</span></span>`);
     if (g.errore.length) {
       const e = g.errore[0];
       q.push(`<span class="qua err" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Apri l'esecuzione ferma"><span class="ico">${ic('i-warn')}</span><b>${g.errore.length}</b><span>ferm${g.errore.length === 1 ? 'a' : 'e'}</span>${largo ? `<span class="nm">· ${esc(m.etichetta(e))}</span>` : ''}</span>`);
@@ -901,12 +939,16 @@ window.DIREZIONE_A = (function () {
     const dipa = filtraSez(opz, 'home.dipartimenti', m.dipartimenti, PILLE_DIPART(m));
     const att = m.richiesteDi('attesa').length;
     const tettoOggi = m.tettoAzienda().giorno;
-    const stats = `<div class="stat"><b>${lav.length}</b><span>al lavoro</span></div>
+    /* Quando il tetto ha fermato tutte le esecuzioni aperte, il titolo della sezione lo dice. E' l'unico posto
+       della card che ha spazio: la riga di stato e' gia' tagliata («Passo 2 di 4» chiede 71 px e ne ha 39), e
+       cambiare il titolo costa **zero px**. */
+    const fermiTetto = lav.length > 0 && lav.every(e => e.pausaPer === 'tetto');
+    const stats = `<div class="stat"><b>${lav.length}</b><span>${parolaLavoro(lav)}</span></div>
       <div class="stat"><b>${att}</b><span>da approvare</span></div>
-      <div class="stat" data-az="pagina" data-pagina="costi" title="I costi dell'azienda"><b>${m.costoOggi} €</b><span>su ${tettoOggi} € al giorno</span>${chipTetto(m.costoOggi, tettoOggi)}</div>`;
+      <div class="stat" data-az="pagina" data-pagina="impostazioni" title="Il tetto d'azienda: lo poni tu"><b>${m.costoOggi} €</b><span>su ${tettoOggi} € al giorno</span>${chipTetto(m.costoOggi, tettoOggi)}</div>`;
     const corpo = `
       <section>
-        <div class="shead"><h3>Al lavoro adesso</h3>${contoSez(lavF.length, lav.length, 'Esecuzioni')}
+        <div class="shead"><h3>${fermiTetto ? 'Ferme per il tetto' : 'Al lavoro adesso'}</h3>${contoSez(lavF.length, lav.length, 'Esecuzioni')}
           ${pilleSez(opz, 'home.lavoro', PILLE_LAVORO(m))}</div>
         ${lavF.length ? `<div class="cards riga">${lavF.map((e, i) => cardAttivita(m, e, i)).join('')}</div>` : `<div class="vuoto">Nessuna esecuzione con questo filtro</div>`}
       </section>
@@ -1095,8 +1137,8 @@ window.DIREZIONE_A = (function () {
     const att = inAttesa(m).filter(r => ids.includes(r.chi));
     const ob = m.obiettiviDi(d.id);
     const costoOggi = lst.reduce((t, e) => t + (e.att.costo || 0), 0);
-    const lav = lst.filter(e => e.stato === 'lavoro').length;
-    const stats = `<div class="stat"><b>${lav}</b><span>al lavoro</span></div>
+    const lavL = lst.filter(e => e.stato === 'lavoro'), lav = lavL.length;
+    const stats = `<div class="stat"><b>${lav}</b><span>${parolaLavoro(lavL)}</span></div>
       <div class="stat"><b>${att.length}</b><span>da approvare</span></div>
       <div class="stat" data-az="pagina" data-pagina="costi" title="I costi dell'azienda"><b>${costoOggi} €</b><span>spesi oggi</span></div>`;
     const esecF = filtraSez(opz, 'dip.oggi', esec, PILLE_ESEC);
@@ -1489,7 +1531,7 @@ window.DIREZIONE_A = (function () {
         ${av(m, e, 'xl', e.pausa ? 'libero' : null, 'data-segue="1"')}
         <div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))} · in produzione dal ${esc(d.dal)}</span>
           <div class="chips">${chipStato(m, e)}${rev ? `<span class="chip lime">${ic('i-bolt')}Revisione in sospeso</span>` : ''}<span class="chip">${ic('i-doc')}Soul prompt v${d.prompt.corrente}</span><span class="chip">${ic(md.icona)}${esc(md.nome)}</span><span class="chip">${ic('i-target')}Colloquio ${d.colloquio.punteggio}</span></div>
-          <div class="azioni"><span class="pill sm" data-az="modifica" data-id="${e.id}">${ic('i-pen')}Modifica</span><span class="pill sm${e.pausa ? ' on' : ''}" data-az="pausa" data-id="${e.id}">${ic(e.pausa ? 'i-play' : 'i-pause')}${e.pausa ? 'Riattiva' : 'Metti in pausa'}</span><span class="pill sm" data-az="colloquio" data-id="${e.id}">${ic('i-target')}Ripeti il colloquio</span></div></div>
+          <div class="azioni"><span class="pill sm" data-az="modifica" data-id="${e.id}">${ic('i-pen')}Modifica</span>${e.pausaPer === 'tetto' ? `<span class="pill sm lime" data-az="pagina" data-pagina="impostazioni">${ic('i-euro')}Ferma per il tetto: alzalo</span>` : `<span class="pill sm${e.pausa ? ' on' : ''}" data-az="pausa" data-id="${e.id}">${ic(e.pausa ? 'i-play' : 'i-pause')}${e.pausa ? 'Riattiva' : 'Metti in pausa'}</span>`}<span class="pill sm" data-az="colloquio" data-id="${e.id}">${ic('i-target')}Ripeti il colloquio</span></div></div>
       </div>
       <p class="mans">${esc(d.mansione)}</p>
       <div class="a-stats numeri">
@@ -1635,6 +1677,11 @@ window.DIREZIONE_A = (function () {
       <div class="hlist">${d.connessioni.map(c => `<div class="crow nofr"><span class="ico">${ic('i-org')}</span><div class="tx"><b>${esc(c.nome)}</b><span>${esc(c.desc)}</span></div><span class="v">${c.stato === 'attiva' ? `<span class="chip lime">${ic('i-check')}Attiva</span>` : `<span class="chip rosa">${ic('i-warn')}Scaduta il ${esc(c.ultimo)}</span>`}</span><span class="v">${esc(c.ultimo)}<small>ultimo uso</small></span><span class="eur">${c.stato === 'attiva' ? '' : `<span class="chip ink">${ic('i-bolt')}Rinnova</span>`}</span></div>`).join('')}</div>
     </section>`;
   }
+  /* Versione 32: la penna in cima alla card non e' piu' decorazione. Fino alla 31 era un `rb ghost` senza
+     `data-az`, e i budget dei dipendenti — 11 numeri a undici, 40 a quaranta — erano assegnati senza che il
+     titolare li vedesse mai. Il budget del dipendente si scrive **qui**, nella sua pagina, e non nella pagina
+     Impostazioni: la foglia e' lui (regola 1), e a quaranta un elenco di 40 campi in una pagina sola cadrebbe
+     sulla regola 3, la cui forma compatta la barra del budget non ce l'ha. */
   function sezioneBudget(m, e, d) {
     const b = d.budget, q = Math.min(100, Math.round(100 * b.speso / Math.max(1, b.mese))), oltre = b.oggi > b.giorno;
     return `<section>
@@ -1642,11 +1689,15 @@ window.DIREZIONE_A = (function () {
       <div class="bp">
         <div class="ncard task ${oltre ? 'lime' : 'dark'} budget">
           <div class="who"><span class="ico">${ic('i-euro')}</span><div><b>Budget del mese</b><span>${b.mese} €/mese · ${b.giorno} €/giorno</span></div></div>
-          <div class="nt"><span class="rb ghost">${ic('i-pen')}</span></div>
+          <div class="nt"><span class="rb ghost" data-az="lim-fuoco" data-dove="dipendente:${e.id}" title="Scrivi il budget">${ic('i-pen')}</span></div>
           <div class="body"><div><div class="tt">${b.speso} € <small>di ${b.mese} €</small></div><div class="prog"><i style="width:${q}%"></i></div><div class="meta"><b>${q}%</b><span>speso</span><b>${Math.max(0, b.mese - b.speso)} €</b><span>per 26 giorni</span></div></div></div>
           <div class="st"><span class="k">Oggi</span><div class="row"><span class="sel"><span>${b.oggi} € su ${b.giorno} €</span>${oltre ? `<span class="chip rosa">${ic('i-warn')}oltre il limite</span>` : `<span class="chip">${ic('i-check')}nel limite</span>`}${ic('i-chev')}</span><span class="rb ${oltre ? 'black' : 'ghost'}">${ic('i-bell')}${oltre ? '<i class="dot"></i>' : ''}</span></div></div>
         </div>
         <div class="hlist" style="margin-top:0">${d.permessi.map(p => `<div class="crow nofr${p.attiva ? '' : ' spenta'}"><span class="ico">${ic(p.eccezione ? 'i-star' : 'i-bell')}</span><div class="tx"><b>${esc(p.nome)}</b><span>${esc(p.origine)}</span></div><span class="v">${esc(p.modo)}</span><span class="v">${p.eccezione ? `<span class="chip lime">${ic('i-star')}Eccezione</span>` : `<span class="chip">Regola generale</span>`}</span><span class="eur">${p.attiva ? `<span class="chip lime">${ic('i-check')}Attiva</span>` : `<span class="chip">Spenta</span>`}</span></div>`).join('')}<div class="crow add" data-az="pagina" data-pagina="richieste"><span class="rb xs">${ic('i-plus')}</span>Aggiungi un'eccezione · le regole generali stanno in Richieste</div></div>
+      </div>
+      <div class="wfirma due" style="margin-top:14px">
+        <div class="fcard"><span class="k">Budget del giorno</span>${campoLimite('dipendente:' + e.id, 'giorno', b.giorno)}<span class="d traccia">${b.da ? esc(b.da) + '. ' : ''}Facoltativo, e <b>non ferma</b>: sopra il budget la consegna torna in coda e aspetta la tua firma. Oggi ${b.oggi} €.</span></div>
+        <div class="fcard"><span class="k">Budget del mese</span>${campoLimite('dipendente:' + e.id, 'mese', b.mese)}<span class="d traccia">Speso ${b.speso} €. Puoi scrivere gli euro o una percentuale del tetto d'azienda: «10 %» diventa ${Math.round(m.tettoAzienda().mese / 10)} € e da lì non si muove più.</span></div>
       </div>
     </section>`;
   }
@@ -1768,14 +1819,21 @@ window.DIREZIONE_A = (function () {
     const ob = x.obiettivo ? m.obiettivi.find(o => o.id === x.obiettivo) : null;
     const richiesta = x.output.find(o => o.stato === 'attesa' && o.richiesta);
     const idx = richiesta ? inAttesa(m).findIndex(q => q.id === richiesta.richiesta) : -1;
-    const frase = e.pausa ? `<b>In pausa</b> dal titolare al passo ${r.cur ? r.cur.n : r.fatti} di ${r.n}: ${eur(r.costo)} spesi finora. Riprendi per continuare${r.cur ? ' con «' + esc(r.cur.nome) + '»' : ''}.`
+    /* Fermo per il tetto (versione 32): la frase e le azioni non sono quelle della pausa del titolare. Qui non
+       c'e' un «Riprendi», e non per dimenticanza: sei clic su «Riprendi» — venti a quaranta — farebbero del tetto
+       che **ferma** un suggerimento, ed e' l'obiezione che il consiglio ha mosso a se' stesso. L'unica strada e'
+       alzare il tetto, e si alza in un posto solo. */
+    const fermoT = e.pausa && e.pausaPer === 'tetto';
+    const frase = fermoT ? `<b>Ferma per il tetto d'azienda</b> al passo ${r.cur ? r.cur.n : r.fatti} di ${r.n}: oggi l'azienda ha speso ${m.costoOggi} € su ${m.tettoOggi()} €, e il passo che viene ${r.prossimo ? 'ne costa ' + eur(r.prossimo.costo || 0) : 'non parte'}. ${eur(r.costo)} spesi finora da questa esecuzione.`
+      : e.pausa ? `<b>In pausa</b> dal titolare al passo ${r.cur ? r.cur.n : r.fatti} di ${r.n}: ${eur(r.costo)} spesi finora. Riprendi per continuare${r.cur ? ' con «' + esc(r.cur.nome) + '»' : ''}.`
       : e.stato === 'lavoro' && r.cur ? `<b>Adesso</b> passo ${r.cur.n} di ${r.n}, ${esc(r.cur.nome)}: ${esc(r.cur.esito || 'in corso')}. ${r.prossimo ? `<b>Prossimo</b> ${esc(r.prossimo.nome)}${r.prossimo.stima ? ', circa ' + esc(r.prossimo.stima) : ''}.` : ''}`
       : e.stato === 'errore' && r.cur ? `<b>Fermo</b> al passo ${r.cur.n} di ${r.n}, ${esc(r.cur.nome)}: ${esc(r.cur.esito || a.errore)}. Serve un intervento del titolare o dell'operatore.`
       : e.stato === 'pianificato' ? `<b>Parte alle ${esc(a.quando)}</b>: ${r.n} passi, circa ${eur(r.stima)}. ${x.log.length ? esc(x.log[x.log.length - 1].testo) : ''}`
       : e.stato === 'attesa' ? `<b>Consegnato alle ${esc(a.fine)}</b> e aspetta l'approvazione del titolare: ${r.n} passi in ${r.durata || '—'}, ${eur(r.costo)}.`
       : `<b>Concluso ${esc(a.fine || '')}</b>: ${r.n} passi${r.durata ? ' in ' + r.durata : ''}, ${eur(r.costo)}.`;
     const pillDip = `<span class="pill sm" data-az="pagina" data-pagina="dipendente" data-id="${e.id}">${ic('i-ne')}La pagina di ${esc(m.etichetta(e))}</span>`;
-    const azioni = e.pausa ? `<span class="pill sm on" data-az="esec-pausa" data-id="${e.id}">${ic('i-play')}Riprendi</span><span class="pill sm" data-az="esec-stop" data-id="${e.id}">${ic('i-x')}Interrompi</span>${pillDip}`
+    const azioni = fermoT ? `<span class="pill sm lime" data-az="pagina" data-pagina="impostazioni">${ic('i-euro')}Alza il tetto d'azienda</span><span class="pill sm" data-az="esec-stop" data-id="${e.id}">${ic('i-x')}Interrompi</span><span class="pill sm" data-az="pagina" data-pagina="chat" data-id="${e.id}">${ic('i-chat')}Scrivi a ${esc(m.etichetta(e))}</span>${pillDip}`
+      : e.pausa ? `<span class="pill sm on" data-az="esec-pausa" data-id="${e.id}">${ic('i-play')}Riprendi</span><span class="pill sm" data-az="esec-stop" data-id="${e.id}">${ic('i-x')}Interrompi</span>${pillDip}`
       : e.stato === 'lavoro' ? `<span class="pill sm" data-az="esec-pausa" data-id="${e.id}">${ic('i-pause')}Metti in pausa</span><span class="pill sm" data-az="esec-stop" data-id="${e.id}">${ic('i-x')}Interrompi</span><span class="pill sm" data-az="pagina" data-pagina="chat" data-id="${e.id}">${ic('i-chat')}Scrivi a ${esc(m.etichetta(e))}</span>${pillDip}`
       : e.stato === 'errore' ? `<span class="pill sm lime" data-az="esec-riprova" data-id="${e.id}">${ic('i-play')}Riprova il passo ${r.cur ? r.cur.n : ''}</span><span class="pill sm" data-az="pagina" data-pagina="dipendente" data-id="${e.id}">${ic('i-org')}Rinnova la connessione</span><span class="pill sm" data-az="esec-stop" data-id="${e.id}">${ic('i-x')}Interrompi</span>`
       : e.stato === 'pianificato' ? `<span class="pill sm lime" data-az="esec-avvia" data-id="${e.id}">${ic('i-play')}Avvia ora</span><span class="pill sm" data-az="pagina" data-pagina="agenda" title="L'agenda dell'azienda">${ic('i-cal')}Sposta</span>${pillDip}`
@@ -1902,26 +1960,38 @@ window.DIREZIONE_A = (function () {
   /* La card costo di un dipartimento: la card costo dell'esecuzione con la spesa del periodo, la ripartizione, la quota e le consegne; lime se oltre il limite del giorno (oggi) o il budget del mese. */
   function cardCostoDip(m, x, periodo, tot, i) {
     const d = x.d;
-    const oltre = periodo === 'oggi' ? x.oggi > x.budgetGiorno : x.budgetSpeso > x.budgetMese;
+    /* Versione 32: il budget di un dipartimento e' **quello che il titolare ha posto**, o niente. Fino alla 31
+       questa card stampava «61 € su 30 € al giorno» per Vendite: quel 30 era la **somma dei budget dei suoi tre
+       dipendenti** e non l'aveva scelto nessuno — la stessa malattia del tetto d'azienda, per giunta in
+       contraddizione col soffitto del modello (69 €), che diceva l'opposto sullo stesso dipartimento. Adesso il
+       dipartimento parte **senza** budget e la card dice la spesa e basta, finche' il titolare non ne pone uno
+       dalla pagina Impostazioni. */
+    const b = m.budgetDip(d.id) || {};
+    const lim = periodo === 'oggi' ? b.giorno : periodo === 'mese' ? b.mese : null;
+    const oltre = lim != null && (periodo === 'oggi' ? x.oggi > lim : x.budgetSpeso > lim);
     const tono = oltre ? 'lime' : (i % 2 ? 'dark' : 'gray');
-    const small = periodo === 'oggi' ? `su ${x.budgetGiorno} € al giorno` : periodo === 'mese' ? `di ${x.budgetMese} € al mese` : `dal ${esc(x.dal)}`;
+    const small = periodo === 'anno' ? `dal ${esc(x.dal)}` : lim != null ? `su ${lim} € ${periodo === 'oggi' ? 'al giorno' : 'al mese'}` : `${periodo === 'oggi' ? 'oggi' : 'in 30 giorni'} · nessun budget`;
     const pct = Math.round(100 * x.spesa / Math.max(1, tot));
     const k = periodo === 'anno' ? `Quota e consegne dal ${esc(x.dal)}` : periodo === 'oggi' ? 'Quota e consegne di oggi' : 'Quota e consegne approvate';
     return `<div class="ncard task ${tono} spesa dpt">
       <div class="who"><span class="ico">${ic(iconaDip[d.id])}</span><div><b>${esc(d.nome)}</b><span>${x.n} dipendent${plurale(x.n, 'e', 'i')}</span></div></div>
-      <div class="nt">${oltre ? `<span class="rb ghost" title="Oltre il limite">${ic('i-bell')}<i class="dot"></i></span>` : `<span class="rb ghost" data-az="pagina" data-pagina="dipartimento" data-dip="${d.id}" title="Apri ${esc(d.nome)}">${ic('i-ne')}</span>`}</div>
+      <div class="nt">${oltre ? `<span class="rb ghost" title="Oltre il budget del dipartimento">${ic('i-bell')}<i class="dot"></i></span>` : `<span class="rb ghost" data-az="pagina" data-pagina="dipartimento" data-dip="${d.id}" title="Apri ${esc(d.nome)}">${ic('i-ne')}</span>`}</div>
       <div class="body"><div><div class="tt">${eur(x.spesa)} <small>${small}</small></div>${periodo === 'anno' ? ripartBlocchi(x.blocchi) : ripartModelli(x.modelli, x.spesa, '', true)}</div></div>
       <div class="st"><span class="k">${k}</span><div class="row"><span class="sel"><span class="chip">${pct}%</span><span>${x.consegne} consegn${plurale(x.consegne, 'a', 'e')}</span>${ic('i-chev')}</span><span class="rb black" data-az="pagina" data-pagina="dipartimento" data-dip="${d.id}" title="Apri ${esc(d.nome)}">${ic('i-eye')}</span></div></div>
     </div>`;
   }
   /* La card costo dell'azienda (sezione Per modello): la stessa card, a 517, con il totale, la ripartizione per modello e la riga di oggi sul limite del giorno. */
   function cardCostoAzienda(m, c, periodo) {
-    const oltre = c.oggi > c.budgetGiorno, oltreMese = c.budgetSpeso > c.budgetMese;
+    /* Il tetto d'azienda, dalla versione 32, e' il numero che il titolare ha **posto** (`m.tettoAzienda()`), non
+       piu' la somma dei budget dei dipendenti che `m.costi()` continua a calcolare per altri usi. La home e questa
+       card devono dire la stessa cosa dello stesso numero — c'e' una prova che cade se divergono. */
+    const t = m.tettoAzienda();
+    const oltre = c.oggi > t.giorno, oltreMese = c.budgetSpeso > t.mese;
     return `<div class="ncard task ${(periodo === 'oggi' ? oltre : oltreMese) ? 'lime' : 'dark'} regola spesa">
       <div class="who"><span class="ico">${ic('i-euro')}</span><div><b>${periodo === 'oggi' ? 'Spesa di oggi' : 'Spesa dei 30 giorni'}</b><span>${m.n} dipendenti · ${consegneTx(c.consegne)}</span></div></div>
       <div class="nt"><span class="rb ghost">${ic('i-bell')}${oltre ? '<i class="dot"></i>' : ''}</span></div>
-      <div class="body"><div><div class="tt">${eur(c.totale)} <small>${periodo === 'oggi' ? `su ${c.budgetGiorno} € al giorno` : `di ${c.budgetMese} € di budget al mese`}</small></div>${ripartModelli(c.perModello, c.totale, `<span style="margin-left:auto">${c.esecuzioni} ${periodo === 'oggi' ? 'passi' : 'esecuzioni'}</span>`)}</div></div>
-      <div class="st"><span class="k">Oggi</span><div class="row"><span class="sel"><span>${c.oggi} € su ${c.budgetGiorno} € al giorno</span>${oltre ? `<span class="chip rosa">${ic('i-warn')}oltre il limite</span>` : `<span class="chip">${ic('i-check')}nel limite</span>`}${ic('i-chev')}</span><span class="rb ghost" data-az="pagina" data-pagina="richieste" title="Le regole di approvazione: spese sopra 50 €">${ic('i-ne')}</span></div></div>
+      <div class="body"><div><div class="tt">${eur(c.totale)} <small>${periodo === 'oggi' ? `su ${t.giorno} € al giorno` : `di ${t.mese} € di tetto al mese`}</small></div>${ripartModelli(c.perModello, c.totale, `<span style="margin-left:auto">${c.esecuzioni} ${periodo === 'oggi' ? 'passi' : 'esecuzioni'}</span>`)}</div></div>
+      <div class="st"><span class="k">Oggi</span><div class="row"><span class="sel"><span>${c.oggi} € su ${t.giorno} € al giorno</span>${oltre ? `<span class="chip rosa">${ic('i-warn')}oltre il limite</span>` : `<span class="chip">${ic('i-check')}nel limite</span>`}${ic('i-chev')}</span><span class="rb ghost" data-az="pagina" data-pagina="impostazioni" title="Il tetto d'azienda: lo poni tu">${ic('i-ne')}</span></div></div>
     </div>`;
   }
   /* La riga della spesa di un dipendente: avatar, etichetta, un valore del periodo (oggi l'esecuzione, nei 30 giorni il costo per esito utile, dalla creazione la data), il budget a barra (del giorno o del mese), la spesa con il badge del confronto, la freccia verso la pagina. */
@@ -1959,10 +2029,11 @@ window.DIREZIONE_A = (function () {
   }
   function paginaCosti(m, opz) {
     const per = Object.assign({ dipartimenti: 'mese', dipendenti: 'mese', clienti: 'mese', modelli: 'mese' }, opz.periodo || {});
-    const c30 = m.costi('mese'), resta = c30.budgetMese - c30.budgetSpeso;
-    const stats = `<div class="stat"><b>${m.costoOggi} €</b><span>spesi oggi</span>${m.costoOggi > c30.budgetGiorno ? `<span class="badge down">${ic('i-warn')}oltre</span>` : ''}</div>
+    const tt = m.tettoAzienda();
+    const c30 = m.costi('mese'), resta = tt.mese - c30.budgetSpeso;
+    const stats = `<div class="stat" data-az="pagina" data-pagina="impostazioni" title="Il tetto d'azienda: lo poni tu"><b>${m.costoOggi} €</b><span>su ${tt.giorno} € al giorno</span>${chipTetto(m.costoOggi, tt.giorno)}</div>
       <div class="stat"><b>${c30.totale} €</b><span>in 30 giorni</span>${delta(c30.totale, c30.prima, false, v => v + ' €')}</div>
-      <div class="stat"><b>${resta} €</b><span>restano di ${c30.budgetMese} €</span>${resta < 0 ? `<span class="badge down">${ic('i-warn')}oltre</span>` : ''}</div>`;
+      <div class="stat" data-az="pagina" data-pagina="impostazioni" title="Il tetto del mese: lo poni tu"><b>${resta} €</b><span>restano di ${tt.mese} €</span>${resta < 0 ? `<span class="badge down">${ic('i-warn')}oltre</span>` : ''}</div>`;
     const cD = m.costi(per.dipartimenti), cE = m.costi(per.dipendenti), cC = m.costi(per.clienti), cM = m.costi(per.modelli), cS = m.costi('oggi');
     const spesaE = filtraCerca(opz, 'costi.dipendenti', cE.perDipendente, x => m.etichetta(x.e) + ' ' + m.sotto(x.e, true) + ' ' + x.e.ruolo);
     const compatto = m.n > 16;
@@ -1993,6 +2064,94 @@ window.DIREZIONE_A = (function () {
         ${cS.perStrumento.length ? `<div class="hlist" style="margin-top:24px">${cS.perStrumento.map(s => rigaStrumento(m, s)).join('')}</div>` : `<div class="vuoto">Nessuno strumento usato oggi</div>`}
       </section>`;
     return cornice(m, opz, 'COSTI', stats, 'costi', corpo, '');
+  }
+
+  /* ---------- pagina Impostazioni (versione 32, decisione 56) ----------
+     **Il primo posto del prodotto dove si scrive un numero.** Fino alla versione 31 nessun limite era modificabile
+     da nessuna parte: l'editor del dipendente aveva tre chiavi (`dip`, `seme`, `tinta`) e le penne sulle card dei
+     budget erano `rb ghost` **senza `data-az`**, cioe' decorazione — e i 22 numeri a undici (44 a quaranta) erano
+     assegnati senza che il titolare li vedesse mai. Da qui si pone il tetto d'azienda, che e' l'unico obbligatorio
+     e l'unico che ferma, e i budget facoltativi di dipartimento e routine.
+     **Nessun settimo cerchio nel rail** (scelta del titolare): ci si entra dal «124 € su 115 €» della home e dalla
+     pagina Costi, e il cerchio acceso resta quello dei costi — la pagina parla di soldi ed e' figlia di quella.
+     **Gli altri due livelli non sono qui**, e non per dimenticanza: il budget di un dipendente sta nella **sua**
+     pagina (la foglia, regola 1) e la soglia di un workflow sta nel **suo** canvas, dove esiste dalla versione 25.
+     A quaranta un elenco di 40 campi violerebbe la regola 3 (oltre sedici elementi la vista si compatta) e la
+     forma compatta butta via la barra del budget: l'ultima sezione li conta e ci porta, invece di rifarli qui. */
+  const ORIZ_LB = { giorno: 'Al giorno', settimana: 'Alla settimana', mese: 'Al mese' };
+  /* Il campo di un limite: il numero in euro, scrivibile. Accetta anche «60 %» — e' il **gesto** della
+     percentuale (decisione del titolare): il prodotto la fissa in euro nel momento in cui la scrivi e sotto
+     scrive da dove viene, «60 % di 115 € al giorno». Da li' e' 69 € e non si muove piu'. Vuoto = nessun budget:
+     e' facoltativo, e solo il tetto d'azienda non si puo' svuotare. */
+  const campoLimite = (dove, per, v, obbl) => `<span class="lim"><input type="text" inputmode="decimal" data-lim="${esc(dove)}" data-per="${per}" value="${v == null ? '' : v}" placeholder="${obbl ? '' : 'nessuno'}" maxlength="7" aria-label="${ORIZ_LB[per]}, in euro o in percentuale del tetto"><span class="eu">€</span></span>`;
+  /* La riga di un limite facoltativo: chi e', i suoi campi (uno per orizzonte), la spesa di oggi e la freccia. */
+  function rigaLimite(m, o) {
+    const oriz = o.oriz || ['giorno', 'mese'];
+    const val = o.val || {};
+    return `<div class="crow lrow${oriz.length > 2 ? ' tre' : ''}">${o.testa || `<span class="ico">${ic(o.ico)}</span>`}<div class="tx"><b>${esc(o.nome)}</b><span>${esc(o.sotto)}${val.da ? ' · ' + esc(val.da) : ''}</span></div>${oriz.map(p => `<span class="campi"><span class="k">${ORIZ_LB[p]}</span>${campoLimite(o.dove, p, val[p] == null ? null : val[p])}</span>`).join('')}<span class="v">${o.chip || ''}</span>${o.vai || '<span></span>'}</div>`;
+  }
+  function impostazioni(m, opz) {
+    const t = m.tettoAzienda(), p = m.propostaTetto(), a = m.tetti.azienda;
+    const ferma = m.tetti.fermaPrimaDelPasso;
+    const c30 = m.costi('mese');
+    const dipC = m.costi('oggi').perDipartimento;
+    /* i due livelli che non si scrivono qui: quanti ce l'hanno davvero */
+    const conBudget = m.dipendenti.filter(e => (m.dossierDi(e).budget || {}).giorno != null).length;
+    const wf = m.dipartimenti.reduce((l, d) => l.concat(m.workflowDi(d.id)), []);
+    const conSoglia = wf.filter(w => w.soglia != null).length;
+    /* Niente badge sui due tetti: qui il numero **e'** il limite, e «115 € · oltre il limite» direbbe che il
+       limite e' oltre se stesso. Quanto e' stato speso lo dicono la barra in cima, la prima sezione e la home. */
+    const stats = `<div class="stat"><b>${t.giorno} €</b><span>tetto del giorno · ${m.costoOggi} € spesi</span></div>
+      <div class="stat"><b>${t.mese} €</b><span>tetto del mese · ${c30.budgetSpeso} € spesi</span></div>
+      <div class="stat"><b>${Object.keys(m.tetti.dip).length + conBudget + m.routine.length + conSoglia}</b><span>budget facoltativi posti</span></div>`;
+    const corpo = `
+      <section>
+        <div class="shead"><h3>Il tetto d'azienda</h3><span class="cnt"><b>1 di 5</b><span>Livelli · l'unico che ferma</span></span>
+          <div class="destra"><span class="pill" data-az="pagina" data-pagina="costi">Che cosa è stato speso ${ic('i-ne')}</span></div></div>
+        <p class="adesso" style="max-width:900px">È <b>l'unico limite obbligatorio</b> e <b>l'unico che ferma</b>: sopra il tetto del giorno non parte nessun passo nuovo. Gli altri quattro — dipartimento, dipendente, routine e la soglia di un workflow — sono facoltativi e non fermano il lavoro: mandano la cosa nella coda che aspetta la tua firma.</p>
+        <div class="wfirma">
+          <div class="fcard"><span class="k">Al giorno</span>${campoLimite('azienda', 'giorno', t.giorno, true)}<span class="d traccia">${a.da ? esc(a.da) + '.' : 'Posto da te il ' + esc(a.dal) + '.'} Oggi la somma dei budget dei tuoi ${m.n} dipendenti farebbe ${p.giorno} €.</span></div>
+          <div class="fcard"><span class="k">Al mese</span>${campoLimite('azienda', 'mese', t.mese, true)}<span class="d traccia">Speso finora ${c30.budgetSpeso} €. La somma dei budget del mese farebbe ${p.mese} €.</span></div>
+          <div class="fcard"><span class="k">Solo per oggi</span>${campoLimite('azienda', 'oggi', a.oggi || null)}<span class="d traccia">${a.oggi ? 'Eccezione firmata oggi: il tetto di oggi vale ' + m.tettoOggi() + ' €. Domani torna a ' + t.giorno + ' €.' : 'L\'eccezione di oggi scade a mezzanotte: il tetto di ogni giorno non si tocca, così resta una promessa e non un attrito.'}</span></div>
+        </div>
+        <div class="wfirma due">
+          <div class="fcard"><span class="k">Quando è raggiunto</span>
+            <div class="filters" style="margin-top:2px"><span class="pill${ferma ? ' on' : ''}" data-az="freno" data-v="1">Ferma</span><span class="pill${ferma ? '' : ' on'}" data-az="freno" data-v="0">Avverte</span></div>
+            <span class="d traccia">${ferma ? 'Il passo che sfonderebbe non parte, e l\'esecuzione aspetta te. Adesso sono ferme ' + m.fermePerTetto().length + ' esecuzioni.' : 'Il lavoro continua e il prodotto te lo dice soltanto.'}</span></div>
+          <div class="fcard"><span class="k">La proposta della prima apertura</span><b>${p.giorno} €</b><span class="d traccia">La somma dei budget dei tuoi ${m.n} dipendenti, al giorno. È da qui che il tetto è nato il ${esc(a.dal)}; da allora è un numero tuo e non si muove quando assumi.</span>
+            <div class="filters" style="margin-top:6px"><span class="pill" data-az="tetto-proposta">${ic('i-rows')}Riportalo alla proposta</span></div></div>
+        </div>
+      </section>
+      <section>
+        <div class="shead"><h3>I budget dei dipartimenti</h3>${contoSez(Object.keys(m.tetti.dip).length, m.dipartimenti.length, 'Con un budget')}</div>
+        <p class="adesso" style="max-width:900px">Facoltativi, e <b>nascono vuoti</b>: fino alla versione 31 la pagina Costi ne stampava uno per ognuno — «61 € su 30 € al giorno» per Vendite — che era la <b>somma dei budget dei suoi dipendenti</b> e non l'aveva scelto nessuno. Puoi scrivere gli euro, oppure una percentuale del tetto: scrivendo «60 %» il prodotto la fissa in euro adesso, e da lì è un numero che non si muove più.</p>
+        <div class="hlist">${dipC.map(x => rigaLimite(m, {
+          dove: 'dip:' + x.d.id, ico: iconaDip[x.d.id], nome: x.d.nome, sotto: x.n + ' dipendent' + (x.n === 1 ? 'e' : 'i'),
+          val: m.budgetDip(x.d.id) || {},
+          chip: `<span class="chip">${eur(x.oggi)} oggi</span>`,
+          vai: `<span class="rb xs" data-az="pagina" data-pagina="dipartimento" data-dip="${x.d.id}" title="Apri ${esc(x.d.nome)}">${ic('i-ne')}</span>`,
+        })).join('')}</div>
+      </section>
+      <section>
+        <div class="shead"><h3>I budget delle routine</h3>${contoSez(m.routine.length, m.routine.length, 'Routine')}
+          <div class="destra"><span class="pill" data-az="pagina" data-pagina="routine">Tutte le routine ${ic('i-ne')}</span></div></div>
+        <p class="adesso" style="max-width:900px">Giorno e mese come dappertutto; <b>la settimana solo dove la cadenza è settimanale</b> — nel modello di oggi è una sola, «${esc((m.routine.find(r => m.orizzontiDi(r).length > 2) || {}).nome || '')}», e la sua cadenza lo dice: ${esc(((m.routine.find(r => m.orizzontiDi(r).length > 2) || {}).innesco || {}).testo || '')}. Sopra il suo budget la routine non parte più: la coda l'aspetta, e il lavoro dell'azienda non si ferma.</p>
+        <div class="hlist">${m.routine.map(rt => rigaLimite(m, {
+          dove: 'routine:' + rt.id, ico: 'i-clock', nome: rt.nome, sotto: rt.innesco.testo,
+          oriz: m.orizzontiDi(rt), val: rt.limiti || {},
+          chip: `<span class="chip">${m.rodaggioDi(rt).fatte} di ${m.rodaggioDi(rt).di} giri</span>`,
+          vai: `<span class="rb xs" data-az="routine" data-id="${rt.id}" title="Apri ${esc(rt.nome)}">${ic('i-ne')}</span>`,
+        })).join('')}</div>
+      </section>
+      <section>
+        <div class="shead"><h3>Gli altri due livelli</h3>${contoSez(conBudget + conSoglia, m.n + wf.length, 'Limiti posti')}</div>
+        <p class="adesso" style="max-width:900px">Non si scrivono qui, e non per dimenticanza: <b>il budget di un dipendente sta nella sua pagina</b>, che è la foglia, e <b>la soglia di un workflow sta nel suo canvas</b>, dove esiste dalla versione 25. Rifarli qui vorrebbe dire ${m.n} campi in un elenco solo, e a quaranta la regola della scala impone la forma compatta — che la barra del budget non ce l'ha.</p>
+        <div class="hlist">
+          <div class="crow"><span class="ico">${ic('i-bot')}</span><div class="tx"><b>I budget dei dipendenti</b><span>Giorno e mese, nella pagina del dipendente</span></div><span class="v">${conBudget} di ${m.n}<small>posti</small></span><span class="v">${m.dipendenti.filter(e => (e.att.costo || 0) > (m.dossierDi(e).budget || {}).giorno).length}<small>oltre oggi</small></span><span class="eur"></span><span class="rb xs" data-az="pagina" data-pagina="costi" title="I costi per dipendente">${ic('i-ne')}</span></div>
+          <div class="crow"><span class="ico">${ic('i-rows')}</span><div class="tx"><b>Le soglie dei workflow</b><span>«Sopra la soglia l'uscita torna in coda»</span></div><span class="v">${conSoglia} di ${wf.length}<small>poste</small></span><span class="v">${eur(Math.min(...wf.map(w => w.soglia)))} – ${eur(Math.max(...wf.map(w => w.soglia)))}<small>la più bassa e la più alta</small></span><span class="eur"></span><span class="rb xs" data-az="pagina" data-pagina="workflow" data-dip="${m.dipartimenti[0].id}" title="I workflow">${ic('i-ne')}</span></div>
+        </div>
+      </section>`;
+    return cornice(m, opz, 'IMPOSTAZIONI', stats, 'costi', corpo, '');
   }
 
   /* ---------- pagina Agenda (versione 15, 2026-09-06) ----------
@@ -2203,7 +2362,7 @@ window.DIREZIONE_A = (function () {
 
   function render(m, opz) {
     opz = Object.assign({ pagina: 'home', dip: 'svi', id: 0, tendina: 'aperta', richiesta: 0, pannello: 'richieste', filtri: {}, ordine: 'vecchie', modifica: null, confronto: null, motivo: false, periodo: {}, filo: 0, agenda: 'tutti', chatf: 'tutti', barra: '', cerca: {}, sez: {}, forma: '', consegna: '', workflow: '', nodo: 0, routine: '', ramo: 0, zoom: 1, multi: [], pan: { x: 0, y: 0 } }, opz || {});
-    return opz.pagina === 'routine' ? paginaRoutine(m, opz) : opz.pagina === 'workflow' ? paginaWorkflow(m, opz) : opz.pagina === 'consegna' ? paginaConsegna(m, opz) : opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : opz.pagina === 'dipendente' ? dipendente(m, opz) : opz.pagina === 'esecuzione' ? esecuzione(m, opz) : opz.pagina === 'costi' ? paginaCosti(m, opz) : opz.pagina === 'agenda' ? agenda(m, opz) : opz.pagina === 'chat' ? chat(m, opz) : home(m, opz);
+    return opz.pagina === 'impostazioni' ? impostazioni(m, opz) : opz.pagina === 'routine' ? paginaRoutine(m, opz) : opz.pagina === 'workflow' ? paginaWorkflow(m, opz) : opz.pagina === 'consegna' ? paginaConsegna(m, opz) : opz.pagina === 'richieste' ? richieste(m, opz) : opz.pagina === 'dipartimento' ? dipartimento(m, opz) : opz.pagina === 'dipendente' ? dipendente(m, opz) : opz.pagina === 'esecuzione' ? esecuzione(m, opz) : opz.pagina === 'costi' ? paginaCosti(m, opz) : opz.pagina === 'agenda' ? agenda(m, opz) : opz.pagina === 'chat' ? chat(m, opz) : home(m, opz);
   }
 
   /* Disegna e collega i clic: tendina, cambio pagina, filtri, decisioni. Ritorna lo stato. */
@@ -2255,7 +2414,9 @@ window.DIREZIONE_A = (function () {
     const esecAzione = (id, az) => {
       const e = m.byId[id]; if (!e) return;
       const x = m.esecuzioneDi(e), r = riepilogoEsecuzione(m, e, x), ora = m.azienda.ora;
-      if (az === 'esec-pausa') { e.pausa = !e.pausa; x.log.push(voce(e.pausa ? 'MR ha messo in pausa l\'esecuzione' : 'MR ha ripreso l\'esecuzione')); }
+      /* La pausa del tetto non si toglie da qui: si toglie alzando il tetto (versione 32). Senza questa riga
+         «Riprendi» aggirerebbe il freno una esecuzione per volta, sei volte a undici e venti a quaranta. */
+      if (az === 'esec-pausa') { if (e.pausaPer === 'tetto') return; e.pausa = !e.pausa; x.log.push(voce(e.pausa ? 'MR ha messo in pausa l\'esecuzione' : 'MR ha ripreso l\'esecuzione')); }
       else if (az === 'esec-stop') { if (r.cur) { r.cur.stato = 'da fare'; delete r.cur.inizio; r.cur.esito = 'Interrotto dal titolare alle ' + ora; } e.stato = 'libero'; e.pausa = false; e.att.fine = ora; delete e.att.passo; delete e.att.errore; x.log.push(voce(`MR ha interrotto l'esecuzione al passo ${r.cur ? r.cur.n : r.fatti}`)); }
       else if (az === 'esec-riprova') { const cur = x.passi.find(p => p.stato === 'errore'); if (!cur) return; cur.stato = 'corso'; cur.inizio = ora; delete cur.fine; delete cur.durata; cur.esito = 'Riprovato dal titolare alle ' + ora; e.stato = 'lavoro'; e.att.da = ora; delete e.att.errore; e.att.passo = [cur.n, x.passi.length]; const pr = x.passi.find(p => p.stato === 'da fare'); e.att.prossimo = pr ? pr.nome : ''; x.log.push(voce(`MR ha riprovato il passo ${cur.n} · ${cur.nome}`, { passo: cur.n })); }
       else if (az === 'esec-avvia') { const p0 = x.passi.find(p => p.stato === 'da fare'); if (!p0) return; p0.stato = 'corso'; p0.inizio = ora; e.stato = 'lavoro'; const quando = e.att.quando; e.att.da = ora; delete e.att.quando; e.att.passo = [p0.n, x.passi.length]; const pr = x.passi.find(p => p.stato === 'da fare'); e.att.prossimo = pr ? pr.nome : ''; x.log.push(voce(`MR ha avviato l'esecuzione${quando ? ' (era pianificata alle ' + quando + ')' : ''}`)); }
@@ -2271,6 +2432,37 @@ window.DIREZIONE_A = (function () {
       m.scrivi(e.id, v, r.cur && e.stato === 'lavoro' ? { passo: r.cur.n } : {});
       tutto();
     };
+    /* ---- Scrivere un limite (versione 32): il primo numero scrivibile del prodotto ----
+       Il campo accetta gli euro («69») **e la percentuale** («60 %»), che e' il gesto deciso dal titolare: la
+       percentuale non resta nel modello, il prodotto la **fissa in euro** nel momento in cui la scrivi e sotto
+       scrive da dove viene. Vuoto toglie il budget, che e' facoltativo — tranne il tetto d'azienda, che e'
+       l'unico obbligatorio e resta com'era. Quello che non e' un numero non scrive niente e il campo lo dice col
+       bordo, come fa gia' il motivo del rifiuto. Dopo la scrittura la pagina si rifa' e il fuoco torna dov'era. */
+    /* `scrivendo` non e' una precauzione teorica: `tutto()` rifa' `radice.innerHTML`, e togliere di mezzo il campo
+       che ha il fuoco fa scattare il suo `blur`, quindi un secondo `change` sullo stesso campo — ormai staccato dal
+       documento — che rientrerebbe qui in mezzo al primo disegno. Senza la guardia la console prende due
+       `pageerror` e le sei prove escono 1. */
+    let scrivendo = false;
+    const scriviLimite = inp => {
+      if (!inp || scrivendo || !radice.contains(inp)) return;
+      scrivendo = true;
+      try { scriviLimiteOra(inp); } finally { scrivendo = false; }
+    };
+    const scriviLimiteOra = inp => {
+      const dove = inp.dataset.lim, per = inp.dataset.per, testo = inp.value.trim();
+      const obbl = dove === 'azienda' && per !== 'oggi';
+      if (!testo) { if (obbl) { inp.style.borderColor = 'var(--hangup)'; return; } m.poniLimite(dove, per, null); }
+      else {
+        const letto = m.leggiLimite(testo, per === 'oggi' ? 'giorno' : per);
+        if (!letto) { inp.style.borderColor = 'var(--hangup)'; inp.focus(); return; }
+        m.poniLimite(dove, per, letto.v, letto.da);
+      }
+      m.aggiornaTetto();
+      tutto();
+      const j = radice.querySelector(`input[data-lim="${dove}"][data-per="${per}"]`);
+      if (j) { j.focus({ preventScroll: true }); j.setSelectionRange(j.value.length, j.value.length); }
+    };
+    radice.addEventListener('change', ev => { const i = ev.target.closest && ev.target.closest('input[data-lim]'); if (i) scriviLimite(i); });
     tutto();
     if (st.editor) apriEditor(st.editor === 'nuovo' ? 0 : +st.editor);
     radice.addEventListener('input', ev => {
@@ -2441,6 +2633,7 @@ window.DIREZIONE_A = (function () {
       else if (k === 'a' && (ev.ctrlKey || ev.metaKey)) { ev.preventDefault(); st.multi = m.ramoDi(w).nodi.map(nd => nd.id); st.nodo = 0; tutto(); }
     });
     radice.addEventListener('keydown', ev => {
+      if (ev.key === 'Enter' && ev.target.closest('input[data-lim]')) { ev.preventDefault(); scriviLimite(ev.target); return; }
       if (ev.key === 'Enter' && ev.target.closest('input[data-campo="motivo"]')) { ev.preventDefault(); const b = radice.querySelector('[data-az="rifiuta-conferma"]'); if (b) b.click(); return; }
       if (ev.key === 'Enter' && ev.target.closest('input[data-campo="chat"]')) { ev.preventDefault(); const b = radice.querySelector('[data-az="esec-invia"],[data-az="chat-invia"]'); if (b) inviaNota(+b.dataset.id, b.dataset.az === 'chat-invia'); return; }
       if (ev.key === 'Enter' && st.modifica && ev.target.closest('input[data-campo]')) { ev.preventDefault(); salva(); }
@@ -2516,6 +2709,10 @@ window.DIREZIONE_A = (function () {
       else if (az === 'firma') { ev.stopPropagation(); const id = el.dataset.id; m.firme[id] = !m.firme[id]; tutto(); }
       else if (az === 'consegna') { ev.stopPropagation(); st.consegna = el.dataset.id; st.pagina = 'consegna'; if (st.tendina === 'estesa') st.tendina = 'aperta'; st.motivo = false; tutto(); window.scrollTo(0, 0); }
       else if (az === 'pagina') { ev.stopPropagation(); st.pagina = el.dataset.pagina; st.routine = el.dataset.routine || ''; if (el.dataset.dip) { st.dip = el.dataset.dip; if (st.pagina === 'richieste') st.filtri = { dip: el.dataset.dip }; } if (el.dataset.id) { if (st.pagina === 'chat') st.filo = +el.dataset.id; else st.id = +el.dataset.id; } if (el.dataset.chi) st.filtri = { chi: el.dataset.chi }; if (el.dataset.cliente) st.filtri = Object.assign(st.pagina === 'richieste' && el.dataset.dip ? { dip: el.dataset.dip } : {}, { cliente: el.dataset.cliente }); if (st.tendina === 'confronto' || st.tendina === 'estesa') st.tendina = 'aperta'; st.motivo = false; tutto(); window.scrollTo(0, 0); }
+      /* ---- i limiti si scrivono (versione 32) ---- */
+      else if (az === 'freno') { m.tetti.fermaPrimaDelPasso = el.dataset.v === '1'; m.aggiornaTetto(); tutto(); }
+      else if (az === 'tetto-proposta') { const pr = m.propostaTetto(); m.poniLimite('azienda', 'giorno', pr.giorno, 'la somma dei budget dei dipendenti'); m.poniLimite('azienda', 'mese', pr.mese, 'la somma dei budget dei dipendenti'); tutto(); }
+      else if (az === 'lim-fuoco') { const i = radice.querySelector(`input[data-lim="${el.dataset.dove}"]`); if (i) { i.scrollIntoView({ block: 'center' }); i.focus(); i.select(); } }
       else if (az === 'filtro') { const k = el.dataset.k, v = el.dataset.v; st.filtri[k] = (st.filtri[k] === v || v === 'tutti') ? undefined : v; tutto(); }
       /* ---- i controlli delle intestazioni di sezione (versione 17): la ricerca, le pillole, le due forme dei dipendenti ---- */
       else if (az === 'cerca') { st.cerca = Object.assign({}, st.cerca, { [el.dataset.sez]: '' }); tutto(); const i = radice.querySelector(`input[data-cerca="${el.dataset.sez}"]`); if (i) i.focus({ preventScroll: true }); }
@@ -2531,7 +2728,7 @@ window.DIREZIONE_A = (function () {
       else if (az === 'modifiche') { decidi(el.dataset.id, 'modifiche', 'Modifiche chieste dal titolare'); }
       else if (az === 'approva-tutte') { inAttesa(m).forEach(r => m.decidi(r.id, 'approvata')); st.richiesta = 0; if (st.tendina === 'estesa') st.tendina = 'aperta'; tutto(); }
       /* ---- pagina del dipendente ---- */
-      else if (az === 'pausa') { const e = m.byId[+el.dataset.id]; if (e) { e.pausa = !e.pausa; tutto(); } }
+      else if (az === 'pausa') { const e = m.byId[+el.dataset.id]; if (e && e.pausaPer !== 'tetto') { e.pausa = !e.pausa; tutto(); } }
       else if (az === 'colloquio') { const e = m.byId[+el.dataset.id]; if (e) { m.dossierDi(e).colloquio.inCorso = true; tutto(); } }
       else if (az === 'assegna') { const e = m.byId[+el.dataset.id]; if (e) { m.dossierDi(e).modello.assegnato = el.dataset.v; tutto(); } }
       else if (az === 'auto') { const e = m.byId[+el.dataset.id]; if (e) { m.dossierDi(e).modello.automatica = el.dataset.v === '1'; tutto(); } }

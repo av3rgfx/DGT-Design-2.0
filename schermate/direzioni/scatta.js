@@ -48,6 +48,9 @@ const CATTURE = [
   { g: 'console', nome: 'a-esecuzione', q: 'pagina=esecuzione&id=4&tendina=chiusa' },
   { g: 'console', nome: 'a-esecuzione-errore', q: 'pagina=esecuzione&id=3&tendina=chiusa' },
   { g: 'console', nome: 'a-esecuzione-attesa', q: 'pagina=esecuzione&id=5&tendina=chiusa' },
+  /* versione 32: la pagina Impostazioni, il primo posto del prodotto dove si scrive un numero (decisione 56) */
+  { g: 'console', nome: 'a-impostazioni', q: 'pagina=impostazioni&tendina=chiusa' },
+  { g: 'console', nome: 'a-impostazioni-40', q: 'pagina=impostazioni&n=40&tendina=chiusa' },
   { g: 'console', nome: 'a-costi', q: 'pagina=costi' },
   { g: 'console', nome: 'a-costi-40', q: 'pagina=costi&n=40&tendina=chiusa' },
   { g: 'console', nome: 'a-agenda', q: 'pagina=agenda&tendina=chiusa' },

@@ -459,7 +459,7 @@ window.DGT_MOBILE = (function () {
     const n = coda(m).length;
     return `<div class="m-rh"><span class="rb black">${ic('i-wand')}</span><h4>Riepilogo di oggi</h4></div>
       ${senzaNumeri ? '' : `<div class="m-stats">
-        <div class="m-stat"><span class="num">${m.alLavoro.length}</span><span>al lavoro</span></div>
+        <div class="m-stat"><span class="num">${m.alLavoro.length}</span><span>${parolaLavoro(m.alLavoro)}</span></div>
         <div class="m-stat"><span class="num">${n}</span><span>da approvare</span></div>
         <div class="m-stat"><span class="num">${m.costoOggi} €</span><span>spesi oggi</span></div>
       </div>`}`;
@@ -507,12 +507,22 @@ window.DGT_MOBILE = (function () {
      alle Richieste, che sul telefono sono la schermata da cui si parte); «al lavoro» e «dopo» all'Agenda; «ferma» alla
      conversazione con chi è fermo, perché dal telefono l'esecuzione non si riavvia e parlargli è l'unica cosa che si può
      fare (la Console apre l'Esecuzione, che il telefono non ha). */
+  /* La parola per un gruppo di esecuzioni aperte (versione 32), la stessa della Console: «al lavoro» finche'
+     lavorano, «in pausa» quando il tetto d'azienda le ha fermate tutte. */
+  const parolaLavoro = lst => lst.length > 0 && lst.every(e => e.pausaPer === 'tetto') ? 'in pausa' : 'al lavoro';
   function quadroGiorno(m, forma) {
     const g = m.gruppiOggi(), e0 = g.errore[0];
     /* le quattro caselle, ognuna con la sua strada: [classe, icona, numero, parola, azione] */
     const caselle = [];
     if (g.fatte) caselle.push({ cls: '', ic: 'i-check', n: g.fatte, tx: 'approvate', az: 'data-az="schermata" data-s="3"', ti: 'Il riepilogo di oggi' });
-    caselle.push({ cls: 'viva', pila: g.corso.map(x => x.id), n: g.corso.length, tx: 'al lavoro', az: 'data-az="schermata" data-s="6"', ti: "L'agenda dell'azienda" });
+    /* Versione 32: quando il tetto d'azienda ha fermato tutte le esecuzioni aperte, «al lavoro» sarebbe falso.
+       La casella resta la seconda, con gli stessi avatar e lo stesso conto: cambia la parola. Sul telefono
+       l'etichetta ha **53 px** — misurati — e «in pausa» ne chiede 40, mentre «in pausa · tetto» ne chiede 71 e si
+       taglia: la Console, che ha spazio, porta anche il perche', come fa gia' con «· Kim» e «· dalle 15:00» che
+       compaiono solo a undici. Stessa parola, un pezzo in piu' dove ci sta. */
+    const fermiT = g.corso.filter(x => x.pausaPer === 'tetto');
+    const tuttiFermi = g.corso.length > 0 && fermiT.length === g.corso.length;
+    caselle.push({ cls: 'viva', pila: g.corso.map(x => x.id), n: g.corso.length, tx: tuttiFermi ? 'in pausa' : 'al lavoro', az: 'data-az="schermata" data-s="6"', ti: tuttiFermi ? "Il tetto d'azienda le ha fermate" : "L'agenda dell'azienda" });
     if (g.errore.length) caselle.push({ cls: 'err', ic: 'i-warn', n: g.errore.length, tx: 'ferm' + (g.errore.length === 1 ? 'a' : 'e'), az: `data-az="filo" data-id="${e0.id}"`, ti: 'Scrivi a chi è fermo' });
     if (g.piani.length) caselle.push({ cls: 'poi', ic: 'i-clock', n: g.piani.length, tx: 'dopo', az: 'data-az="schermata" data-s="6"', ti: "L'agenda dell'azienda" });
 
@@ -782,6 +792,7 @@ window.DGT_MOBILE = (function () {
   function dipartimento(m, tel, st) {
     const d = m.dipartimenti.find(x => x.id === st.dip) || m.dipartimenti[0];
     const { lst, ids, lav, att, oggi } = contiDip(m, d);
+    const lstLav = lst.filter(e => e.stato === 'lavoro');
     const ordine = { lavoro: 0, errore: 1, pianificato: 2 };
     const esec = lst.filter(e => e.stato in ordine).sort((a, b) => ordine[a.stato] - ordine[b.stato]);
     const ob = m.obiettiviDi(d.id);
@@ -801,7 +812,7 @@ window.DGT_MOBILE = (function () {
         <div class="m-nav"><span class="rb olight" data-az="indietro" data-s="7" title="Dipartimenti">${ic('i-left')}</span><span class="chip light">${ic('i-org')}${esc(d.desc)}</span></div>
         <h3 class="m-h1${d.nome.length > 12 ? ' stretta' : ''}">${esc(d.nome.toUpperCase())}</h3>
         <div class="m-stats">
-          <div class="m-stat"><span class="num">${lav}</span><span>al lavoro</span></div>
+          <div class="m-stat"><span class="num">${lav}</span><span>${parolaLavoro(lstLav)}</span></div>
           <div class="m-stat"><span class="num">${att.length}</span><span>da approvare</span></div>
           <div class="m-stat"><span class="num">${oggi} €</span><span>spesi oggi</span></div>
         </div>

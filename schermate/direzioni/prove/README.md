@@ -1,7 +1,7 @@
 # Prove cliccate
 
-**Sei** prove con Playwright che aprono le pagine da `file://`, cliccano e verificano il DOM, il modello e la console — **638
-verifiche in tutto** (Console 171, mobile 91, Costi 50, Agenda e Chat 56, Workflow 221, Routine 49). Tutte leggono
+**Sei** prove con Playwright che aprono le pagine da `file://`, cliccano e verificano il DOM, il modello e la console — **675
+verifiche in tutto** (Console 201, mobile 91, Costi 51, Agenda e Chat 56, Workflow 225, Routine 51). Tutte leggono
 le stesse variabili d'ambiente:
 
 - `LOCAL_FONT_CSS` — il CSS con Urbanist incorporata (`design-system/tools/fetch-fonts.py`), servito al posto di Google Fonts;
@@ -95,3 +95,39 @@ Dalla versione 31 `console.js` ha una **sezione 14** e `mobile.js` una sezione i
 Le due prove sono scritte come invarianti proprio perché il difetto non era il singolo badge: era la classe.
 Come per gli errori muti del CSS, quello che si conta si conta su **tutte** le pagine e a **tutte e due** le
 taglie, non sull'esempio che ha fatto scoprire il problema.
+
+
+## I limiti di spesa, e il prodotto che si apre fermo (2026-09-09, versione 32)
+
+Le **+37 verifiche** (638 → 675) non tengono un elemento: tengono gli invarianti che la versione 32 introduce.
+
+**Il tetto ha una sorgente sola.** `console.js`, sezione 15, apre home e Costi a undici e a quaranta e chiede che
+dicano lo **stesso numero con lo stesso tetto** — quello che `m.tettoAzienda()` ritorna, cioè quello che il
+titolare ha posto. Fino alla 31 il tetto era `sommaBudget()`, e `workflow.js` (sezione 9) adesso lo prova
+direttamente: **si assume un dipendente e la proposta sale a 125 € mentre il tetto resta 115**. Un limite che
+cambia per fatti altrui non è un limite.
+
+**Nessuna superficie dice «al lavoro» mentre nessuno lavora.** È lo stesso difetto che la versione 31 è servita a
+togliere dalla home, e qui poteva rinascere: col freno cablato le esecuzioni aperte sono in pausa per il tetto.
+Le prove chiedono che il primo numero della home dica «in pausa», che la sezione si intitoli «Ferme per il tetto»,
+e — su `mobile.js` — che le quattro parole del quadro del giorno siano `approvate · in pausa · ferma · dopo`.
+**Quattro**, non cinque: sul telefono la griglia è due per due e l'etichetta ha **53 px** misurati.
+
+**Nessun punto di stato su chi è fermo** (regola 19). `console.js` conta gli avatar della pagina che hanno il
+`.segnale` e appartengono a un dipendente in pausa: devono essere **zero**, a undici e a quaranta.
+
+**Il numero si scrive davvero.** La pagina Impostazioni ha **diciotto** campi; le prove ne scrivono quattro: il
+tetto del giorno (e la home lo dice subito, col ramo «nel limite» che nel modello di prima non si vedeva mai),
+l'**eccezione di oggi** (+60 € → il tetto di oggi fa 175 € e chi era fermo riparte da solo, mentre il tetto di
+ogni giorno resta 115 €), la **percentuale come gesto** su un dipartimento («60 %» → resta `69` e la riga dice
+«60 % di 115 € al giorno»), e il **budget di un dipendente** dalla sua pagina, dove la penna non è più
+decorazione.
+
+**Il freno non si aggira.** Sulla pagina Esecuzione di chi è fermo per il tetto non esiste nessun «Riprendi»:
+c'è «Alza il tetto d'azienda». Senza questa verifica sei clic a undici (venti a quaranta) farebbero del tetto
+che ferma un suggerimento.
+
+**La coda cresce di uno, non di sei.** `console.js` e `mobile.js` contano cinque richieste a undici e otto a
+quaranta, e chiedono che quelle di `tipo: 'tetto'` siano **una sola**. `routine.js` chiede che quella richiesta
+**non abbia nessuna regola d'approvazione**: non è un'uscita verso un cliente, è una decisione sull'azienda, e
+senza quella distinzione cadrebbe su «Report interni: automatica».
