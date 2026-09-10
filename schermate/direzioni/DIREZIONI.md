@@ -3166,6 +3166,125 @@ committato è quello che esce 9 volte su 11, e non è stato toccato. Ma è una c
 finché resta così un prima/dopo su di lei non prova niente: va aspettata la fine della transizione invece di
 contare 300 ms.
 
+### Versione 32 — i limiti di spesa, e il prodotto che si apre fermo (2026-09-09)
+
+Il lavoro deciso dalle sette risposte del titolare (versione 31) è costruito. **675 verifiche verdi** (erano 638),
+**84 catture** (erano 82: le due nuove sono la pagina Impostazioni alle due taglie), **70 catture rifatte**.
+
+#### 1. Il tetto d'azienda lo pone il titolare
+
+`tettoAzienda()` era `sommaBudget()`: 115 €/giorno a undici e 400 a quaranta, cioè la somma di undici (quaranta)
+budget che la decisione 55 dichiara **facoltativi**. Nessuna pagina aveva mai chiesto al titolare quanto volesse
+spendere in un giorno, e «oltre il tetto» diceva che era stata superata una somma, non che era stata rotta una
+promessa. Adesso il tetto è un numero suo, e la somma sopravvive come **proposta della prima apertura**
+(`propostaTetto()`, l'unico posto dove `sommaBudget` resta viva). La differenza si misura in una riga di prova:
+
+| | tetto del giorno | proposta |
+|---|---|---|
+| all'apertura | 115 € | 115 € |
+| **dopo aver assunto un dipendente** | **115 €** | **125 €** |
+
+#### 2. La pagina Impostazioni: il primo numero scrivibile del prodotto
+
+Fino alla 31 **nessun limite era modificabile da nessuna parte**: l'editor del dipendente aveva tre chiavi
+(`dip`, `seme`, `tinta`) e le penne sulle card dei budget erano `rb ghost` **senza `data-az`**, cioè decorazione.
+I 22 numeri a undici (44 a quaranta) erano assegnati senza che il titolare li vedesse mai.
+
+La pagina ha **quattro sezioni** e **diciotto campi** a undici: il tetto d'azienda (giorno, mese, e l'eccezione di
+oggi), che cosa fa quando è raggiunto (*Ferma* / *Avverte*), la proposta della prima apertura con la pillola che
+ci riporta; i budget dei quattro dipartimenti; i budget delle tre routine; e l'ultima sezione conta gli **altri
+due livelli** e ci porta, invece di rifarli qui.
+
+**Perché gli altri due non stanno qui**, e non è dimenticanza: il budget di un dipendente sta nella **sua** pagina
+(la foglia, regola 1) e la soglia di un workflow nel **suo** canvas, dove esiste dalla versione 25. Rifarli qui
+vorrebbe dire 40 campi in un elenco solo a quaranta, e lì la regola 3 impone la forma compatta — che la barra del
+budget non ce l'ha. Nessun settimo cerchio nel rail: si entra dal «124 € su 115 €» della home e dai Costi, e il
+cerchio acceso resta quello dei costi.
+
+#### 3. La percentuale da dato a gesto
+
+Il soffitto di Vendite era il **60 % del tetto d'azienda**, e siccome il tetto era una somma, passava da 69 a 75 €
+quando si assumeva in **Amministrazione**. Adesso la percentuale non è più un dato: è un **modo di scrivere il
+numero**. Si scrive «60 %» nel campo, il prodotto risponde `69` e la riga sotto dice **«60 % di 115 € al
+giorno»**. Da lì è 69 € e non si muove più. Spariscono `tetti.dip` in percentuale, `soffittoDi`, `sommaSoffitti` e
+`avvisoSopra100` — che non avrebbe potuto scattare mai, perché la somma delle quote faceva 60 e la soglia stava a
+100.
+
+#### 4. Il dipartimento parte senza soffitto
+
+I soffitti di dipartimento erano **due e si contraddicevano**: 30 € disegnati dalla pagina Costi (la somma dei
+budget dei suoi tre dipendenti) contro 69 € nel modello, 2,3 volte, che dicevano cose opposte su Vendite. Nessuno
+dei due l'aveva scelto il titolare. Adesso `tetti.dip` nasce **vuoto** e la card dice «61 € oggi · nessun budget».
+
+#### 5. Il freno cablato, e il prodotto che si apre fermo
+
+`fermaPrimaDelPasso: true` stava nel modello dalla decisione 55 e **non lo leggeva nessuna pagina** (l'unico
+lettore era una riga di log dentro una prova). Adesso lo legge il prodotto, e siccome il tetto è già consumato
+*prima* di qualunque passo nuovo, **il prodotto si apre fermo**: 3 esecuzioni su 3 a undici, 12 su 12 a quaranta.
+
+**Nessuno stato nuovo, e non per prudenza: perché il prodotto ce l'aveva già.** Chi è fermo non cambia `e.stato`
+— resta `lavoro`, ed è vero, la sua esecuzione è aperta — e prende `e.pausa` con `pausaPer: 'tetto'`. `e.pausa`
+esisteva da sette punti del codice: il chip **«In pausa»** lo stampa `componenti.js` (quindi Console e telefono
+dicono la stessa parola), il punto dell'avatar si spegne, la pagina Esecuzione aveva già la frase e il log.
+
+| dove | prima | dopo |
+|---|---|---|
+| barra «Oggi in azienda», seconda casella | «3 al lavoro» | «3 **in pausa · tetto**», stessi avatar, stesso conto |
+| telefono, quadro del giorno | «3 al lavoro» | «3 **in pausa**» (l'etichetta ha 53 px: «in pausa · tetto» ne chiede 71 e si taglia) |
+| home, primo numero | «3 al lavoro» | «3 in pausa» |
+| home, titolo della sezione | «Al lavoro adesso» | «**Ferme per il tetto**» |
+| card dell'esecuzione | chip lime «In corso» | chip «In pausa», nessun punto sull'avatar |
+| pagina Esecuzione | — | «Ferma per il tetto d'azienda al passo 2 di 4…» e la pillola «Alza il tetto d'azienda» |
+
+**Niente quinta casella nella barra**, e il righello dice perché. Misurata davvero (la misura della versione 31
+era sbagliata, e la revisione incrociata l'ha corretta): «6 ferme per il tetto» chiede **163,4 px** su **188**
+liberi a undici — ci sta, ma di 24,6 — mentre cambiare la parola alla seconda casella costa **+32,5 px**. E
+soprattutto sul telefono lo stesso quadro è una **griglia due per due** con una prova che asserisce quattro
+caselle esatte: una quinta la farebbe diventare tre righe, +57,5 px, contro i 14-20 px di margine che quella
+schermata ha.
+
+**E il freno non si aggira.** Sulla pagina di chi è fermo per il tetto non c'è nessun «Riprendi»: sei clic a
+undici — venti a quaranta — farebbero del tetto che ferma un suggerimento.
+
+#### 6. Lo sblocco: una firma che porta una cifra
+
+`m.decidi(id, stato, commento, esitoRevisione)` non aveva un parametro per un importo, e una richiesta non aveva
+`importo`. Adesso ce l'ha, ed è usato: la richiesta **«Tetto del giorno raggiunto: 124 € su 115 €»** è una sola
+per tutta l'azienda, e la cifra che porta è il **costo dichiarato del passo che sfonderebbe** — 21 € a undici
+(passo 4 di 7 dello Sviluppatore full-stack), 29 € a quaranta. Approvandola il tetto sale **solo per oggi** e chi
+era fermo riparte da solo; il tetto di ogni giorno non si tocca.
+
+**Perché una e non sei**, contato: una richiesta per esecuzione ferma porterebbe la coda da **4 a 10** a undici e
+da **7 a 27** a quaranta, e il criterio scritto in questo repository è che l'attenzione del titolare è la risorsa
+scarsa. Così la coda va da 4 a 5 e da 7 a 8.
+
+**Perché il passo e non la giornata**, contato: «finire la giornata» sarebbe **+89 €** a undici e **+566 €** a
+quaranta — più del tetto stesso — ed è una **stima** (i passi da fare hanno un costo stimato, e la regola della
+versione 24 dice che quello che è previsto non si stampa come misurato). Il costo di *quel* passo, invece, è un
+numero dichiarato, e risale a un dipendente e a un'esecuzione come vuole la spina dorsale.
+
+La richiesta del tetto **non ha nessuna regola d'approvazione**: non è un'uscita verso un cliente. Senza questa
+distinzione sarebbe caduta su «Report interni: automatica», e la pagina Richieste avrebbe stampato che un
+rendiconto governa il tetto di spesa.
+
+#### 7. Che cosa la revisione incrociata ha corretto, di nuovo
+
+Come nelle versioni 24-31, la revisione incrociata ha spostato la risposta più dei pareri. Tre numeri **scritti da
+me** nel contesto del consiglio sono risultati falsi, e tutti e cinque i consiglieri ci avevano fatto aritmetica
+sopra:
+
+| il numero scritto | il numero vero |
+|---|---|
+| la quinta casella costa **107 px** a undici | **163,4 px** — la prima misura aveva cancellato metà del testo prima di misurarlo |
+| la barra sta su **25** catture | **41** portano quella viva (44 ne portano una in quel posto, ma 3 sono la barra archiviata dietro `?barra=0`) |
+| finire la giornata costa **+49 €** | **+89 €** a undici e **+566 €** a quaranta: le esecuzioni **pianificate** valgono altri 40,80 € (144 a quaranta) e nessuno le aveva contate |
+
+E un numero che questo documento si portava dietro dalla versione 31 è risultato falso a sua volta: **«un sesto
+stato tocca 42 punti in 5 file»**. Contato: `m.STATI[e.stato].breve` compare **una volta sola**, in un file solo.
+Il raggio vero di uno stato nuovo sono le **165 comparazioni** `\.stato === '…'` in sei file — molto di più di 42,
+ma la *superficie di crash* era uno. La decisione («nessuno stato nuovo») resta quella giusta, per la ragione
+giusta.
+
 ## 5. File
 
 | File | Ruolo |

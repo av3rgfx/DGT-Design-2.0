@@ -34,7 +34,10 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   /* Il numero era 2 594 px fino alla versione 20. La banda riservata della versione 21 stringe la colonna da 1312 a
      1008 px e la pagina si allunga: il prezzo misurato del non avere più controlli sotto la tendina. Resta il senso
      dell'asserzione — a «oggi» la pagina non si muove — e infatti la si rilegge sotto, dopo le pillole del periodo. */
-  check(altOggi === 3198, 'Sviluppo a «oggi» è alta 3 198 px: 3 130 più i 68 px dell\'intestazione a due righe della versione 22, e da lì non si muove (' + altOggi + ')');
+  /* Versione 32: 3 396 px, cioè 3 198 più i 198 della card della richiesta del tetto. Il tetto ferma il passo di
+     un dipendente di Sviluppo, quindi la richiesta che lo sblocca sta fra le sue: ogni euro risale a un dipendente
+     e a un'esecuzione, anche quando è un euro di budget. */
+  check(altOggi === 3396, 'Sviluppo a «oggi» è alta 3 396 px: i 3 198 di prima più i 198 della richiesta del tetto (' + altOggi + ')');
   check(await conta(sez('^Consegne') + ' .ncard.task') === 7, 'sette consegne di oggi in Sviluppo, come prima');
   check(await conta(sez('^Consegne') + ' [data-az="cerca"]') === 0, 'niente cerchio «cerca» a «oggi»: sette righe stanno in una schermata');
 
@@ -178,8 +181,16 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
       decise: m.richieste.filter(r => r.deciso).length,
       /* il Tester QA delle 15:00 non è una routine: il diario dice che l'ha pianificato MR, ieri, per oggi */
       testerHaRoutine: m.routineDi(m.byId[2]).length,
-      tetto: m.tettoAzienda(), soffittoVen: m.soffittoDi('ven'), soffittoSvi: m.soffittoDi('svi'),
-      modo: m.tetti.modo, ferma: m.tetti.fermaPrimaDelPasso, somma: m.sommaSoffitti(),
+      /* versione 32: gli euro dappertutto. `soffittoDi`, `sommaSoffitti` e `tetti.modo` non esistono piu' —
+         stavano qui dentro un `page.evaluate` **senza try/catch**, e toccarli senza sistemare queste due righe
+         avrebbe fatto rigettare l'IIFE con 159 verifiche che non partono e sembrano passate. */
+      tetto: m.tettoAzienda(), proposta: m.propostaTetto(), budgetVen: m.budgetDip('ven'), budgetSvi: m.budgetDip('svi'),
+      ferma: m.tetti.fermaPrimaDelPasso, quote: m.tetti.dip,
+      /* il tetto e' un numero posto, non una somma: si assume e non si muove */
+      dopoAssunzione: (() => { const q = DGT_DATI.modello(11); q.aggiungi({ ruolo: 'Prova' }); return { tetto: q.tettoAzienda().giorno, proposta: q.propostaTetto().giorno }; })(),
+      /* la percentuale come gesto: si scrive, si fissa in euro, e da li' non si muove */
+      gesto: m.leggiLimite('60 %', 'giorno'), gestoEuro: m.leggiLimite('69'), gestoRotto: m.leggiLimite('ciao'),
+      orizzontiRt: m.routine.map(r => m.orizzontiDi(r).join('+')),
     };
   });
   check(rt11.n === 3, 'le routine di undici sono tre, non otto: le otto voci erano tre routine viste da otto lati (' + rt11.n + ')');
@@ -192,12 +203,16 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(rt40.n === 3, 'a quaranta il generatore ne ricava tre con lo stesso criterio (' + rt40.n + ')');
   check(rt40.tutteApprovate, 'e nessuna nasce da una richiesta rifiutata: quella il titolare l\'ha vista');
 
-  console.log('\n9. i tetti di spesa (decisione 55 e le due conferme dell\'8 settembre)');
-  check(rt11.modo === 'soffitto', 'il tetto di dipartimento è un soffitto, non una ripartizione: le quote possono sommare oltre 100');
-  check(rt11.ferma === true, 'e il tetto si controlla prima di ogni passo, mai a metà');
-  check(rt11.tetto.giorno === 115 && rt11.tetto.mese === 1580, 'il tetto d\'azienda a undici: 115 €/giorno e 1 580 €/mese, la somma dei budget (' + rt11.tetto.giorno + '/' + rt11.tetto.mese + ')');
-  check(rt11.soffittoVen === 69 && rt11.soffittoSvi === null, 'Vendite ha un soffitto del 60 % (69 €), gli altri no: obbligatorio è solo il tetto d\'azienda');
-  check(rt11.somma === 60, 'e la somma delle quote è 60 %: sotto il 100, nessun avviso da dare (' + rt11.somma + ')');
+  console.log('\n9. i limiti di spesa (versione 32: gli euro, e il tetto posto dal titolare)');
+  check(rt11.ferma === true, 'il tetto si controlla prima di ogni passo, mai a metà');
+  check(rt11.tetto.giorno === 115 && rt11.tetto.mese === 1580, 'il tetto d\'azienda a undici: 115 €/giorno e 1 580 €/mese (' + rt11.tetto.giorno + '/' + rt11.tetto.mese + ')');
+  check(rt11.proposta.giorno === 115, 'e alla prima apertura la proposta era la somma dei budget, 115 €: il titolare l\'ha accettata, e da lì il numero è suo');
+  check(rt11.dopoAssunzione.tetto === 115 && rt11.dopoAssunzione.proposta === 125, 'assumendo un dipendente la proposta sale a 125 € e il tetto resta 115: un limite che cambia per fatti altrui non è un limite (' + rt11.dopoAssunzione.tetto + '/' + rt11.dopoAssunzione.proposta + ')');
+  check(rt11.budgetVen === null && rt11.budgetSvi === null && Object.keys(rt11.quote).length === 0, 'nessun dipartimento nasce con un budget: è facoltativo, e i due soffitti che si contraddicevano (30 € a schermo, 69 € nel modello) non ci sono più');
+  check(rt11.gesto && rt11.gesto.v === 69 && /60 % di 115/.test(rt11.gesto.da), 'la percentuale è un gesto, non un dato: «60 %» diventa 69 € e porta scritto da dove viene («' + (rt11.gesto || {}).da + '»)');
+  check(rt11.gestoEuro && rt11.gestoEuro.v === 69 && rt11.gestoEuro.da === '', 'e «69» resta 69 € senza traccia: la traccia c\'è solo se il gesto c\'è stato');
+  check(rt11.gestoRotto === null, 'quello che non è un numero non scrive niente');
+  check(rt11.orizzontiRt.join(' · ') === 'giorno+mese · giorno+settimana+mese · giorno+mese', 'giorno e mese dappertutto, la settimana solo dove la cadenza è settimanale: la sola settimanale è rt2, il venerdì (' + rt11.orizzontiRt.join(' · ') + ')');
 
   /* ---- 10. che i controlli SI VEDANO (versione 21) ---- */
   console.log('\n10. i controlli dei workflow si vedono, non solo esistono');

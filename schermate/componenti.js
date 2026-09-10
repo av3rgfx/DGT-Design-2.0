@@ -855,7 +855,12 @@ window.DGT_COMPONENTI = (function () {
   const dots = lv => `<span class="dots l${lv}">${S(5)}</span>`;
   /* Avatar generato dal seme (ruolo o seme scelto) nello stato del dipendente; `stato` lo forza (es. la richiesta che aspetta), `extra` aggiunge attributi (data-anima, data-segue). */
   /* l'orbe riceve la tinta del dipendente e quella del suo dipartimento (versione 10): il modo con cui le usa lo decide l'aspetto della pagina */
-  const av = (m, e, size, stato, extra, opz) => { const d = m.dipDi(e); return `<span class="av${size ? ' ' + size : ''}"${extra ? ' ' + extra : ''}>${window.DGT_AVATAR.html(m.semeDi(e), stato || e.stato, Object.assign({ tinta: m.tintaDi ? m.tintaDi(e) : undefined, dip: d ? d.tinta : undefined }, opz || {}))}</span>`; };
+  /* Chi e' **in pausa** non porta il punto di stato, in nessuna vista (versione 32). La regola 19 dice lime = al
+     lavoro, giallo = da approvare, rosa = errore, e **niente da fermo**: un punto lime su un'esecuzione che il tetto
+     ha fermato direbbe il contrario del vero. Fino alla 31 lo facevano due sole chiamate, a mano, nella pagina
+     dell'Esecuzione e in quella del Dipendente; adesso e' l'aiutante a saperlo, cosi' vale anche per le card della
+     home, per le righe e per il telefono. Chi passa uno stato esplicito comanda lui, come prima. */
+  const av = (m, e, size, stato, extra, opz) => { const d = m.dipDi(e); return `<span class="av${size ? ' ' + size : ''}"${extra ? ' ' + extra : ''}>${window.DGT_AVATAR.html(m.semeDi(e), stato || (e.pausa ? 'libero' : e.stato), Object.assign({ tinta: m.tintaDi ? m.tintaDi(e) : undefined, dip: d ? d.tinta : undefined }, opz || {}))}</span>`; };
   const pair = (m, ids, size, max) => {
     const lst = ids.map(id => m.byId[id]).filter(Boolean);
     const shown = max ? lst.slice(0, max) : lst;

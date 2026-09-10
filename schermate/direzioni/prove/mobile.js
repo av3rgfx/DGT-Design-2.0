@@ -33,10 +33,12 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(await conta('.m-tel') === 8, 'otto telefoni');
   check((await Promise.all([1, 2, 3, 4, 5, 6, 7, 8].map(schermata))).join(',') === '1,2,3,4,5,6,7,8', 'schermate da 1 a 8');
   let c = await coda(); console.log('    coda:', c.map(r => r.cosa).join(' | '));
-  check(c.length === 4, 'quattro richieste in coda');
+  /* Versione 32: cinque, non quattro. La quinta è la richiesta del tetto: il freno è cablato e il tetto è già
+     consumato all'apertura, quindi il prodotto si apre fermo. È una sola per tutta l'azienda. */
+  check(c.length === 5 && c.filter(r => r.tipo === 'tetto').length === 1, 'cinque richieste in coda, e una sola è quella del tetto');
   /* dalla versione 17 il conto sta nel titolo, non più nella riga dei due numeri grandi (vedi la sezione 6) */
-  check(await txt(tel(1) + '.m-h1') === 'DA APPROVARE4', 'titolo e numero «da approvare»');
-  check(await txt(tel(1) + '.meet .n') === '4' && await conta(tel(1) + '.m-coda .qrow[data-az="apri"]') === 4, 'campanella con 4, quattro righe in coda');
+  check(await txt(tel(1) + '.m-h1') === 'DA APPROVARE5', 'titolo e numero «da approvare»');
+  check(await txt(tel(1) + '.meet .n') === '5' && await conta(tel(1) + '.m-coda .qrow[data-az="apri"]') === 5, 'campanella con 5, cinque righe in coda');
   check(await conta(tel(1) + '.task.lime') === 1 && (await txt(tel(1) + '.task .tt')) === c[0].cosa, 'la card lime della richiesta corrente');
   check(await txt(tel(2) + '.m-tit h2') === c[0].cosa, 'il telefono 2 mostra la stessa richiesta: ' + c[0].cosa);
   check(await txt(tel(3) + '.m-rh h4') === 'Riepilogo di oggi' && await conta(tel(3) + '.m-rie .voce') === 5 && await conta(tel(3) + '.dcard') === 2, 'il Riepilogo: due card e cinque voci del diario');
@@ -48,11 +50,11 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(await schermata(1) === '2' && await conta(tel(1) + '.m-scr.rev') === 1, 'la riga apre la revisione sul telefono 1');
   check(await conta(tel(2) + '.m-scr.rev') === 1 && (await txt(tel(2) + '.m-tit h2')).includes('Standard'), 'il telefono 2 segue: «Da Standard a Esperto»');
   check(await conta(tel(2) + '.m-doc.ver') === 2 && await conta(tel(2) + '.m-det') === 5 && await conta(tel(2) + '.m-bar .pill.on') === 1, 'due versioni, cinque card, la pillola «Prova»');
-  check((await txt(tel(2) + '.m-pager')) === `${iMod + 1} di 4`, 'contatore ' + (iMod + 1) + ' di 4');
+  check((await txt(tel(2) + '.m-pager')) === `${iMod + 1} di 5`, 'contatore ' + (iMod + 1) + ' di 5');
   await clic(tel(2) + '[data-az="succ"]');
-  check((await txt(tel(2) + '.m-pager')) === `${(iMod + 1) % 4 + 1} di 4`, 'la freccia avanti');
+  check((await txt(tel(2) + '.m-pager')) === `${(iMod + 1) % 5 + 1} di 5`, 'la freccia avanti');
   await clic(tel(2) + '[data-az="prec"]');
-  check((await txt(tel(2) + '.m-pager')) === `${iMod + 1} di 4`, 'la freccia indietro');
+  check((await txt(tel(2) + '.m-pager')) === `${iMod + 1} di 5`, 'la freccia indietro');
   await passo('revisione e frecce');
 
   console.log('3. il rifiuto con motivo');
@@ -63,7 +65,7 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   await page.type(tel(2) + 'input[data-campo="motivo"]', 'Prima una prova su venti'); await page.keyboard.press('Enter'); await page.waitForTimeout(300);
   const rif = await richiesta(c[iMod].id);
   check(rif.stato === 'rifiutata' && rif.commento === 'Prima una prova su venti' && rif.rv === 'rifiutata', 'motivo + Invio: rifiutata con il motivo, anche nella revisione');
-  check(await conta('.m-scr.motivo') === 0 && (await coda()).length === 3, 'il campo si chiude, tre in coda');
+  check(await conta('.m-scr.motivo') === 0 && (await coda()).length === 4, 'il campo si chiude, quattro in coda');
   await passo('rifiuto');
 
   console.log('4. la prova della revisione del soul prompt');
@@ -75,7 +77,7 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   await clic(tel(2) + '[data-az="prova"]');
   const pr = await richiesta(c[iPr].id);
   check(pr.stato === 'approvata' && pr.commento === 'Prova su 20 esecuzioni' && pr.rv === 'prova', 'prova: approvata con «Prova su 20 esecuzioni», la revisione è in prova');
-  check((await coda()).length === 2, 'due in coda');
+  check((await coda()).length === 3, 'tre in coda');
   await passo('prova');
 
   console.log('5. approva le altre fino allo stato vuoto');
@@ -95,7 +97,11 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(await conta(quadro + '.duedue') === 1 && await conta(quadro + ' .qq') === 4, 'la schermata 1 porta il quadro: quattro caselle in griglia (la forma scelta)');
   /* solo le parole delle caselle: `> span` senza l'icona e senza la pila, che dentro ha i suoi span (avatar e «+N») */
   const parole = await page.locator(quadro + ' .qq > span:not(.ico):not(.pair)').allTextContents();
-  check(parole.join(' ') === 'approvate al lavoro ferma dopo', 'le quattro parole: ' + parole.join(' · '));
+  /* Versione 32: la seconda parola è «in pausa» quando il tetto d'azienda ha fermato tutte le esecuzioni aperte
+     — e all'apertura è così. Sul telefono l'etichetta ha **53 px** misurati: «in pausa» ne chiede 40, «in pausa ·
+     tetto» ne chiede 71 e si taglia, quindi il perché lo porta la Console, che ha spazio (come già fa con «· Kim»
+     e «· dalle 15:00», che compaiono solo a undici). Nessuna quinta casella: la griglia è due per due. */
+  check(parole.join(' ') === 'approvate in pausa ferma dopo', 'le quattro parole: ' + parole.join(' · '));
   /* la regola della correzione 16a: un elemento fisso non ripete quello che un altro dice già sulla stessa schermata.
      La forma 2 tiene la casella «approvate», quindi cade la riga dei due numeri grandi: «approvate oggi» era lo stesso
      conto a 60 px di distanza, «da approvare» è passato nel titolo. */
@@ -227,7 +233,7 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   console.log('8. quaranta');
   await page.goto(file('n=40')); await page.waitForTimeout(600);
   c = await coda(); console.log('    in coda a 40:', c.length);
-  check(c.length === 7 && await txt(tel(1) + '.meet .n') === '7' && await conta(tel(1) + '.m-coda .qrow[data-az="apri"]') === 7, 'sette in coda, «7» sulla campanella');
+  check(c.length === 8 && await txt(tel(1) + '.meet .n') === '8' && await conta(tel(1) + '.m-coda .qrow[data-az="apri"]') === 8, 'otto in coda a quaranta, «8» sulla campanella: le sette di prima più quella del tetto');
   /* il numero a due cifre sulla campanella: scritto a mano, deve stare nel badge senza sforare */
   const badge = await page.evaluate(() => { const b = document.querySelector('.m-tel[data-n="1"] .meet .n'); b.textContent = '12'; return { largo: b.scrollWidth <= b.clientWidth + 1, w: b.getBoundingClientRect().width }; });
   check(badge.largo && badge.w >= 22, '«12» sta nel badge della campanella (larghezza ' + Math.round(badge.w) + ')');

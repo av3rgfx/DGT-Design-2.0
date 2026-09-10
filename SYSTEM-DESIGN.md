@@ -807,6 +807,56 @@ sono dell'utente e sono ancora da prendere.**
     passo che, aperto, ne copriva due, e in un caso copriva il nodo del titolare. Il conto diceva «libero», la
     resa copriva.
 
+45. **Un limite che nessuno ha scelto non è una promessa, e un limite che cambia per fatti altrui non è un
+    limite** (2026-09-09, versione 32). Il tetto di spesa dell'azienda era `sommaBudget()`: la somma di undici
+    (quaranta) budget dichiarati **facoltativi**, che per i dossier generati valeva `10` scritto nel generatore.
+    Nessuna pagina aveva mai chiesto al titolare quanto volesse spendere in un giorno — quindi «oltre il tetto»
+    diceva che era stata superata una somma, non che era stata rotta una promessa, e un allarme su un impegno mai
+    preso è la stessa specie di difetto di un numero inventato. E il soffitto di un dipartimento, che era una
+    **percentuale** di quella somma, si muoveva per fatti che non lo riguardavano: assumendo un dipendente in
+    **Amministrazione**, il soffitto di **Vendite** passava da 69 a 75 €.
+    La regola ha tre parti. **(a)** Il limite che ferma lo pone una persona, e la somma resta solo come
+    **proposta** alla prima apertura: dopo, assumere muove la proposta e non il limite. **(b)** Una sola unità —
+    gli euro — a tutti i livelli; la percentuale sopravvive come **gesto** di scrittura, non come dato: si scrive
+    «60 %», il prodotto la fissa in euro **in quel momento** e stampa da dove viene («60 % di 115 € al giorno»).
+    Si tiene la comodità di impostare in proporzione e si perde il difetto. **(c)** Un limite facoltativo nasce
+    **vuoto**: finché nessuno l'ha posto, la pagina dice la spesa e basta, non un numero calcolato che nessuno ha
+    scelto — e che, nel caso di Vendite, contraddiceva l'altro (30 € a schermo contro 69 nel modello, 2,3 volte,
+    con verdetti opposti sullo stesso dipartimento).
+    Corollario: **il primo posto dove si scrive un numero è una pagina, non una penna disegnata.** Fino alla
+    versione 31 le penne sulle card dei budget erano `rb ghost` senza `data-az`: decorazione. Un controllo che
+    sembra scrivere e non scrive è peggio di un controllo assente (è la regola 17 applicata ai numeri).
+
+46. **Un freno dichiarato e non cablato è un difetto, e cablarlo cambia il prodotto: va disegnato, non aggirato**
+    (2026-09-09, versione 32). `fermaPrimaDelPasso: true` stava nel modello da tre settimane e **non lo leggeva
+    nessuna pagina**: il tetto dichiarava di fermare e non aveva mai fermato niente. Cablandolo, siccome il tetto
+    è già consumato *prima* di qualunque passo nuovo, **il prodotto si apre fermo** — 3 esecuzioni su 3 a undici,
+    12 su 12 a quaranta. Il titolare ha deciso che è giusto così, ed è la prova che un freno vero non è un
+    dettaglio del modello: è una schermata diversa.
+    **Prima di inventare uno stato, si guarda se il prodotto ce l'ha già.** Il sesto stato («ferma per tetto»)
+    sembrava obbligatorio e non lo era: `e.pausa` esisteva da sette punti del codice, con il chip «In pausa»
+    stampato dal componente condiviso (quindi la stessa parola su Console e telefono), il punto dell'avatar
+    spento, la frase e il log nella pagina Esecuzione. Chi è fermo **non cambia stato** — la sua esecuzione è
+    aperta, ed è vero — e prende `pausa` con il **motivo** accanto (`pausaPer`), che è quello che distingue la
+    mano del titolare dal tetto.
+    Corollari misurati:
+    - **una casella che dice l'altra verità batte una casella in più.** La barra «Oggi in azienda» non prende una
+      quinta casella: la seconda cambia parola («3 al lavoro» → «3 in pausa · tetto») tenendo avatar e conto.
+      Costa +32,5 px invece di 169,4, non ripete nessun numero, e soprattutto **non spacca il telefono**, dove lo
+      stesso quadro è una griglia due per due e l'etichetta ha 53 px (là la parola è «in pausa» e basta: il
+      perché lo porta la superficie che ha spazio, come già fa con «· Kim» e «· dalle 15:00»);
+    - **il freno non deve avere una scorciatoia.** Sulla pagina di chi è fermo per il tetto non c'è nessun
+      «Riprendi»: ci sarebbe, ed è la pillola che il prodotto ha già — ma sei clic a undici e venti a quaranta
+      farebbero del tetto che ferma un suggerimento. C'è «Alza il tetto d'azienda», che porta nell'unico posto
+      dove il tetto si alza;
+    - **lo sblocco è uno e porta una cifra vera.** Una richiesta per esecuzione ferma porterebbe la coda da 4 a
+      10 e da 7 a 27; una sola la porta da 4 a 5 e da 7 a 8. E la cifra è il **costo dichiarato del passo che
+      sfonderebbe** (21 € a undici, 29 a quaranta), non la stima di quanto costa finire la giornata (+89 e
+      **+566**), che cadrebbe sulla regola 40;
+    - **l'eccezione è di oggi, la promessa no.** Il titolare non cambia il tetto di ogni giorno per far ripartire
+      il lavoro: firma un supplemento che scade, e quante volte è servito è la misura che dice se il tetto è
+      tarato male.
+
 ## 11. Collegamenti
 
 - Confronto delle tre direzioni (artefatto): https://claude.ai/code/artifact/e7334087-3fc8-4ec9-86f7-bd9fa387bd8f

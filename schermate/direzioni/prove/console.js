@@ -36,12 +36,17 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   await vai('');
   check(await conta('.a-tend.aperta') === 1 && await conta('.appr') === 1, 'la tendina è aperta all\'apertura, con la richiesta corrente');
   let coda = await inAttesa(); console.log('    in attesa:', coda.map(r => r.cosa).join(' | '));
-  check(coda.length === 4 && await conta('.a-tend .qrow[data-az="vai"]') === 4, 'quattro richieste in attesa, quattro righe in coda');
+  /* Versione 32: le richieste in attesa sono **cinque**, non quattro. La quinta e' quella del tetto: il freno e'
+     cablato davvero, il tetto d'azienda e' gia' consumato all'apertura (124 € su 115) e il prodotto si apre fermo.
+     E' **una** richiesta al giorno, non una per esecuzione ferma: sei a undici e venti a quaranta spenderebbero
+     l'attenzione del titolare, che questo repository chiama la risorsa scarsa. */
+  check(coda.length === 5 && await conta('.a-tend .qrow[data-az="vai"]') === 5, 'cinque richieste in attesa, cinque righe in coda: la quinta è quella del tetto');
+  check(coda.filter(r => r.tipo === 'tetto').length === 1, 'e ce n\'è una sola per il tetto, non una per esecuzione ferma');
   check((await txt('.a-tend')).includes(coda[0].cosa), 'la richiesta corrente è la più vecchia: ' + coda[0].cosa);
   await clic('.appr [data-az="approva"]');
   check((await richiesta(coda[0].id)).stato === 'approvata', 'approva dalla tendina: la prima richiesta è approvata');
   coda = await inAttesa();
-  check(coda.length === 3 && await conta('.a-tend.aperta') === 1, 'tre in attesa, la tendina resta aperta sulla successiva');
+  check(coda.length === 4 && await conta('.a-tend.aperta') === 1, 'quattro in attesa, la tendina resta aperta sulla successiva');
   const iRev = coda.findIndex(r => r.tipo === 'revisione');
   check(iRev >= 0, 'in coda c\'è una revisione di performance');
   await clic(`.a-tend .qrow[data-az="vai"][data-idx="${iRev}"]`);
@@ -64,7 +69,7 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(await conta('.a-tend .dcard') === 3 && (await txt('.a-tend')).includes('Obiettivo del mese'), 'il Riepilogo di oggi: tre card');
   await clic('.a-tend [data-az="chiudi"]');
   check(await conta('.a-tend') === 0 && await conta('.a-mini') === 2, 'chiudi: le due pillole sul bordo');
-  check(await txt('.a-mini b') === '2', 'la pillola conta le due richieste rimaste');
+  check(await txt('.a-mini b') === '3', 'la pillola conta le tre richieste rimaste');
   await clic('.a-mini[data-pannello="richieste"]');
   check(await conta('.a-tend.aperta') === 1, 'la pillola riapre la tendina');
   check(await largo(), 'nessuno sforo orizzontale');
@@ -73,13 +78,13 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   await vai('pagina=richieste&tendina=chiusa');
   check(await titolo() === 'RICHIESTE', 'titolo RICHIESTE');
   const righe = await conta('.hrow');
-  check(await conta('.task[data-az="richiesta"]') === 4 && await conta('.hrow') === 16, 'quattro card lime da approvare in cima, sedici righe decise nello storico');
+  check(await conta('.task[data-az="richiesta"]') === 5 && await conta('.hrow') === 16, 'cinque card lime da approvare in cima, sedici righe decise nello storico');
   await clic('[data-az="filtro"][data-k="tipo"][data-v="post"]');
   check((await txt('.fsum')).includes('1 filtro attivo') && await conta('.hrow') < righe, 'filtro per tipo: un filtro attivo, meno righe');
   await clic('[data-az="azzera"]');
   check((await txt('.fsum')).includes('nessun filtro') && await conta('.hrow') === righe, 'azzera: nessun filtro, tutte le righe');
   await clic('[data-az="approva-tutte"]');
-  check((await inAttesa()).length === 0 && await conta('.task[data-az="richiesta"]') === 0 && await conta('.hrow') === 20, '«Approva tutte»: nessuna card in attesa, venti righe nello storico');
+  check((await inAttesa()).length === 0 && await conta('.task[data-az="richiesta"]') === 0 && await conta('.hrow') === 21, '«Approva tutte»: nessuna card in attesa, ventuno righe nello storico');
   check(await txt('.a-mini b') === '0', 'la pillola sul bordo dice 0');
 
   console.log('3. l\'editor del dipendente: crea, modifica, tinta');
@@ -116,8 +121,29 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(await page.evaluate(id => modello.byId[id].nome, nuovo.id) === 'Vera' && await conta('.a-tend.dip') === 0, 'Esc chiude senza salvare');
   check(await largo(), 'nessuno sforo orizzontale');
 
-  console.log('4. l\'esecuzione: pausa, interrompi, riprova, avvia, nota del titolare');
+  /* ---- versione 32: il prodotto si apre fermo, e questa e' la prima cosa che si incontra ----
+     Il tetto d'azienda e' cablato davvero e all'apertura e' gia' consumato: le esecuzioni aperte sono in pausa
+     **per il tetto**, e da li' non si «riprende» — sei clic su «Riprendi» (venti a quaranta) farebbero del tetto
+     che ferma un suggerimento. L'unica strada e' alzarlo, e si alza in un posto solo. Il resto della sezione 4
+     prova la pausa **del titolare**, che e' un'altra cosa: quindi prima si toglie il fermo del tetto. */
+  console.log('4. il tetto che ferma, e poi l\'esecuzione: pausa, interrompi, riprova, avvia, nota del titolare');
   await vai('pagina=esecuzione&id=4&tendina=chiusa');
+  check(await page.evaluate(() => modello.byId[4].pausa === true && modello.byId[4].pausaPer === 'tetto'), 'all\'apertura l\'esecuzione è ferma per il tetto, e lo stato resta «lavoro»: nessuno stato nuovo');
+  check((await txt('.a-main')).includes('Ferma per il tetto d\'azienda'), 'la pagina lo dice con le sue parole, non con quelle della pausa del titolare');
+  check(await conta('[data-az="esec-pausa"]') === 0 && await conta('.a-main [data-pagina="impostazioni"]') >= 1, 'e non c\'è nessun «Riprendi»: c\'è «Alza il tetto d\'azienda», che porta dove il tetto si pone');
+  /* La pillola porta a Impostazioni **senza ricaricare**: si cammina dentro il prodotto, come farebbe il titolare,
+     e il modello (che vive nella pagina) si porta dietro quello che si scrive. Una `page.goto` qui rifarebbe il
+     modello da zero e il fermo tornerebbe: non e' un difetto, e' il prodotto. */
+  await clic('.a-main [data-pagina="impostazioni"]');
+  check(await titolo() === 'IMPOSTAZIONI' && await conta('input[data-lim]') === 18, 'si arriva a Impostazioni, che ha diciotto campi scrivibili: il primo posto del prodotto dove si scrive un numero');
+  await page.fill('input[data-lim="azienda"][data-per="oggi"]', '60');
+  await page.press('input[data-lim="azienda"][data-per="oggi"]', 'Enter'); await page.waitForTimeout(300);
+  check(await page.evaluate(() => modello.tettoOggi() === 175 && !modello.byId[4].pausa), 'scritta l\'eccezione di oggi (+60 €), il tetto di oggi fa 175 € e chi era fermo riparte da solo');
+  check(await page.evaluate(() => modello.tettoAzienda().giorno === 115), 'e il tetto di ogni giorno resta 115 €: l\'eccezione è di oggi, la promessa non si tocca');
+  check(await page.evaluate(() => modello.richiestaTetto() === null && modello.richiesteDi('attesa').length === 4), 'e la richiesta del tetto sparisce dalla coda, che torna a quattro: non c\'è più niente da sbloccare');
+  await clic('.a-rail [data-pagina="home"]');
+  check((await txt('.a-main .shead h3')) === 'Al lavoro adesso', 'la home torna a dire «Al lavoro adesso», che adesso è vero');
+  await clic('.cards.riga [data-az="pagina"][data-pagina="esecuzione"][data-id="4"]');
   console.log('    pagina:', await titolo());
   const log0 = await conta('.lrow');
   await clic('[data-az="esec-pausa"]');
@@ -175,7 +201,13 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(caselle.length === 4, 'quattro caselle: approvate, al lavoro, ferme, dopo');
   check(!caselle.some(t => /aspettano te/.test(t)), 'la barra non ripete «da approvare»: lo dice la linguetta lime');
   check(await conta('.a-mini[data-pannello="richieste"], .a-tend.aperta') >= 1, 'la linguetta lime (o la tendina aperta) c\'è sempre');
-  check(caselle[0] === c.approvate + 'approvate' && caselle[1].includes(c.lavoro + 'al lavoro'), 'i primi due numeri sono quelli del modello (' + c.approvate + ', ' + c.lavoro + ')');
+  /* Versione 32: la seconda casella dice **l'altra verita' con la stessa forma**. Il conto e gli avatar sono
+     quelli delle esecuzioni aperte; la parola e' «al lavoro» finche' lavorano e «in pausa · tetto» quando il
+     tetto d'azienda le ha fermate tutte. Non nasce una quinta casella: sul telefono lo stesso quadro e' una
+     griglia due per due con quattro caselle esatte, e l'etichetta ha 53 px misurati. */
+  const fermiT = await page.evaluate(() => modello.dipendenti.filter(e => e.pausaPer === 'tetto').length);
+  check(caselle[0] === c.approvate + 'approvate' && caselle[1].includes(String(c.lavoro)) && caselle[1].includes(fermiT === c.lavoro ? 'in pausa · tetto' : 'al lavoro'), 'i primi due numeri sono quelli del modello (' + c.approvate + ', ' + c.lavoro + ') e la seconda casella dice «' + (fermiT === c.lavoro ? 'in pausa · tetto' : 'al lavoro') + '»');
+  check(fermiT === c.lavoro && fermiT > 0, 'e all\'apertura sono ferme per il tetto tutte e ' + fermiT + ': il prodotto si apre fermo, ed è voluto');
   check(caselle[2].startsWith(c.errore + 'ferm') && caselle[3].startsWith(c.piani + 'dopo'), 'ferme e dopo sono quelli del modello (' + c.errore + ', ' + c.piani + ')');
   check(await conta('.a-sched .tl .qua.err') === 1, 'la casella di chi è fermo è rosa: la barra di prima non lo diceva');
   check(await conta('.a-sched .tl .now') === 0 && await conta('.a-sched .tl .ev') === 0, 'niente marcatore dell\'ora né blocchi: la barra non finge più una linea del tempo');
@@ -200,7 +232,7 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   await vai('n=40');
   c = await conteggi(); caselle = await barra();
   console.log('    caselle a 40:', caselle.join(' | '));
-  check(caselle.length === 4 && caselle[1].includes(c.lavoro + 'al lavoro') && caselle[3].startsWith(c.piani + 'dopo'), 'a quaranta la barra ha le stesse quattro caselle, con i numeri di quaranta');
+  check(caselle.length === 4 && caselle[1].includes('in pausa · tetto') && caselle[3].startsWith(c.piani + 'dopo'), 'a quaranta la barra ha le stesse quattro caselle, con i numeri di quaranta: nessuna quinta, a nessuna delle due taglie');
   check(await page.evaluate(() => { const t = document.querySelector('.a-sched .tl'); return t.scrollWidth - t.clientWidth; }) === 0, 'a quaranta la barra non sfora');
 
   console.log('\n8. i controlli delle intestazioni di sezione (versione 17)');
@@ -520,6 +552,60 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   const kvRie = await page.evaluate(() => [...document.querySelectorAll('.a-tend.aperta .kv')].map(e => e.innerText.replace(/\s+/g, ' ')));
   const mm = await page.evaluate(() => { const q = DGT_DATI.modello(11); return q.costoOggi + ' € su ' + q.tettoAzienda().giorno + ' €'; });
   check(kvRie.some(x => x.includes(mm)), 'e il Riepilogo del titolare dice lo stesso numero con lo stesso tetto: ' + JSON.stringify(kvRie));
+
+  /* ================= 15. i limiti di spesa (versione 32) =================
+     Le verifiche non guardano un elemento, guardano un **invariante**: che il tetto abbia una sorgente sola, che
+     nessuna superficie dica «al lavoro» mentre nessuno lavora, e che chi e' fermo non porti il punto di stato che
+     la regola 19 riserva a chi lavora. Se un domani una pagina diverge, cadono. */
+  console.log('\n15. i limiti di spesa: una sorgente sola, nessuna parola falsa, nessun punto di troppo');
+  for (const n of ['11', '40']) {
+    const q = n === '40' ? 'n=40&' : '';
+    await vai(q + 'tendina=chiusa');
+    const home = await page.evaluate(() => {
+      const st = [...document.querySelectorAll('.a-stats .stat')].map(e => e.innerText.replace(/\s+/g, ' ').trim());
+      return { st, titolo: (document.querySelector('.a-main section .shead h3') || {}).textContent };
+    });
+    const mod = await page.evaluate(() => ({ tetto: modello.tettoAzienda().giorno, speso: modello.costoOggi, ferme: modello.fermePerTetto().length, lav: modello.alLavoro.length }));
+    check(home.st[2].includes(mod.speso + ' € su ' + mod.tetto + ' € al giorno'), 'a ' + n + ' la home dice il tetto che il titolare ha posto (' + mod.speso + ' su ' + mod.tetto + ')');
+    check(mod.ferme === mod.lav && mod.ferme > 0, 'a ' + n + ' il tetto ha fermato tutte le esecuzioni aperte (' + mod.ferme + ' su ' + mod.lav + '): il prodotto si apre fermo, ed è voluto');
+    check(!home.st[0].includes('al lavoro') && home.st[0].includes('in pausa'), 'a ' + n + ' il primo numero della home non dice «al lavoro» mentre nessuno lavora: dice «in pausa»');
+    check(home.titolo === 'Ferme per il tetto', 'a ' + n + ' e la sezione si intitola «Ferme per il tetto», che è l\'unico posto della card con lo spazio per dirlo');
+    /* la regola 19: lime = al lavoro, giallo = da approvare, rosa = errore, niente da fermo */
+    const punti = await page.evaluate(() => [...document.querySelectorAll('.a-main .ava.orbe')].filter(a => a.querySelector('.segnale') && modello.byId[+((a.closest('[data-id]') || {}).dataset || {}).id] && modello.byId[+a.closest('[data-id]').dataset.id].pausa).length);
+    check(punti === 0, 'a ' + n + ' nessun avatar di chi è fermo porta il punto di stato (regola 19: niente da fermo)');
+    /* il tetto e i Costi: lo stesso numero, una sorgente sola */
+    await vai(q + 'pagina=costi&tendina=chiusa');
+    const cst = await page.evaluate(() => [...document.querySelectorAll('.a-stats .stat')].map(e => e.innerText.replace(/\s+/g, ' ').trim()));
+    check(cst[0].includes(mod.speso + ' € su ' + mod.tetto + ' € al giorno'), 'a ' + n + ' i Costi dicono lo stesso numero con lo stesso tetto: ' + cst[0]);
+    /* il dipartimento senza soffitto: la card della spesa non stampa piu' la somma dei budget dei suoi */
+    const dip = await page.evaluate(() => { const b = [...document.querySelectorAll('[data-az="periodo"][data-sez="dipartimenti"]')].find(e => e.dataset.v === 'oggi'); if (b) b.click(); return null; });
+    await page.waitForTimeout(300);
+    const cardDip = await page.evaluate(() => [...document.querySelectorAll('.task.spesa.dpt .tt')].map(e => e.innerText.replace(/\s+/g, ' ').trim()));
+    check(cardDip.every(t => /nessun budget$/.test(t)), 'a ' + n + ' nessun dipartimento nasce con un soffitto: le card dicono «nessun budget» invece della somma dei budget dei suoi (' + cardDip.join(' | ') + ')');
+  }
+  /* Impostazioni: il numero si scrive, e quello che si scrive lo dicono tutte le pagine */
+  await vai('pagina=impostazioni&tendina=chiusa');
+  await page.fill('input[data-lim="azienda"][data-per="giorno"]', '200');
+  await page.press('input[data-lim="azienda"][data-per="giorno"]', 'Enter'); await page.waitForTimeout(300);
+  check(await page.evaluate(() => modello.tettoAzienda().giorno === 200 && modello.fermePerTetto().length === 0), 'scritto 200 € nel tetto del giorno, il freno molla: 124 € stanno sotto 200');
+  await clic('.a-rail [data-pagina="home"]');
+  const st200 = await page.evaluate(() => [...document.querySelectorAll('.a-stats .stat')].map(e => e.innerText.replace(/\s+/g, ' ').trim()));
+  check(st200[2].includes('124 € su 200 € al giorno') && st200[2].includes('nel limite') && st200[0].includes('al lavoro'), 'e la home lo dice subito, col ramo positivo che nel modello di prima non si vedeva mai: ' + st200[2]);
+  /* il gesto della percentuale, sulla pagina viva */
+  await vai('pagina=impostazioni&tendina=chiusa');
+  await page.fill('input[data-lim="dip:ven"][data-per="giorno"]', '60 %');
+  await page.press('input[data-lim="dip:ven"][data-per="giorno"]', 'Enter'); await page.waitForTimeout(300);
+  const gesto = await page.evaluate(() => { const i = document.querySelector('input[data-lim="dip:ven"][data-per="giorno"]'); return { v: i.value, riga: i.closest('.crow').querySelector('.tx span').textContent.trim() }; });
+  check(gesto.v === '69' && /60 % di 115 € al giorno/.test(gesto.riga), 'la percentuale è un gesto: si scrive «60 %», resta 69 € e la riga dice da dove viene («' + gesto.riga + '»)');
+  await page.fill('input[data-lim="dip:ven"][data-per="giorno"]', '');
+  await page.press('input[data-lim="dip:ven"][data-per="giorno"]', 'Enter'); await page.waitForTimeout(300);
+  check(await page.evaluate(() => modello.budgetDip('ven') === null || modello.budgetDip('ven').giorno == null), 'e si può togliere: il budget di un dipartimento è facoltativo');
+  /* il budget del dipendente si scrive nella sua pagina: la penna non e' piu' decorazione */
+  await vai('pagina=dipendente&id=4&tendina=chiusa');
+  check(await conta('input[data-lim="dipendente:4"]') === 2, 'la pagina del dipendente ha i due campi del suo budget: la penna non è più decorazione');
+  await page.fill('input[data-lim="dipendente:4"][data-per="giorno"]', '25');
+  await page.press('input[data-lim="dipendente:4"][data-per="giorno"]', 'Enter'); await page.waitForTimeout(300);
+  check(await page.evaluate(() => modello.dossierDi(modello.byId[4]).budget.giorno === 25), 'e scrive davvero nel modello, dove la pagina Costi lo legge');
 
   check(errors.length === 0, 'nessun errore in console: ' + JSON.stringify(errors));
   console.log(`\n${ok} ok, ${ko} ko`);

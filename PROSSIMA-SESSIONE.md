@@ -1,4 +1,222 @@
 # Prossima sessione — passaggio di consegne
+## Versione 32 — i limiti di spesa, e il prodotto che si apre fermo (2026-09-09)
+
+**Le sette risposte della versione 31 sono state costruite tutte.** Il tetto d'azienda lo pone il titolare, esiste
+la pagina **Impostazioni** (il primo posto del prodotto dove si scrive un numero), i limiti sono in euro con la
+percentuale come **gesto**, il dipartimento parte senza budget, il **freno è cablato davvero** e il prodotto **si
+apre fermo**, e `m.decidi` ha imparato a portare una **cifra**. Prove **675 verdi, 0 ko** (erano 638), catture
+**84** (erano 82; 70 rifatte), artefatti **ripubblicati allo stesso indirizzo**.
+
+Resta **una cosa da confermare**, ed è una deviazione consapevole da una delle sette risposte: vedi
+«La deviazione, e perché».
+
+### Che cosa c'è adesso, in ordine di costruzione
+
+**1. Il tetto d'azienda è un numero posto, non una somma.** `tettoAzienda()` era `sommaBudget()`. Adesso è quello
+che il titolare ha scritto, e la somma sopravvive solo come `propostaTetto()`, che è quello che Impostazioni
+offre alla prima apertura. La differenza è una riga di prova: **si assume un dipendente e la proposta sale a
+125 € mentre il tetto resta 115.**
+
+**2. La pagina Impostazioni.** Quattro sezioni, **diciotto campi scrivibili** a undici: il tetto del giorno, il
+tetto del mese, **l'eccezione di oggi**, il freno (*Ferma* / *Avverte*), la proposta con la pillola che ci
+riporta; i quattro dipartimenti; le tre routine (giorno e mese, e la settimana **solo** su quella settimanale);
+e un'ultima sezione che **conta e porta** agli altri due livelli invece di rifarli. Nessun settimo cerchio nel
+rail: si entra dal «124 € su 115 €» della home e dai Costi, e resta acceso il cerchio dell'euro.
+
+Gli altri due livelli non stanno lì, e non per dimenticanza: **il budget di un dipendente sta nella sua pagina**
+(la foglia, regola 1) — e lì la penna ha smesso di essere decorazione, adesso ci sono i due campi — e **la soglia
+di un workflow sta nel suo canvas**, dove esiste dalla versione 25. A quaranta un elenco di 40 campi cadrebbe
+sulla regola 3, e la forma compatta la barra del budget non ce l'ha.
+
+**3. La percentuale è un gesto.** Si scrive «60 %» in un campo, il prodotto risponde `69` e la riga sotto dice
+«60 % di 115 € al giorno». Spariti `tetti.dip` in percentuale, `soffittoDi`, `sommaSoffitti` e `avvisoSopra100`
+(che non avrebbe potuto scattare mai). Le due righe di `prove/workflow.js` che li leggevano dentro un
+`page.evaluate` **senza try/catch** sono state sistemate per prime, come il passaggio di consegne avvertiva.
+
+**4. Il dipartimento parte senza soffitto**, e `cardCostoDip` dice «61 € oggi · nessun budget» invece di «su
+30 €».
+
+**5. Il freno è cablato, e il prodotto si apre fermo.** 3 esecuzioni su 3 a undici, 12 su 12 a quaranta. Come lo
+si vede:
+
+| dove | prima | adesso |
+|---|---|---|
+| barra «Oggi in azienda» | «3 al lavoro» | «3 **in pausa · tetto**», stessi avatar, stesso conto |
+| telefono, quadro del giorno | «3 al lavoro» | «3 **in pausa**» (53 px di etichetta: «in pausa · tetto» ne chiede 71) |
+| home, primo numero e titolo | «3 al lavoro» · «Al lavoro adesso» | «3 in pausa» · «**Ferme per il tetto**» |
+| card e righe | chip lime «In corso», punto lime | chip «In pausa», **nessun punto** (regola 19) |
+| pagina Esecuzione | — | «Ferma per il tetto d'azienda al passo 2 di 4…» e «Alza il tetto d'azienda» |
+
+**Niente quinta casella**, e il righello dice perché: sul telefono lo stesso quadro è una griglia due per due con
+una prova che asserisce **quattro caselle esatte**, e una quinta la farebbe diventare tre righe (+57,5 px contro
+14-20 px di margine).
+
+**6. Lo sblocco porta una cifra.** `m.decidi(id, stato, commento, esitoRevisione, **importo**)`, e la richiesta ha
+`importo`. È **una** richiesta per tutta l'azienda — «Tetto del giorno raggiunto: 124 € su 115 €» — e la cifra è
+il **costo dichiarato del passo che sfonderebbe** (21 € a undici, 29 a quaranta). Approvandola il tetto sale
+**solo per oggi**, e chi era fermo riparte da solo.
+
+### La deviazione, e perché — **da confermare**
+
+La quinta risposta diceva: «**nessuno stato nuovo**: chi è fermo resta in `attesa`». Il vincolo — nessuno stato
+nuovo — è rispettato. Il posto dove appoggiarlo **no**: chi è fermo resta in `lavoro` con `e.pausa` e
+`pausaPer: 'tetto'`, non passa in `attesa`. Tre misure hanno spostato la scelta:
+
+1. `attesa` significa, nel modello e nelle pagine, «**ha consegnato** e aspetta l'approvazione», e la sua parola
+   breve è «**Da approvare**». Su chi non ha consegnato niente sarebbe falsa, ed è la stessa specie di difetto che
+   la versione 31 è servita a togliere;
+2. il punto dell'avatar di `attesa` è **giallo** (regola 19: giallo = da approvare). Chi è fermo non deve avere
+   nessun punto;
+3. `m.alLavoro` si svuoterebbe: la sezione «Al lavoro adesso» della home sparirebbe con tutte le sue card, e cinque
+   verifiche cadrebbero.
+
+`e.pausa` invece **il prodotto ce l'aveva già**, in sette punti: il chip «In pausa» lo stampa il componente
+condiviso (quindi Console e telefono dicono la stessa parola), il punto si spegne da sé, la pagina Esecuzione
+aveva già la frase, la pillola e il log. Non è uno stato nuovo: è un attributo ortogonale che esisteva.
+**Se preferisci `attesa` lo stesso, si cambia in poche righe — ma quelle tre conseguenze restano.**
+
+### Il consiglio: come si vede il fermo e come si sblocca
+
+Cinque pareri, revisione incrociata su cinque angoli (i fatti nel codice, il costo su prove e catture, le regole e
+la lingua, la spina dorsale e il carico, la prova dei quaranta).
+
+**Dove il consiglio è d'accordo**: nessuno stato nuovo; il fermo si dice con quello che il prodotto ha già; lo
+sblocco non è una richiesta per esecuzione. **Dove si scontra**: se la coda lime può contenere una decisione che
+non è un'uscita (due sì, tre no), e se il tetto ferma anche chi è già in volo (uno solo dice di no).
+
+**Le quattro cose che la revisione incrociata ha corretto, tutte verificate col righello.** Tre erano numeri
+scritti da me nel contesto, e tutti e cinque i consiglieri ci avevano fatto aritmetica sopra:
+
+| scritto | vero |
+|---|---|
+| la quinta casella costa **107 px** | **163,4** — la prima misura aveva cancellato metà del testo prima di misurarlo |
+| la barra sta su **25** catture | **41** portano quella viva (44 ne portano una in quel posto: 3 sono la barra archiviata dietro `?barra=0`) |
+| finire la giornata costa **+49 €** | **+89** a undici e **+566** a quaranta: le **pianificate** valgono altri 40,80 € (144 a quaranta), e nessuno le aveva contate |
+| «un sesto stato tocca **42 punti in 5 file**» (dalla versione 31) | `m.STATI[e.stato].breve` compare **una volta sola, in un file solo**. Il raggio vero di uno stato nuovo sono le **165** comparazioni `.stato === '…'` in sei file: molto di più, ma la superficie di **crash** era una |
+
+**Quello che nessuno dei cinque aveva detto, e che ha deciso due scelte**: il costo dei passi che restano è una
+**stima** (`stimaPasso` lo dichiara), e la regola 40 di questo repository dice che quello che è previsto non si
+stampa come misurato. Per questo la richiesta chiede **il passo**, non la giornata. E: `chipStato` **stampa già**
+«In pausa» nel componente condiviso — la parola non andava inventata.
+
+### I punti ciechi che restano — **da confermare**
+
+1. **La deviazione su `attesa`** (sopra): è l'unica cosa che aspetta una tua parola.
+2. **Il rosa di «oltre il limite»** contro la regola 4 (rosa solo per errori e cali): resta com'era, non l'ho
+   deciso da solo. Adesso però c'è un posto in più dove si vede.
+3. **Il lime su chi è oltre il budget**: `rigaCostoCompatta` dipinge di lime le righe sfondate a quaranta, e il
+   lime è la firma del titolare. È un difetto vivo, trovato dalla revisione incrociata, e non è di questa
+   sessione.
+4. **La richiesta del tetto sta nel «Da approvare» di un dipartimento** (quello del passo che sfonderebbe): è
+   coerente con la regola 2 — ogni euro risale a un dipendente e a un'esecuzione — ma è la prima richiesta che
+   parla dell'azienda intera, e a quaranta cade in Amministrazione invece che in Sviluppo.
+5. **La pausa del titolare non è raggiungibile all'apertura**: col tetto che ferma tutto, «Metti in pausa» non
+   compare finché il tetto non si alza. È una conseguenza voluta del «si apre fermo», ma va guardata.
+
+### Quello che è rimasto aperto dalle versioni scorse, e non è stato toccato
+
+- la riga di stato delle card «Al lavoro adesso» è **già tagliata** (39 px contro 71: si legge «Pass…») — e
+  *come* sistemarla è una scelta con più risposte, quindi passa dal consiglio;
+- la regola `g4` è **«Attiva»** nelle Richieste e **«Spenta»** nel Dipendente (`dati.js:1274` contro `:282/:369/:467`);
+- `a-workflow-firma.png` è **instabile di suo** (2 volte su 11): è l'unica cattura che fa un clic e poi aspetta
+  300 ms fissi invece della fine della transizione.
+
+(`avvisoSopra100`, che era il terzo di questi difetti, **non esiste più**: è morto con la percentuale.)
+
+## Come riprendere (dalla versione 32)
+
+1. **Il metodo di sempre**: rifare i font locali, lanciare le sei prove di `prove/` e catturare **prima** di
+   toccare qualcosa, poi confrontare a codice immutato. In questa sessione le 82 catture di partenza erano
+   **identiche al byte**, compresa quella instabile.
+2. **La prima cosa da chiedere all'utente** è la conferma della deviazione su `attesa` (sopra). Tutto il resto
+   della versione 32 è costruito e verde.
+3. **Dove sta cosa, adesso**:
+   - il modello dei limiti: `dati.js`, `tetti` / `tettoAzienda` / `tettoOggi` / `propostaTetto` / `budgetDip` /
+     `leggiLimite` / `poniLimite` / `orizzontiDi`;
+   - il freno: `fermePerTetto` / `passoFermo` / `applicaTetto` / `richiestaTetto` / `aggiornaTetto`, e
+     `decidi(..., importo)`;
+   - la pagina: `impostazioni()` in `direzione-a.js`, con `campoLimite` e `rigaLimite`; la scrittura è
+     `scriviLimite` dentro `monta`, con la guardia di rientro (senza, il `blur` del campo rientra in mezzo al
+     disegno e la console prende due `pageerror`);
+   - la parola: `parolaLavoro` in `direzione-a.js` **e** in `mobile.js`.
+4. **Trappole nuove, misurate in questa sessione**:
+   - `tutto()` rifà `radice.innerHTML`: qualunque campo di testo che scrive e ridisegna ha bisogno della guardia
+     di rientro e del fuoco rimesso a mano, come fa già la ricerca di sezione;
+   - un commento con i **backtick** dentro un template literal (il CSS delle pagine, il CSS dell'avatar) rompe il
+     file in silenzio: `node --check` lo prende, il browser no fino al caricamento;
+   - la prova degli **errori muti** del CSS chiede che nessuna variabile sia usata senza essere definita da
+     qualche parte: con tutti gli avatar fermi, `--segnale-c` non era più definita da nessun elemento in linea, e
+     la prova è diventata rossa. Adesso ha un valore di ripiego nel foglio;
+   - `vai()` nelle prove fa `page.goto`, quindi **rifà il modello**: quello che si scrive in Impostazioni si perde.
+     Per provare una scrittura bisogna **camminare dentro il prodotto** con i clic, come fa il titolare.
+5. **Numeri da non rifidarsi a memoria** — in questa sessione ne sono risultati falsi **quattro**, tutti scritti
+   in un documento: i px della quinta casella, le catture con la barra, il costo per finire la giornata, e i «42
+   punti in 5 file». Quello che si misura si misura.
+
+## Stato alla fine della versione 32
+
+- **Branch**: `claude/spending-limits-company-cap-p6rjiw`, ripartito da `main` dopo l'unione della PR #23.
+- **Prove**: **675 verdi, 0 ko** (erano 638) — Console **201**, mobile 91, Costi 51, Agenda e Chat 56,
+  Workflow **225**, Routine **51**.
+- **Catture**: **84** (erano 82), di cui **70 rifatte** e 2 nuove (`a-impostazioni`, `a-impostazioni-40`).
+- **Codice toccato**: `dati.js` (i limiti, il freno, la richiesta del tetto, `decidi` col quinto parametro),
+  `direzione-a.js` (la pagina Impostazioni, la barra, le card, la pagina Esecuzione, la pagina Dipendente, i
+  Costi), `mobile.js` (il quadro del giorno e i due numeri), `componenti.js` (il punto dell'avatar di chi è in
+  pausa, per tutte e due le superfici), `avatar-orbe.js` (il ripiego di `--segnale-c`), le cinque prove e
+  `scatta.js`.
+- **Artefatti**: **ripubblicati allo stesso indirizzo** — la Console
+  (https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34) e il telefono
+  (https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9).
+- **Quello che aspetta l'utente**: **una cosa sola**, la deviazione su `attesa`. Più i cinque punti ciechi qui
+  sopra e i tre difetti aperti dalle versioni scorse.
+
+## Pronto per la prossima sessione
+
+```
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md («Versione 32», «La deviazione, e perché», «Come riprendere (dalla
+versione 32)» e «Stato alla fine della versione 32»). Controlla la PR aperta sul branch
+claude/spending-limits-company-cap-p6rjiw: se è unita riparti da main tenendo lo stesso nome di branch.
+
+Nella versione 32 i limiti di spesa sono costruiti tutti e sette: il tetto d'azienda lo pongo io (e assumere non
+lo muove più), c'è la pagina IMPOSTAZIONI con diciotto campi scrivibili — il primo posto del prodotto dove si
+scrive un numero — la percentuale è un gesto («60 %» → 69 € con la riga che dice da dove viene), il dipartimento
+parte senza budget, il freno è cablato e il prodotto SI APRE FERMO, e lo sblocco è una richiesta lime che porta
+una cifra. 675 prove verdi, 84 catture, artefatti ripubblicati. Quella parte è chiusa e non va rifatta.
+
+LA PRIMA COSA: ti devo confermare UNA deviazione. Avevo detto «chi è fermo resta in attesa»; il codice invece
+lascia lo stato «lavoro» e usa e.pausa con pausaPer:'tetto', perché attesa vuol dire «ha consegnato» (chip «Da
+approvare», punto giallo) e svuoterebbe la sezione «Al lavoro adesso». Le tre misure stanno in «La deviazione, e
+perché». Chiedimelo prima di costruire altro.
+
+Poi restano cinque punti ciechi e tre difetti aperti, e sono elencati là dentro: il rosa di «oltre il limite»
+contro la regola 4; il LIME su chi è oltre il budget in rigaCostoCompatta a quaranta (difetto vivo, la firma del
+titolare usata per un'altra cosa); la richiesta del tetto che cade nel «Da approvare» di un dipartimento; la
+pausa del titolare irraggiungibile finché il tetto ferma; la riga di stato delle card «Al lavoro adesso» già
+tagliata (39 px contro 71: «Pass…»), che è una scelta e quindi passa dal consiglio; la regola g4 «Attiva» nelle
+Richieste e «Spenta» nel Dipendente; e a-workflow-firma.png instabile di suo.
+
+Il metodo di sempre: prima e dopo, rifare i font locali, lanciare le SEI prove di prove/ e catturare le pagine
+PRIMA di toccare qualcosa; quello che si misura si misura. Ogni dubbio progettuale passa dal consiglio
+(llm-council) con la revisione incrociata: nella 32 ha corretto QUATTRO numeri scritti nei documenti, compresi i
+«42 punti in 5 file» che erano uno solo.
+
+Alla fine: prove aggiornate, screenshot, artefatti ripubblicati allo stesso indirizzo (conviene farlo fare a un
+sottoagente: lo strumento vuole che si legga per intero la copia viva), DIREZIONI.md, SYSTEM-DESIGN.md, i README,
+PROSSIMA-SESSIONE.md, commit, push e PR.
+```
+
+### I comandi che servono subito
+
+```bash
+export SC=<cartella-di-lavoro>                       # es. lo scratchpad della sessione
+export PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules
+export LOCAL_FONT_CSS=$SC/fonts.css                  # i font locali vanno rifatti a ogni sessione
+node schermate/direzioni/prove/{console,mobile,costi,agenda-chat,workflow,routine}.js
+node schermate/direzioni/scatta.js [--in <cartella>] [gruppo…]
+cd schermate/direzioni && node build-unico.js direzione-a.html <out>.html   # i due file unici per gli artefatti
+cd schermate/direzioni && node build-unico.js mobile.html <out>.html
+```
+
 ## Versione 31 — il tetto sfondato che la home diceva al contrario (2026-09-09)
 
 **Due consigli, cinque decisioni dell'utente, e la parte decisa disegnata.** La domanda era «che cosa dice la home

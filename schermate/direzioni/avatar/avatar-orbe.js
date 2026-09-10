@@ -373,6 +373,12 @@ svg.ava.orbe[data-occhi="colorati"]{--sclera:var(--av-tinta-c,#FCFCFC);--pupilla
 /* ---- il segnale di stato: il punto sul bordo (con un bordo nero che lo stacca dal disco e dalla card lime) e l'anello vivo
    (arco al lavoro con un fondo nero sottile, onde da approvare, tratteggio in errore, tacche pianificato) ---- */
 .ava.orbe .segnale{pointer-events:none}
+/* --segnale-c la scrive sempre l'elemento .segnale, che nasce solo insieme a lei: il valore qui e' il ripiego
+   che non si vede mai, e serve perche' la prova degli errori muti (prove/workflow.js) chiede che nessuna
+   variabile sia usata senza essere definita da qualche parte. Dalla versione 32 puo' succedere che in una pagina
+   intera non ci sia nessun punto di stato — quando il tetto ha fermato tutte le esecuzioni — e allora la
+   definizione in linea non c'e' da nessuna parte. */
+.ava.orbe .segnale{--segnale-c:#FCFCFC}
 .ava.orbe .segnale .punto{fill:var(--segnale-c);stroke:#0A0A0A;stroke-width:4;paint-order:stroke}
 .ava.orbe .segnale circle:not(.punto){fill:none;stroke:var(--segnale-c);stroke-width:5;stroke-linecap:round}
 .ava.orbe .segnale .arco{stroke-dasharray:26 74}

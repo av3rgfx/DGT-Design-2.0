@@ -1223,6 +1223,10 @@ window.DGT_DATI = (function () {
         if (!r) return null;
         const att = out.regole.filter(g => g.attiva);
         const g = id => att.find(x => x.id === id) || null;
+        /* La richiesta del tetto non e' un'uscita verso un cliente: e' una decisione sull'azienda, e nessuna
+           regola d'approvazione la governa. Senza questa riga cadrebbe su `g2` («Report interni: automatica») e
+           la pagina Richieste stamperebbe che un rendiconto governa il tetto di spesa. */
+        if (r.tipo === 'tetto') return null;
         return (r.costo > 50 && g('g4'))
           || (r.cliente && r.cliente !== azienda.nome && g('g1'))
           || (r.tipo === 'lista' && g('g3'))
@@ -1237,30 +1241,166 @@ window.DGT_DATI = (function () {
          **zero** ed e' proprio quello il punto — la consegna piu' cara del modello costa 33,80 €, la soglia sta a
          50, e la regola non puo' scattare mai. Il conto lo dice invece di lasciarlo credere. */
       contaRegola: g => m.richieste.filter(r => { const x = out.regolaPer(r); return x && x.id === g.id; }).length,
-      /* I tetti di spesa (decisione 55, e le due conferme dell'utente dell'8 settembre 2026).
-         **Soffitto, non ripartizione**: la quota di un dipartimento e' un limite a se' e le quote possono sommare
-         oltre 100; il tetto d'azienda e' il fermo vero, primo arrivato primo servito. Con la ripartizione — che e'
-         quello che i budget di oggi sono, 30+35+30+20 = 115 = il tetto d'azienda — Vendite si sarebbe fermata a
-         30 € uccidendo a meta' l'esecuzione dei 200 lead mentre Amministrazione teneva fermi 20 € non spesi.
-         `avvisoSopra100`: quando le quote sommano oltre il 100 % la pagina lo dice, invece di far finta di niente.
-         Obbligatorio e' **solo** il tetto d'azienda: dipartimento, dipendente e routine sono facoltativi, cosi' chi
-         non tocca niente ha un numero solo da capire.
+      /* I limiti di spesa (versione 32, le sette risposte del titolare del 9 settembre 2026).
+         **Una sola unita', gli euro**, a tutti i livelli. La percentuale non e' piu' un dato: e' un **gesto**
+         dell'editor — si scrive «60 %» e il prodotto lo fissa in euro in quel momento («60 % di 115 → 69 €») e
+         da li' non si muove piu'. Fino alla 31 il soffitto di un dipartimento era una quota del tetto d'azienda,
+         e siccome il tetto era la **somma** dei budget dei dipendenti, il soffitto di Vendite passava da 69 a
+         75 € quando si assumeva in **Amministrazione**: un limite che cambia per fatti altrui non e' un limite.
+         Con la percentuale muore anche `avvisoSopra100`, che non avrebbe potuto scattare mai (la somma delle
+         quote faceva 60 e la soglia stava a 100).
+         **Cinque livelli**: azienda (obbligatorio, ed e' l'unico che **ferma**), dipartimento, dipendente e
+         routine (facoltativi: mandano in coda), piu' la **soglia** del workflow, che esiste dalla versione 25
+         (`w.soglia`, «Sopra la soglia l'uscita torna in coda») e resta dov'e'.
+         **Due orizzonti**, giorno e mese; la **settimana** solo dove la cadenza e' settimanale — rt2, il
+         venerdi'. Il tetto del mese non e' mai sfondato (39 % a undici, 42 % a quaranta): prescrivere tre
+         orizzonti dappertutto sarebbe decorazione.
+         **Tre parole, tre lavori**: *tetto* per quello che ferma, *budget* per i facoltativi, *soglia* per il
+         workflow.
          `fermaPrimaDelPasso`: il tetto si controlla **prima di ogni passo**, mai a meta'. I passi dei 200 lead
-         costano 0,5 · 6 · 22 · 9,5 · 23 · 4 €: un solo passo puo' costare 23 €, piu' del doppio dell'intero tetto
-         giornaliero di Nora (10 €). Il passo che sfonderebbe non parte e l'esecuzione va in «ferma per tetto». */
+         costano 0,5 · 6 · 22 · 9,5 · 23 · 4 €: un solo passo puo' costare 23 €, piu' del doppio dell'intero
+         budget giornaliero di Nora (10 €). Il passo che sfonderebbe non parte. */
       tetti: {
-        modo: 'soffitto', avvisoSopra100: true, fermaPrimaDelPasso: true,
-        dip: { ven: 60 },   /* in % del tetto d'azienda; gli altri non ne hanno (facoltativo) */
+        fermaPrimaDelPasso: true,
+        /* Il tetto d'azienda, in euro, **posto dal titolare**. Fino alla versione 31 era `sommaBudget()`, cioe'
+           un numero che nessuno aveva scelto: e allora «oltre il tetto» diceva che era stata superata una somma,
+           non che era stata rotta una promessa. Qui c'e' quello che il titolare ha scritto il 1º settembre
+           accettando la **proposta** della prima apertura (`propostaTetto`, la somma dei budget di allora): da
+           quel momento e' suo e non si muove piu' — assumere un dipendente non lo alza. Lo si riscrive dalla
+           pagina Impostazioni, che e' il primo posto del prodotto dove si scrive un numero. */
+        azienda: { giorno: 0, mese: 0, dal: '1 set', da: '',
+          /* L'**eccezione di oggi**: gli euro che il titolare ha aggiunto al tetto **solo per oggi**, e che a
+             mezzanotte scadono. Il tetto di ogni giorno non si tocca — cosi' resta una promessa e non un attrito —
+             e quante volte l'eccezione e' servita e' la misura che dice se il tetto e' tarato male. */
+          oggi: 0 },
+        /* I budget dei dipartimenti, in euro: `{ svi: { giorno, mese, da } }`. Nasce **vuoto** — il dipartimento
+           parte senza soffitto, come ha deciso il titolare — e fino alla 31 la pagina Costi ne stampava uno
+           («su 30 €») che era la somma dei budget dei suoi dipendenti e non l'aveva scelto nessuno: la stessa
+           malattia del tetto d'azienda. */
+        dip: {},
       },
-      /* Il tetto d'azienda: oggi e' la somma dei budget dei dipendenti (115 €/giorno e 1 580 €/mese a undici,
-         400 e 5 120 a quaranta) — e a tutte e due le taglie e' **gia' sfondato**: 124 € spesi contro 115 a undici
-         (108 %), 427 contro 400 a quaranta (107 %). Si calcola qui e non nel letterale perche' i dossier nascono
-         dopo `out`. */
-      tettoAzienda: () => ({ giorno: sommaBudget('giorno'), mese: sommaBudget('mese') }),
-      /* Il soffitto di un dipartimento in euro, o null se non ne ha uno (e' facoltativo). */
-      soffittoDi: dip => { const q = out.tetti.dip[dip]; return q ? Math.round(out.tettoAzienda().giorno * q / 100) : null; },
-      /* La somma delle quote di dipartimento, in %: sopra 100 non e' un errore (e' un soffitto), ma va detto. */
-      sommaSoffitti: () => dipartimenti.reduce((t, d) => t + (out.tetti.dip[d.id] || 0), 0),
+      /* Il tetto d'azienda, giorno e mese. La forma del ritorno e' quella di sempre: i suoi sette chiamanti non
+         cambiano, cambia da dove viene il numero. */
+      tettoAzienda: () => ({ giorno: out.tetti.azienda.giorno, mese: out.tetti.azienda.mese }),
+      /* Il tetto che vale **oggi**: quello di ogni giorno piu' l'eccezione di oggi, se il titolare ne ha firmata
+         una. E' questo che il freno guarda; `tettoAzienda()` resta la promessa. */
+      tettoOggi: () => out.tetti.azienda.giorno + (out.tetti.azienda.oggi || 0),
+      /* La **proposta** della prima apertura: la somma dei budget dei dipendenti. Non e' il tetto — e' il numero
+         che Impostazioni offre a chi non ne ha ancora scritto uno, e il solo posto dove `sommaBudget` sopravvive.
+         A undici fa 115 €/giorno e 1 580 €/mese, a quaranta 400 e 5 120; assumendo un dipendente sale, e il
+         tetto no: e' esattamente la differenza fra una proposta e una promessa. */
+      propostaTetto: () => ({ giorno: sommaBudget('giorno'), mese: sommaBudget('mese') }),
+      /* Il budget di un dipartimento in euro (`{ giorno, mese, da }`), o **null** se non ne ha: e' facoltativo, e
+         nessun dipartimento ne nasce con uno. */
+      budgetDip: dip => out.tetti.dip[dip] || null,
+      /* La percentuale come **gesto**, non come dato: `leggiLimite('60 %', 'giorno')` con il tetto a 115 ritorna
+         `{ v: 69, da: '60 % di 115 € al giorno' }`, e da li' e' 69 € e basta. `leggiLimite('69')` ritorna 69 €
+         senza traccia. Ritorna null se il testo non e' un numero (il campo allora non scrive niente). */
+      leggiLimite: (testo, per) => {
+        const t = String(testo == null ? '' : testo).trim().replace(',', '.');
+        if (!t) return null;
+        const pct = /^([0-9]+(?:\.[0-9]+)?)\s*%$/.exec(t);
+        if (pct) {
+          const base = out.tettoAzienda()[per === 'mese' ? 'mese' : 'giorno'];
+          const q = parseFloat(pct[1]);
+          return { v: Math.round(base * q / 100), da: pct[1].replace('.', ',') + ' % di ' + base + ' € al ' + (per === 'mese' ? 'mese' : 'giorno') };
+        }
+        const n = /^([0-9]+(?:\.[0-9]+)?)\s*€?$/.exec(t);
+        return n ? { v: Math.round(parseFloat(n[1])), da: '' } : null;
+      },
+      /* Scrive un limite in euro. `dove`: 'azienda' | 'dip:<id>' | 'dipendente:<id>' | 'routine:<id>';
+         `per`: 'giorno' | 'settimana' | 'mese'. `v` null toglie il budget (facoltativo: solo l'azienda non si
+         puo' togliere). `da` e' la traccia del gesto («60 % di 115 € al giorno»), che la pagina stampa sotto il
+         numero perche' di un numero fissato si veda da dove viene. Ritorna il valore scritto, o null. */
+      poniLimite: (dove, per, v, da) => {
+        const k = per === 'mese' ? 'mese' : per === 'settimana' ? 'settimana' : 'giorno';
+        const [tipo, id] = String(dove || '').split(':');
+        if (tipo === 'azienda') { if (v == null) return null; if (per === 'oggi') out.tetti.azienda.oggi = v; else { out.tetti.azienda[k] = v; out.tetti.azienda.da = da || ''; } out.aggiornaTetto(); return v; }
+        if (tipo === 'dip') {
+          if (!dipartimenti.some(d => d.id === id)) return null;
+          if (v == null) { const b = out.tetti.dip[id]; if (b) { delete b[k]; if (b.giorno == null && b.mese == null) delete out.tetti.dip[id]; } return null; }
+          const b = out.tetti.dip[id] || (out.tetti.dip[id] = {}); b[k] = v; b.da = da || ''; return v;
+        }
+        if (tipo === 'dipendente') {
+          const e = out.byId[+id]; if (!e) return null;
+          const d = out.dossierDi(e); if (!d.budget) d.budget = {};
+          if (v == null) { delete d.budget[k]; delete d.budget.da; return null; }
+          d.budget[k] = v; d.budget.da = da || ''; return v;
+        }
+        if (tipo === 'routine') {
+          const rt = (m.routine || []).find(x => x.id === id); if (!rt) return null;
+          if (!rt.limiti) rt.limiti = {};
+          if (v == null) { delete rt.limiti[k]; return null; }
+          rt.limiti[k] = v; rt.limiti.da = da || ''; return v;
+        }
+        return null;
+      },
+      /* ---- Il freno, cablato davvero (versione 32) ----
+         `fermaPrimaDelPasso` sta nel modello dalla decisione 55 e fino alla versione 31 **non lo leggeva nessuna
+         pagina**: l'unico lettore in tutto il repository era una riga di log dentro una prova. Adesso lo legge il
+         prodotto, ed e' questa la ragione per cui **si apre fermo**: il tetto e' gia' consumato (124 € su 115 a
+         undici, 427 su 400 a quaranta) *prima* di qualunque passo nuovo, quindi il passo che sfonderebbe non parte.
+         **Non nasce nessuno stato nuovo.** Chi e' fermo non cambia `e.stato` — resta `lavoro`, ed e' vero: la sua
+         esecuzione e' aperta — e prende `e.pausa`, che il prodotto ha gia' e che vuol dire esattamente questo. Il
+         chip «In pausa» lo stampa `chipStato` (componenti.js), il punto dell'avatar si spegne da se' (regola 19:
+         niente punto da fermo), la pagina Esecuzione ha gia' la frase e la pillola. `pausaPer` dice **chi** ha
+         fermato: `'titolare'` quando lo fa lui dalla pillola, `'tetto'` quando lo fa il tetto. */
+      fermePerTetto: () => (!out.tetti.fermaPrimaDelPasso || costoOggi <= out.tettoOggi()) ? [] : m.dipendenti.filter(e => e.stato === 'lavoro'),
+      /* Il passo che sfonderebbe: il primo passo da fare dell'esecuzione ferma piu' cara. E' il numero della
+         richiesta al titolare — misurato, non stimato: e' il costo dichiarato di **quel** passo, e risale a un
+         dipendente e a un'esecuzione come vuole la spina dorsale. */
+      passoFermo: () => {
+        const fer = out.fermePerTetto();
+        if (!fer.length) return null;
+        const cand = fer.map(e => { const x = out.esecuzioneDi(e), p = x.passi.find(q => q.stato === 'da fare'); return p ? { e, p, n: x.passi.length } : null; }).filter(Boolean);
+        if (!cand.length) return null;
+        return cand.sort((a, b) => (b.p.costo || 0) - (a.p.costo || 0) || a.e.id - b.e.id)[0];
+      },
+      /* Mette e toglie la pausa **del tetto**, senza toccare quella del titolare: se il tetto rientra (perche' il
+         titolare l'ha alzato o ha firmato l'eccezione di oggi) chi era fermo per il tetto riparte da solo, e chi
+         era in pausa per mano sua resta fermo. Si richiama dopo ogni scrittura di un limite. */
+      applicaTetto: () => {
+        const fermi = new Set(out.fermePerTetto().map(e => e.id));
+        m.dipendenti.forEach(e => {
+          if (fermi.has(e.id)) { if (!e.pausa || e.pausaPer === 'tetto') { e.pausa = true; e.pausaPer = 'tetto'; } }
+          else if (e.pausaPer === 'tetto') { e.pausa = false; delete e.pausaPer; }
+        });
+        return out;
+      },
+      /* ---- La richiesta del tetto (versione 32) ----
+         Il tetto ferma, e il titolare deve poterlo sbloccare: e' **una** richiesta al giorno, non una per
+         esecuzione. Sei richieste a undici e venti a quaranta spenderebbero proprio la risorsa che questo
+         repository chiama scarsa — l'attenzione del titolare — per una decisione che e' un numero solo.
+         La cifra non e' una previsione: e' il **costo dichiarato del passo che sfonderebbe**, il piu' caro fra
+         quelli fermi, e risale a un dipendente e a un'esecuzione come vuole la spina dorsale. La regola 40 dice
+         che quello che e' previsto non si stampa come misurato: per questo la richiesta chiede il passo, non
+         «finire la giornata» (che sarebbe 89 € a undici e **566** a quaranta, cioe' una stima piu' grande del
+         tetto stesso).
+         `chi` e' il dipendente di quel passo, quindi la richiesta si disegna con i componenti di sempre e non
+         apre nessuna superficie nuova: le 29 letture di `m.byId[r.chi]` continuano a funzionare. */
+      richiestaTetto: () => m.richieste.find(r => r.tipo === 'tetto' && r.stato === 'attesa') || null,
+      /* Rimette in fila modello e prodotto dopo ogni scrittura di un limite: chi e' fermo per il tetto, e la
+         richiesta che lo sblocca (che nasce quando il tetto ferma e sparisce quando non ferma piu'). */
+      aggiornaTetto: () => {
+        out.applicaTetto();
+        const pf = out.passoFermo(), viva = out.richiestaTetto();
+        if (!pf) { if (viva) m.richieste.splice(m.richieste.indexOf(viva), 1); return out; }
+        const imp = Math.ceil(pf.p.costo || 0);
+        const dati = {
+          chi: pf.e.id, cosa: 'Tetto del giorno raggiunto: ' + costoOggi + ' € su ' + out.tettoOggi() + ' €',
+          cliente: azienda.nome, ora: azienda.ora, tipo: 'tetto', stato: 'attesa', costo: 0, importo: imp,
+          passi: [], nota: 'Il tetto d\'azienda è l\'unico limite che ferma: sopra di lui non parte nessun passo nuovo.',
+          testo: 'Il passo ' + pf.p.n + ' di ' + pf.n + ' di ' + out.etichetta(pf.e) + ' («' + pf.p.nome + '») costa ' + String(pf.p.costo).replace('.', ',') + ' €, e il tetto del giorno è finito. Alzarlo di ' + imp + ' € solo per oggi fa ripartire le ' + out.fermePerTetto().length + ' esecuzioni ferme; domani il tetto torna a ' + out.tetti.azienda.giorno + ' €.',
+          allegato: 'Passo ' + pf.p.n + ' di ' + pf.n + ' · ' + String(pf.p.costo).replace('.', ',') + ' €',
+          giorno: 0, min: (parseInt(azienda.ora, 10) || 10) * 60,
+        };
+        if (viva) Object.assign(viva, dati); else m.richieste.push(Object.assign({ id: 'tt1' }, dati));
+        return out;
+      },
+      /* Gli orizzonti che un livello regge: giorno e mese dappertutto, e la **settimana solo dove la cadenza e'
+         settimanale**. L'unica routine settimanale e' rt2, che scatta il venerdi'. */
+      orizzontiDi: rt => (rt && rt.innesco && /settiman|luned|marted|mercoled|gioved|venerd|sabato|domenica/i.test(rt.innesco.ogni || '')
+        ? ['giorno', 'settimana', 'mese'] : ['giorno', 'mese']),
       regole: [
         { id: 'g1', nome: 'Uscite verso i clienti', desc: 'Post, proposte e documenti per i clienti', modo: 'Sempre da approvare', attiva: true, icona: 'i-mega' },
         { id: 'g2', nome: 'Report interni', desc: 'Report giornalieri e rendiconti', modo: 'Automatica', attiva: true, icona: 'i-doc' },
@@ -1645,17 +1785,34 @@ window.DGT_DATI = (function () {
          Console e il telefono condividono lo stato). stato: approvata | modifiche | rifiutata; `commento` è il motivo (obbligatorio
          per il rifiuto dal telefono e per le revisioni); per una revisione `esitoRevisione` è prova | applicata | modifiche |
          rifiutata (predefinito: applicata se approvata, altrimenti lo stato). Ritorna la richiesta, o null se non esiste. */
-      decidi: (id, stato, commento, esitoRevisione) => {
+      decidi: (id, stato, commento, esitoRevisione, importo) => {
         const r = m.richieste.find(x => x.id === id); if (!r) return null;
         const [hh, mm] = azienda.ora.split(':').map(Number);
         r.stato = stato; r.decisa = azienda.ora; r.giorno = 0; r.min = hh * 60 + mm; if (commento) r.commento = commento;
+        if (importo != null) r.importo = importo;
         if (r.tipo === 'revisione') out.decidiRevisione(r, esitoRevisione || (stato === 'approvata' ? 'applicata' : stato), commento);
+        /* La firma che porta una **cifra** (versione 32): approvando la richiesta del tetto il titolare non cambia
+           la sua promessa — alza il tetto **solo per oggi**, e l'eccezione resta scritta con l'ora e con l'importo.
+           E' l'unico posto del prodotto dove una decisione muove un numero invece di far uscire una consegna, ed e'
+           la ragione per cui `decidi` ha imparato il quinto parametro. */
+        if (r.tipo === 'tetto') {
+          if (stato === 'approvata') out.tetti.azienda.oggi = (out.tetti.azienda.oggi || 0) + (r.importo || 0);
+          out.aggiornaTetto();
+        }
         return r;
       },
     };
     function sommaBudget(per) { return m.dipendenti.reduce((t, e) => t + ((out.dossierDi(e).budget || {})[per] || 0), 0); }
     const dossier = {}, esecuzioni = {};
     out.ricalcola();
+    /* Il tetto d'azienda che il titolare ha posto il 1º settembre: la **proposta** della prima apertura, accettata.
+       Si scrive qui e non nel letterale perche' i dossier nascono dopo `out`. Da questo momento e' un numero suo:
+       assumere un dipendente muove `propostaTetto()` e **non** muove il tetto — che e' tutta la differenza fra la
+       versione 31 e questa. */
+    { const p0 = out.propostaTetto(); out.tetti.azienda.giorno = p0.giorno; out.tetti.azienda.mese = p0.mese; }
+    /* E qui il prodotto **si apre fermo**, che e' voluto: il tetto e' gia' consumato prima di qualunque passo
+       nuovo, quindi il freno mette in pausa le esecuzioni aperte e nasce la richiesta che le sblocca. */
+    out.aggiornaTetto();
     return out;
   }
 

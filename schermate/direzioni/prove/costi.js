@@ -83,8 +83,13 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   check(pillOn.some(t => t.trim() === 'Rossi Srl'), 'filtro cliente Rossi Srl attivo');
   check((await txt('.fsum')).includes('1 filtro attivo'), 'un solo filtro attivo');
   await page.click('.a-rail [data-pagina="home"]'); await page.waitForTimeout(300);
-  await page.click('.a-head .stat[data-pagina="costi"]'); await page.waitForTimeout(300);
-  check(await titolo() === 'COSTI', 'il numero «spesi oggi» della home porta ai costi');
+  /* Versione 32: il terzo numero della home («124 € su 115 € al giorno») porta a **Impostazioni**, che e' dove il
+     tetto si pone — non ai Costi, che sono dove il tetto si consuma. E' la porta che il titolare ha chiesto
+     insieme al «nessun settimo cerchio nel rail»; ai Costi si arriva dal cerchio dell'euro e da Impostazioni. */
+  await page.click('.a-head .stat[data-pagina="impostazioni"]'); await page.waitForTimeout(300);
+  check(await titolo() === 'IMPOSTAZIONI', 'il numero «124 € su 115 € al giorno» della home porta a Impostazioni, dove il tetto si pone');
+  await page.click('.a-main .destra [data-pagina="costi"]'); await page.waitForTimeout(300);
+  check(await titolo() === 'COSTI', 'e da Impostazioni si va ai Costi, che sono dove il tetto si consuma');
   await page.click('.a-main > section >> nth=4 >> .crow >> nth=0 >> [data-pagina="esecuzione"]'); await page.waitForTimeout(300);
   check(await titolo() === '200 LEAD E-COMMERCE IN LOMBARDIA', 'dalla riga «Ricerca web» all\'esecuzione di Ricerca lead: ' + await titolo());
   await page.click('.destra [data-pagina="costi"]'); await page.waitForTimeout(300);
