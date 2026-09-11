@@ -61,7 +61,7 @@ window.DIREZIONE_A = (function () {
   const { ic, esc, prefissa, iconaDip } = window.DGT_UI;
   const C = window.DGT_COMPONENTI;
   /* le primitive condivise stanno in schermate/componenti.js (versione 14): qui le pagine, la cornice, le tendine e monta */
-  const { variabili, av, pair, dots, chipStato, chipEsito, iconaTipo, nomeTipo, eur, delta, differenze } = C;
+  const { variabili, av, pair, dots, chipStato, chipEsito, iconaTipo, nomeTipo, costoRichiesta, passiRichiesta, eur, delta, differenze } = C;
   /* il canvas del workflow e' condiviso col telefono dalla versione 27 (decisione 72): sta in componenti.js */
   const { canvasWorkflow, canvasTuttoDentro } = C;
 
@@ -586,7 +586,9 @@ window.DIREZIONE_A = (function () {
 
   const nomePeriodo = { oggi: 'Oggi', ieri: 'Ieri', settimana: 'Ultimi 7 giorni', mese: 'Ultimi 30 giorni', prima: 'Prima' };
   /* in attesa: le più vecchie prima */
-  const inAttesa = m => m.richiesteDi('attesa').slice().sort((a, b) => (b.giorno - a.giorno) || (a.min - b.min));
+  /* L'ordine della coda sta nel modello (`m.codaAttesa`, versione 33), cosi' la Console e il telefono la mostrano
+     nello stesso ordine invece di ricalcolarlo ognuno per conto suo. */
+  const inAttesa = m => m.codaAttesa();
 
   const livelloOggi = e => ({ lavoro: e.att.da <= '09:00' ? 5 : 4, attesa: 3, errore: 1, pianificato: 0, libero: 0 })[e.stato];
 
@@ -603,7 +605,7 @@ window.DIREZIONE_A = (function () {
      stesso difetto che la versione 31 e' servita a togliere dalla home. */
   const parolaLavoro = lst => lst.length > 0 && lst.every(e => e.pausaPer === 'tetto') ? 'in pausa' : 'al lavoro';
   const chipTetto = (speso, tetto) => speso > tetto
-    ? `<span class="badge down">${ic('i-warn')}oltre il limite</span>`
+    ? `<span class="badge oltre">${ic('i-warn')}oltre il limite</span>`
     : `<span class="badge flat">${ic('i-check')}nel limite</span>`;
 
   function cardAttivita(m, e, i) {
@@ -619,7 +621,7 @@ window.DIREZIONE_A = (function () {
       <div class="who">${av(m, e, '', e.pausa ? 'libero' : null, 'data-anima="1"')}<div><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div></div>
       <div class="nt"><span class="rb ghost">${ic('i-bell')}${pend ? '<i class="dot"></i>' : ''}</span><span class="rb ghost" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Apri l'esecuzione">${ic('i-ne')}</span></div>
       <div class="body"><span class="ico">${ic(iconaDip[e.dip])}</span><div><div class="tt">${esc(e.att.titolo)}</div><div class="meta"><b>${esc(e.att.cliente)}</b><span>da</span><b>${esc(e.att.da)}</b></div></div></div>
-      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${fermo ? `<span class="chip">${ic('i-pause')}In pausa</span>` : `<span class="chip lime">${ic('i-play')}In corso</span>`}<span>Passo ${e.att.passo[0]} di ${e.att.passo[1]}</span>${ic('i-chev')}</span><span class="rb ghost" data-az="pagina" data-pagina="chat" data-id="${e.id}" title="Scrivi a ${esc(m.etichetta(e))}">${ic('i-chat')}</span><span class="rb black" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Passi, log e output">${ic('i-eye')}</span></div></div>
+      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${fermo ? `<span class="chip">${ic('i-pause')}In pausa</span>` : `<span class="chip lime">${ic('i-play')}In corso</span>`}${ic('i-chev')}</span><span class="rb ghost" data-az="pagina" data-pagina="chat" data-id="${e.id}" title="Scrivi a ${esc(m.etichetta(e))}">${ic('i-chat')}</span><span class="rb black" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Passi, log e output">${ic('i-eye')}</span></div></div>
     </div>`;
   }
   function cardEsecuzione(m, e, i) {
@@ -627,8 +629,10 @@ window.DIREZIONE_A = (function () {
     const a = e.att;
     const err = e.stato === 'errore';
     const tono = err ? 'gray' : 'dark';
-    const meta = err ? `<b>${esc(a.cliente)}</b><span>fallito alle</span><b>${esc(a.da)}</b>` : `<b>${esc(a.cliente)}</b><span>parte alle</span><b>${esc(a.quando)}</b>`;
-    const sel = err ? `<span class="chip rosa">${ic('i-warn')}Errore</span><span>${esc(a.errore)}</span>` : `<span class="chip">${ic('i-clock')}${esc(a.quando)}</span><span>In coda</span>`;
+    const meta = err ? `<b>${esc(a.cliente)}</b><span>fallito alle</span><b>${esc(a.da)}</b>` : `<b>${esc(a.cliente)}</b><span>alle</span><b>${esc(a.quando)}</b>`;
+    /* Il chip dice lo stato, e basta (versione 33): «In coda» al posto dell'ora, che la riga sotto il titolo stampa
+       gia' — erano due volte lo stesso numero sulla stessa card. */
+    const sel = err ? `<span class="chip rosa">${ic('i-warn')}Errore</span>` : `<span class="chip">${ic('i-clock')}In coda</span>`;
     return `<div class="ncard task ${tono}">
       <div class="who">${av(m, e)}<div><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div></div>
       <div class="nt"><span class="rb ghost">${ic('i-bell')}${err ? '<i class="dot"></i>' : ''}</span><span class="rb ghost" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Apri l'esecuzione">${ic('i-ne')}</span></div>
@@ -643,7 +647,7 @@ window.DIREZIONE_A = (function () {
       <div class="who"><span class="ico">${ic('i-target')}</span><div><b>${esc(o.cliente)}</b><span>scadenza ${esc(o.scadenza)} · ${o.chi.length} dipendent${o.chi.length === 1 ? 'e' : 'i'}</span></div></div>
       <div class="nt"><span class="rb ghost">${ic('i-bell')}${o.stato === 'ritardo' ? '<i class="dot"></i>' : ''}</span></div>
       <div class="body"><div><div class="tt">${esc(o.titolo)}</div><div class="meta"><b>${o.avanz}%</b><span>·</span><b>${o.consegne[0]} di ${o.consegne[1]}</b><span>consegne</span></div><div class="prog"><i style="width:${o.avanz}%"></i></div><div class="next">Prossima: ${esc(o.prossima)}</div></div></div>
-      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${pair(m, o.chi, 'xs', 2)}<span>${st}</span>${ic('i-chev')}</span><span class="rb ghost" data-az="pagina" data-pagina="chat" data-id="${o.chi[0]}" title="Scrivi a ${esc(m.etichetta(m.byId[o.chi[0]]))}">${ic('i-chat')}</span><span class="rb black" data-az="pagina" data-pagina="richieste" data-cliente="${esc(o.cliente)}" title="Le richieste di ${esc(o.cliente)}">${ic('i-eye')}</span></div></div>
+      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${pair(m, o.chi, 'xs', 2)}<span class="chip">${st}</span>${ic('i-chev')}</span><span class="rb ghost" data-az="pagina" data-pagina="chat" data-id="${o.chi[0]}" title="Scrivi a ${esc(m.etichetta(m.byId[o.chi[0]]))}">${ic('i-chat')}</span><span class="rb black" data-az="pagina" data-pagina="richieste" data-cliente="${esc(o.cliente)}" title="Le richieste di ${esc(o.cliente)}">${ic('i-eye')}</span></div></div>
     </div>`;
   }
   function cardDipartimento(m, d) {
@@ -671,8 +675,13 @@ window.DIREZIONE_A = (function () {
     </div>`;
   }
   const cardAggiungi = (m, dip) => `<div class="ncard lead add" data-az="nuovo" data-dip="${dip || ''}"><span class="rb ghost">${ic('i-plus')}</span>Aggiungi un dipendente${dip ? `<br>a ${esc(m.dipartimenti.find(d => d.id === dip).nome)}` : ''}</div>`;
+  /* La riga compatta del dipendente (oltre sedici, regola 3). Il lime dice **al lavoro**: chi e' fermo per il tetto
+     non ce l'ha, o la riga direbbe il contrario del vero mentre il primo numero della pagina dice «12 in pausa»
+     (versione 33; a quaranta erano 12 righe lime su 12 fermi, ed e' lo stesso difetto che la versione 31 e' servita
+     a togliere dalla home). Il chip della sua attivita' resta: dice **che cosa** era in corso, non che va. */
   function rigaDipendente(m, e) {
-    return `<div class="erow${e.stato === 'lavoro' ? ' lav' : ''}">${av(m, e)}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e, true))}</span></div>${e.stato === 'lavoro' ? `<span class="chip onlime"><span>${esc(e.att.titolo)}</span></span>` : chipStato(m, e)}<span class="rb xs" data-az="modifica" data-id="${e.id}" title="Modifica">${ic('i-pen')}</span><span class="rb xs" data-az="pagina" data-pagina="dipendente" data-id="${e.id}" title="Apri">${ic('i-ne')}</span></div>`;
+    const lav = e.stato === 'lavoro' && !e.pausa;
+    return `<div class="erow${lav ? ' lav' : ''}">${av(m, e)}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e, true))}</span></div>${e.stato === 'lavoro' ? `<span class="chip${lav ? ' onlime' : ''}"><span>${esc(e.att.titolo)}</span></span>` : chipStato(m, e)}<span class="rb xs" data-az="modifica" data-id="${e.id}" title="Modifica">${ic('i-pen')}</span><span class="rb xs" data-az="pagina" data-pagina="dipendente" data-id="${e.id}" title="Apri">${ic('i-ne')}</span></div>`;
   }
   /* ---- I controlli delle intestazioni di sezione (versione 17, 2026-09-07) ----
      La regola: **un controllo si vede solo se fa quello che promette, con i dati che ci sono già.** Due prove — serve in
@@ -970,6 +979,10 @@ window.DIREZIONE_A = (function () {
   const PILLE_STORICO = [['giorno', 'Per giorno', null], ['chi', 'Per dipendente', null], ['cliente', 'Per cliente', null]];
   const PILLE_REGOLE = [['tutte', 'Tutte', null], ['attive', 'Attive', g => g.attiva], ['spente', 'Spente', g => !g.attiva]];
   const raggruppa = (lst, chiave) => { const k = []; lst.forEach(x => { const c = chiave(x); const g = k.find(y => y.nome === c); if (g) g.lst.push(x); else k.push({ nome: c, lst: [x] }); }); return k.sort((a, b) => b.lst.length - a.lst.length || a.nome.localeCompare(b.nome)); };
+  /* La pillola «Decidi» dice **il prezzo della decisione**, e basta (versione 33). Fino alla 32 diceva anche l'ora,
+     che la riga sotto il titolo stampa gia' — lo stesso numero due volte sulla stessa card — e il testo non ci
+     stava: 88 px di posto contro i 104-124 chiesti, cioe' la sesta specie di card tagliata, quella che nessuno
+     aveva contato perche' il taglio si vedeva solo aprendo la pagina Dipartimento. */
   function cardRichiesta(m, r, i) {
     const chi = m.byId[r.chi];
     const idx = inAttesa(m).indexOf(r);
@@ -977,7 +990,7 @@ window.DIREZIONE_A = (function () {
       <div class="who">${av(m, chi)}<div><b>${esc(m.etichetta(chi))}</b><span>${esc(m.sotto(chi))}</span></div></div>
       <div class="nt"><span class="rb ghost">${ic('i-ne')}</span></div>
       <div class="body"><span class="ico">${ic(iconaTipo[r.tipo])}</span><div><div class="tt">${esc(r.cosa)}</div><div class="meta"><b>${esc(r.cliente)}</b><span>·</span><b>${esc(r.ora)}</b></div></div></div>
-      <div class="st"><span class="k">Decidi</span><div class="row"><span class="sel"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic(iconaTipo[r.tipo])}</span><span>${r.costo} € · ${r.passi.length} passi · ${esc(r.ora)}</span>${ic('i-chev')}</span><span class="rb black" data-az="approva" data-id="${r.id}" title="Approva">${ic('i-check')}</span><span class="rb red" data-az="rifiuta" data-id="${r.id}" title="Rifiuta">${ic('i-x')}</span></div></div>
+      <div class="st"><span class="k">Decidi</span><div class="row"><span class="sel"><span class="av xs" style="background:var(--ink);color:var(--white)">${ic(iconaTipo[r.tipo])}</span><span>${costoRichiesta(r)}${passiRichiesta(r)}</span>${ic('i-chev')}</span><span class="rb black" data-az="approva" data-id="${r.id}" title="Approva">${ic('i-check')}</span><span class="rb red" data-az="rifiuta" data-id="${r.id}" title="Rifiuta">${ic('i-x')}</span></div></div>
     </div>`;
   }
   /* ---------- la consegna (versione 19, 2026-09-07) ----------
@@ -1589,7 +1602,7 @@ window.DIREZIONE_A = (function () {
       <div class="who">${av(m, e)}<div><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e))}</span></div></div>
       <div class="nt"><span class="rb ghost">${ic('i-bell')}${att ? '<i class="dot"></i>' : ''}</span><span class="rb ghost" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Apri l'esecuzione">${ic('i-ne')}</span></div>
       <div class="body"><span class="ico">${ic(iconaDip[e.dip])}</span><div><div class="tt">${esc(a.titolo)}</div><div class="meta"><b>${esc(a.cliente || '—')}</b><span>${att ? 'consegnato alle' : 'concluso'}</span><b>${esc(a.fine || '')}</b></div></div></div>
-      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${att ? `<span class="chip ink">${ic('i-bell')}Da approvare</span><span>aspetta il titolare</span>` : `<span class="chip">Libero</span><span>nessuna esecuzione in corso</span>`}${ic('i-chev')}</span><span class="rb ghost" data-az="pagina" data-pagina="chat" data-id="${e.id}" title="Scrivi a ${esc(m.etichetta(e))}">${ic('i-chat')}</span><span class="rb black" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Passi, log e output">${ic('i-eye')}</span></div></div>
+      <div class="st"><span class="k">Stato</span><div class="row"><span class="sel">${att ? `<span class="chip ink">${ic('i-bell')}Da approvare</span>` : `<span class="chip">Libero</span>`}${ic('i-chev')}</span><span class="rb ghost" data-az="pagina" data-pagina="chat" data-id="${e.id}" title="Scrivi a ${esc(m.etichetta(e))}">${ic('i-chat')}</span><span class="rb black" data-az="pagina" data-pagina="esecuzione" data-id="${e.id}" title="Passi, log e output">${ic('i-eye')}</span></div></div>
     </div>`;
   }
   /* Le pillole delle sezioni del dipendente. Cadono quelle che chiedono un dato che il dossier non tiene: i giorni passati
@@ -1883,7 +1896,7 @@ window.DIREZIONE_A = (function () {
     const x = m.esecuzioneDi(e), a = e.att, d = m.dossierDi(e);
     const r = riepilogoEsecuzione(m, e, x);
     const stats = `<div class="stat"><b>${r.fatti}</b><span>di ${r.n} passi</span></div>
-      <div class="stat"><b>${eur(r.costo)}</b><span>spesi</span>${r.costo > d.budget.giorno ? `<span class="badge down">${ic('i-warn')}oltre</span>` : ''}</div>
+      <div class="stat"><b>${eur(r.costo)}</b><span>spesi</span>${r.costo > d.budget.giorno ? `<span class="badge oltre">${ic('i-warn')}oltre</span>` : ''}</div>
       <div class="stat"><b>${r.durata || '—'}</b><span>${e.stato === 'lavoro' ? 'da ' + esc(a.da) : e.stato === 'errore' ? 'fermo dalle ' + esc(a.da) : e.stato === 'pianificato' ? 'parte alle ' + esc(a.quando) : 'in tutto'}</span></div>`;
     const filtro = opz.log || 'tutto';
     const passiF = filtraSez(opz, 'esec.passi', x.passi, PILLE_PASSI);
@@ -2001,13 +2014,19 @@ window.DIREZIONE_A = (function () {
     const q = Math.min(100, Math.round(100 * lim.v / Math.max(1, lim.di))), oltre = lim.v > lim.di;
     const mezzo = periodo === 'oggi' ? `${esc(e.att.titolo)}<small>${e.stato === 'lavoro' && e.att.passo ? `passo ${e.att.passo[0]} di ${e.att.passo[1]}` : esc(m.STATI[e.stato].breve.toLowerCase())}</small>`
       : periodo === 'mese' ? `${eur(x.esito)}<small>per esito utile</small>` : `dal ${esc(x.d.dal)}<small>in produzione</small>`;
-    const badge = periodo === 'mese' ? delta(x.spesa, x.prima, false, v => v + ' €') : (periodo === 'oggi' && oltre ? `<span class="badge down">${ic('i-warn')}oltre</span>` : '');
+    const badge = periodo === 'mese' ? delta(x.spesa, x.prima, false, v => v + ' €') : (periodo === 'oggi' && oltre ? `<span class="badge oltre">${ic('i-warn')}oltre</span>` : '');
     return `<div class="crow sp${x.spesa ? '' : ' spenta'}">${av(m, e)}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e, true))}</span></div><span class="v mezzo">${mezzo}</span><span class="v bud"><small>${lim.v} di ${lim.di} € ${lim.lb}</small><span class="prog${oltre ? ' oltre' : ''}"><i style="width:${q}%"></i></span></span><span class="eur">${badge}${eur(x.spesa)}</span><span class="rb xs" data-az="pagina" data-pagina="dipendente" data-id="${e.id}" title="Apri">${ic('i-ne')}</span></div>`;
   }
-  /* Oltre sedici dipendenti la vista compatta (regola 3): pillole a tre per riga, con la spesa in un chip; lime chi è oltre il budget. */
+  /* Oltre sedici dipendenti la vista compatta (regola 3): pillole a tre per riga, con la spesa in un chip.
+     **Il lime qui non c'e' piu'** (versione 33): fino alla 32 questa riga accendeva `lav` su chi era oltre il
+     budget, cioe' la **stessa classe** che nella home, alla stessa taglia, dice «al lavoro» — due significati per
+     una forma, e per giunta col colore che e' la firma del titolare (versione 22). L'oltre lo dice la **parola**
+     dentro il chip che c'e' gia': «55 € · oltre» misura 69,8 px e non taglia nessuna delle 12 righe a quaranta,
+     mentre due chip separati ne taglierebbero cinque. La forma compatta non ha la barra del budget: il chip e'
+     l'unico posto dove il limite puo' stare. */
   function rigaCostoCompatta(m, x, periodo) {
     const e = x.e, b = x.budget, oltre = periodo === 'oggi' ? b.oggi > b.giorno : b.speso > b.mese;
-    return `<div class="erow${oltre ? ' lav' : ''}">${av(m, e)}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e, true))}${periodo === 'mese' ? ` · ${eur(x.esito)} per esito` : ''}</span></div><span class="chip${oltre ? ' onlime' : ''}"><span>${eur(x.spesa)}</span></span><span class="rb xs" data-az="pagina" data-pagina="dipendente" data-id="${e.id}" title="Apri">${ic('i-ne')}</span></div>`;
+    return `<div class="erow">${av(m, e)}<div class="tx"><b>${esc(m.etichetta(e))}</b><span>${esc(m.sotto(e, true))}${periodo === 'mese' ? ` · ${eur(x.esito)} per esito` : ''}</span></div><span class="chip"><span>${eur(x.spesa)}${oltre ? ' · oltre' : ''}</span></span><span class="rb xs" data-az="pagina" data-pagina="dipendente" data-id="${e.id}" title="Apri">${ic('i-ne')}</span></div>`;
   }
   /* La riga della spesa per cliente (la stessa della sezione «Spesa del mese» del Dipartimento): consegne approvate, oggi, quota, spesa; la freccia apre le richieste del cliente (se ne ha: la spesa può venire solo da esecuzioni, come Zenith a 11). */
   function rigaCliente(m, c, periodo, tot, ambito, dip) {
@@ -2033,7 +2052,7 @@ window.DIREZIONE_A = (function () {
     const c30 = m.costi('mese'), resta = tt.mese - c30.budgetSpeso;
     const stats = `<div class="stat" data-az="pagina" data-pagina="impostazioni" title="Il tetto d'azienda: lo poni tu"><b>${m.costoOggi} €</b><span>su ${tt.giorno} € al giorno</span>${chipTetto(m.costoOggi, tt.giorno)}</div>
       <div class="stat"><b>${c30.totale} €</b><span>in 30 giorni</span>${delta(c30.totale, c30.prima, false, v => v + ' €')}</div>
-      <div class="stat" data-az="pagina" data-pagina="impostazioni" title="Il tetto del mese: lo poni tu"><b>${resta} €</b><span>restano di ${tt.mese} €</span>${resta < 0 ? `<span class="badge down">${ic('i-warn')}oltre</span>` : ''}</div>`;
+      <div class="stat" data-az="pagina" data-pagina="impostazioni" title="Il tetto del mese: lo poni tu"><b>${resta} €</b><span>restano di ${tt.mese} €</span>${resta < 0 ? `<span class="badge oltre">${ic('i-warn')}oltre</span>` : ''}</div>`;
     const cD = m.costi(per.dipartimenti), cE = m.costi(per.dipendenti), cC = m.costi(per.clienti), cM = m.costi(per.modelli), cS = m.costi('oggi');
     const spesaE = filtraCerca(opz, 'costi.dipendenti', cE.perDipendente, x => m.etichetta(x.e) + ' ' + m.sotto(x.e, true) + ' ' + x.e.ruolo);
     const compatto = m.n > 16;
@@ -2100,10 +2119,14 @@ window.DIREZIONE_A = (function () {
     const wf = m.dipartimenti.reduce((l, d) => l.concat(m.workflowDi(d.id)), []);
     const conSoglia = wf.filter(w => w.soglia != null).length;
     /* Niente badge sui due tetti: qui il numero **e'** il limite, e «115 € · oltre il limite» direbbe che il
-       limite e' oltre se stesso. Quanto e' stato speso lo dicono la barra in cima, la prima sezione e la home. */
-    const stats = `<div class="stat"><b>${t.giorno} €</b><span>tetto del giorno · ${m.costoOggi} € spesi</span></div>
-      <div class="stat"><b>${t.mese} €</b><span>tetto del mese · ${c30.budgetSpeso} € spesi</span></div>
-      <div class="stat"><b>${Object.keys(m.tetti.dip).length + conBudget + m.routine.length + conSoglia}</b><span>budget facoltativi posti</span></div>`;
+       limite e' oltre se stesso. Quanto e' stato speso lo dicono la barra in cima, la prima sezione e la home.
+       **E le etichette non lo ripetono piu'** (versione 33): fino alla 32 dicevano «tetto del giorno · 124 € spesi»,
+       cioe' contraddicevano questo stesso commento e, misurato, spingevano i tre numeri **fuori dalla banda**
+       riservata alla tendina — il terzo nasceva tutto sotto di lei (x 1001-1296 a undici, 1049-1343 a quaranta,
+       contro i 1110 dove la tendina comincia). Accorciate stanno: 936 px su 992 a undici, 961 a quaranta. */
+    const stats = `<div class="stat"><b>${t.giorno} €</b><span>tetto del giorno</span></div>
+      <div class="stat"><b>${t.mese} €</b><span>tetto del mese</span></div>
+      <div class="stat"><b>${Object.keys(m.tetti.dip).length + conBudget + m.routine.length + conSoglia}</b><span>budget facoltativi</span></div>`;
     const corpo = `
       <section>
         <div class="shead"><h3>Il tetto d'azienda</h3><span class="cnt"><b>1 di 5</b><span>Livelli · l'unico che ferma</span></span>
@@ -2268,7 +2291,7 @@ window.DIREZIONE_A = (function () {
     const idx = inAttesa(m).indexOf(r);
     return `<div class="qrow${r.stato === 'attesa' ? ' on' : ''}"${idx >= 0 ? ` data-az="richiesta" data-idx="${idx}"` : ''}>
       <span class="av xs" style="background:var(--ink);color:var(--white)">${ic(iconaTipo[r.tipo])}</span>
-      <div class="tx"><b>${esc(r.cosa)}</b><span>${nomeTipo[r.tipo]} · ${esc(r.cliente)} · ${r.costo} €</span></div>
+      <div class="tx"><b>${esc(r.cosa)}</b><span>${nomeTipo[r.tipo]} · ${esc(r.cliente)} · ${costoRichiesta(r)}</span></div>
       ${r.stato === 'attesa' ? `<span class="rb xs black" data-az="approva" data-id="${r.id}" title="Approva">${ic('i-check')}</span><span class="rb xs red" data-az="rifiuta" data-id="${r.id}" title="Rifiuta">${ic('i-x')}</span>` : chipEsito(r)}
       <span class="rb xs">${ic('i-chevr')}</span></div>`;
   }

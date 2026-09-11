@@ -305,6 +305,32 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
     check(nudi === 1, `e a ${n} la schermata 3 stampa il numero senza tetto una volta sola, fra i tre numeri grandi (${nudi})`);
   }
 
+  console.log('\nX. nessun titolo di card chiede piu\' righe di quante ne ha (versione 33)');
+  /* Il telefono taglia i titoli con `-webkit-line-clamp`, e un titolo tagliato non si vede: si legge fino ai
+     puntini. E' successo appena la richiesta del **tetto** e' diventata la prima della coda — «Tetto del giorno
+     raggiunto: 124 € su 115 €» chiedeva **tre** righe da 162 px e ne aveva due, cioe' la card d'apertura del
+     telefono si apriva su un titolo mozzato. Adesso il titolo e' quello che la home e i Costi dicono dello stesso
+     numero, e la verifica tiene la **classe**: su tutte le schermate, a undici e a quaranta, nessun titolo chiede
+     piu' spazio di quello che ha. */
+  let mozzi = [];
+  for (const n of ['11', '40']) {
+    await page.goto(file(n === '40' ? 'n=40' : '')); await page.waitForTimeout(500);
+    const r = await page.evaluate(() => {
+      const out = [];
+      /* Solo i **titoli** delle card, e solo in altezza. Una riga d'elenco che finisce nei puntini e' disegno (sta
+         in una colonna stretta e la sua pagina la apre per intero), un titolo di card no: e' la cosa per cui la
+         card esiste. E' la stessa distinzione fra «coperto» e «tagliato» del README delle prove. */
+      document.querySelectorAll('.m-scr .tt').forEach(el => {
+        const cs = getComputedStyle(el);
+        if (!cs.webkitLineClamp || cs.webkitLineClamp === 'none') return;
+        if (el.scrollHeight > el.clientHeight + 1) out.push(el.textContent.trim().slice(0, 38) + ' (' + el.scrollHeight + ' px in ' + el.clientHeight + ')');
+      });
+      return out;
+    });
+    mozzi = mozzi.concat(r.map(t => 'a ' + n + ' ' + t));
+  }
+  check(mozzi.length === 0, 'nessun titolo di card del telefono chiede più righe di quante ne ha, a undici e a quaranta (' + mozzi.slice(0, 3).join(' · ') + ')');
+
   check(errors.length === 0, 'nessun errore in console: ' + JSON.stringify(errors));
   console.log(`\n${ok} ok, ${ko} ko`);
   await browser.close(); process.exit(ko ? 1 : 0);

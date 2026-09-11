@@ -177,4 +177,32 @@ async function copertiIntestazione(page) {
   });
 }
 
-module.exports = { coperti, muti, copertiMobile, copertiIntestazione, riferimentiRotti };
+/* I **testi** dell'intestazione che nascono sotto un elemento fisso. `copertiIntestazione` guarda i controlli
+   (`[data-az]`) e li giudica dal loro centro: un numero largo che sporge solo per meta' gli sfugge, e cosi' e'
+   sfuggita la pagina Impostazioni della versione 32, dove tutto il terzo numero («20 budget facoltativi posti»,
+   x 1001-1296 a undici e 1049-1343 a quaranta) nasceva oltre i 1110 px dove comincia la tendina. Qui si misura il
+   rettangolo del **testo** — con un Range, non con la scatola, che per via del badge `position:absolute` e' piu'
+   larga di quello che si legge — e si guarda se tocca un fisso. */
+async function testiCopertiIntestazione(page) {
+  return page.evaluate(() => {
+    const head = document.querySelector('.a-head');
+    if (!head) return [];
+    const fissi = [...document.querySelectorAll('.a-tend, .a-mini')].map(el => el.getBoundingClientRect());
+    if (!fissi.length) return [];
+    const out = [];
+    const w = document.createTreeWalker(head, NodeFilter.SHOW_TEXT);
+    let nodo;
+    while ((nodo = w.nextNode())) {
+      if (!nodo.textContent.trim()) continue;
+      const rg = document.createRange(); rg.selectNodeContents(nodo);
+      const b = rg.getBoundingClientRect();
+      if (!b.width || !b.height) continue;
+      if (fissi.some(f => b.right > f.left && b.left < f.right && b.bottom > f.top && b.top < f.bottom)) {
+        out.push('«' + nodo.textContent.trim().slice(0, 28) + '» a x ' + Math.round(b.left) + '-' + Math.round(b.right));
+      }
+    }
+    return out;
+  });
+}
+
+module.exports = { coperti, muti, copertiMobile, copertiIntestazione, testiCopertiIntestazione, riferimentiRotti };

@@ -1,7 +1,7 @@
 # Prove cliccate
 
-**Sei** prove con Playwright che aprono le pagine da `file://`, cliccano e verificano il DOM, il modello e la console — **675
-verifiche in tutto** (Console 201, mobile 91, Costi 51, Agenda e Chat 56, Workflow 225, Routine 51). Tutte leggono
+**Sei** prove con Playwright che aprono le pagine da `file://`, cliccano e verificano il DOM, il modello e la console — **692
+verifiche in tutto** (Console 214, mobile 92, Costi 53, Agenda e Chat 56, Workflow 225, Routine 52). Tutte leggono
 le stesse variabili d'ambiente:
 
 - `LOCAL_FONT_CSS` — il CSS con Urbanist incorporata (`design-system/tools/fetch-fonts.py`), servito al posto di Google Fonts;
@@ -131,3 +131,39 @@ che ferma un suggerimento.
 quaranta, e chiedono che quelle di `tipo: 'tetto'` siano **una sola**. `routine.js` chiede che quella richiesta
 **non abbia nessuna regola d'approvazione**: non è un'uscita verso un cliente, è una decisione sull'azienda, e
 senza quella distinzione cadrebbe su «Report interni: automatica».
+
+
+## Quello che il prodotto stampa e nessuno può leggere (2026-09-11, versione 33)
+
+Le **+17 verifiche** (675 → 692) non guardano un elemento: guardano che **niente di quello che il prodotto scrive
+esca dai puntini**, e che una forma non dica due fatti diversi.
+
+**Nessun testo tagliato nella riga di stato delle card** (`console.js`, sezione 16). Otto pagine per due taglie,
+**190 pillole**: nessun testo dentro `.sel` può essere più largo di quello che si vede. Prima erano tagliate
+quattro specie di card su sei — «Pass…» al posto di «Passo 2 di 4» (35,4 px di posto, 70,2 chiesti) e «Chiav…» al
+posto del motivo dell'errore — e la verifica ne ha trovata una **quinta che il censimento non aveva**: la card
+della richiesta, con «3 € · 3 passi · 10:12» in 88 px. Una seconda riga chiede che quello che resta nella pillola
+sia **solo uno stato**: In pausa · In corso · Errore · In coda · Da approvare · Libero · In ritardo · Concluso ·
+Da iniziare.
+
+**Nessun titolo di card mozzato sul telefono** (`mobile.js`). Lì i titoli si tagliano in **altezza**, con
+`-webkit-line-clamp`, e un titolo di tre righe in due si legge fino ai puntini: è successo appena la richiesta del
+tetto è diventata la prima della coda. La verifica guarda solo i titoli delle card, non le righe d'elenco: una
+riga stretta che finisce nei puntini è disegno, e la sua pagina la apre per intero — la stessa distinzione fra
+«coperto» e «tagliato» di più sopra.
+
+**Il lime dice una cosa sola** (`console.js`, sezione 16). A quaranta si contano le righe lime della home e si
+chiede che siano quante le persone che **lavorano davvero** (zero, col tetto che ferma tutto), e che nei Costi non
+ce ne sia nessuna: là l'oltre lo dice la parola dentro il chip, su tutte e dodici le righe oltre budget.
+
+**La richiesta del tetto è la prima della coda, e sa dire chi è**: il chip la nomina («Tetto d'azienda») invece di
+stampare «undefined», e la sua card dice di quanto alza il tetto invece di «0 € · 0 passi».
+
+**Una regola d'azienda ha uno stato solo**: `g4` si legge nella pagina Richieste e nella pagina Dipendente e le
+due devono dire la stessa cosa. Erano «Attiva» e «Spenta» dalla versione 22.
+
+**Nessun testo dell'intestazione nasce sotto la tendina** (`routine.js`). La verifica che c'era guardava i
+controlli `[data-az]` e li giudicava dal **centro**; adesso misura il rettangolo del **testo** con un Range —
+la scatola, per via del badge `position:absolute`, è più larga di quello che si legge. E la lista delle pagine,
+che è scritta a mano, ha finalmente dentro `pagina=impostazioni`: la pagina è nata nella versione 32 e nessuno
+l'aveva aggiunta, così i suoi tre numeri nascevano tutti sotto la tendina senza che nulla lo dicesse.

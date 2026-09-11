@@ -139,6 +139,21 @@ const CATTURE = [
   { g: 'controlli', nome: 'a-sez-spesa-oggi', q: 'pagina=dipartimento&dip=svi&tendina=chiusa', sel: '.a-main section:nth-of-type(6)', h: 1400, clic: '[data-az="periodo"][data-sez="dip.spesa"][data-v="oggi"]' },
 ];
 
+/* Dopo un clic (o un `eval`) non si contano 300 ms fissi. `a-workflow-firma` era l'unica cattura che clicca e usciva
+   diversa 2 volte su 11 (versione 31); misurato nella 33: il clic fa scorrere la pagina di 614 px per portare la
+   pillola in vista, e la cattura a pagina intera dipinge gli elementi `position:fixed` (le due linguette del
+   titolare) **una volta sola**, a 240 px se e' passato almeno un fotogramma dallo scorrimento, a 854 (= 240 + 614)
+   se no. Non e' il prodotto: e' Chromium che dipinge il fisso rispetto allo scorrimento del momento. Quindi si
+   aspetta la fine di transizioni e animazioni (solo quelle finite: una infinita non finisce mai), si riporta lo
+   scorrimento a zero come in tutte le altre catture, e si lasciano passare due fotogrammi. Tetto di 2 s perche'
+   una cattura non deve mai restare appesa. */
+const fermo = page => page.evaluate(() => Promise.race([
+  Promise.all(document.getAnimations().filter(a => { try { return a.effect.getTiming().iterations !== Infinity; } catch (e) { return false; } }).map(a => a.finished.catch(() => {})))
+    .then(() => document.fonts.ready)
+    .then(() => { window.scrollTo(0, 0); return new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); }),
+  new Promise(r => setTimeout(r, 2000)),
+]));
+
 (async () => {
   const arg = process.argv.slice(2);
   const iOut = arg.indexOf('--in');
@@ -159,8 +174,8 @@ const CATTURE = [
     await page.goto('file://' + path.join(QUI, (c.file || 'direzione-a.html')) + (c.q ? '?' + c.q : ''), { waitUntil: 'load' });
     await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(600);
-    if (c.clic) for (const s of c.clic.split('|')) { await page.click(s); await page.waitForTimeout(300); }
-    if (c.eval) { await page.evaluate(c.eval); await page.waitForTimeout(300); }
+    if (c.clic) for (const s of c.clic.split('|')) { await page.click(s); await fermo(page); }
+    if (c.eval) { await page.evaluate(c.eval); await fermo(page); }
     const file = path.join(out, c.nome + '.png');
     if (c.sel) await page.locator(c.sel).first().screenshot({ path: file });
     else await page.screenshot({ path: file, fullPage: !c.viewport });

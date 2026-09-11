@@ -118,14 +118,18 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   /* Il difetto dichiarato della versione 21: `.a-head` arrivava a x 1414 e i suoi ultimi numeri — cliccabili —
      nascevano sotto la tendina aperta. Adesso sta nei 1008 px della colonna, su ogni pagina e a tutte e due le
      taglie, e sotto la tendina non nasce più niente. */
+  /* `pagina=impostazioni` e' entrata qui nella **versione 33**: la pagina e' nata nella 32 e questa lista non la
+     conteneva, quindi la verifica non l'ha mai guardata — e i suoi tre numeri nascevano tutti sotto la tendina.
+     Una prova che elenca le pagine a mano va allungata quando ne nasce una. */
   const PAGINE = ['', 'pagina=richieste', 'pagina=dipartimento&dip=svi', 'pagina=dipendente&id=4', 'pagina=esecuzione&id=4',
     'pagina=costi', 'pagina=agenda', 'pagina=chat', 'pagina=consegna&consegna=c1-0', 'pagina=workflow&workflow=w1',
-    'pagina=routine', 'pagina=routine&routine=rt1'];
-  let sforo = 0, coperti = 0, aria = [];
+    'pagina=routine', 'pagina=routine&routine=rt1', 'pagina=impostazioni'];
+  let sforo = 0, coperti = 0, testi = [], aria = [];
   for (const q of PAGINE) {
     for (const n of ['11', '40']) {
       await page.goto(file(q + (q ? '&' : '') + 'n=' + n + '&tendina=aperta')); await page.waitForTimeout(120);
       coperti += (await vis.copertiIntestazione(page)).length;
+      testi = testi.concat((await vis.testiCopertiIntestazione(page)).map(t => (q || 'home') + ' a ' + n + ': ' + t));
       const g = await page.evaluate(() => {
         const h = document.querySelector('.a-head').getBoundingClientRect(), mn = document.querySelector('.a-main').getBoundingClientRect();
         return { dx: Math.round(h.right), aria: Math.round(mn.top - (h.top + h.height)) };
@@ -136,6 +140,7 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   }
   check(sforo === 0, 'su ' + (PAGINE.length * 2) + ' pagine per due taglie l\'intestazione non esce mai dalla banda (sfori: ' + sforo + ')');
   check(coperti === 0, 'e nessuno dei suoi numeri nasce sotto la tendina aperta: erano 4 (' + coperti + ')');
+  check(testi.length === 0, 'e nemmeno un pezzo di testo, misurato sul testo e non sulla scatola: erano i tre numeri di Impostazioni (' + testi.slice(0, 3).join(' · ') + ')');
   check(Math.min(...aria) >= 64, 'l\'aria fra intestazione e prima sezione non scende sotto i 64 px di prima (minimo ' + Math.min(...aria) + ')');
   /* il prezzo, misurato e non stimato: la stima diceva 64 px, la misura ne dice 68 */
   await vai('pagina=dipartimento&dip=svi&tendina=chiusa');
