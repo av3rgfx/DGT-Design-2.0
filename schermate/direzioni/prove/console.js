@@ -28,7 +28,7 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
     return i < 0 ? null : '.a-main section:nth-of-type(' + (i + 1) + ')';
   }, re);
   /* il modello della pagina (`modello` in direzione-a.html): le richieste in attesa nell'ordine della tendina (le più vecchie prima) */
-  const inAttesa = () => page.evaluate(() => modello.richiesteDi('attesa').slice().sort((a, b) => (b.giorno - a.giorno) || (a.min - b.min)).map(r => ({ id: r.id, tipo: r.tipo, cosa: r.cosa })));
+  const inAttesa = () => page.evaluate(() => modello.codaAttesa().map(r => ({ id: r.id, tipo: r.tipo, cosa: r.cosa })));
   const richiesta = id => page.evaluate(id => { const r = modello.richieste.find(x => x.id === id); return { stato: r.stato, commento: r.commento || '' }; }, id);
   const logTitolare = () => page.locator('.lrow.titolare').allTextContents().then(a => a.map(t => t.replace(/\s+/g, ' ').trim()));
 
@@ -606,6 +606,80 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   await page.fill('input[data-lim="dipendente:4"][data-per="giorno"]', '25');
   await page.press('input[data-lim="dipendente:4"][data-per="giorno"]', 'Enter'); await page.waitForTimeout(300);
   check(await page.evaluate(() => modello.dossierDi(modello.byId[4]).budget.giorno === 25), 'e scrive davvero nel modello, dove la pagina Costi lo legge');
+
+  console.log('\n16. la riga di stato delle card, e le due forme che dicevano il contrario del vero (versione 33)');
+  /* **La pillola porta il solo chip.** Non e' una scelta nuova: `SYSTEM-DESIGN.md` lo scrive gia' («la riga di
+     stato lascia al testo 30-52 px, quindi li' ci sta il solo chip») e `cardConsegna` lo fa dalla versione 19. Le
+     altre cinque specie di card no, e il testo usciva tagliato da sempre: «Pass…» al posto di «Passo 2 di 4»
+     (35,4 px disponibili contro 70,2 chiesti), «Chiav…» al posto del motivo dell'errore (46,8 contro 157,6). La
+     verifica non guarda una card: chiede che **nessun testo dentro `.sel`, su nessuna pagina e a nessuna delle due
+     taglie, sia piu' largo di quello che si vede** — e che a quaranta, dove esiste «Passo 7 di 10», resti vero. */
+  const PAG_CARD = ['', 'pagina=dipartimento&dip=svi', 'pagina=dipartimento&dip=mkt', 'pagina=dipartimento&dip=ven',
+    'pagina=dipartimento&dip=amm', 'pagina=dipendente&id=4', 'pagina=richieste', 'pagina=agenda'];
+  let tagliati = [], viste = 0;
+  for (const q of PAG_CARD) for (const n of ['11', '40']) {
+    await vai(q + (q ? '&' : '') + 'n=' + n + '&tendina=chiusa', 250);
+    const r = await page.evaluate(() => {
+      const out = [];
+      document.querySelectorAll('.ncard.task .st .sel').forEach(sel => {
+        sel.querySelectorAll('span, b').forEach(el => {
+          if (el.querySelector('span, b, svg')) return;
+          if (!el.textContent.trim()) return;
+          if (el.scrollWidth > el.clientWidth + 1) out.push(el.textContent.trim().slice(0, 24) + ' (' + el.scrollWidth + ' in ' + el.clientWidth + ')');
+        });
+      });
+      return { out, n: document.querySelectorAll('.ncard.task .st .sel').length };
+    });
+    viste += r.n; tagliati = tagliati.concat(r.out.map(t => (q || 'home') + ' a ' + n + ': ' + t));
+  }
+  check(tagliati.length === 0, 'su ' + viste + ' pillole di stato, in 8 pagine per due taglie, nessun testo è tagliato: erano «Pass…» e «Chiav…» (' + tagliati.slice(0, 4).join(' · ') + ')');
+  await vai('tendina=chiusa');
+  const selHome = await page.locator('.ncard.task .st .sel').allTextContents().then(a => a.map(t => t.replace(/\s+/g, ' ').trim()));
+  check(selHome.every(t => /^(In pausa|In corso|Errore|In coda|Da approvare|Libero|In ritardo|Concluso|Da iniziare)$/.test(t)), 'e quello che resta è lo stato e basta: ' + [...new Set(selHome)].join(' | '));
+
+  /* **Il lime dice «al lavoro», e nient'altro** (regola 4, e la versione 22: «il lime resta la sua firma, mai
+     altro»). Due forme lo tradivano, tutte e due alla taglia grande: la riga compatta della home restava lime su
+     chi il tetto aveva fermato (12 su 12), e quella dei Costi la usava per dire «oltre il budget» — la **stessa
+     classe**, nella stessa taglia, per due fatti diversi. */
+  await vai('n=40&tendina=chiusa');
+  const limeHome = await page.evaluate(() => ({
+    righe: document.querySelectorAll('.elenco .erow.lav').length,
+    fermi: modello.dipendenti.filter(e => e.stato === 'lavoro' && e.pausa).length,
+    lavoro: modello.dipendenti.filter(e => e.stato === 'lavoro' && !e.pausa).length,
+  }));
+  check(limeHome.righe === limeHome.lavoro, 'a quaranta le righe lime della home sono quante le persone che lavorano davvero: ' + limeHome.righe + ' righe, ' + limeHome.lavoro + ' al lavoro, ' + limeHome.fermi + ' ferme per il tetto');
+  await vai('n=40&pagina=costi&tendina=chiusa');
+  await clic('[data-az="periodo"][data-sez="dipendenti"][data-v="oggi"]', 300);
+  const costi40 = await page.evaluate(() => ({
+    lime: document.querySelectorAll('.elenco .erow.lav').length,
+    oltre: [...document.querySelectorAll('.elenco .erow .chip')].filter(c => /· oltre$/.test(c.textContent.trim())).length,
+    modello: modello.costi('oggi').perDipendente.filter(x => x.budget.oggi > x.budget.giorno).length,
+  }));
+  check(costi40.lime === 0, 'e nei Costi il lime non dice più «oltre il budget»: zero righe lime (' + costi40.lime + ')');
+  check(costi40.oltre === costi40.modello && costi40.oltre > 0, 'lo dice la parola dentro il chip che c\'era già, su tutte quelle oltre: ' + costi40.oltre + ' di ' + costi40.modello);
+
+  /* La richiesta che sblocca il lavoro di tutta l'azienda sta **in cima** alla coda, e dice il suo importo invece
+     di «0 € · 0 passi» (`tipo: 'tetto'` non stava in `iconaTipo`/`nomeTipo`: la card stampava «undefined»). */
+  for (const n of ['11', '40']) {
+    await vai('n=' + n + '&tendina=aperta', 300);
+    const prima = await page.evaluate(() => modello.codaAttesa()[0]);
+    check(prima.tipo === 'tetto', 'a ' + n + ' la richiesta del tetto è la prima della coda: prima cadeva dove la portava la sua ora (' + prima.cosa + ')');
+    const corrente = await txt('.appr .top .chip');
+    check(/Tetto d'azienda/.test(corrente) && !/undefined/.test(corrente), 'e la tendina la sa nominare: «' + corrente + '»');
+    await vai('n=' + n + '&pagina=richieste&tendina=chiusa', 300);
+    const cardT = await page.evaluate(() => { const c = [...document.querySelectorAll('.ncard.task')].find(e => /Tetto del giorno/.test(e.textContent)); return c ? c.querySelector('.st .sel span:not(.av)').textContent.replace(/\s+/g, ' ').trim() : null; });
+    check(cardT && /^\+\d+ € per oggi$/.test(cardT) && !/0 passi/.test(cardT), 'e la sua card dice di quanto alza il tetto, non «0 € · 0 passi»: «' + cardT + '»');
+  }
+
+  /* Una regola d'azienda ha **uno** stato, non due: `g4` era «Attiva» nelle Richieste e «Spenta» in ogni pagina
+     Dipendente, perche' i dossier ne tenevano una copia ferma a prima della versione 22. */
+  for (const n of ['11', '40']) {
+    await vai('n=' + n + '&pagina=richieste&tendina=chiusa', 250);
+    const inRic = await page.evaluate(() => { const c = [...document.querySelectorAll('.regole .ncard')].find(e => /Spese sopra 50/.test(e.textContent)); return /Spenta/.test(c.textContent) ? 'Spenta' : 'Attiva'; });
+    await vai('n=' + n + '&pagina=dipendente&id=1&tendina=chiusa', 250);
+    const inDip = await page.evaluate(() => { const r = [...document.querySelectorAll('.crow')].find(e => /Spese sopra 50/.test(e.textContent)); return r ? (/Spenta/.test(r.textContent) ? 'Spenta' : 'Attiva') : 'assente'; });
+    check(inRic === inDip, 'a ' + n + ' «Spese sopra 50 €» ha lo stesso stato nelle due pagine che la stampano: Richieste «' + inRic + '», Dipendente «' + inDip + '»');
+  }
 
   check(errors.length === 0, 'nessun errore in console: ' + JSON.stringify(errors));
   console.log(`\n${ok} ok, ${ko} ko`);

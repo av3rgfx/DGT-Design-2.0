@@ -45,7 +45,7 @@
 window.DGT_MOBILE = (function () {
   const { ic, esc, prefissa } = window.DGT_UI;
   const C = window.DGT_COMPONENTI;
-  const { av, pair, iconaTipo, nomeTipo, chipStato, chipEsito, eur, differenze } = C;   // i componenti condivisi con la Console (schermate/componenti.js)
+  const { av, pair, iconaTipo, nomeTipo, costoRichiesta, passiRichiesta, chipStato, chipEsito, eur, differenze } = C;   // i componenti condivisi con la Console (schermate/componenti.js)
   /* Il canvas del workflow (versione 27, decisione 72): **lo stesso** della Console, in sola lettura. Sta in
      componenti.js e non è una seconda resa — il telefono passa `soloLettura` e la larghezza che ha. */
   const { canvasWorkflow, canvasTuttoDentro, canvasSuNodo, canvasStringi, W_METRICHE } = C;
@@ -427,7 +427,8 @@ window.DGT_MOBILE = (function () {
 
   /* La coda del telefono: le richieste in attesa, le più vecchie prima (come nella Console). Dalla versione 12 anche le
      revisioni di performance: la Console e il telefono contano le stesse richieste. */
-  const coda = m => m.richiesteDi('attesa').sort((a, b) => (b.giorno - a.giorno) || (a.min - b.min));
+  /* Lo stesso ordine della Console, e una sola volta: sta nel modello (versione 33). */
+  const coda = m => m.codaAttesa();
   const corrente = (m, st) => { const c = coda(m); const idx = Math.min(st.richiesta || 0, Math.max(0, c.length - 1)); return { c, idx, r: c[idx] }; };
   const approvateOggi = m => m.richieste.filter(x => x.giorno === 0 && x.stato === 'approvata').length;
 
@@ -441,7 +442,7 @@ window.DGT_MOBILE = (function () {
   const NOME_EV = { corso: 'In corso', attesa: 'Da approvare', errore: 'Errore', pianificato: 'Pianificato', fatto: 'Concluso' };
   /* La riga di una richiesta in coda (approva/rifiuta sul posto). Si chiamava «rigaConsegna» e dalla versione 19 si
      chiama `rigaRichiesta`: «consegna» adesso e' la cosa creata da un'esecuzione e ha una riga sua qui sotto. */
-  const rigaRichiesta = (m, r) => { const i = coda(m).indexOf(r); return `<div class="qrow${r.stato === 'attesa' ? ' on' : ''}"${i >= 0 ? ` data-az="apri" data-idx="${i}"` : ''}><span class="av xs" style="background:var(--ink);color:var(--white)">${ic(iconaTipo[r.tipo])}</span><div class="tx"><b>${esc(r.cosa)}</b><span>${nomeTipo[r.tipo]} · ${r.costo} €</span></div>${r.stato === 'attesa' ? `<span class="rb xs black" data-az="approva" data-id="${r.id}" title="${r.tipo === 'revisione' ? 'Applica' : 'Approva'}">${ic('i-check')}</span><span class="rb xs red" data-az="rifiuta" data-idx="${i}" title="Rifiuta con un motivo">${ic('i-x')}</span>` : chipEsito(r)}</div>`; };
+  const rigaRichiesta = (m, r) => { const i = coda(m).indexOf(r); return `<div class="qrow${r.stato === 'attesa' ? ' on' : ''}"${i >= 0 ? ` data-az="apri" data-idx="${i}"` : ''}><span class="av xs" style="background:var(--ink);color:var(--white)">${ic(iconaTipo[r.tipo])}</span><div class="tx"><b>${esc(r.cosa)}</b><span>${nomeTipo[r.tipo]} · ${costoRichiesta(r)}</span></div>${r.stato === 'attesa' ? `<span class="rb xs black" data-az="approva" data-id="${r.id}" title="${r.tipo === 'revisione' ? 'Applica' : 'Approva'}">${ic('i-check')}</span><span class="rb xs red" data-az="rifiuta" data-idx="${i}" title="Rifiuta con un motivo">${ic('i-x')}</span>` : chipEsito(r)}</div>`; };
   /* La riga di una consegna (versione 19, 2026-09-07): la cosa creata da un'esecuzione, sul telefono in riga e non in
      card — la colonna e' larga 254 px e le card della Console non ci stanno. Porta l'avatar di chi l'ha fatta (regola
      19: il disco nella sua tinta), il nome, chi e per chi, e il chip dello stato. Il tocco apre la **schermata della
@@ -545,7 +546,7 @@ window.DGT_MOBILE = (function () {
       <div class="who">${av(m, chi, '', 'attesa')}<div><b>${esc(m.etichetta(chi))}</b><span>${esc(m.sotto(chi))}</span></div></div>
       <div class="nt"><span class="rb olight">${ic('i-bell')}<i class="dot"></i></span><span class="rb olight" data-az="apri" data-idx="${idx}" title="Apri la richiesta">${ic('i-ne')}</span></div>
       <div class="body"><span class="ico">${ic(iconaTipo[r.tipo])}</span><div><div class="tt">${esc(r.cosa)}</div><div class="meta"><b>${esc(r.cliente)}</b><span>·</span><b>${esc(r.ora)}</b></div></div></div>
-      <div class="st"><span class="k">Decidi<span class="chip onlime">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]} · ${r.costo} € · ${r.passi.length} passi</span></span><div class="row"><span class="rb olight" data-az="apri" data-idx="${idx}" title="Apri">${ic('i-eye')}</span><span class="rb olight" data-az="filo" data-id="${r.chi}" title="Scrivi a ${esc(m.etichetta(chi))}">${ic('i-chat')}</span><span class="pag">${idx + 1} di ${n}</span><span class="rb black" data-az="approva" data-id="${r.id}" title="${r.tipo === 'revisione' ? 'Applica' : 'Approva'}">${ic('i-check')}</span><span class="rb red" data-az="rifiuta" data-idx="${idx}" title="Rifiuta con un motivo">${ic('i-x')}</span></div></div>
+      <div class="st"><span class="k">Decidi<span class="chip onlime">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]} · ${costoRichiesta(r)}${passiRichiesta(r)}</span></span><div class="row"><span class="rb olight" data-az="apri" data-idx="${idx}" title="Apri">${ic('i-eye')}</span><span class="rb olight" data-az="filo" data-id="${r.chi}" title="Scrivi a ${esc(m.etichetta(chi))}">${ic('i-chat')}</span><span class="pag">${idx + 1} di ${n}</span><span class="rb black" data-az="approva" data-id="${r.id}" title="${r.tipo === 'revisione' ? 'Applica' : 'Approva'}">${ic('i-check')}</span><span class="rb red" data-az="rifiuta" data-idx="${idx}" title="Rifiuta con un motivo">${ic('i-x')}</span></div></div>
     </div>`;
   }
   function daApprovare(m, tel, st) {
@@ -630,7 +631,7 @@ window.DGT_MOBILE = (function () {
       ? `<div class="chips"><span class="chip">${ic('i-bolt')}Revisione${rv.tipo === 'prompt' ? ' del soul prompt' : ' del modello'}</span><span class="chip lime">${ic('i-bell')}decide il titolare</span></div>
           <h2>${rv.tipo === 'prompt' ? `Soul prompt v${rv.da}&nbsp;→&nbsp;v${rv.a}` : `Da ${esc(m.MODELLI[rv.da].nome)} a ${esc(m.MODELLI[rv.a].nome)}`}</h2>
           <div class="sotto"><b>${esc(m.etichetta(chi))}</b> · ${esc(m.sotto(chi))} · proposta ${esc(rv.quando)}</div>`
-      : `<div class="chips"><span class="chip">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]}</span><span class="chip">${r.costo} €</span><span class="chip">${r.passi.length} passi</span></div>
+      : `<div class="chips"><span class="chip">${ic(iconaTipo[r.tipo])}${nomeTipo[r.tipo]}</span><span class="chip">${costoRichiesta(r)}</span>${r.passi.length ? `<span class="chip">${r.passi.length} passi</span>` : ''}</div>
           <h2>${esc(r.cosa)}</h2>
           <div class="sotto"><b>${esc(m.etichetta(chi))}</b> · ${esc(r.cliente)} · consegnata alle ${esc(r.ora)}</div>`;
     const azioni = tel.motivo

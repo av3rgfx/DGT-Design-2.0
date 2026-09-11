@@ -1,4 +1,235 @@
 # Prossima sessione — passaggio di consegne
+## Versione 33 — quello che il prodotto stampava e nessuno poteva leggere (2026-09-11)
+
+**Nessuna funzione nuova: sei bugie misurate, chiuse.** Niente di quello che c'era è stato rifatto — la versione 32
+(i limiti di spesa) resta com'era. Quello che è cambiato è che il prodotto ha **smesso di stampare cose illeggibili
+o false**, e ogni correzione è tenuta da una prova che guarda la **classe** e non l'esempio. Prove **692 verdi,
+0 ko** (erano 675), catture **84** di cui **33 rifatte**, artefatti ripubblicati allo stesso indirizzo.
+
+Due dubbi progettuali sono passati dal consiglio con la revisione incrociata. **Uno è stato chiuso dal righello** e
+costruito (la riga di stato); **l'altro aspetta te, ed è una parola sola**: vedi «La domanda aperta».
+
+### Che cosa c'è adesso
+
+**1. La pillola di stato delle card dice lo stato, e basta.** Accanto al chip c'erano **35,4 px** e «Passo 2 di 4»
+ne chiede 70,2: a schermo si leggeva **«Pass…»**, su ogni card, a undici e a quaranta, da quando la card esiste. E
+«Chiav…» al posto del motivo dell'errore (46,8 contro 157,6). La risposta era **già scritta** in `SYSTEM-DESIGN.md`
+per le card consegna della versione 19 — «lì ci sta il solo chip» — e applicata in **un punto su sei**. Adesso vale
+per tutte: In pausa · In corso · Errore · In coda · Da approvare · Libero · In ritardo · Concluso · Da iniziare. Il
+passo sta nella pagina Esecuzione e nei Costi, il motivo dell'errore nella pagina Esecuzione, l'ora nella riga sotto
+il titolo.
+
+**2. Il lime ha smesso di dire due cose.** La classe `lav` dipingeva le righe di chi è **al lavoro** nella home e di
+chi è **oltre il budget** nei Costi: stessa tinta, stessa taglia, due significati — e il lime è la firma del
+titolare (versione 22). Nei Costi lo dice adesso la parola dentro il chip che c'era già: «84 € · **oltre**», 69,8 px,
+zero tagli su dodici righe (due chip separati ne avrebbero tagliate cinque).
+
+**3. La home ha smesso di dire «al lavoro» sulle righe di chi è fermo.** A quaranta erano **12 righe lime su 12
+ferme**, mentre il primo numero della stessa pagina diceva «12 in pausa». È lo stesso difetto che la versione 31 è
+servita a togliere dai numeri, sopravvissuto nella riga compatta.
+
+**4. La richiesta che sblocca l'azienda è la prima della coda, e sa dire chi è.** Era la n. 2 di 5 a undici e la
+**n. 7 di 8** a quaranta, perché cadeva dove la portava la sua ora. E stampava «**undefined** · 10:42» con l'icona
+rotta (sul telefono «undefined · 0 €»), perché `tipo: 'tetto'` non stava in `iconaTipo`/`nomeTipo`; e «0 € · 0
+passi», che di quella richiesta è falso due volte. Adesso: prima in coda, «Tetto d'azienda», «**+21 € per oggi**»
+(29 a quaranta). L'ordine della coda è passato **nel modello** (`m.codaAttesa`), così Console e telefono non lo
+ricalcolano ognuno per conto suo.
+
+**5. I tre numeri di Impostazioni non nascono più sotto la tendina.** Il terzo stava **tutto** oltre i 1110 px dove
+la tendina comincia (x 1001-1296 a undici, 1049-1343 a quaranta). La prova che tiene le intestazioni **elenca le
+pagine a mano** e quella, nata nella versione 32, non c'era. Tolte dalle etichette le spese che la barra in cima
+stampa già — e che contraddicevano il commento scritto due righe sopra — i tre numeri stanno in 936 px su 992.
+
+**6. Due difetti vecchi, chiusi.** La regola `g4` era «Attiva» nelle Richieste e «Spenta» in ogni pagina Dipendente:
+i dossier ne tenevano una **copia** ferma a prima della versione 22. E `a-workflow-firma.png`, l'unica cattura
+instabile (2 volte su 11), esce adesso **identica 12 volte su 12**.
+
+### La cattura instabile non era instabile: era la cattura
+
+Misurato, non ipotizzato: il clic sulla pillola fa **scorrere la pagina di 614 px** per portarla in vista, e la
+cattura a pagina intera dipinge gli elementi `position:fixed` (le due linguette del titolare) **una volta sola** —
+a 240 px se è passato un fotogramma dallo scorrimento, a **854** (= 240 + 614) se no. Non è il prodotto, è Chromium.
+`scatta.js` non conta più 300 ms fissi: aspetta la fine di transizioni e animazioni (solo quelle che finiscono),
+riporta lo scorrimento a zero e lascia passare due fotogrammi.
+
+### La domanda aperta — **e aspetta te, è una parola**
+
+**Il tetto sfondato resta rosa, o va neutro come tutto il resto?**
+
+Il consiglio si è spaccato **2 a 2** (uno per il rosa dappertutto), e lo scontro è solo sul tetto. Il colore è tuo
+da decidere dalla versione 31, dove l'avevi lasciato «per non deciderlo da soli».
+
+| | che cosa vuol dire | prezzo, contato |
+|---|---|---|
+| **Rosa solo al tetto** | il tetto resta rosa perché **ferma il lavoro** e rompe una promessa che hai fatto tu; i budget facoltativi, che non fermano niente, diventano neutri | 11 righe, 0 prove, **6 catture**. La regola 4 diventa «rosa = errori, cali e tetto sfondato» |
+| **Neutro dappertutto** | sfondare un limite è un **fatto**, non un allarme: il segnale è la richiesta lime in coda, che c'è già | 14 righe, 0 prove, 16 catture. La regola 4 resta **intatta** |
+
+L'argomento più forte per il neutro l'ha trovato la revisione incrociata: **la versione 32 ha già deciso che
+fermarsi per il tetto non è un errore** — chip «In pausa» neutro, nessun punto sull'avatar (regola 19, «niente da
+fermo»). Un prodotto con la **causa rossa e l'effetto grigio** mente in una delle due direzioni. L'argomento più
+forte per il rosa: il tetto è l'unico limite che **ferma**, e togliergli il colore lo rende invisibile fuori dalle
+due pagine che lo scrivono.
+
+Intanto **una cosa è stata fatta comunque**, perché non è una scelta di colore: il badge non usa più la classe
+`down`, che nei token si chiama letteralmente «badge in calo», per una **salita**. La tinta è identica; cambiarla,
+quando avrai deciso, costa **una riga sola** invece di quattro.
+
+### Che cosa ha corretto la revisione incrociata
+
+Come sempre, ha spostato la risposta più dei pareri.
+
+| scritto | vero |
+|---|---|
+| la pillola lascia al testo **45,4 px** (nel contesto che avevo scritto io) | **35,4**: gli addendi fanno 136,6, non 126,6 — e quattro consiglieri su cinque ci avevano fatto aritmetica sopra |
+| «i passi non hanno **mai due cifre**», quindi «2 di 4» basta | a quaranta esiste **«Passo 7 di 10»**, e «7 di 10» chiede 37,3 px: la forma corta muore alla taglia grande |
+| «l'**occhio** duplica la freccia: si può togliere» | vale solo sulle card al lavoro: su quelle in errore e in coda il cerchio nero è «Riprova»/«Avvia ora» |
+| «le specie tagliate sono **tre**» | sono **sei**, e la sesta l'ha trovata la prova nuova, non il censimento: la card della richiesta |
+
+E **due cose che le revisioni davano per vere le ha smentite il righello**, che è la ragione per cui si misura anche
+quello che il consiglio afferma:
+
+- «a quaranta il terzo numero dei **Costi** finisce 39 px sotto la tendina»: **falso**. È la *scatola* a sporgere
+  (il badge è `position:absolute` e la allarga), non il testo. Sotto la tendina nasceva invece il numero di
+  **Impostazioni**, che nessuno aveva guardato;
+- «la **campanella** inerte viola la regola 25»: **no**. La regola 25 esenta, dichiarandoli, «i 45 indicatori
+  disegnati come cerchi nell'intaglio delle card e nella cornice, che dicono uno stato e vengono dal riferimento».
+
+### I punti ciechi che restano — **da confermare**
+
+1. **Il colore dell'oltre** (sopra): l'unica cosa che aspetta una tua parola.
+2. **Il motivo dell'errore non è più sulla card.** La pillola non lo taglia più, ma adesso non lo dice affatto: si
+   legge aprendo l'esecuzione. Una revisione ha fatto notare che quel motivo **governa il pulsante che sta sulla
+   stessa card** — «Chiavi di accesso scadute» dice che «Riprova» è inutile — e proponeva di metterlo nella riga
+   sotto il titolo, al posto di «Zenith fallito alle 08:55». Non l'ho fatto: è provato su **una sola** stringa del
+   modello (157,6 px su 196), e il primo messaggio più lungo sfonderebbe. Se lo vuoi, è una riga.
+3. **Il chevron della pillola non apre niente.** Viene dal riferimento («copiato così com'è») e la regola 25 esenta
+   i cerchi, non lui. È lo stesso conflitto già risolto una volta con l'emendamento del verde → lime: va deciso da
+   te, non aggirato.
+4. **La card in coda ha cambiato chip**: era l'ora, adesso è la parola «In coda» (l'ora la riga sotto il titolo la
+   diceva già: era lo stesso numero due volte). La regola 18, che nominava «l'ora» fra i chip possibili, è stata
+   aggiornata di conseguenza.
+5. **Il primo numero della home a quaranta**: «12 in pausa» è giusto, ma le 12 righe della sezione Dipendenti
+   adesso non sono più lime e la pagina è **più spenta**. È il vero, ma cambia il colpo d'occhio.
+
+### Quello che resta aperto dalle versioni scorse
+
+- la **deviazione su `attesa`** della versione 32 (chi è fermo resta in `lavoro` con `e.pausa`, non passa in
+  `attesa`): le tre misure che l'hanno decisa stanno in «La deviazione, e perché», più sotto. Sempre da confermare;
+- i **quattro punti ciechi** della versione 32 che non erano il lime (la richiesta del tetto che cade nel «Da
+  approvare» di un dipartimento; la pausa del titolare irraggiungibile finché il tetto ferma);
+- i candidati che aspettano dati: connettori, chat di dipartimento, decisioni 68, 69 e 75.
+
+## Come riprendere (dalla versione 33)
+
+1. **Il metodo di sempre**: rifare i font locali, lanciare le sei prove e catturare **prima** di toccare qualcosa.
+   In questa sessione le 84 catture di partenza erano identiche al byte, **compresa** quella che fino a ieri era
+   instabile.
+2. **La prima cosa da chiedere all'utente** è il colore dell'oltre (sopra). Tutto il resto della 33 è costruito e
+   verde.
+3. **Dove sta cosa, adesso**:
+   - la riga di stato delle card: `cardAttivita`, `cardEsecuzione`, `cardObiettivo`, `cardUltima`, `cardRichiesta`
+     in `direzione-a.js` — cinque funzioni, la stessa regola;
+   - l'ordine della coda: `codaAttesa` in `dati.js`, e i due chiamanti (`inAttesa` nella Console, `coda` sul
+     telefono) che adesso non calcolano più niente;
+   - il costo di una richiesta: `costoRichiesta` e `passiRichiesta` in `componenti.js`, condivisi dalle due
+     superfici;
+   - il badge di un limite sfondato: `.badge.oltre` in `componenti.js` — **una riga**, se il colore cambia;
+   - le regole del dossier: `allineaPermessi` in `dati.js`, che le fa seguire a `m.regole`;
+   - l'attesa delle catture: `fermo(page)` in `scatta.js`.
+4. **Trappole nuove, misurate in questa sessione**:
+   - **un commento con i backtick dentro un template literal CSS rompe il file in silenzio.** È scritto nel
+     passaggio di consegne della versione 32 e ci sono ricascato lo stesso: `node --check` lo prende subito, il
+     browser no fino al caricamento. Nei commenti del CSS si scrivono i nomi delle classi senza apici inversi;
+   - **una prova che elenca le pagine a mano va allungata quando ne nasce una.** La pagina Impostazioni è rimasta
+     fuori dalla verifica delle intestazioni per una versione intera;
+   - **misurare la scatola non è misurare il testo.** Il badge `position:absolute` allarga `.stat` di decine di px
+     oltre l'ultima lettera: la verifica delle intestazioni adesso usa un `Range` sul nodo di testo;
+   - **cambiare l'ordine della coda cambia le prove che cliccano «approva»**: la prima richiesta non è più quella
+     che era. Una prova dei Costi l'ha presa subito, ed è stata riscritta per firmare due volte (prima il tetto, poi
+     la consegna) invece di dare per scontato chi sta in cima.
+5. **Numeri da non rifidarsi a memoria** — in questa sessione ne sono risultati falsi **sei**: i 45,4 px liberi
+   nella pillola, i passi «mai a due cifre», le tre specie tagliate, l'occhio che duplica la freccia su tutte le
+   card, il numero dei Costi sotto la tendina e la campanella che violerebbe la regola 25. Quattro venivano dal
+   contesto che avevo scritto io, due dalle revisioni.
+
+## Stato alla fine della versione 33
+
+- **Branch**: `claude/spending-limits-architecture-4gb9a0`, ripartito da `main` dopo l'unione delle PR #23 e #24.
+- **Prove**: **692 verdi, 0 ko** (erano 675) — Console **214**, telefono **92**, Costi **53**, Agenda e Chat 56,
+  Workflow 225, Routine **52**.
+- **Catture**: **84**, di cui **33 rifatte**. Prima di toccare il codice erano state rifatte e confrontate una a
+  una col «prima»: **84 identiche al byte**, compresa `a-workflow-firma.png`, che nella versione 31 non lo era.
+- **Codice toccato**: `componenti.js` (il tipo `tetto`, `costoRichiesta`, `passiRichiesta`, `.badge.oltre`),
+  `dati.js` (`codaAttesa`, `allineaPermessi`, il titolo della richiesta del tetto), `direzione-a.js` (le cinque
+  card, la riga compatta della home e dei Costi, le etichette di Impostazioni, i quattro badge), `mobile.js` (la
+  coda e i tre punti che stampavano il costo), `scatta.js` (l'attesa deterministica), e quattro prove più
+  `visibile.js`.
+- **Artefatti**: **ripubblicati allo stesso indirizzo** — la Console
+  (https://claude.ai/code/artifact/e6699f3a-879b-4bce-a9d8-6fc21ed84e34) e il telefono
+  (https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9).
+- **Quello che aspetta l'utente**: **il colore dell'oltre**, più i cinque punti ciechi qui sopra e la deviazione su
+  `attesa` della versione 32.
+- **La consegna allo sviluppo**: il titolare ha dichiarato il design completo e ha chiesto un pacchetto con cui
+  iniziare il prodotto in un **repository nuovo**, con qualunque agente di codice e senza file di istruzioni per
+  uno strumento in particolare. Sta in `consegna-sviluppo/`: `README.md` (il punto d'ingresso), il modello di
+  dominio estratto da `dati.js`, le 48 regole riscritte come regole di prodotto, il sistema di design, le
+  invarianti estratte dalle sei prove, le decisioni aperte, l'inventario file per file, le fixture JSON a undici e
+  a quaranta, il prompt di avvio ed `esporta.sh`, che assembla la cartella da copiare. La ragione del repository
+  nuovo, misurata: 275 MB di storia git e 7 792 righe di cronaca su 9 407 di documenti.
+
+## Pronto per la prossima sessione
+
+```
+Leggi CLAUDE.md, poi PROSSIMA-SESSIONE.md («Versione 33», «La domanda aperta», «Come riprendere (dalla versione
+33)» e «Stato alla fine della versione 33»). Controlla la PR aperta sul branch
+claude/spending-limits-architecture-4gb9a0: se è unita riparti da main tenendo lo stesso nome di branch.
+
+Nella versione 33 non è nata nessuna funzione: sono state chiuse SEI cose che il prodotto stampava e nessuno
+poteva leggere, o che dicevano il falso. La pillola di stato delle card dice adesso lo stato e basta (accanto al
+chip c'erano 35,4 px e «Passo 2 di 4» ne chiede 70,2: si leggeva «Pass…» da sempre, e la risposta era già scritta
+nel sistema di design per le card consegna della versione 19). Il lime ha smesso di dire due cose: nei Costi
+l'oltre lo dice la parola dentro il chip («84 € · oltre») e nella home le righe di chi il tetto ha fermato non
+sono più lime. La richiesta che sblocca l'azienda è la prima della coda, si chiama «Tetto d'azienda» invece di
+«undefined» e dice «+21 € per oggi» invece di «0 € · 0 passi». I tre numeri di Impostazioni non nascono più sotto
+la tendina. E due difetti vecchi sono chiusi: g4 diceva «Attiva» in una pagina e «Spenta» in un'altra, e la
+cattura instabile adesso esce identica 12 volte su 12. 692 prove verdi, 84 catture, artefatti ripubblicati.
+
+LA PRIMA COSA: ti devo una parola sola, ed è un colore. «Il tetto sfondato resta ROSA, o va NEUTRO come tutto il
+resto?» Il consiglio si è spaccato 2 a 2. Per il neutro: la versione 32 ha già deciso che fermarsi per il tetto
+non è un errore (chip «In pausa» neutro, nessun punto sull'avatar), e un prodotto con la causa rossa e l'effetto
+grigio mente in una delle due direzioni. Per il rosa: il tetto è l'unico limite che FERMA, e senza colore diventa
+invisibile fuori dalle due pagine che lo scrivono. Prezzo: rosa-solo-al-tetto 11 righe e 6 catture, neutro 14
+righe e 16 catture, zero prove rotte in tutti e due i casi. Nel frattempo il badge ha una classe sua con la
+stessa tinta: cambiare colore costa UNA riga.
+
+Restano poi cinque punti ciechi (il motivo dell'errore che la card non dice più; il chevron della pillola che non
+apre niente e viene dal riferimento; il chip della card in coda passato dall'ora alla parola; la home a quaranta
+più spenta), la deviazione su «attesa» della versione 32, e i candidati che aspettano dati (connettori, chat di
+dipartimento, decisioni 68, 69 e 75).
+
+Il metodo di sempre: prima e dopo, rifare i font locali, lanciare le SEI prove di prove/ e catturare le pagine
+PRIMA di toccare qualcosa; quello che si misura si misura, e vale anche per quello che dice il consiglio: nella
+33 il righello ha smentito DUE cose che le revisioni davano per vere. Ogni dubbio progettuale passa dal consiglio
+(llm-council) con la revisione incrociata: nella 33 ha corretto quattro numeri del contesto che avevo scritto io,
+compreso quello su cui quattro consiglieri su cinque avevano fatto aritmetica.
+
+Alla fine: prove aggiornate, screenshot, artefatti ripubblicati allo stesso indirizzo (lo strumento vuole che si
+legga per intero la copia viva: conviene farlo fare a un sottoagente), DIREZIONI.md, SYSTEM-DESIGN.md, i README,
+PROSSIMA-SESSIONE.md, commit, push e PR.
+```
+
+### I comandi che servono subito
+
+```bash
+export SC=<cartella-di-lavoro>                       # es. lo scratchpad della sessione
+export PLAYWRIGHT_MODULE=playwright NODE_PATH=/opt/node22/lib/node_modules
+export LOCAL_FONT_CSS=$SC/fonts.css                  # i font locali vanno rifatti a ogni sessione
+node schermate/direzioni/prove/{console,mobile,costi,agenda-chat,workflow,routine}.js
+node schermate/direzioni/scatta.js [--in <cartella>] [gruppo…]
+cd schermate/direzioni && node build-unico.js direzione-a.html <out>.html   # i due file unici per gli artefatti
+cd schermate/direzioni && node build-unico.js mobile.html <out>.html
+```
+
 ## Versione 32 — i limiti di spesa, e il prodotto che si apre fermo (2026-09-09)
 
 **Le sette risposte della versione 31 sono state costruite tutte.** Il tetto d'azienda lo pone il titolare, esiste

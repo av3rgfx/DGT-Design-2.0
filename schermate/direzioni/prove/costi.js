@@ -100,6 +100,14 @@ const check = (cond, msg) => { if (cond) { ok++; console.log('  ok  ' + msg); } 
   console.log('4. le decisioni cambiano i costi');
   await page.goto(file('pagina=costi&tendina=aperta')); await page.waitForTimeout(400);
   const c0 = (await page.locator('.shead .cnt').nth(2).textContent()).trim();
+  /* Dalla **versione 33** la prima della coda e' la richiesta del **tetto**: e' l'unica che non riguarda un
+     cliente ma tutta l'azienda, e finche' non e' decisa non riparte nessun passo. Quindi qui si firma due volte —
+     prima il tetto (e il freno molla), poi la consegna — e la prova dice tutte e due le cose invece di dare per
+     scontato chi sta in cima. */
+  const primaCoda = await page.evaluate(() => modello.codaAttesa()[0].tipo);
+  check(primaCoda === 'tetto', 'la prima della coda è il tetto: è quella che sblocca il lavoro di tutti');
+  await page.click('.appr [data-az="approva"]'); await page.waitForTimeout(300);
+  check(await page.evaluate(() => modello.fermePerTetto().length === 0), 'firmata, il freno molla e le esecuzioni ripartono');
   await page.click('.appr [data-az="approva"]'); await page.waitForTimeout(300);
   check(await titolo() === 'COSTI', 'approvare dalla tendina lascia la pagina dei costi');
   check(errors.length === 0, 'nessun errore in console finora');

@@ -93,6 +93,11 @@ window.DGT_COMPONENTI = (function () {
 .dots.l5 i:nth-child(1){background:var(--d1)}.dots.l5 i:nth-child(2){background:var(--d2)}.dots.l5 i:nth-child(3){background:var(--d3)}.dots.l5 i:nth-child(4){background:var(--d4)}.dots.l5 i:nth-child(5){background:var(--d5)}
 .badge{display:inline-flex;align-items:center;gap:2px;height:20px;padding:0 8px;border-radius:var(--r-pill);font-size:12px;font-weight:500}
 .badge.up{background:var(--lime);color:#1A2A05}.badge.down{background:var(--badge-red);color:var(--badge-red-ink)}
+/* .badge.oltre e' il badge di un limite sfondato. Ha **oggi** la tinta di .badge.down, ma non e' un calo: down nei
+   token si chiama letteralmente «badge in calo» e sfondare un tetto e' una salita. Separare la classe costa zero
+   pixel e toglie la bugia dal codice; se il titolare decidera' che il colore dell'oltre non e' il rosa (la domanda
+   aperta della versione 33, regola 4), si cambia **questa riga** e non quattro posti. */
+.badge.oltre{background:var(--badge-red);color:var(--badge-red-ink)}
 .badge svg{width:10px;height:10px}
 /* card con intaglio */
 .ncard{position:relative;border-radius:var(--r-card);background:linear-gradient(180deg,var(--card-top),var(--card));color:var(--white)}
@@ -875,8 +880,18 @@ window.DGT_COMPONENTI = (function () {
     ? `<div class="msg sistema"><span class="chip light">${ic('i-bell')}<span>${esc(v.ora)} · ${esc(m.etichetta(e))} ${esc(v.testo)}</span></span></div>`
     : `<div class="msg ${v.da === 'io' ? 'io' : 'dip'}">${v.da === 'io' ? `<span class="av persona">${esc(m.azienda.titolare.iniziali)}</span>` : av(m, e, 's')}<div class="bub">${esc(v.testo)}<span class="ora">${esc(v.ora)}${v.passo ? ' · al passo ' + v.passo : ''}</span></div></div>`;
 
-  const iconaTipo = { post: 'i-mega', documento: 'i-doc', lista: 'i-list', proposta: 'i-receipt', revisione: 'i-bolt' };
-  const nomeTipo = { post: 'Post', documento: 'Documento', lista: 'Lista', proposta: 'Proposta', revisione: 'Revisione' };
+  /* `tetto` e' entrato nella versione 32 con la richiesta che sblocca il freno d'azienda, e queste due mappe non lo
+     conoscevano: la card della coda stampava «undefined · 10:42» con l'icona rotta, e sul telefono «undefined · 0 €»
+     (versione 33, trovato dalla revisione incrociata e verificato aprendo le pagine). Non e' un'uscita verso un
+     cliente: e' una decisione sull'azienda, e l'icona e' quella dell'euro. */
+  const iconaTipo = { post: 'i-mega', documento: 'i-doc', lista: 'i-list', proposta: 'i-receipt', revisione: 'i-bolt', tetto: 'i-euro' };
+  const nomeTipo = { post: 'Post', documento: 'Documento', lista: 'Lista', proposta: 'Proposta', revisione: 'Revisione', tetto: 'Tetto d\'azienda' };
+
+  /* Il costo di una richiesta, come si scrive. La richiesta del **tetto** non ha un costo ne' dei passi: ha un
+     **importo**, cioe' di quanto il titolare alza il tetto se firma (versione 33; fino alla 32 le tre superfici
+     stampavano «0 € · 0 passi», che di quella richiesta e' falso due volte). */
+  const costoRichiesta = r => r.tipo === 'tetto' ? '+' + (r.importo || 0) + ' € per oggi' : r.costo + ' €';
+  const passiRichiesta = r => (r.passi && r.passi.length ? ' · ' + r.passi.length + ' passi' : '');
 
   function chipStato(m, e) {
     const s = e.stato;
@@ -939,6 +954,6 @@ window.DGT_COMPONENTI = (function () {
     return [L.join(''), R.join('')];
   }
 
-  return { css: prefissa(css, '.dirA'), variabili, av, pair, dots, chipStato, chipEsito, messaggio, iconaTipo, nomeTipo, eur, delta, differenze,
+  return { css: prefissa(css, '.dirA'), variabili, av, pair, dots, chipStato, chipEsito, messaggio, iconaTipo, nomeTipo, costoRichiesta, passiRichiesta, eur, delta, differenze,
     canvasWorkflow, canvasMisure, canvasTuttoDentro, canvasSuNodo, canvasStringi, canvasCoperti, W_METRICHE: { COL: W_COL, PX: W_PX, PY: W_PY, PAD: W_PAD, W: W_W, H: W_H, H_CHIUSO: W_H_CHIUSO } };
 })();

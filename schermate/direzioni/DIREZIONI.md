@@ -3285,6 +3285,65 @@ Il raggio vero di uno stato nuovo sono le **165 comparazioni** `\.stato === '…
 ma la *superficie di crash* era uno. La decisione («nessuno stato nuovo») resta quella giusta, per la ragione
 giusta.
 
+### Versione 33 — quello che il prodotto stampava e nessuno poteva leggere (2026-09-11)
+
+Nessuna funzione nuova: **sei cose che dicevano il falso o non si leggevano**, tutte trovate col righello e tutte
+tenute adesso da una prova che guarda la **classe** e non l'esempio. Prove **da 675 a 692 verdi** (Console 214, telefono 92, Costi 53, Agenda e Chat 56, Workflow 225, Routine 52),
+catture **84**, di cui **33 rifatte**, zero ko.
+
+**1. La riga di stato delle card portava un testo che non ci stava.** 35,4 px di posto, 70,2 chiesti da «Passo 2
+di 4»: a schermo si leggeva **«Pass…»**, su ogni card e a tutte e due le taglie, da quando la card esiste. E
+«Chiav…» al posto del motivo dell'errore (46,8 contro 157,6). La risposta stava **già scritta** in
+`SYSTEM-DESIGN.md` per le card consegna della versione 19 — «lì ci sta il solo chip» — e applicata in un punto su
+sei. Adesso la pillola porta **lo stato e basta**, su tutte le specie. Il consiglio aveva proposto anche di
+accorciare («2 di 4», 33,1 px, entrerebbe per 2,3): la revisione incrociata l'ha ucciso col righello, perché a
+quaranta esiste «Passo 7 di 10» e «7 di 10» chiede 37,3 px. La forma corta muore alla taglia grande.
+
+**2. Una sesta specie tagliata, che il censimento non aveva.** L'ha trovata la prova nuova, non l'occhio: la card
+della **richiesta** stampava «3 € · 3 passi · 10:12» in 88 px chiedendone 104-124 — e quell'ora la riga sotto il
+titolo la diceva già.
+
+**3. Il lime diceva due cose diverse alla stessa taglia.** `lav` dipingeva le righe di chi è **al lavoro** nella
+home e di chi è **oltre il budget** nei Costi: due pagine dello stesso rail, stessa tinta, due significati — con
+il lime che è la firma del titolare (versione 22). Nei Costi l'oltre lo dice adesso la parola dentro il chip che
+c'era già («84 € · oltre», 69,8 px, zero tagli su dodici righe). E nella home la riga restava lime **su chi il
+tetto aveva fermato**: 12 righe su 12 ferme, mentre il primo numero della stessa pagina diceva «12 in pausa».
+
+**4. La richiesta che sblocca tutta l'azienda stava in fondo alla coda.** Seconda di cinque a undici, **settima di
+otto** a quaranta, perché cadeva dove la portava la sua ora. Adesso è la prima: è l'unica che non riguarda un
+cliente ma l'azienda, e finché non è decisa non riparte nessun passo. L'ordine della coda è passato **nel
+modello**, così Console e telefono non lo ricalcolano ognuno per conto suo.
+
+**5. La stessa richiesta era illeggibile.** `tipo: 'tetto'` non stava in `iconaTipo`/`nomeTipo`: la card stampava
+«**undefined** · 10:42» con l'icona rotta, e sul telefono «undefined · 0 €». E diceva «0 € · 0 passi», che di
+quella richiesta è falso due volte: non ha passi, e la cifra che conta è **di quanto alza il tetto** (+21 € a
+undici, +29 a quaranta). Portandola in cima è saltato fuori anche il titolo: «Tetto del giorno raggiunto: 124 €
+su 115 €» chiedeva **tre** righe sul telefono e ne aveva due. Adesso dice «Tetto del giorno: 124 € su 115 €» —
+la stessa forma della home e dei Costi, senza la parola che il numero già dice.
+
+**6. I tre numeri di Impostazioni nascevano sotto la tendina.** La pagina è della versione 32 e la prova che tiene
+le intestazioni **elencava le pagine a mano**: quella non c'era. Il terzo numero stava tutto oltre i 1110 px dove
+comincia la tendina (x 1001-1296 a undici, 1049-1343 a quaranta). Accorciate le etichette — via «· 124 € spesi»,
+che la barra in cima stampa già e che contraddiceva il commento scritto due righe sopra — i tre numeri stanno in
+936 px su 992. La prova adesso misura il **testo** con un Range invece della scatola, che per via del badge
+`position:absolute` è più larga di quello che si legge.
+
+**Più due difetti vecchi, chiusi.** La regola `g4` era «Attiva» nelle Richieste e «Spenta» in ogni pagina
+Dipendente: i dossier ne tenevano una **copia** ferma a prima della versione 22, e adesso una riga d'origine
+«Regola generale» prende lo stato dalla regola d'azienda che porta il suo nome. E `a-workflow-firma.png`, l'unica
+cattura instabile (2 volte su 11), adesso esce **identica 12 volte su 12**: la causa non era il prodotto ma la
+cattura — il clic fa scorrere la pagina di 614 px e Chromium dipinge gli elementi `position:fixed` una volta
+sola, a 240 px o a 854 secondo il fotogramma. Non si contano più 300 ms fissi: si aspetta la fine di transizioni
+e animazioni, si riporta lo scorrimento a zero e si lasciano passare due fotogrammi.
+
+**Che cosa ha corretto la revisione incrociata, questa volta.** Il conto della pillola scritto nel contesto
+(126,6 px liberi) era sbagliato: sono **136,6**, cioè 35,4 liberi e non 45,4, e quattro consiglieri su cinque ci
+avevano fatto aritmetica sopra. «Mai due cifre nei passi» era falso. «L'occhio duplica la freccia» vale solo
+sulle card al lavoro: su quelle in errore e in coda il cerchio nero è «Riprova»/«Avvia ora». E due cose che le
+revisioni davano per vere il righello le ha smentite a sua volta: il terzo numero dei **Costi** a quaranta **non**
+nasce sotto la tendina (è la scatola a sporgere, non il testo), e la campanella inerte nell'intaglio è
+**dichiarata fuori** dalla regola 25, che esenta i 45 indicatori del riferimento.
+
 ## 5. File
 
 | File | Ruolo |

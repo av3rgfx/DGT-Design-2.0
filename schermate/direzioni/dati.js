@@ -1175,6 +1175,14 @@ window.DGT_DATI = (function () {
       ricalcola: () => { byId = out.byId = Object.fromEntries(m.dipendenti.map(e => [e.id, e])); out.perDip = Object.fromEntries(dipartimenti.map(d => [d.id, m.dipendenti.filter(e => e.dip === d.id)])); out.n = m.dipendenti.length; out.alLavoro = m.dipendenti.filter(e => e.stato === 'lavoro'); },
       obiettiviDi: dip => m.obiettivi.filter(o => o.dip === dip),
       richiesteDi: st => m.richieste.filter(r => r.stato === st),
+      /* La coda del titolare, nell'ordine in cui gliela si mette davanti — **una sola volta, per tutte e due le
+         superfici** (versione 33: la Console e il telefono la ordinavano ognuno per conto suo, con la stessa
+         formula scritta due volte). Prima il **tetto**, poi le uscite dalla piu' vecchia.
+         Perche' il tetto prima: e' l'unica richiesta che non riguarda un cliente ma **tutta l'azienda**, e finche'
+         non e' decisa non riparte nessun passo — le altre richieste restano decidibili, il lavoro no. Fino alla 32
+         cadeva dove la portava la sua ora: seconda di cinque a undici, **settima di otto a quaranta**, cioe' la
+         cosa che sblocca il lavoro di quaranta persone stava in fondo. */
+      codaAttesa: () => out.richiesteDi('attesa').sort((a, b) => (b.tipo === 'tetto' ? 1 : 0) - (a.tipo === 'tetto' ? 1 : 0) || (b.giorno - a.giorno) || (a.min - b.min)),
       periodoDi: r => r.giorno === 0 ? 'oggi' : r.giorno === 1 ? 'ieri' : r.giorno <= 7 ? 'settimana' : r.giorno <= 31 ? 'mese' : 'prima',
       clienti: [...new Set(m.richieste.map(r => r.cliente))].sort(),
       /* filtri = { stato, tipo, chi, cliente, periodo, q }: valore assente o 'tutti' = nessun filtro */
@@ -1387,7 +1395,11 @@ window.DGT_DATI = (function () {
         if (!pf) { if (viva) m.richieste.splice(m.richieste.indexOf(viva), 1); return out; }
         const imp = Math.ceil(pf.p.costo || 0);
         const dati = {
-          chi: pf.e.id, cosa: 'Tetto del giorno raggiunto: ' + costoOggi + ' € su ' + out.tettoOggi() + ' €',
+          /* Il titolo e' la **stessa forma** che la home e i Costi stampano dello stesso numero (versione 31):
+             «124 € su 115 €». Senza «raggiunto», che il numero dice gia' — e che misurato costava la terza riga:
+             sul telefono il titolo della card ha due righe da 162 px e con quella parola ne chiedeva tre,
+             uscendo nei puntini adesso che questa richiesta e' la prima della coda (versione 33). */
+          chi: pf.e.id, cosa: 'Tetto del giorno: ' + costoOggi + ' € su ' + out.tettoOggi() + ' €',
           cliente: azienda.nome, ora: azienda.ora, tipo: 'tetto', stato: 'attesa', costo: 0, importo: imp,
           passi: [], nota: 'Il tetto d\'azienda è l\'unico limite che ferma: sopra di lui non parte nessun passo nuovo.',
           testo: 'Il passo ' + pf.p.n + ' di ' + pf.n + ' di ' + out.etichetta(pf.e) + ' («' + pf.p.nome + '») costa ' + String(pf.p.costo).replace('.', ',') + ' €, e il tetto del giorno è finito. Alzarlo di ' + imp + ' € solo per oggi fa ripartire le ' + out.fermePerTetto().length + ' esecuzioni ferme; domani il tetto torna a ' + out.tetti.azienda.giorno + ' €.',
@@ -1765,7 +1777,12 @@ window.DGT_DATI = (function () {
       fili: () => m.dipendenti.map(e => ({ e, ultimo: ultimo(e), nuovi: nonLetti(e) })).sort((a, b) => ((b.nuovi > 0) - (a.nuovi > 0)) || String((b.ultimo || {}).ora || '').localeCompare(String((a.ultimo || {}).ora || '')) || (a.e.id - b.e.id)),
       MODELLI,
       /* Il dossier del dipendente (versione 6): scritto a mano per Nora e il Social media manager a 11, generato per gli altri; una sola copia per dipendente, così le decisioni restano. */
-      dossierDi: e => { if (!e) return null; if (!dossier[e.id]) dossier[e.id] = (n < 40 && DOSSIER11[e.id]) ? DOSSIER11[e.id] : dossierGenerato(e); return dossier[e.id]; },
+      /* Versione 33: le regole generali del dossier sono **le stesse** di `m.regole`, non una copia. Fino alla 32 i
+         tre dossier scrivevano «Spese sopra 50 €: attiva: false» (era vero prima della versione 22, che ha acceso
+         g4) e la pagina Dipendente stampava «Spenta» sotto la stessa regola che Richieste stampava «Attiva» —
+         stessa regola, due pagine, due stati opposti. Adesso una riga d'origine «Regola generale» prende
+         `attiva` dalla regola d'azienda che porta il suo nome: le eccezioni restano del dossier. */
+      dossierDi: e => { if (!e) return null; if (!dossier[e.id]) dossier[e.id] = allineaPermessi((n < 40 && DOSSIER11[e.id]) ? DOSSIER11[e.id] : dossierGenerato(e)); return dossier[e.id]; },
       /* L'esecuzione corrente del dipendente (versione 8): scritta a mano a 11 per sei dipendenti, generata per gli altri; una sola copia per dipendente, così le azioni restano. */
       esecuzioneDi: e => { if (!e) return null; if (!esecuzioni[e.id]) esecuzioni[e.id] = (n < 40 && ESEC11[e.id]) ? ESEC11[e.id] : esecuzioneGenerata(e); return esecuzioni[e.id]; },
       /* La revisione di una richiesta di tipo `revisione`. */
@@ -1802,6 +1819,8 @@ window.DGT_DATI = (function () {
         return r;
       },
     };
+    /* Le regole generali di un dossier seguono `out.regole` (versione 33, vedi `dossierDi`). */
+    function allineaPermessi(d) { (d.permessi || []).forEach(p => { if (p.eccezione) return; const g = out.regole.find(x => x.nome === p.nome); if (g) p.attiva = g.attiva; }); return d; }
     function sommaBudget(per) { return m.dipendenti.reduce((t, e) => t + ((out.dossierDi(e).budget || {})[per] || 0), 0); }
     const dossier = {}, esecuzioni = {};
     out.ricalcola();

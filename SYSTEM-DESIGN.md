@@ -208,6 +208,9 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
 2. Il «adesso» è un luogo: barra «Oggi in azienda» in alto e prima riga di card esecuzione, «da approvare» in testa.
 3. Oltre sedici elementi ogni elenco ha una vista compatta a pillole (3 per riga) e il filtro predefinito è il dipartimento.
 4. Un solo accento: lime = attenzione del titolare (al lavoro, da approvare); rosa solo per errori e cali.
+   *(Aperta dalla versione 33, e aspetta il titolare: un limite sfondato non è né un errore né un calo, eppure è
+   rosa in quattro forme. Le due strade, misurate, stanno in `PROSSIMA-SESSIONE.md`. Quello che il lime non dice
+   più lo chiude invece la regola 48.)*
 5. Testi corti: titoli entro due righe a 24 px, ruoli in una riga a 13 px, pillole su una riga.
 6. Il pannello del titolare sono due tendine flottanti sopra tutto: «Da approvare» (pillola lime con campanella e
    numero; aperta mostra la richiesta corrente e la coda; estesa mostra la richiesta per intero con le azioni) e
@@ -267,7 +270,9 @@ Le schermate successive nascono solo dentro questa direzione, con queste regole:
     `transform`: così le tendine e le pillole fisse («da approvare», «Riepilogo») restano al bordo destro dello schermo
     e non scorrono con la pagina; i `100vh` delle tendine si dividono per `--z`.
 18. **Nessuna ripetizione dell'avatar dentro una card di un solo dipendente**: l'avatar sta nella striscia in alto; il
-    selettore di stato porta un chip («In corso», «Errore», l'ora), non l'avatar. La pila di avatar resta dove i
+    selettore di stato porta un chip («In corso», «Errore», «In coda»), non l'avatar. *(Dalla versione 33 il chip è
+    sempre una **parola di stato**: l'ora, che era il chip della card in coda, stava già nella riga sotto il titolo
+    — lo stesso numero due volte sulla stessa card. E accanto al chip non c'è nient'altro: regola 47.)* La pila di avatar resta dove i
     dipendenti sono più d'uno (obiettivi, dipartimenti), con il badge «+N» dopo la pila.
 19. **Il colore distingue i dipendenti** (2026-09-05, versione 10): ogni dipendente AI ha una tinta fra otto, sul disco
     piatto del suo avatar, assegnata alla creazione e cambiabile nell'editor. È l'unica eccezione alla regola del solo
@@ -856,6 +861,38 @@ sono dell'utente e sono ancora da prendere.**
     - **l'eccezione è di oggi, la promessa no.** Il titolare non cambia il tetto di ogni giorno per far ripartire
       il lavoro: firma un supplemento che scade, e quante volte è servito è la misura che dice se il tetto è
       tarato male.
+
+47. **Un testo che non ci sta non è un testo: è una promessa non mantenuta** (2026-09-11, versione 33). La riga di
+    stato delle card esecuzione lascia al testo accanto al chip **35,4 px su 172** (padding 22, chip 80,6, due
+    spazi da 10, chevron 14): «Passo 2 di 4» ne chiede 70,2 e a schermo si leggeva **«Pass…»** su ogni card, a
+    undici e a quaranta, da quando la card esiste. La risposta era **già scritta in questo documento** per le card
+    consegna della versione 19 — «lì ci sta il solo chip» — e applicata in un solo punto su sei. Adesso vale per
+    tutte: **la pillola porta lo stato e basta** (In pausa · In corso · Errore · In coda · Da approvare · Libero ·
+    In ritardo · Concluso · Da iniziare), e il dettaglio sta dove c'è posto per leggerlo — il passo nella pagina
+    Esecuzione e nei Costi, il motivo dell'errore nella pagina Esecuzione, l'ora nella riga sotto il titolo.
+    Tre cose che il righello ha deciso al posto delle opinioni:
+    - **accorciare non bastava.** «2 di 4» (33,1 px) sarebbe entrato per 2,3 px, ma a quaranta esiste «Passo 7 di
+      10» e «7 di 10» ne chiede 37,3: la forma corta muore alla taglia grande, cioè proprio dove serve. E «2/4»
+      sarebbe stata una **seconda forma** per un fatto che il prodotto scrive «passo N di M» in sette punti;
+    - **la specie tagliata non era una.** Contate: card al lavoro, in errore, in coda, obiettivo, «l'ultima volta»
+      e — trovata dalla prova, non dal censimento — la card della **richiesta**, dove «3 € · 3 passi · 10:12»
+      chiedeva 104 px in 88. Quella riga stampava anche l'**ora**, che la riga sotto il titolo dice già;
+    - **il taglio non è sempre un difetto.** Una riga d'elenco che finisce nei puntini sta in una colonna stretta e
+      la sua pagina la apre per intero: è disegno. Un titolo di card no. La prova distingue le due cose, come già
+      faceva per «coperto» e «tagliato».
+
+48. **Una forma che dice due fatti diversi nella stessa taglia è una forma sbagliata, anche quando i due fatti sono
+    entrambi veri** (2026-09-11, versione 33). Alla taglia grande la classe `lav` dipingeva di lime, nella home, le
+    righe di chi è **al lavoro**, e nella pagina Costi quelle di chi è **oltre il budget**: due pagine dello stesso
+    rail, la stessa tinta, due significati — e per giunta il lime è la firma del titolare (versione 22: «il lime
+    resta la sua firma, mai altro»), che su un budget sfondato non c'entra. Nei Costi l'oltre lo dice adesso la
+    **parola dentro il chip che c'era già** («84 € · oltre»: 69,8 px, zero tagli su dodici righe; due chip separati
+    ne avrebbero tagliate cinque), e il lime torna a dire una cosa sola.
+    Con lei cadono due bugie misurate dello stesso genere: la riga della home restava lime e diceva l'attività di
+    chi il tetto aveva fermato — **12 righe su 12 ferme**, mentre il primo numero della stessa pagina diceva «12 in
+    pausa» —; e il badge di un limite sfondato usava la classe `down`, che nei token si chiama letteralmente
+    «badge in calo», per una **salita**. La tinta non è cambiata (è una domanda aperta per il titolare, regola 4):
+    è cambiato il nome, e adesso cambiarla costa una riga sola invece di quattro.
 
 ## 11. Collegamenti
 
