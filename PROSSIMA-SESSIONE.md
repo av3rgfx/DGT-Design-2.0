@@ -169,6 +169,13 @@ quello che il consiglio afferma:
   (https://claude.ai/code/artifact/34192ba0-51da-4f02-9e64-3a6d698a44e9).
 - **Quello che aspetta l'utente**: **il colore dell'oltre**, più i cinque punti ciechi qui sopra e la deviazione su
   `attesa` della versione 32.
+- **La consegna allo sviluppo**: il titolare ha dichiarato il design completo e ha chiesto un pacchetto con cui
+  iniziare il prodotto in un **repository nuovo**, con qualunque agente di codice e senza file di istruzioni per
+  uno strumento in particolare. Sta in `consegna-sviluppo/`: `README.md` (il punto d'ingresso), il modello di
+  dominio estratto da `dati.js`, le 48 regole riscritte come regole di prodotto, il sistema di design, le
+  invarianti estratte dalle sei prove, le decisioni aperte, l'inventario file per file, le fixture JSON a undici e
+  a quaranta, il prompt di avvio ed `esporta.sh`, che assembla la cartella da copiare. La ragione del repository
+  nuovo, misurata: 275 MB di storia git e 7 792 righe di cronaca su 9 407 di documenti.
 
 ## Pronto per la prossima sessione
 
