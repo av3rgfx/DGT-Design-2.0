@@ -174,8 +174,10 @@ quello che il consiglio afferma:
   uno strumento in particolare. Sta in `consegna-sviluppo/`: `README.md` (il punto d'ingresso), il modello di
   dominio estratto da `dati.js`, le 48 regole riscritte come regole di prodotto, il sistema di design, le
   invarianti estratte dalle sei prove, le decisioni aperte, l'inventario file per file, le fixture JSON a undici e
-  a quaranta, il prompt di avvio ed `esporta.sh`, che assembla la cartella da copiare. La ragione del repository
-  nuovo, misurata: 275 MB di storia git e 7 792 righe di cronaca su 9 407 di documenti.
+  a quaranta, il prompt di avvio. La cartella è **autosufficiente**: contiene già le copie del sistema di design,
+  dei due riferimenti e di trenta catture, 15 MB in tutto, e si porta con un `cp -r`. `aggiorna-copie.sh` serve
+  solo a chi continua il design, per rinfrescare quelle copie quando una sorgente cambia. La ragione del
+  repository nuovo, misurata: 275 MB di storia git e 7 792 righe di cronaca su 9 407 di documenti.
 
 ## Pronto per la prossima sessione
 

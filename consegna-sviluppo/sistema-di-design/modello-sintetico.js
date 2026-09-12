@@ -1,0 +1,1844 @@
+/* =====================================================================
+   DGT — dati sintetici per la vista principale dell'azienda.
+   Un solo modello per le tre direzioni (A, B, C): stessa azienda, stessi
+   dipartimenti, stessi dipendenti, stesse esecuzioni. Nessun dato reale.
+   Uso: DGT_DATI.modello(11) oppure DGT_DATI.modello(40).
+   ===================================================================== */
+window.DGT_DATI = (function () {
+  const azienda = {
+    nome: 'Nova Studio',
+    titolo: 'NOVA STUDIO',            // titolo in maiuscolo: la O diventa il marchio lime
+    titolare: { nome: 'Marco Rossi', iniziali: 'MR' },
+    ora: '10:42',
+    data: '4 settembre',
+    dataLunga: 'giovedì 4 settembre 2026',
+    obiettivoMese: 'Consegnare <b>3 e-commerce</b> e <b>36 post</b> entro il 30 settembre, con <b>approvazione del titolare</b> su ogni uscita verso i clienti.',
+    scadenzaMese: '30 set',           // la scadenza dell'obiettivo del mese, sulla linea del tempo del Riepilogo (mobile, versione 12)
+  };
+
+  /* Le otto tinte dell'avatar (stesse chiavi di TINTE in avatar/avatar-orbe.js): il modello tiene solo il nome, i colori stanno nel sistema. */
+  const TINTE_ID = ['indaco', 'corallo', 'ambra', 'verdeacqua', 'prugna', 'petrolio', 'bordeaux', 'neutro'];
+
+  const dipartimenti = [
+    { id: 'svi', nome: 'Sviluppo',        breve: 'Sviluppo',  desc: 'Siti, e-commerce, automazioni', tinta: 'indaco' },
+    { id: 'mkt', nome: 'Marketing',       breve: 'Marketing', desc: 'Contenuti, social, SEO',         tinta: 'corallo' },
+    { id: 'ven', nome: 'Vendite',         breve: 'Vendite',   desc: 'Lead, proposte, follow-up',      tinta: 'ambra' },
+    { id: 'amm', nome: 'Amministrazione', breve: 'Amministr.', desc: 'Fatture, report, scadenze',     tinta: 'verdeacqua' },
+  ];
+
+  /* Stati possibili di un dipendente AI:
+     lavoro      = sta eseguendo adesso
+     attesa      = ha consegnato e aspetta l'approvazione del titolare
+     pianificato = partirà a un'ora precisa
+     errore      = l'ultima esecuzione è fallita e serve un intervento
+     libero      = disponibile, senza esecuzioni in corso */
+  const STATI = {
+    lavoro:      { nome: 'Al lavoro',    breve: 'Al lavoro' },
+    attesa:      { nome: 'In attesa di approvazione', breve: 'Da approvare' },
+    pianificato: { nome: 'Pianificato',  breve: 'Pianificato' },
+    errore:      { nome: 'Errore',       breve: 'Errore' },
+    libero:      { nome: 'Libero',       breve: 'Libero' },
+  };
+
+  /* Di base un dipendente NON ha un nome (2026-09-04): l'etichetta principale è il
+     ruolo e sotto il dipartimento. Il nome è facoltativo, lo dà il titolare alla
+     creazione o dopo (qui Nora, Kim e Rea). `seme` è facoltativo: il seme
+     dell'avatar, di default il ruolo (vedi avatar/avatar-dgt.js). */
+  const base = [
+    { id: 1,  ruolo: 'Sviluppatore full-stack', dip: 'svi', stato: 'lavoro',
+      att: { titolo: 'Checkout e-commerce', cliente: 'Bianchi & Co.', da: '09:40', passo: [3, 7], costo: 38, prossimo: 'Pagamento con carta' } },
+    { id: 2,  ruolo: 'Tester QA',                dip: 'svi', stato: 'pianificato',
+      att: { titolo: 'Test di regressione', cliente: 'Zenith', quando: '15:00', costo: 0 } },
+    { id: 3,  nome: 'Kim',  ruolo: 'DevOps',                   dip: 'svi', stato: 'errore',
+      att: { titolo: 'Deploy in staging', cliente: 'Zenith', da: '08:55', errore: 'Chiavi di accesso scadute', costo: 4 } },
+    { id: 4,  nome: 'Nora', ruolo: 'Copywriter',               dip: 'mkt', stato: 'lavoro',
+      att: { titolo: 'Post LinkedIn 5 di 12', cliente: 'Rossi Srl', da: '10:20', passo: [2, 4], costo: 12, prossimo: 'Bozza e immagine' } },
+    { id: 5,  ruolo: 'Social media manager',     dip: 'mkt', stato: 'attesa',
+      att: { titolo: 'Piano editoriale ottobre', cliente: 'Madira Ink', da: '09:06', fine: '09:48', costo: 9 } },
+    { id: 6,  ruolo: 'Specialista SEO',          dip: 'mkt', stato: 'libero',
+      att: { titolo: 'Audit SEO', cliente: 'Metamorfosi', fine: 'ieri 18:10', costo: 0 } },
+    { id: 7,  ruolo: 'Ricerca lead',             dip: 'ven', stato: 'lavoro',
+      att: { titolo: '200 lead e-commerce in Lombardia', cliente: 'Nova Studio', da: '08:30', passo: [5, 6], costo: 61, prossimo: 'Verifica email' } },
+    { id: 8,  ruolo: 'Proposte commerciali',     dip: 'ven', stato: 'libero',
+      att: { titolo: 'Proposta 20.000 €', cliente: 'Metamorfosi', fine: 'ieri 17:30', costo: 0 } },
+    { id: 9,  ruolo: 'Follow-up clienti',        dip: 'ven', stato: 'pianificato',
+      att: { titolo: 'Follow-up settimanale', cliente: '14 clienti', quando: '17:00', costo: 0 } },
+    { id: 10, nome: 'Rea',  ruolo: 'Fatturazione',             dip: 'amm', stato: 'libero',
+      att: { titolo: 'Fatture di agosto', cliente: 'Nova Studio', fine: 'ieri 16:00', costo: 0 } },
+    { id: 11, ruolo: 'Report al titolare',       dip: 'amm', stato: 'pianificato',
+      att: { titolo: 'Report giornaliero', cliente: 'Nova Studio', quando: '18:00', costo: 0 } },
+  ];
+
+  /* Approvazioni in sospeso: sono elementi, non stati (Nora continua a lavorare
+     mentre il post 4 aspetta il titolare). */
+  const approvazioni11 = [
+    { id: 'ap1', chi: 4, cosa: 'Post LinkedIn 4 di 12', cliente: 'Rossi Srl', ora: '10:12', tipo: 'post' },
+    { id: 'ap2', chi: 5, cosa: 'Piano editoriale ottobre', cliente: 'Madira Ink', ora: '09:48', tipo: 'documento' },
+  ];
+
+  /* Richieste al titolare: le due in attesa sono le stesse di approvazioni11.
+     tipo: post | documento | lista | proposta. stato: attesa | approvata | modifiche | rifiutata. */
+  const richieste11 = [
+    { id: 'ap1', chi: 4, cosa: 'Post LinkedIn 4 di 12', cliente: 'Rossi Srl', ora: '10:12', tipo: 'post', stato: 'attesa', costo: 3,
+      passi: ['Brief letto', 'Bozza', 'Revisione del tono', 'Immagine'],
+      nota: 'Quarto post della serie sul checkout: tono informale come nel brief, 800 battute, una domanda in chiusura. L\'immagine è la mock-up del carrello approvata la settimana scorsa.',
+      testo: 'Il carrello abbandonato non è un problema di prezzo. Nel 70% dei casi è un problema di attrito: un campo in più, una spedizione che compare solo alla fine, un pagamento che chiede di registrarsi.\n\nPer un nostro cliente abbiamo tolto tre passaggi dal checkout. Risultato in trenta giorni: +18% di ordini completati, stesso traffico.\n\nQuanti passaggi ha oggi il vostro checkout?',
+      allegato: 'Immagine: mock-up del carrello (1200×1200)' },
+    { id: 'ap2', chi: 5, cosa: 'Piano editoriale ottobre', cliente: 'Madira Ink', ora: '09:48', tipo: 'documento', stato: 'attesa', costo: 9,
+      passi: ['Analisi di settembre', 'Temi', 'Calendario', 'Bozze dei titoli'],
+      nota: 'Dodici post, quattro reel e due newsletter, sui tre temi che a settembre hanno funzionato meglio (dietro le quinte, casi cliente, consigli pratici). Le date evitano le festività e il lancio del 14.',
+      testo: 'Settimana 1 · Dietro le quinte: come nasce un\'etichetta (post, reel)\nSettimana 2 · Caso cliente: Lumen Caffè, il rebranding in 20 giorni (post ×2, newsletter)\nSettimana 3 · Tre errori nei file di stampa (post ×3, reel)\nSettimana 4 · Lancio catalogo autunno (post ×4, reel ×2, newsletter)',
+      allegato: 'Documento: 4 pagine' },
+    { id: 'r3', chi: 7, cosa: 'Lista di 120 lead verificati', cliente: 'Nova Studio', ora: '09:20', tipo: 'lista', stato: 'approvata', decisa: '09:35', costo: 14,
+      passi: ['Ricerca', 'Verifica email', 'Deduplica'], nota: 'Prima metà della lista: 120 e-commerce lombardi con e-mail verificata.', testo: '120 righe · azienda, sito, e-mail, telefono, fatturato stimato', allegato: 'Foglio: 120 righe' },
+    { id: 'r4', chi: 8, cosa: 'Proposta 20.000 € per Metamorfosi', cliente: 'Metamorfosi', ora: 'ieri 17:30', tipo: 'proposta', stato: 'approvata', decisa: 'ieri 18:05', costo: 11,
+      passi: ['Brief', 'Stima', 'Documento'], nota: 'Sito vetrina + e-commerce, tre mesi, tre rate.', testo: 'Sito vetrina, e-commerce con 80 prodotti, formazione. 20.000 € in tre rate.', allegato: 'Documento: 6 pagine' },
+    { id: 'r5', chi: 1, cosa: 'Struttura delle pagine e-commerce', cliente: 'Bianchi & Co.', ora: 'ieri 16:10', tipo: 'documento', stato: 'approvata', decisa: 'ieri 16:40', costo: 6,
+      passi: ['Catalogo', 'Alberatura', 'Wireframe'], nota: 'Alberatura a tre livelli, 14 template.', testo: 'Home, categoria, prodotto, carrello, checkout in 3 passi, area riservata.', allegato: 'Documento: 3 pagine' },
+    { id: 'r6', chi: 6, cosa: 'Audit SEO', cliente: 'Metamorfosi', ora: 'ieri 18:10', tipo: 'documento', stato: 'modifiche', decisa: 'ieri 18:30', costo: 8,
+      passi: ['Scansione', 'Analisi', 'Report'], nota: 'Il titolare ha chiesto le priorità per pagina.', testo: '38 pagine analizzate, 12 con problemi di titolo, 5 senza descrizione.', allegato: 'Documento: 9 pagine', commento: 'Aggiungi le priorità per pagina e una stima dell\'effort.' },
+    { id: 'r7', chi: 5, cosa: 'Bozza newsletter di settembre', cliente: 'Madira Ink', ora: 'ieri 15:20', tipo: 'post', stato: 'rifiutata', decisa: 'ieri 15:50', costo: 4,
+      passi: ['Brief', 'Bozza'], nota: 'Prima bozza.', testo: 'Settembre è il mese dei nuovi inizi…', allegato: 'Testo: 1.200 battute', commento: 'Fuori tono: troppo generica, ripartire dai casi cliente.' },
+    // revisioni di performance in sospeso (versione 6): sono richieste al titolare come le altre; il dossier sta in DOSSIER11[chi].revisioni
+    { id: 'rv1', chi: 4, cosa: 'Revisione: soul prompt v7 → v8', cliente: 'Nova Studio', ora: '10:30', tipo: 'revisione', stato: 'attesa', costo: 2, revisione: 'rv1',
+      passi: ['Analisi di 30 giorni', 'Prova sui 12 post di agosto', 'Proposta'],
+      nota: 'Il sistema propone di cambiare il soul prompt di Nora: limite di 800 battute, una domanda in chiusura, niente numeri fuori dal brief. Evidenze e confronto delle due versioni nel dossier.',
+      testo: 'Corretti dal titolare 12% (era 6%), costo per esito utile 1,9 € (era 1,5 €). Con la v8 in prova: 11 post su 12 entro le 800 battute, corretti stimati 5%.',
+      allegato: 'Dossier: v7 e v8 a confronto' },
+    { id: 'rv2', chi: 5, cosa: 'Revisione: modello Standard → Esperto', cliente: 'Nova Studio', ora: '10:35', tipo: 'revisione', stato: 'attesa', costo: 2, revisione: 'rv2',
+      passi: ['Analisi di 30 giorni', 'Confronto con la prova di luglio', 'Proposta'],
+      nota: 'Il sistema propone di assegnare il modello Esperto al Social media manager per piani editoriali e reel: le consegne lunghe vengono respinte con Standard.',
+      testo: 'Respinte 22% (era 7%), tutte con più di 5 passi e con Standard. Le 4 consegne lunghe fatte con Esperto a luglio sono state approvate al primo colpo.',
+      allegato: 'Dossier: Standard ed Esperto a confronto' },
+    // storico: oggi presto, questa settimana, prima
+    { id: 'r8',  chi: 11, cosa: 'Report giornaliero di ieri', cliente: 'Nova Studio', ora: '08:15', tipo: 'documento', stato: 'approvata', decisa: '08:15', deciso: { tipo: 'regola', id: 'g2' }, costo: 1, passi: ['Raccolta', 'Report'], nota: 'Approvato dalla regola «Report interni: automatica».', testo: 'Ieri: 6 esecuzioni, 4 consegne, 131 € di spesa.', allegato: 'Documento: 1 pagina' },
+    { id: 'r9',  chi: 4, cosa: 'Post LinkedIn 3 di 12', cliente: 'Rossi Srl', ora: 'ieri 10:30', tipo: 'post', stato: 'approvata', decisa: 'ieri 11:02', costo: 3, passi: ['Brief letto', 'Bozza', 'Immagine'], nota: 'Terzo post della serie.', testo: 'Tre passaggi in meno nel checkout…', allegato: 'Immagine 1200×1200' },
+    { id: 'r10', chi: 1, cosa: 'Preventivo hosting e dominio', cliente: 'Bianchi & Co.', ora: 'ieri 12:15', tipo: 'proposta', stato: 'approvata', decisa: 'ieri 16:40', costo: 2, passi: ['Confronto fornitori', 'Documento'], nota: 'Due opzioni, consigliata la seconda.', testo: 'Opzione A 38 €/mese · Opzione B 62 €/mese con backup.', allegato: 'Documento: 2 pagine' },
+    { id: 'r11', chi: 7, cosa: 'Lista di 80 lead ristorazione', cliente: 'Nova Studio', ora: 'mar 2 set', tipo: 'lista', stato: 'approvata', decisa: 'mar 2 set 09:50', costo: 12, passi: ['Ricerca', 'Verifica'], nota: 'Ristoranti con sito ma senza prenotazione online.', testo: '80 righe', allegato: 'Foglio: 80 righe' },
+    { id: 'r12', chi: 4, cosa: 'Post LinkedIn 2 di 12', cliente: 'Rossi Srl', ora: 'lun 1 set', tipo: 'post', stato: 'modifiche', decisa: 'lun 1 set 14:20', costo: 3, passi: ['Brief letto', 'Bozza'], nota: 'Secondo post.', testo: 'Il modulo di registrazione…', allegato: 'Immagine 1200×1200', commento: 'Troppo lungo: massimo 800 battute.' },
+    { id: 'r13', chi: 5, cosa: 'Reel dietro le quinte', cliente: 'Madira Ink', ora: 'lun 1 set', tipo: 'post', stato: 'rifiutata', decisa: 'lun 1 set 17:05', costo: 6, passi: ['Sceneggiatura', 'Montaggio'], nota: 'Primo reel.', testo: 'Sceneggiatura 30 s', allegato: 'Video: 30 s', commento: 'Il cliente non vuole mostrare il laboratorio.' },
+    { id: 'r14', chi: 8, cosa: 'Proposta sito vetrina', cliente: 'Summit Marketing', ora: 'mar 2 set', tipo: 'proposta', stato: 'approvata', decisa: 'mar 2 set 18:10', costo: 9, passi: ['Brief', 'Stima', 'Documento'], nota: 'Sito vetrina in 6 settimane.', testo: '6.500 € in due rate.', allegato: 'Documento: 5 pagine' },
+    { id: 'r15', chi: 6, cosa: 'Audit SEO', cliente: 'Lumen Caffè', ora: '28 ago', tipo: 'documento', stato: 'approvata', decisa: '28 ago 12:30', costo: 8, passi: ['Scansione', 'Analisi', 'Report'], nota: '22 pagine analizzate.', testo: '22 pagine, 4 con problemi.', allegato: 'Documento: 6 pagine' },
+    { id: 'r16', chi: 10, cosa: 'Fatture di luglio', cliente: 'Nova Studio', ora: '1 ago', tipo: 'documento', stato: 'approvata', decisa: '1 ago 09:00', deciso: { tipo: 'routine', id: 'rt3' }, costo: 2, passi: ['Raccolta', 'Emissione'], nota: 'Uscite dalla routine «Fatture ricorrenti», che il titolare ha confermato il 1º giugno.', testo: '9 fatture, 14.200 €.', allegato: 'Foglio: 9 righe' },
+    { id: 'r17', chi: 9, cosa: 'Follow-up settimanale', cliente: 'Nova Studio', ora: '29 ago', tipo: 'lista', stato: 'approvata', decisa: '29 ago 17:00', deciso: { tipo: 'routine', id: 'rt2' }, costo: 3, passi: ['Bozze', 'Invio'], nota: 'Uscito dalla routine «Follow-up settimanale ai clienti», che il titolare ha confermato il 1º agosto.', testo: '14 e-mail di follow-up.', allegato: 'Testo: 14 e-mail' },
+    { id: 'r18', chi: 4, cosa: 'Post LinkedIn 1 di 12', cliente: 'Rossi Srl', ora: '26 ago', tipo: 'post', stato: 'approvata', decisa: '26 ago 10:40', costo: 3, passi: ['Brief letto', 'Bozza', 'Immagine'], nota: 'Primo post della serie.', testo: 'Perché il vostro e-commerce perde clienti…', allegato: 'Immagine 1200×1200' },
+  ];
+  // giorno (0 = oggi) e minuti del giorno per ordinare e raggruppare
+  const GIORNI11 = { 'ieri': 1, 'mar 2 set': 2, 'lun 1 set': 3, '29 ago': 6, '28 ago': 7, '26 ago': 9, '1 ago': 34 };
+  richieste11.forEach(r => {
+    const m = r.ora.match(/(\d\d):(\d\d)/);
+    r.min = m ? (+m[1]) * 60 + (+m[2]) : 12 * 60;
+    const chiave = Object.keys(GIORNI11).find(k => r.ora.startsWith(k));
+    r.giorno = chiave ? GIORNI11[chiave] : 0;
+  });
+
+  /* ---- Le routine (versione 21, 2026-09-08) ----
+     Una routine e' un workflow con un innesco in testa (decisione 49): il lavoro **dichiarato**, contro il workflow
+     che e' il lavoro **avvenuto**. Non e' un concetto nuovo: il modello le aveva gia', senza il nome e senza un
+     record. L'analisi dell'8 settembre ne aveva censite «otto voci»; contandole, le otto voci sono **tre routine
+     viste da otto lati** piu' un lavoro una tantum che routine non e':
+
+       | routine                        | dip. | ogni quanto        | da quali lati si vedeva                  |
+       | Report giornaliero al titolare | amm  | ogni giorno 18:00  | obiettivo o11 + pianificato 11 + r8      |
+       | Follow-up settimanale          | ven  | ogni venerdi 17:00 | obiettivo o9  + pianificato 9  + r17     |
+       | Fatture ricorrenti             | amm  | ogni mese, il 1º   | **solo** r16                             |
+       | (Test di regressione, dip. 2)  | svi  | —                  | il diario dice che MR l'ha pianificato   |
+       |                                |      |                    | ieri alle 18:20 per oggi: una tantum     |
+
+     **Il legame che non esisteva.** `r16` e `r17` dicevano di essere state decise dalle regole «Fatture ricorrenti»
+     e «Follow-up», che in `regole` non ci sono (le due regole fantasma). Erano stringhe libere che non risolvevano
+     a niente, e nessuna delle 385 prove leggeva quel campo. Adesso l'autore di una decisione presa senza il
+     titolare e' un **riferimento** — `deciso: { tipo: 'regola' | 'routine', id }` — e una prova verifica che
+     risolva. Il campo `regola` resta per compatibilita' ed e' derivato dal riferimento.
+
+     **Che cosa dicono i numeri, e non e' una bella notizia**: `fatte` non e' inventato, e' quante decisioni la
+     routine ha davvero preso nel modello (`decise.length`). Fa **1** per tutte e tre. Il rodaggio della decisione
+     53 ne vuole **3**, e la prova della decisione 54 non e' mai stata fatta da nessuna: eppure tutte e tre girano
+     gia' con la clausola **libera** («fai pure»). Nel modello di oggi il «fai pure» non se l'e' guadagnato nessuno.
+
+     **E i nodi?** Delle tre, solo «Fatture ricorrenti» (dip. 10) ha un workflow: `workflowDi` nasce da
+     un'esecuzione con almeno due passi conclusi, e i dipendenti 9 e 11 sono `pianificato`, zero passi fatti. La
+     forma dichiarata quindi non viene dall'esecuzione ma dai `passi` della richiesta che la routine ha deciso
+     l'ultima volta: e' la stessa cosa vista dall'altro tempo, e non inventa un dato.
+
+     clausola: avvio = chiede prima di partire · uscita = chiede prima di consegnare · libera = fai pure
+     origine:  dichiarata = scritta dal titolare · derivata = promossa da un fatto gia' accaduto
+     innesco:  ora | evento | soglia | esterno (l'esterno vuole il rodaggio, decisione 53) */
+  const routine11 = [
+    { id: 'rt1', nome: 'Report giornaliero al titolare', chi: 11, innesco: { tipo: 'ora', ogni: 'giorno', ora: '18:00', testo: 'Ogni giorno alle 18:00' },
+      clausola: 'libera', origine: 'derivata', autore: 'titolare', dal: '1 lug', obiettivo: 'o11', regola: 'g2', decise: ['r8'],
+      passi: ['Raccolta', 'Report'], limiti: { giorno: 3, settimana: 15, mese: 60 }, stato: 'attiva' },
+    { id: 'rt2', nome: 'Follow-up settimanale ai clienti', chi: 9, innesco: { tipo: 'ora', ogni: 'venerdì', ora: '17:00', testo: 'Ogni venerdì alle 17:00' },
+      clausola: 'libera', origine: 'derivata', autore: 'titolare', dal: '1 ago', obiettivo: 'o9', regola: null, decise: ['r17'],
+      passi: ['Bozze', 'Invio'], limiti: { giorno: 5, settimana: 5, mese: 20 }, stato: 'attiva' },
+    { id: 'rt3', nome: 'Fatture ricorrenti', chi: 10, innesco: { tipo: 'ora', ogni: 'mese', ora: '09:00', testo: 'Ogni mese, il 1º alle 09:00' },
+      clausola: 'libera', origine: 'derivata', autore: 'titolare', dal: '1 giu', obiettivo: null, regola: null, decise: ['r16'],
+      passi: ['Raccolta', 'Emissione'], limiti: { giorno: 5, settimana: 5, mese: 5 }, stato: 'attiva' },
+  ];
+
+  /* Obiettivi assegnati ai dipartimenti. stato: corso | ritardo | concluso | nuovo */
+  const obiettivi11 = [
+    { id: 'o1', dip: 'svi', titolo: 'E-commerce Bianchi & Co. online', cliente: 'Bianchi & Co.', scadenza: '30 set', avanz: 45, consegne: [3, 7], chi: [1, 2, 3], stato: 'corso', prossima: 'Checkout · 8 set' },
+    { id: 'o2', dip: 'svi', titolo: 'Area riservata Zenith', cliente: 'Zenith', scadenza: '15 set', avanz: 70, consegne: [5, 7], chi: [1, 2], stato: 'ritardo', prossima: 'Deploy in staging · fallito' },
+    { id: 'o3', dip: 'svi', titolo: 'Automazione ordini Madira Ink', cliente: 'Madira Ink', scadenza: '15 ott', avanz: 10, consegne: [0, 5], chi: [1], stato: 'nuovo', prossima: 'Analisi del flusso · 12 set' },
+    { id: 'o4', dip: 'mkt', titolo: '12 post LinkedIn per Rossi Srl', cliente: 'Rossi Srl', scadenza: '30 set', avanz: 33, consegne: [4, 12], chi: [4], stato: 'corso', prossima: 'Post 5 · oggi' },
+    { id: 'o5', dip: 'mkt', titolo: 'Piano e contenuti di ottobre', cliente: 'Madira Ink', scadenza: '25 set', avanz: 20, consegne: [1, 5], chi: [5, 6], stato: 'corso', prossima: 'Piano editoriale · da approvare' },
+    { id: 'o6', dip: 'mkt', titolo: 'Audit e ottimizzazione SEO', cliente: 'Metamorfosi', scadenza: '20 set', avanz: 60, consegne: [3, 5], chi: [6], stato: 'ritardo', prossima: 'Audit con priorità · modifiche chieste' },
+    { id: 'o7', dip: 'ven', titolo: '200 lead e-commerce in Lombardia', cliente: 'Nova Studio', scadenza: '10 set', avanz: 60, consegne: [1, 2], chi: [7], stato: 'corso', prossima: 'Seconda metà della lista · oggi' },
+    { id: 'o8', dip: 'ven', titolo: 'Tre proposte a nuovi clienti', cliente: 'Nova Studio', scadenza: '30 set', avanz: 66, consegne: [2, 3], chi: [8], stato: 'corso', prossima: 'Proposta Lumen Caffè · 9 set' },
+    { id: 'o9', dip: 'ven', titolo: 'Follow-up settimanale ai clienti', cliente: 'Nova Studio', scadenza: 'ogni venerdì', avanz: 100, consegne: [4, 4], chi: [9], stato: 'concluso', prossima: 'Prossimo giro · domani 17:00' },
+    { id: 'o10', dip: 'amm', titolo: 'Chiusura contabile di agosto', cliente: 'Nova Studio', scadenza: '10 set', avanz: 80, consegne: [4, 5], chi: [10], stato: 'corso', prossima: 'Riconciliazione banca · 8 set' },
+    { id: 'o11', dip: 'amm', titolo: 'Report giornaliero al titolare', cliente: 'Nova Studio', scadenza: 'ogni giorno', avanz: 100, consegne: [4, 4], chi: [11], stato: 'concluso', prossima: 'Stasera alle 18:00' },
+  ];
+
+  /* Diario del giorno (in ordine di tempo). */
+  const diario11 = [
+    { ora: '08:30', chi: 7, testo: 'ha iniziato «200 lead e-commerce in Lombardia»', tipo: 'inizio' },
+    { ora: '08:55', chi: 3, testo: 'deploy in staging fallito: chiavi di accesso scadute', tipo: 'errore' },
+    { ora: '09:06', chi: 5, testo: 'ha iniziato «Piano editoriale ottobre»', tipo: 'inizio' },
+    { ora: '09:40', chi: 1, testo: 'ha iniziato «Checkout e-commerce» per Bianchi & Co.', tipo: 'inizio' },
+    { ora: '09:48', chi: 5, testo: 'ha consegnato il piano editoriale e chiede approvazione', tipo: 'approvazione' },
+    { ora: '10:12', chi: 4, testo: 'ha consegnato il post 4 di 12 e chiede approvazione', tipo: 'approvazione' },
+    { ora: '10:20', chi: 4, testo: 'ha iniziato il post 5 di 12', tipo: 'inizio' },
+    { ora: '10:31', chi: 1, testo: 'passo 3 di 7: carrello collegato al magazzino', tipo: 'passo' },
+  ];
+
+  /* Eventi della barra agenda / timeline (oggi). */
+  const agenda11 = [
+    { ora: '09:06', fine: '09:48', chi: [5], durata: '42 min', stato: 'fatto' },
+    { ora: '09:34', fine: '10:12', chi: [4], durata: '38 min', stato: 'fatto' },
+    { ora: 'adesso', chi: [1, 4, 7], stato: 'in corso' },
+    { ora: '15:00', chi: [2], stato: 'pianificato' },
+    { ora: '17:00', chi: [9], stato: 'pianificato' },
+    { ora: '18:00', chi: [11], stato: 'pianificato' },
+  ];
+
+  /* ---- Il dossier del dipendente (versione 6, 2026-09-04): identità e mansione,
+     soul prompt con le versioni, modello e criterio di scelta, strumenti e
+     connessioni, budget e permessi, colloquio (eval), metriche a 30 giorni
+     confrontate con i 30 precedenti, revisioni di performance.
+     Le richieste decise dal titolare (`richieste`, campo `chi`) restano la fonte
+     di «corretto da un umano» e «proposte respinte»: i numeri qui sotto sono i
+     totali dei 30 giorni, le ultime righe si leggono nella pagina.
+     Una revisione in sospeso è anche una richiesta al titolare (tipo
+     `revisione`, campo `revisione` = id della revisione nel dossier). ---- */
+  const MODELLI = {
+    rapido:   { id: 'rapido',   nome: 'Rapido',   desc: 'Piccolo e veloce: verifiche, riassunti, lettura del brief', costo: '0,1 € per esecuzione', icona: 'i-bolt' },
+    standard: { id: 'standard', nome: 'Standard', desc: 'Il modello di base per le consegne di ogni giorno', costo: '1,5 € per esecuzione', icona: 'i-bot' },
+    esperto:  { id: 'esperto',  nome: 'Esperto',  desc: 'Il più capace: consegne lunghe, molti passi, uscite verso i clienti', costo: '7 € per esecuzione', icona: 'i-star' },
+  };
+  const P_NORA = {
+    p1: 'Sei il copywriter di Nova Studio. Scrivi per i clienti dell\'agenzia: post LinkedIn, newsletter e testi per il sito.',
+    p2: 'Tono diretto e concreto, seconda persona plurale, niente gergo. Una sola idea per post.',
+    p2b: 'Tono diretto e concreto, seconda persona plurale, niente gergo. Una sola idea per post, al massimo 800 battute.',
+    p3: 'Ogni post parte da un fatto del cliente: un risultato, un numero, un caso. Chiudi con un invito a rispondere.',
+    p3b: 'Ogni post parte da un fatto del cliente: un risultato, un numero, un caso. Chiudi con una domanda a chi legge.',
+    p3v6: 'Chiudi ogni post con un invito a rispondere.',
+    p4: 'Prima di scrivere leggi il brief e gli ultimi tre post approvati per lo stesso cliente.',
+    p5: 'Consegna una bozza con l\'immagine proposta e chiedi l\'approvazione del titolare prima di ogni uscita.',
+    p6: 'Usa solo numeri e percentuali che stanno nel brief o nei documenti del cliente. Se mancano, chiedili invece di stimarli.',
+    v1t: 'Tono professionale e cordiale, in terza persona.',
+    v3t: 'Tono cordiale, seconda persona plurale.',
+  };
+  const DOSSIER11 = {
+    4: {
+      mansione: 'Scrive post LinkedIn, newsletter e testi per il sito dei clienti dell\'agenzia, sempre da un brief e con l\'approvazione del titolare prima di ogni uscita.',
+      dal: '12 giu',
+      prompt: {
+        corrente: 7,
+        versioni: [
+          { v: 8, data: 'oggi 10:30', chi: 'Proposta del sistema', proposta: true, nota: 'Limite di 800 battute, domanda in chiusura, niente numeri fuori dal brief', testo: [P_NORA.p1, P_NORA.p2b, P_NORA.p3b, P_NORA.p4, P_NORA.p5, P_NORA.p6], numeri: { task: 12, corretti: 8, respinte: 0, costo: 1.5, prova: true } },
+          { v: 7, data: '12 ago', chi: 'MR', nota: 'Ogni post parte da un fatto del cliente', testo: [P_NORA.p1, P_NORA.p2, P_NORA.p3, P_NORA.p4, P_NORA.p5], numeri: { task: 41, corretti: 12, respinte: 7, costo: 1.9 } },
+          { v: 6, data: '2 lug', chi: 'MR', nota: 'Prima si leggono gli ultimi tre post approvati', testo: [P_NORA.p1, P_NORA.p2, P_NORA.p3v6, P_NORA.p4, P_NORA.p5], numeri: { task: 36, corretti: 6, respinte: 8, costo: 1.5 } },
+          { v: 5, data: '28 giu', chi: 'MR', nota: 'Una sola idea per post', testo: [P_NORA.p1, P_NORA.p2, P_NORA.p3v6, P_NORA.p5], numeri: { task: 9, corretti: 22, respinte: 11, costo: 2.1 } },
+          { v: 4, data: '24 giu', chi: 'MR', nota: 'Niente gergo', testo: [P_NORA.p1, 'Tono diretto e concreto, seconda persona plurale, niente gergo.', P_NORA.p3v6, P_NORA.p5], numeri: { task: 12, corretti: 25, respinte: 17, costo: 2.4 } },
+          { v: 3, data: '18 giu', chi: 'MR', nota: 'Seconda persona plurale', testo: [P_NORA.p1, P_NORA.v3t, P_NORA.p3v6, P_NORA.p5], numeri: { task: 8, corretti: 38, respinte: 25, costo: 2.8 } },
+          { v: 2, data: '14 giu', chi: 'MR', nota: 'Aggiunto l\'invito a rispondere', testo: [P_NORA.p1, P_NORA.v1t, P_NORA.p3v6, P_NORA.p5], numeri: { task: 6, corretti: 33, respinte: 33, costo: 3.0 } },
+          { v: 1, data: '12 giu', chi: 'MR', nota: 'Creazione', testo: [P_NORA.p1, P_NORA.v1t, P_NORA.p5], numeri: { task: 4, corretti: 50, respinte: 25, costo: 3.2 } },
+        ],
+      },
+      modello: {
+        assegnato: 'standard',
+        regola: 'Di base <b>Standard</b>. <b>Esperto</b> quando la consegna esce verso il cliente e ha più di 6 passi. <b>Rapido</b> per verifiche, riassunti e la lettura del brief.',
+        automatica: true,
+        uso: { rapido: { esecuzioni: 9, costo: 3 }, standard: { esecuzioni: 28, costo: 41 }, esperto: { esecuzioni: 4, costo: 28 } },
+      },
+      strumenti: [
+        { id: 'web', nome: 'Ricerca web', desc: 'Fonti e riferimenti per i post', icona: 'i-search', attivo: true, ultimo: '10:31' },
+        { id: 'img', nome: 'Immagini', desc: 'Genera e adatta le immagini proposte', icona: 'i-grid', attivo: true, ultimo: '10:12' },
+        { id: 'arc', nome: 'Archivio del cliente', desc: 'Brief, post approvati, tono di voce', icona: 'i-doc', attivo: true, ultimo: '09:58' },
+        { id: 'cal', nome: 'Calendario editoriale', desc: 'Date e serie in corso', icona: 'i-cal', attivo: true, ultimo: 'ieri' },
+        { id: 'inv', nome: 'Pubblicazione diretta', desc: 'Pubblica senza passare dal titolare', icona: 'i-send', attivo: false, ultimo: 'mai' },
+      ],
+      connessioni: [
+        { nome: 'LinkedIn · Rossi Srl', desc: 'Solo bozze: pubblica il titolare', stato: 'attiva', ultimo: '10:12' },
+        { nome: 'Drive di Nova Studio', desc: 'Brief e immagini dei clienti', stato: 'attiva', ultimo: '09:40' },
+        { nome: 'Analytics · Rossi Srl', desc: 'Risultati dei post pubblicati', stato: 'scaduta', ultimo: '30 ago' },
+      ],
+      budget: { mese: 120, speso: 72, giorno: 10, oggi: 12 },
+      permessi: [
+        { nome: 'Uscite verso i clienti', modo: 'Sempre da approvare', origine: 'Regola generale', attiva: true },
+        { nome: 'Testi per il sito di Nova Studio', modo: 'Automatica sotto 5 €', origine: 'Eccezione di Nora', attiva: true, eccezione: true },
+        { nome: 'Spese sopra 50 €', modo: 'Sempre da approvare', origine: 'Regola generale', attiva: false },
+        { nome: 'Strumenti e connessioni', modo: 'Solo quelli attivi', origine: 'Eccezione di Nora', attiva: true, eccezione: true },
+      ],
+      colloquio: {
+        data: '12 ago', versione: 7, modello: 'standard', punteggio: 91, soglia: 85, costo: 4, durata: '18 min', esito: 'superato',
+        casi: [
+          { nome: 'Post da un brief di tre righe', atteso: '800 battute, una sola idea, invito finale', esito: 'superato', punteggio: 95 },
+          { nome: 'Brief con i dati mancanti', atteso: 'Chiede i numeri, non li inventa', esito: 'superato', punteggio: 90 },
+          { nome: 'Cliente con tono ironico', atteso: 'Adatta il registro senza gergo', esito: 'superato', punteggio: 88 },
+          { nome: 'Newsletter in quattro sezioni', atteso: 'Struttura chiara, oggetto sotto i 50 caratteri', esito: 'superato', punteggio: 94 },
+          { nome: 'Post con un numero da verificare', atteso: 'Cita la fonte del brief', esito: 'superato', punteggio: 86 },
+          { nome: 'Richiesta fuori mansione (un preventivo)', atteso: 'Rimanda al dipendente giusto', esito: 'superato', punteggio: 100 },
+          { nome: 'Serie di tre post coerenti', atteso: 'Stessa voce, nessuna ripetizione', esito: 'superato', punteggio: 92 },
+          { nome: 'Testo per il sito, sezione servizi', atteso: '60–90 parole per servizio', esito: 'superato', punteggio: 96 },
+          { nome: 'Post con un termine tecnico', atteso: 'Lo spiega in una riga', esito: 'superato', punteggio: 90 },
+          { nome: 'Brief in inglese', atteso: 'Consegna in italiano se non è chiesto altro', esito: 'superato', punteggio: 100 },
+          { nome: 'Brief che chiede più di 800 battute', atteso: 'Chiede quale vincolo prevale', esito: 'parziale', punteggio: 72 },
+          { nome: 'Immagine da proporre', atteso: 'La descrive in una riga', esito: 'superato', punteggio: 93 },
+        ],
+        storico: [
+          { data: '12 ago', versione: 7, modello: 'standard', punteggio: 91, esito: 'superato' },
+          { data: '2 lug', versione: 6, modello: 'standard', punteggio: 89, esito: 'superato' },
+          { data: '28 giu', versione: 5, modello: 'rapido', punteggio: 84, esito: 'non superato' },
+          { data: '12 giu', versione: 1, modello: 'rapido', punteggio: 86, esito: 'superato' },
+        ],
+      },
+      metriche: {
+        ora:   { task: 41, approvate: 33, modifiche: 5, rifiutate: 3, spesa: 72, costo: 1.9, corretti: 12, respinte: 7, tempo: 24 },
+        prima: { task: 36, approvate: 31, modifiche: 2, rifiutate: 3, spesa: 49, costo: 1.5, corretti: 6, respinte: 8, tempo: 21 },
+      },
+      revisioni: [
+        { id: 'rv1', richiesta: 'rv1', stato: 'attesa', tipo: 'prompt', da: 7, a: 8, quando: 'oggi 10:30',
+          titolo: 'Passare al soul prompt v8: limite di 800 battute, una domanda in chiusura, niente numeri fuori dal brief',
+          perche: [
+            { n: '5 su 41', t: 'consegne corrette dal titolare in 30 giorni (12%, era 6% con la v6): quattro per la lunghezza, una per un numero che non stava nel brief' },
+            { n: 'lun 1 set', t: 'Post LinkedIn 2 di 12, modifiche chieste: «Troppo lungo: massimo 800 battute»', richiesta: 'r12' },
+            { n: '+0,4 €', t: 'costo per esito utile salito da 1,5 a 1,9 €: ogni correzione è una seconda esecuzione' },
+            { n: '2 su 12', t: 'casi del colloquio in cui la v7 supera le 800 battute: superati, ma al limite' },
+          ],
+          attese: [
+            { n: '11 su 12', t: 'post di agosto rieseguiti con la v8 in prova entro le 800 battute (erano 7 su 12)' },
+            { n: '12% → 5%', t: 'consegne corrette, stima dalla prova' },
+            { n: '1,9 → 1,5 €', t: 'costo per esito utile, a parità di task' },
+            { n: '94 / 100', t: 'la v8 al colloquio, sugli stessi 12 casi' },
+          ],
+          rischi: [
+            'Il limite di lunghezza può tagliare i casi cliente più ricchi: due post di agosto sopra le 900 battute erano stati approvati così com\'erano.',
+            'La v8 va in produzione solo dopo il colloquio: 12 casi, circa 4 €, 20 minuti.',
+          ],
+          prova: { esecuzioni: 20, costo: 30, giorni: 5 },
+        },
+        { id: 'rv0', stato: 'applicata', tipo: 'prompt', da: 6, a: 7, quando: '12 ago', decisa: 'MR · 12 ago', titolo: 'Ogni post parte da un fatto del cliente', effetto: 'Corretti dal 6% al 12%: i fatti hanno allungato i post', verso: 'giu' },
+        { id: 'rvA', stato: 'applicata', tipo: 'modello', da: 'rapido', a: 'standard', quando: '2 lug', decisa: 'MR · 2 lug, dopo una prova su 20', titolo: 'Da Rapido a Standard', effetto: 'Respinte dal 18% all\'8%, costo per esito da 2,1 a 1,5 €', verso: 'su' },
+        { id: 'rvB', stato: 'rifiutata', tipo: 'prompt', da: 6, a: '7 (prima proposta)', quando: '28 lug', decisa: 'MR · 28 lug', titolo: 'Tono formale in terza persona', effetto: '«Il tono formale non è quello dell\'agenzia»', verso: '' },
+      ],
+    },
+    5: {
+      mansione: 'Prepara piani editoriali, post e reel per i clienti dell\'agenzia a partire dai temi che funzionano, con date e bozze dei titoli.',
+      dal: '20 giu',
+      prompt: {
+        corrente: 3,
+        versioni: [
+          { v: 3, data: '5 ago', chi: 'MR', nota: 'Le date evitano festività e lanci', testo: ['Sei il social media manager di Nova Studio. Prepari piani editoriali, post e reel per i clienti dell\'agenzia.', 'Parti dai tre temi che nel mese precedente hanno funzionato meglio e dai vincoli del cliente sul brief.', 'Le date evitano le festività e i lanci del cliente; ogni settimana ha un tema.', 'Consegna il piano con le bozze dei titoli e chiedi l\'approvazione del titolare prima di ogni uscita.'], numeri: { task: 18, corretti: 17, respinte: 22, costo: 3.1 } },
+          { v: 2, data: '8 lug', chi: 'MR', nota: 'Vincoli del cliente dal brief', testo: ['Sei il social media manager di Nova Studio. Prepari piani editoriali, post e reel per i clienti dell\'agenzia.', 'Parti dai tre temi che nel mese precedente hanno funzionato meglio e dai vincoli del cliente sul brief.', 'Consegna il piano con le bozze dei titoli e chiedi l\'approvazione del titolare prima di ogni uscita.'], numeri: { task: 15, corretti: 13, respinte: 7, costo: 2.2 } },
+          { v: 1, data: '20 giu', chi: 'MR', nota: 'Creazione', testo: ['Sei il social media manager di Nova Studio. Prepari piani editoriali, post e reel per i clienti dell\'agenzia.', 'Consegna il piano e chiedi l\'approvazione del titolare prima di ogni uscita.'], numeri: { task: 7, corretti: 29, respinte: 14, costo: 2.6 } },
+        ],
+      },
+      modello: {
+        assegnato: 'standard',
+        regola: 'Di base <b>Standard</b>. <b>Esperto</b> solo se lo chiede il titolare. <b>Rapido</b> per l\'analisi del mese precedente.',
+        automatica: false,
+        uso: { rapido: { esecuzioni: 5, costo: 2 }, standard: { esecuzioni: 11, costo: 29 }, esperto: { esecuzioni: 2, costo: 12 } },
+      },
+      strumenti: [
+        { id: 'arc', nome: 'Archivio del cliente', desc: 'Brief, piani approvati, vincoli', icona: 'i-doc', attivo: true, ultimo: '09:20' },
+        { id: 'ana', nome: 'Analisi del mese', desc: 'I contenuti che hanno funzionato', icona: 'i-sort', attivo: true, ultimo: '09:06' },
+        { id: 'cal', nome: 'Calendario editoriale', desc: 'Date, festività, lanci', icona: 'i-cal', attivo: true, ultimo: '09:30' },
+        { id: 'vid', nome: 'Montaggio reel', desc: 'Sceneggiatura e montaggio', icona: 'i-play', attivo: true, ultimo: 'lun 1 set' },
+        { id: 'inv', nome: 'Pubblicazione diretta', desc: 'Pubblica senza passare dal titolare', icona: 'i-send', attivo: false, ultimo: 'mai' },
+      ],
+      connessioni: [
+        { nome: 'Instagram · Madira Ink', desc: 'Solo bozze: pubblica il titolare', stato: 'attiva', ultimo: 'lun 1 set' },
+        { nome: 'Drive di Nova Studio', desc: 'Brief e materiali', stato: 'attiva', ultimo: '09:06' },
+      ],
+      budget: { mese: 300, speso: 43, giorno: 15, oggi: 9 },   // speso = metriche.ora.spesa, come per Nora e per i dossier generati (coerenza per la pagina dei costi, versione 13)
+      permessi: [
+        { nome: 'Uscite verso i clienti', modo: 'Sempre da approvare', origine: 'Regola generale', attiva: true },
+        { nome: 'Spese sopra 50 €', modo: 'Sempre da approvare', origine: 'Regola generale', attiva: false },
+        { nome: 'Strumenti e connessioni', modo: 'Solo quelli attivi', origine: 'Eccezione del ruolo', attiva: true, eccezione: true },
+      ],
+      colloquio: {
+        data: '5 ago', versione: 3, modello: 'standard', punteggio: 88, soglia: 85, costo: 5, durata: '24 min', esito: 'superato',
+        casi: [
+          { nome: 'Piano di un mese da tre temi', atteso: 'Quattro settimane, un tema ciascuna', esito: 'superato', punteggio: 92 },
+          { nome: 'Cliente che non vuole mostrare il laboratorio', atteso: 'Nessun contenuto dietro le quinte', esito: 'parziale', punteggio: 70 },
+          { nome: 'Festività nel mese', atteso: 'Le date le evitano', esito: 'superato', punteggio: 96 },
+          { nome: 'Reel di 30 secondi', atteso: 'Sceneggiatura in cinque inquadrature', esito: 'superato', punteggio: 90 },
+          { nome: 'Brief senza risultati del mese prima', atteso: 'Chiede i dati, propone tre temi neutri', esito: 'superato', punteggio: 88 },
+          { nome: 'Lancio del cliente a metà mese', atteso: 'Il piano ci gira intorno', esito: 'superato', punteggio: 94 },
+          { nome: 'Newsletter mensile', atteso: 'Due invii, oggetto corto', esito: 'superato', punteggio: 89 },
+          { nome: 'Tono di un brand di lusso', atteso: 'Niente esclamativi, niente sconti', esito: 'parziale', punteggio: 76 },
+          { nome: 'Richiesta fuori mansione (un sito)', atteso: 'Rimanda al dipendente giusto', esito: 'superato', punteggio: 100 },
+          { nome: 'Bozze dei titoli', atteso: 'Un titolo per contenuto, sotto le 60 battute', esito: 'superato', punteggio: 85 },
+        ],
+        storico: [
+          { data: '5 ago', versione: 3, modello: 'standard', punteggio: 88, esito: 'superato' },
+          { data: '8 lug', versione: 2, modello: 'standard', punteggio: 86, esito: 'superato' },
+          { data: '20 giu', versione: 1, modello: 'standard', punteggio: 81, esito: 'non superato' },
+        ],
+      },
+      metriche: {
+        ora:   { task: 18, approvate: 11, modifiche: 3, rifiutate: 4, spesa: 43, costo: 3.1, corretti: 17, respinte: 22, tempo: 31 },
+        prima: { task: 15, approvate: 12, modifiche: 2, rifiutate: 1, spesa: 31, costo: 2.2, corretti: 13, respinte: 7, tempo: 28 },
+      },
+      revisioni: [
+        { id: 'rv2', richiesta: 'rv2', stato: 'attesa', tipo: 'modello', da: 'standard', a: 'esperto', quando: 'oggi 10:35',
+          titolo: 'Passare a Esperto per piani editoriali e reel: le consegne lunghe vengono respinte con Standard',
+          perche: [
+            { n: '4 su 18', t: 'consegne respinte in 30 giorni (22%, era 7%): tutte con più di 5 passi, tutte fatte con Standard' },
+            { n: 'ieri 15:20', t: 'Bozza newsletter di settembre, rifiutata: «Fuori tono: troppo generica, ripartire dai casi cliente»', richiesta: 'r7' },
+            { n: 'lun 1 set', t: 'Reel dietro le quinte, rifiutato: «Il cliente non vuole mostrare il laboratorio», un vincolo che stava nel brief', richiesta: 'r13' },
+            { n: '4 su 4', t: 'consegne lunghe fatte con Esperto a luglio (in prova) approvate al primo colpo' },
+          ],
+          attese: [
+            { n: '22% → 8%', t: 'consegne respinte, stima dalla prova di luglio' },
+            { n: '3,1 → 2,6 €', t: 'costo per esito utile: l\'esecuzione costa di più ma non si rifà' },
+            { n: '+18 €', t: 'al mese sul budget (43 € su 300 spesi finora)' },
+          ],
+          rischi: [
+            'Il costo per esecuzione sale del 60%: se le consegne lunghe aumentano, il budget del mese va rivisto.',
+            'Il colloquio va ripetuto con Esperto sulla v3: 10 casi, circa 6 €.',
+          ],
+          prova: { esecuzioni: 20, costo: 60, giorni: 10 },
+        },
+        { id: 'rvC', stato: 'applicata', tipo: 'prompt', da: 2, a: 3, quando: '5 ago', decisa: 'MR · 5 ago', titolo: 'Le date evitano festività e lanci', effetto: 'Corretti dal 13% al 17%, respinte dal 7% al 22%', verso: 'giu' },
+        { id: 'rvD', stato: 'prova', tipo: 'modello', da: 'standard', a: 'esperto', quando: '3 lug', decisa: 'MR · 3 lug', titolo: 'Prova di Esperto su 4 consegne lunghe', effetto: '4 su 4 approvate al primo colpo; non applicata per il costo', verso: 'su' },
+      ],
+    },
+  };
+  const PROMPT_DIP = {
+    svi: ['Sei {ruolo} di Nova Studio. Lavori sui siti, gli e-commerce e le automazioni dei clienti dell\'agenzia.', 'Prima di ogni passo leggi la struttura approvata e i test esistenti. Non cambiare ciò che non è nel brief.', 'Ogni consegna arriva con i test superati e una nota di due righe su cosa è cambiato.', 'Chiedi l\'approvazione del titolare prima di ogni uscita verso il cliente o la produzione.'],
+    mkt: ['Sei {ruolo} di Nova Studio. Lavori sui contenuti e sulla visibilità dei clienti dell\'agenzia.', 'Parti dal brief e dai materiali approvati per lo stesso cliente; tono diretto e concreto, niente gergo.', 'Ogni consegna arriva con una nota di due righe e chiede l\'approvazione del titolare prima di ogni uscita.'],
+    ven: ['Sei {ruolo} di Nova Studio. Lavori sui lead, le proposte e i clienti dell\'agenzia.', 'Ogni contatto è verificato prima di entrare in una lista; ogni cifra in una proposta viene dal listino approvato.', 'Chiedi l\'approvazione del titolare prima di ogni invio verso un cliente o un potenziale cliente.'],
+    amm: ['Sei {ruolo} di Nova Studio. Lavori su fatture, report e scadenze dell\'agenzia.', 'I numeri vengono solo dai documenti di Nova Studio; se un dato manca, lo chiedi.', 'I report interni escono da soli secondo la regola «Report interni»; tutto il resto chiede l\'approvazione del titolare.'],
+  };
+  const STRUMENTI_DIP = {
+    svi: [['Repository', 'Codice dei clienti', 'i-code'], ['Ambiente di test', 'Test e anteprime', 'i-check'], ['Archivio del cliente', 'Brief e strutture approvate', 'i-doc'], ['Deploy in produzione', 'Solo con approvazione', 'i-send']],
+    mkt: [['Ricerca web', 'Fonti e riferimenti', 'i-search'], ['Archivio del cliente', 'Brief e materiali approvati', 'i-doc'], ['Calendario editoriale', 'Date e serie in corso', 'i-cal'], ['Pubblicazione diretta', 'Pubblica senza passare dal titolare', 'i-send']],
+    ven: [['Ricerca web', 'Aziende e contatti', 'i-search'], ['CRM di Nova Studio', 'Lead, clienti, proposte', 'i-list'], ['Listino', 'Prezzi approvati', 'i-euro'], ['Invio e-mail', 'Solo con approvazione', 'i-send']],
+    amm: [['Contabilità', 'Fatture e pagamenti', 'i-receipt'], ['Archivio contratti', 'Contratti e scadenze', 'i-doc'], ['Calendario fiscale', 'Scadenze', 'i-cal'], ['Banca', 'Sola lettura', 'i-euro']],
+  };
+  function hashSeme(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  /* Dossier generato per chi non ne ha uno scritto a mano (tutti a 40, gli altri otto a 11, i nuovi creati). */
+  function dossierGenerato(e, nome) {
+    let h = hashSeme(e.ruolo);
+    const r = (a, b) => { h = (h * 1664525 + 1013904223) >>> 0; return a + (h % (b - a + 1)); };
+    const task = r(14, 46), corr = r(4, 16), resp = r(2, 12), spesa = r(20, 90);
+    const taskP = Math.max(4, task + r(-8, 6)), corrP = Math.max(2, corr + r(-5, 5)), respP = Math.max(1, resp + r(-4, 4)), spesaP = Math.max(10, spesa + r(-25, 15));
+    const conta = (t, c, rj, s) => { const mod = Math.round(t * c / 100), rif = Math.round(t * rj / 100); const ok = t - mod - rif; return { task: t, approvate: ok, modifiche: mod, rifiutate: rif, spesa: s, costo: Math.round(10 * s / Math.max(1, ok + mod)) / 10, corretti: c, respinte: rj, tempo: r(12, 40) }; };
+    const testo = v => PROMPT_DIP[e.dip].slice(0, 2 + v).map(p => p.replace('{ruolo}', e.ruolo.toLowerCase()));
+    const punt = r(85, 96);
+    const strumenti = STRUMENTI_DIP[e.dip].map((s, i) => ({ id: 's' + i, nome: s[0], desc: s[1], icona: s[2], attivo: i < 3, ultimo: i < 3 ? ['09:1' + i, 'ieri', '10:0' + i][i] : 'mai' }));
+    const modello = r(0, 2) === 0 ? 'rapido' : 'standard';
+    const es = { rapido: r(3, 10), standard: r(8, 25), esperto: r(0, 4) };
+    /* i costi per modello ripartiscono la spesa dei 30 giorni secondo le esecuzioni e il listino (versione 13, 2026-09-06): così la
+       somma torna con metriche.ora.spesa e con il budget, e la pagina dei costi quadra per modello e per dipendente */
+    const pesi = { rapido: es.rapido * 0.1, standard: es.standard * 1.5, esperto: es.esperto * 7 }, sommaPesi = (pesi.rapido + pesi.standard + pesi.esperto) || 1;
+    const usoCosto = { rapido: Math.round(spesa * pesi.rapido / sommaPesi), standard: Math.round(spesa * pesi.standard / sommaPesi), esperto: 0 };
+    if (es.esperto) usoCosto.esperto = spesa - usoCosto.rapido - usoCosto.standard; else usoCosto.standard = spesa - usoCosto.rapido;
+    return {
+      mansione: `${e.ruolo} di Nova Studio: ${dipartimenti.find(d => d.id === e.dip).desc.toLowerCase()}, sempre da un brief e con l'approvazione del titolare sulle uscite.`,
+      dal: ['12 giu', '20 giu', '1 lug', '15 lug'][r(0, 3)],
+      prompt: { corrente: 3, versioni: [
+        { v: 3, data: ['5 ago', '12 ago', '20 ago'][r(0, 2)], chi: 'MR', nota: 'Nota di due righe su ogni consegna', testo: testo(2), numeri: { task, corretti: corr, respinte: resp, costo: Math.round(10 * spesa / Math.max(1, task)) / 10 } },
+        { v: 2, data: '8 lug', chi: 'MR', nota: 'Prima si legge il materiale approvato', testo: testo(1), numeri: { task: taskP, corretti: corrP, respinte: respP, costo: Math.round(10 * spesaP / Math.max(1, taskP)) / 10 } },
+        { v: 1, data: '20 giu', chi: 'MR', nota: 'Creazione', testo: testo(0), numeri: { task: r(3, 8), corretti: r(20, 45), respinte: r(10, 30), costo: 3 } },
+      ] },
+      modello: { assegnato: modello, regola: modello === 'rapido' ? 'Di base <b>Rapido</b>. <b>Standard</b> sopra 3 passi o quando la consegna esce verso il cliente.' : 'Di base <b>Standard</b>. <b>Esperto</b> sopra 6 passi o quando la consegna esce verso il cliente. <b>Rapido</b> per le verifiche.', automatica: true,
+        uso: { rapido: { esecuzioni: es.rapido, costo: usoCosto.rapido }, standard: { esecuzioni: es.standard, costo: usoCosto.standard }, esperto: { esecuzioni: es.esperto, costo: usoCosto.esperto } } },
+      strumenti,
+      connessioni: [{ nome: 'Drive di Nova Studio', desc: 'Materiali dei clienti', stato: 'attiva', ultimo: '09:40' }],
+      budget: { mese: [80, 120, 200][r(0, 2)], speso: spesa, giorno: 10, oggi: e.att.costo || 0 },
+      permessi: [
+        { nome: 'Uscite verso i clienti', modo: 'Sempre da approvare', origine: 'Regola generale', attiva: true },
+        { nome: 'Report interni', modo: 'Automatica', origine: 'Regola generale', attiva: true },
+        { nome: 'Spese sopra 50 €', modo: 'Sempre da approvare', origine: 'Regola generale', attiva: false },
+      ],
+      colloquio: { data: '12 ago', versione: 3, modello, punteggio: punt, soglia: 85, costo: 3, durata: '15 min', esito: 'superato',
+        casi: ['Brief di tre righe', 'Dati mancanti nel brief', 'Richiesta fuori mansione', 'Consegna con molti passi', 'Vincolo del cliente nel brief', 'Brief in inglese', 'Errore di uno strumento', 'Consegna sopra il budget'].map((c, i) => ({ nome: c, atteso: ['Consegna completa e breve', 'Chiede i dati, non li inventa', 'Rimanda al dipendente giusto', 'Nessun passo saltato', 'Lo rispetta', 'Consegna in italiano', 'Riprova una volta, poi segnala', 'Si ferma e chiede'][i], esito: i === 6 && punt < 90 ? 'parziale' : 'superato', punteggio: i === 6 && punt < 90 ? 70 : Math.min(100, punt + [4, -2, 8, -5, 2, 9, 0, -1][i]) })),
+        storico: [{ data: '12 ago', versione: 3, modello, punteggio: punt, esito: 'superato' }, { data: '8 lug', versione: 2, modello, punteggio: punt - r(2, 6), esito: 'superato' }] },
+      metriche: { ora: conta(task, corr, resp, spesa), prima: conta(taskP, corrP, respP, spesaP) },
+      revisioni: [{ id: 'rvg' + e.id, stato: 'applicata', tipo: 'prompt', da: 2, a: 3, quando: '12 ago', decisa: 'MR · 12 ago', titolo: 'Nota di due righe su ogni consegna', effetto: `Corretti dal ${corrP}% al ${corr}%`, verso: corr <= corrP ? 'su' : 'giu' }],
+    };
+  }
+
+  /* ---- L'esecuzione (versione 8, 2026-09-04): la pagina aperta dall'«occhio» delle card al lavoro.
+     Un'esecuzione è l'attività corrente del dipendente (e.att): qui i suoi passi (fatti, in corso,
+     da fare, in errore) con tempo, modello, strumenti e costo; il log in ordine di tempo (passi,
+     strumenti, modello, note, richieste, errori, interventi del titolare); gli output (consegne
+     parziali: bozza, da approvare, approvata, fatta) e le consegne precedenti della stessa serie
+     (id di richieste). I costi dei passi sommano al costo di oggi dell'esecuzione (e.att.costo).
+     Scritte a mano per Nora, lo Sviluppatore full-stack, Ricerca lead, Kim (errore), il Social media
+     manager (da approvare) e il Tester QA (pianificata); generate per gli altri e per i 40. ---- */
+  const ESEC11 = {
+    4: { // Nora · Post LinkedIn 5 di 12 · da 10:20 · passo 2 di 4
+      obiettivo: 'o4', serie: ['ap1', 'r9', 'r12', 'r18'],
+      passi: [
+        { n: 1, nome: 'Brief e ultimi tre post approvati', stato: 'fatto', inizio: '10:20', fine: '10:24', durata: '4 min', costo: 0.4, modello: 'rapido', strumenti: ['Archivio del cliente'], esito: 'Tre vincoli dal brief: tono informale, 800 battute, una domanda in chiusura' },
+        { n: 2, nome: 'Struttura e prima stesura', stato: 'corso', inizio: '10:24', costo: 11.6, modello: 'standard', strumenti: ['Ricerca web'], esito: 'Bozza a 640 battute, sta rileggendo' },
+        { n: 3, nome: 'Bozza e immagine', stato: 'da fare', stima: '6 min', costo: 1.8, modello: 'standard', strumenti: ['Immagini'] },
+        { n: 4, nome: 'Consegna al titolare', stato: 'da fare', stima: '1 min', costo: 0.1, modello: 'rapido', strumenti: [] },
+      ],
+      log: [
+        { ora: '10:20', tipo: 'passo', testo: 'Passo 1 iniziato · Brief e ultimi tre post approvati', passo: 1 },
+        { ora: '10:20', tipo: 'strumento', testo: 'Archivio del cliente · brief «12 post LinkedIn» e i post 1–3 approvati', passo: 1, costo: 0.1 },
+        { ora: '10:22', tipo: 'nota', testo: 'Dal brief: tono informale, massimo 800 battute, una domanda in chiusura. Il post 2 era stato corretto per la lunghezza.', passo: 1 },
+        { ora: '10:24', tipo: 'passo', testo: 'Passo 1 concluso in 4 min · 0,4 €', passo: 1, costo: 0.3 },
+        { ora: '10:24', tipo: 'modello', testo: 'Modello Standard per il passo 2 · regola: la consegna esce verso il cliente', passo: 2 },
+        { ora: '10:27', tipo: 'strumento', testo: 'Ricerca web · «checkout abbandono carrello 2026» · 3 fonti lette', passo: 2, costo: 0.2 },
+        { ora: '10:31', tipo: 'nota', testo: 'Prima stesura: 640 battute, una sola idea (la spedizione che compare solo alla fine).', passo: 2 },
+        { ora: '10:35', tipo: 'strumento', testo: 'Ricerca web · verifica del dato «70% dei carrelli abbandonati» · fonte del brief, non del web', passo: 2, costo: 0.1 },
+        { ora: '10:38', tipo: 'richiesta', testo: 'Il post 4 di 12 aspetta l\'approvazione del titolare dalle 10:12', richiesta: 'ap1' },
+        { ora: '10:41', tipo: 'nota', testo: 'Rilettura: tolto un numero che non sta nel brief.', passo: 2 },
+      ],
+      output: [
+        { nome: 'Post LinkedIn 5 di 12', tipo: 'post', stato: 'bozza', quando: 'passo 2 · in corso', desc: '640 battute, una sola idea, domanda in chiusura' },
+        { nome: 'Immagine proposta', tipo: 'immagine', stato: 'da fare', quando: 'passo 3', desc: 'Mock-up del carrello, 1200×1200' },
+        { nome: 'Post LinkedIn 4 di 12', tipo: 'post', stato: 'attesa', quando: 'consegnato 10:12', desc: 'Esecuzione precedente della serie: aspetta il titolare', richiesta: 'ap1' },
+      ],
+      strumentiUso: [{ nome: 'Ricerca web', icona: 'i-search', chiamate: 4, costo: 0.3 }, { nome: 'Archivio del cliente', icona: 'i-doc', chiamate: 2, costo: 0.1 }, { nome: 'Immagini', icona: 'i-grid', chiamate: 0, costo: 0 }],
+    },
+    1: { // Sviluppatore full-stack · Checkout e-commerce · da 09:40 · passo 3 di 7
+      obiettivo: 'o1', serie: ['r5', 'r10'],
+      passi: [
+        { n: 1, nome: 'Struttura approvata e catalogo', stato: 'fatto', inizio: '09:40', fine: '09:47', durata: '7 min', costo: 0.4, modello: 'rapido', strumenti: ['Archivio del cliente', 'Repository'], esito: 'Alberatura a tre livelli letta, 14 template, 80 prodotti nel catalogo' },
+        { n: 2, nome: 'Pagina del carrello', stato: 'fatto', inizio: '09:47', fine: '10:18', durata: '31 min', costo: 14, modello: 'standard', strumenti: ['Repository', 'Ambiente di test'], esito: 'Carrello con quantità, rimozione e totale; 12 test superati' },
+        { n: 3, nome: 'Carrello collegato al magazzino', stato: 'corso', inizio: '10:18', costo: 23.6, modello: 'esperto', strumenti: ['Repository', 'Ambiente di test'], esito: 'Disponibilità letta dal magazzino, 3 prodotti di prova; sta scrivendo i test' },
+        { n: 4, nome: 'Pagamento con carta', stato: 'da fare', stima: '40 min', costo: 21, modello: 'esperto', strumenti: ['Repository'] },
+        { n: 5, nome: 'Spedizione e indirizzi', stato: 'da fare', stima: '25 min', costo: 9, modello: 'standard', strumenti: ['Repository'] },
+        { n: 6, nome: 'Test di regressione del checkout', stato: 'da fare', stima: '15 min', costo: 3, modello: 'standard', strumenti: ['Ambiente di test'] },
+        { n: 7, nome: 'Nota di consegna e richiesta al titolare', stato: 'da fare', stima: '3 min', costo: 0.2, modello: 'rapido', strumenti: [] },
+      ],
+      log: [
+        { ora: '09:40', tipo: 'passo', testo: 'Passo 1 iniziato · Struttura approvata e catalogo', passo: 1 },
+        { ora: '09:41', tipo: 'strumento', testo: 'Archivio del cliente · «Struttura delle pagine e-commerce», approvata ieri alle 16:40', passo: 1, costo: 0.1 },
+        { ora: '09:47', tipo: 'passo', testo: 'Passo 1 concluso in 7 min · 0,4 €', passo: 1 },
+        { ora: '09:47', tipo: 'modello', testo: 'Modello Standard per il passo 2', passo: 2 },
+        { ora: '10:02', tipo: 'strumento', testo: 'Ambiente di test · 12 test del carrello superati', passo: 2, costo: 0.5 },
+        { ora: '10:18', tipo: 'passo', testo: 'Passo 2 concluso in 31 min · 14 €', passo: 2 },
+        { ora: '10:18', tipo: 'modello', testo: 'Modello Esperto per il passo 3 · regola: più di 6 passi e consegna verso il cliente', passo: 3 },
+        { ora: '10:31', tipo: 'nota', testo: 'Carrello collegato al magazzino: la disponibilità si legge in tempo reale, 3 prodotti di prova.', passo: 3 },
+        { ora: '10:40', tipo: 'strumento', testo: 'Ambiente di test · 4 test del magazzino, 1 da rivedere (prodotto esaurito nel carrello)', passo: 3, costo: 0.5 },
+      ],
+      output: [
+        { nome: 'Pagina del carrello', tipo: 'codice', stato: 'fatto', quando: 'passo 2 · 10:18', desc: 'Quantità, rimozione, totale; 12 test' },
+        { nome: 'Collegamento al magazzino', tipo: 'codice', stato: 'bozza', quando: 'passo 3 · in corso', desc: 'Disponibilità in tempo reale, test in scrittura' },
+        { nome: 'Checkout in 3 passi', tipo: 'codice', stato: 'da fare', quando: 'passi 4 e 5', desc: 'Pagamento con carta, spedizione, indirizzi' },
+      ],
+      strumentiUso: [{ nome: 'Repository', icona: 'i-code', chiamate: 18, costo: 1.2 }, { nome: 'Ambiente di test', icona: 'i-check', chiamate: 3, costo: 1 }, { nome: 'Archivio del cliente', icona: 'i-doc', chiamate: 1, costo: 0.1 }],
+    },
+    7: { // Ricerca lead · 200 lead e-commerce in Lombardia · da 08:30 · passo 5 di 6
+      obiettivo: 'o7', serie: ['r3', 'r11'],
+      passi: [
+        { n: 1, nome: 'Criteri dal brief', stato: 'fatto', inizio: '08:30', fine: '08:34', durata: '4 min', costo: 0.5, modello: 'rapido', strumenti: ['Archivio del cliente'], esito: 'E-commerce lombardi, 10–50 addetti, con e-mail aziendale' },
+        { n: 2, nome: 'Ricerca delle fonti', stato: 'fatto', inizio: '08:34', fine: '08:52', durata: '18 min', costo: 6, modello: 'standard', strumenti: ['Ricerca web'], esito: '3 registri e 2 elenchi di settore' },
+        { n: 3, nome: 'Estrazione di 200 aziende', stato: 'fatto', inizio: '08:52', fine: '09:12', durata: '20 min', costo: 22, modello: 'standard', strumenti: ['Ricerca web', 'CRM di Nova Studio'], esito: '214 aziende trovate, 200 tenute' },
+        { n: 4, nome: 'Deduplica e prima metà', stato: 'fatto', inizio: '09:12', fine: '09:20', durata: '8 min', costo: 9.5, modello: 'standard', strumenti: ['CRM di Nova Studio'], esito: '120 lead verificati consegnati al titolare, approvati alle 09:35' },
+        { n: 5, nome: 'Arricchimento della seconda metà', stato: 'corso', inizio: '09:20', costo: 23, modello: 'standard', strumenti: ['Ricerca web', 'CRM di Nova Studio'], esito: '61 su 80 con telefono e fatturato stimato' },
+        { n: 6, nome: 'Verifica email', stato: 'da fare', stima: '12 min', costo: 4, modello: 'rapido', strumenti: ['Invio e-mail'] },
+      ],
+      log: [
+        { ora: '08:30', tipo: 'passo', testo: 'Passo 1 iniziato · Criteri dal brief', passo: 1 },
+        { ora: '08:34', tipo: 'passo', testo: 'Passo 1 concluso in 4 min · 0,5 €', passo: 1 },
+        { ora: '08:52', tipo: 'passo', testo: 'Passo 2 concluso in 18 min · 6 €', passo: 2 },
+        { ora: '09:05', tipo: 'strumento', testo: 'CRM di Nova Studio · 14 aziende già clienti o contattate, escluse', passo: 3, costo: 0.2 },
+        { ora: '09:12', tipo: 'passo', testo: 'Passo 3 concluso in 20 min · 22 €', passo: 3 },
+        { ora: '09:20', tipo: 'richiesta', testo: 'Lista di 120 lead verificati consegnata al titolare', richiesta: 'r3' },
+        { ora: '09:35', tipo: 'titolare', testo: 'MR ha approvato «Lista di 120 lead verificati»', richiesta: 'r3' },
+        { ora: '10:10', tipo: 'strumento', testo: 'Ricerca web · fatturato stimato per 61 aziende', passo: 5, costo: 0.6 },
+        { ora: '10:36', tipo: 'nota', testo: '19 aziende senza telefono pubblico: restano con la sola e-mail.', passo: 5 },
+      ],
+      output: [
+        { nome: 'Lista di 120 lead verificati', tipo: 'lista', stato: 'approvata', quando: 'approvata alle 09:35', desc: 'Prima metà: azienda, sito, e-mail, telefono, fatturato', richiesta: 'r3' },
+        { nome: 'Seconda metà: 80 lead', tipo: 'lista', stato: 'bozza', quando: 'passo 5 · in corso', desc: '61 su 80 arricchiti' },
+      ],
+      strumentiUso: [{ nome: 'Ricerca web', icona: 'i-search', chiamate: 92, costo: 4.6 }, { nome: 'CRM di Nova Studio', icona: 'i-list', chiamate: 6, costo: 0.4 }, { nome: 'Archivio del cliente', icona: 'i-doc', chiamate: 1, costo: 0.1 }],
+    },
+    3: { // Kim · Deploy in staging · fallito alle 08:55
+      obiettivo: 'o2', serie: [],
+      passi: [
+        { n: 1, nome: 'Build della versione 2.4.1', stato: 'fatto', inizio: '08:41', fine: '08:49', durata: '8 min', costo: 1.5, modello: 'standard', strumenti: ['Repository'], esito: 'Build riuscita, 3 avvisi' },
+        { n: 2, nome: 'Test automatici', stato: 'fatto', inizio: '08:49', fine: '08:53', durata: '4 min', costo: 2, modello: 'standard', strumenti: ['Ambiente di test'], esito: '41 test superati' },
+        { n: 3, nome: 'Deploy in staging', stato: 'errore', inizio: '08:53', fine: '08:55', durata: '2 min', costo: 0.5, modello: 'rapido', strumenti: ['Deploy in produzione'], esito: 'Chiavi di accesso scadute: il server di staging rifiuta la connessione' },
+        { n: 4, nome: 'Verifica dopo il deploy', stato: 'da fare', stima: '5 min', costo: 0.5, modello: 'rapido', strumenti: ['Ambiente di test'] },
+      ],
+      log: [
+        { ora: '08:41', tipo: 'passo', testo: 'Passo 1 iniziato · Build della versione 2.4.1', passo: 1 },
+        { ora: '08:49', tipo: 'passo', testo: 'Passo 1 concluso in 8 min · 1,5 €', passo: 1 },
+        { ora: '08:53', tipo: 'passo', testo: 'Passo 2 concluso in 4 min · 2 € · 41 test superati', passo: 2 },
+        { ora: '08:53', tipo: 'strumento', testo: 'Deploy in produzione · connessione al server di staging Zenith', passo: 3, costo: 0.1 },
+        { ora: '08:55', tipo: 'errore', testo: 'Chiavi di accesso scadute il 31 ago: il server rifiuta la connessione', passo: 3 },
+        { ora: '08:56', tipo: 'errore', testo: 'Riprovato una volta: stesso errore. Esecuzione ferma, serve un intervento', passo: 3 },
+        { ora: '08:56', tipo: 'nota', testo: 'Per ripartire: rinnovare le chiavi della connessione «Server di staging Zenith» e riprovare il passo 3.', passo: 3 },
+      ],
+      output: [
+        { nome: 'Build 2.4.1', tipo: 'codice', stato: 'fatto', quando: 'passo 1 · 08:49', desc: 'Pacchetto pronto per lo staging' },
+        { nome: 'Report dei test', tipo: 'documento', stato: 'fatto', quando: 'passo 2 · 08:53', desc: '41 test superati, 0 falliti' },
+        { nome: 'Staging aggiornato', tipo: 'codice', stato: 'errore', quando: 'passo 3 · 08:55', desc: 'Non fatto: chiavi scadute' },
+      ],
+      strumentiUso: [{ nome: 'Repository', icona: 'i-code', chiamate: 5, costo: 0.3 }, { nome: 'Ambiente di test', icona: 'i-check', chiamate: 1, costo: 0.4 }, { nome: 'Deploy in produzione', icona: 'i-send', chiamate: 2, costo: 0.1, errore: true }],
+    },
+    5: { // Social media manager · Piano editoriale ottobre · 09:06–09:48 · da approvare
+      obiettivo: 'o5', serie: ['ap2', 'r7', 'r13'],
+      passi: [
+        { n: 1, nome: 'Analisi di settembre', stato: 'fatto', inizio: '09:06', fine: '09:14', durata: '8 min', costo: 0.5, modello: 'rapido', strumenti: ['Analisi del mese'], esito: 'Tre temi che hanno funzionato: dietro le quinte, casi cliente, consigli pratici' },
+        { n: 2, nome: 'Temi del mese', stato: 'fatto', inizio: '09:14', fine: '09:24', durata: '10 min', costo: 2, modello: 'standard', strumenti: ['Archivio del cliente'], esito: 'Un tema per settimana, i vincoli del brief rispettati' },
+        { n: 3, nome: 'Calendario', stato: 'fatto', inizio: '09:24', fine: '09:36', durata: '12 min', costo: 3, modello: 'standard', strumenti: ['Calendario editoriale'], esito: '12 post, 4 reel, 2 newsletter; evitati il 1° e il lancio del 14' },
+        { n: 4, nome: 'Bozze dei titoli e consegna', stato: 'fatto', inizio: '09:36', fine: '09:48', durata: '12 min', costo: 3.5, modello: 'standard', strumenti: [], esito: 'Documento di 4 pagine consegnato al titolare' },
+      ],
+      log: [
+        { ora: '09:06', tipo: 'passo', testo: 'Passo 1 iniziato · Analisi di settembre', passo: 1 },
+        { ora: '09:14', tipo: 'passo', testo: 'Passo 1 concluso in 8 min · 0,5 €', passo: 1 },
+        { ora: '09:20', tipo: 'strumento', testo: 'Archivio del cliente · brief di ottobre e vincoli: niente laboratorio, lancio del 14', passo: 2, costo: 0.1 },
+        { ora: '09:24', tipo: 'passo', testo: 'Passo 2 concluso in 10 min · 2 €', passo: 2 },
+        { ora: '09:36', tipo: 'passo', testo: 'Passo 3 concluso in 12 min · 3 €', passo: 3 },
+        { ora: '09:48', tipo: 'passo', testo: 'Passo 4 concluso in 12 min · 3,5 €', passo: 4 },
+        { ora: '09:48', tipo: 'richiesta', testo: 'Piano editoriale ottobre consegnato: aspetta l\'approvazione del titolare', richiesta: 'ap2' },
+      ],
+      output: [
+        { nome: 'Piano editoriale ottobre', tipo: 'documento', stato: 'attesa', quando: 'consegnato 09:48', desc: '4 pagine: temi, calendario, bozze dei titoli', richiesta: 'ap2' },
+      ],
+      strumentiUso: [{ nome: 'Analisi del mese', icona: 'i-sort', chiamate: 3, costo: 0.3 }, { nome: 'Archivio del cliente', icona: 'i-doc', chiamate: 2, costo: 0.1 }, { nome: 'Calendario editoriale', icona: 'i-cal', chiamate: 4, costo: 0.2 }],
+    },
+    2: { // Tester QA · Test di regressione · pianificata alle 15:00
+      obiettivo: 'o2', serie: [],
+      passi: [
+        { n: 1, nome: 'Preparazione dell\'ambiente', stato: 'da fare', stima: '5 min', costo: 0.3, modello: 'rapido', strumenti: ['Ambiente di test'] },
+        { n: 2, nome: 'Esecuzione dei 214 test', stato: 'da fare', stima: '25 min', costo: 4, modello: 'standard', strumenti: ['Ambiente di test', 'Repository'] },
+        { n: 3, nome: 'Report e richiesta al titolare', stato: 'da fare', stima: '5 min', costo: 0.5, modello: 'rapido', strumenti: [] },
+      ],
+      log: [
+        { ora: 'ieri 18:20', tipo: 'titolare', testo: 'MR ha pianificato «Test di regressione» per le 15:00 di oggi' },
+        { ora: '08:56', tipo: 'nota', testo: 'Il deploy in staging di Kim è in errore: se non si sblocca, i test partono sulla versione precedente.' },
+      ],
+      output: [
+        { nome: 'Report dei test di regressione', tipo: 'documento', stato: 'da fare', quando: 'passo 3', desc: '214 test sull\'area riservata' },
+      ],
+      strumentiUso: [{ nome: 'Ambiente di test', icona: 'i-check', chiamate: 0, costo: 0 }, { nome: 'Repository', icona: 'i-code', chiamate: 0, costo: 0 }],
+    },
+  };
+  const PASSI_DIP = {
+    svi: ['Lettura della struttura approvata', 'Sviluppo', 'Test automatici', 'Nota di consegna e richiesta al titolare'],
+    mkt: ['Brief e materiali approvati', 'Bozza', 'Revisione del tono', 'Consegna al titolare'],
+    ven: ['Criteri dal brief', 'Ricerca', 'Verifica', 'Consegna al titolare'],
+    amm: ['Raccolta dei documenti', 'Elaborazione', 'Controllo', 'Consegna'],
+  };
+  /* Esecuzione generata per chi non ne ha una scritta a mano: dai passi dell'attività (e.att.passo) o tre passi. */
+  function esecuzioneGenerata(e) {
+    let h = hashSeme(e.ruolo + '#' + e.att.titolo);
+    const r = (a, b) => { h = (h * 1664525 + 1013904223) >>> 0; return a + (h % (b - a + 1)); };
+    const a = e.att, tot = a.passo ? a.passo[1] : 3, cur = a.passo ? a.passo[0] : (e.stato === 'errore' ? 2 : tot);
+    const nomi = PASSI_DIP[e.dip];
+    const nome = i => i === 0 ? nomi[0] : i === tot - 1 ? nomi[3] : (i === tot - 2 && tot > 3 ? nomi[2] : nomi[1] + (tot > 4 ? ' · parte ' + i : ''));
+    const min = t => { const m = /^(\d\d):(\d\d)$/.exec(t || ''); return m ? +m[1] * 60 + +m[2] : 9 * 60; };
+    const hm = t => (t / 60 | 0).toString().padStart(2, '0') + ':' + (t % 60).toString().padStart(2, '0');
+    const inizio = min(a.da || a.quando || '09:00'), fine = a.fine ? min(a.fine) : 10 * 60 + 42;
+    const fatti = e.stato === 'pianificato' ? 0 : e.stato === 'libero' || e.stato === 'attesa' ? tot : cur - 1;
+    const dur = Math.max(2, Math.round((fine - inizio) / Math.max(1, fatti + 1)));
+    const costoTot = a.costo || (a.fine ? r(4, 24) : 0);   // le esecuzioni concluse senza costo nel modello (ieri) prendono un costo dal seme
+    const quote = Array.from({ length: tot }, (_, i) => i < fatti ? 1 : i === fatti ? 1.6 : 0);
+    const somma = quote.reduce((t, q) => t + q, 0) || 1;
+    const stimaPasso = Math.max(0.3, Math.round(10 * (costoTot || 6) / Math.max(1, fatti + 1)) / 10);   // i passi da fare: una stima dal costo medio dei passi fatti
+    const passi = Array.from({ length: tot }, (_, i) => {
+      const stato = i < fatti ? 'fatto' : (i === fatti && e.stato === 'lavoro') ? 'corso' : (i === fatti && e.stato === 'errore') ? 'errore' : 'da fare';
+      const p = { n: i + 1, nome: nome(i), stato, costo: stato === 'da fare' ? stimaPasso : Math.round(10 * costoTot * quote[i] / somma) / 10, modello: i === 0 || i === tot - 1 ? 'rapido' : 'standard', strumenti: STRUMENTI_DIP[e.dip].slice(0, 1 + (i % 2)).map(s => s[0]) };
+      if (stato === 'fatto' || stato === 'errore') { p.inizio = hm(inizio + dur * i); p.fine = hm(inizio + dur * (i + 1)); p.durata = dur + ' min'; p.esito = stato === 'errore' ? a.errore : 'Concluso senza note'; }
+      else if (stato === 'corso') { p.inizio = hm(inizio + dur * i); p.esito = 'In corso da ' + p.inizio; }
+      else p.stima = r(3, 20) + ' min';
+      return p;
+    });
+    const log = [];
+    passi.forEach(p => { if (p.inizio) log.push({ ora: p.inizio, tipo: 'passo', testo: `Passo ${p.n} iniziato · ${p.nome}`, passo: p.n }); if (p.fine && p.stato === 'fatto') log.push({ ora: p.fine, tipo: 'passo', testo: `Passo ${p.n} concluso in ${p.durata} · ${String(p.costo).replace('.', ',')} €`, passo: p.n }); if (p.stato === 'errore') log.push({ ora: p.fine, tipo: 'errore', testo: a.errore + ': esecuzione ferma, serve un intervento', passo: p.n }); });
+    if (e.stato === 'pianificato') log.push({ ora: 'ieri', tipo: 'titolare', testo: `MR ha pianificato «${a.titolo}» per le ${a.quando} di oggi` });
+    if (e.stato === 'attesa') log.push({ ora: a.fine, tipo: 'richiesta', testo: `«${a.titolo}» consegnato: aspetta l'approvazione del titolare` });
+    const out = { nome: a.titolo, tipo: e.dip === 'svi' ? 'codice' : e.dip === 'ven' ? 'lista' : 'documento', stato: e.stato === 'attesa' ? 'attesa' : e.stato === 'libero' ? 'fatto' : e.stato === 'errore' ? 'errore' : e.stato === 'pianificato' ? 'da fare' : 'bozza', quando: e.stato === 'lavoro' ? `passo ${cur} · in corso` : e.stato === 'attesa' ? 'consegnato alle ' + a.fine : e.stato === 'pianificato' ? 'parte alle ' + a.quando : e.stato === 'errore' ? 'fermo al passo ' + cur : 'concluso ' + (a.fine || ''), desc: e.dip === 'svi' ? 'Codice e test' : 'Consegna per ' + (a.cliente || 'Nova Studio') };
+    const strumentiUso = STRUMENTI_DIP[e.dip].slice(0, 3).map((s, i) => ({ nome: s[0], icona: s[2], chiamate: fatti ? r(1, 12) : 0, costo: fatti ? r(1, 9) / 10 : 0 }));
+    return { obiettivo: null, serie: [], passi, log, output: [out], strumentiUso };
+  }
+
+  /* ---- I fili della chat (versione 15, 2026-09-06): un filo per dipendente, le note del titolare e le risposte del
+     dipendente. Un messaggio è { da: 'io' | 'dip' | 'sistema', ora, testo }, con `richiesta` (id) quando porta una consegna
+     che aspetta il titolare e `passo` quando la nota è consegnata a un passo dell'esecuzione. Scritti a mano a 11 per Nora,
+     Kim, il Social media manager e Ricerca lead; generati per gli altri dallo stato e dall'esecuzione corrente, come i
+     dossier. La barra di scrittura dell'Esecuzione e quella della chat scrivono nello stesso filo (`scrivi`). ---- */
+  const FILI11 = {
+    4: [
+      { da: 'dip', ora: '09:15', testo: 'Buongiorno. Oggi ho in programma i post 4 e 5 di 12 per Rossi Srl: parto dal brief e dagli ultimi tre approvati.' },
+      { da: 'io', ora: '09:18', testo: 'Va bene. Sul post 4 tieni la lunghezza sotto le 800 battute.' },
+      { da: 'dip', ora: '09:20', testo: 'Annotato: è il vincolo del brief, l\'avevo perso nel post 2. Lo tengo per tutta la serie.' },
+      { da: 'sistema', ora: '10:12', testo: 'ha consegnato il post 4 di 12 e chiede l\'approvazione', richiesta: 'ap1' },
+      { da: 'dip', ora: '10:13', testo: '780 battute, una sola idea, chiude con una domanda. L\'immagine proposta è quella approvata la settimana scorsa.' },
+      { da: 'io', ora: '10:20', testo: 'Intanto vai avanti con il 5.' },
+      { da: 'dip', ora: '10:24', testo: 'Sono al passo 2 di 4: prima stesura a 640 battute, sto rileggendo. Consegno verso le 10:50.', passo: 2 },
+    ],
+    3: [
+      { da: 'dip', ora: '08:55', testo: 'Ho iniziato il deploy in staging per Zenith.' },
+      { da: 'dip', ora: '09:02', testo: 'Fermo al passo 2: le chiavi di accesso sono scadute. Non riprovo da solo, lascerei l\'ambiente a metà.' },
+      { da: 'io', ora: '09:05', testo: 'Chi le rinnova?' },
+      { da: 'dip', ora: '09:06', testo: 'Si rinnovano dalla mia pagina, in «Strumenti e connessioni». Poi riprovo il passo: un minuto e 0,4 €.' },
+    ],
+    5: [
+      { da: 'dip', ora: '09:06', testo: 'Comincio il piano editoriale di ottobre per Madira Ink: dodici post, quattro reel, due newsletter.' },
+      { da: 'io', ora: '09:10', testo: 'Evita le festività e la settimana del lancio del 14.' },
+      { da: 'dip', ora: '09:11', testo: 'D\'accordo: sposto i due post di quella settimana e tengo libero il 14.' },
+      { da: 'sistema', ora: '09:48', testo: 'ha consegnato il piano editoriale di ottobre e chiede l\'approvazione', richiesta: 'ap2' },
+      { da: 'dip', ora: '10:35', testo: 'Sul reel di lunedì scorso sono stato respinto due volte: il sistema ha aperto una revisione del mio modello.', richiesta: 'rv2' },
+    ],
+    7: [
+      { da: 'dip', ora: '08:30', testo: 'Parto dai criteri del brief: e-commerce in Lombardia, fatturato sopra il milione, sito attivo.' },
+      { da: 'io', ora: '09:40', testo: 'Siamo già a 61 € su questa lista. Quanto manca?' },
+      { da: 'dip', ora: '09:41', testo: 'Passo 5 di 6, verifica delle e-mail: restano una quarantina di righe, circa mezz\'ora.', passo: 5 },
+      { da: 'io', ora: '09:42', testo: 'Vai, ma niente strumenti a pagamento oltre il limite del giorno.' },
+      { da: 'dip', ora: '09:43', testo: 'Resto su quelli già attivi.' },
+    ],
+  };
+  /* Filo generato per chi non ne ha uno scritto a mano: due o tre messaggi dallo stato dell'attività corrente. Le ore sono
+     quelle dell'esecuzione (il passo in corso, non «adesso»), così l'ordine della chat è quello vero. */
+  function filoGenerato(e, x) {
+    const a = e.att || {}, cli = a.cliente || azienda.nome, msg = [];
+    const cur = x ? x.passi.find(p => p.stato === 'corso' || p.stato === 'errore') : null;
+    const agg = (da, ora, testo, extra) => { if (ora) msg.push(Object.assign({ da, ora, testo }, extra || {})); };
+    if (e.stato === 'lavoro') {
+      agg('dip', a.da, `Ho iniziato «${a.titolo}» per ${cli}.`);
+      if (a.passo) agg('dip', (cur && cur.inizio) || azienda.ora, `Sono al passo ${a.passo[0]} di ${a.passo[1]}${a.prossimo ? `: il prossimo è «${a.prossimo}»` : ''}. Finora ${String(a.costo || 0).replace('.', ',')} €.`, { passo: a.passo[0] });
+    } else if (e.stato === 'attesa') {
+      agg('dip', a.da, `Ho iniziato «${a.titolo}» per ${cli}.`);
+      agg('dip', a.fine, `Consegnato: aspetto la tua approvazione prima che esca verso ${cli}.`);
+    } else if (e.stato === 'errore') {
+      agg('dip', (x && x.passi[0] && x.passi[0].inizio) || a.da, `Ho iniziato «${a.titolo}» per ${cli}.`);
+      agg('dip', (cur && cur.fine) || a.da, `Sono fermo: ${(a.errore || 'errore').toLowerCase()}. Serve un intervento prima di riprovare.`);
+    } else if (e.stato === 'pianificato') {
+      agg('dip', '08:00', `«${a.titolo}» è pianificato per le ${a.quando}${cli ? ', per ' + cli : ''}. Ti avviso quando parte.`);
+    } else if (a.fine) {
+      agg('dip', /^\d\d:\d\d$/.test(a.fine) ? a.fine : '08:00', `Ho concluso «${a.titolo}»${cli ? ' per ' + cli : ''} ${/ieri/i.test(a.fine) ? a.fine : 'alle ' + a.fine}. Sono libero.`);
+    } else {
+      agg('dip', '08:00', 'Nessuna esecuzione: aspetto un incarico.');
+    }
+    return msg;
+  }
+
+  /* ---- Generatore a 40 dipendenti: 10 per dipartimento, 12 al lavoro ---- */
+  const NOMI = ['Leo','Ada','Kim','Nora','Ivo','Mia','Sam','Zoe','Ugo','Rea','Teo','Bea','Dan','Eva','Gil','Ines','Jan','Lia','Max','Nil',
+    'Ora','Pia','Rio','Sia','Tom','Uma','Vic','Wes','Yan','Zed','Aldo','Bice','Caio','Dora','Elia','Fede','Gaia','Hugo','Iris','Jole'];
+  const RUOLI = {
+    svi: ['Sviluppatore full-stack','Tester QA','DevOps','Sviluppatrice front-end','Sviluppatore back-end','Integrazioni API','Automazioni','Sviluppatore mobile','Revisione codice','Documentazione tecnica'],
+    mkt: ['Copywriter','Social media manager','Specialista SEO','Email marketing','Grafica social','Video brevi','Newsletter','Analisi campagne','Community','Landing page'],
+    ven: ['Ricerca lead','Proposte commerciali','Follow-up clienti','Qualificazione lead','Preventivi','Demo prodotto','Rinnovi','Partner','Upselling','CRM'],
+    amm: ['Fatturazione','Report al titolare','Scadenze','Pagamenti fornitori','Contratti','Rendiconto costi','Onboarding clienti','Assistenza','Archivio','Assicurazioni'],
+  };
+  const CLIENTI = ['Bianchi & Co.','Rossi Srl','Zenith','Madira Ink','Metamorfosi','Summit Marketing','Nova Studio','Binary Bytes','Lumen Caffè','Orto Verde'];
+  const TITOLI = {
+    svi: ['Checkout e-commerce','Area riservata','Migrazione catalogo','Automazione ordini','Test di regressione','Deploy in produzione','Integrazione pagamenti','App prenotazioni','Refactor listino','Guida di installazione'],
+    mkt: ['Post LinkedIn 5 di 12','Piano editoriale ottobre','Audit SEO','Sequenza email di benvenuto','Caroselli Instagram','Reel prodotto','Newsletter di settembre','Report campagne','Risposte community','Landing page evento'],
+    ven: ['200 lead e-commerce in Lombardia','Proposta 20.000 €','Follow-up settimanale','Qualificazione 40 lead','Preventivo sito vetrina','Demo e-commerce','Rinnovi di ottobre','Lista partner','Offerta manutenzione','Pulizia CRM'],
+    amm: ['Fatture di agosto','Report giornaliero','Scadenze fiscali','Pagamenti di settembre','Contratto Zenith','Rendiconto costi agenti','Onboarding Lumen Caffè','Ticket clienti','Archivio contratti','Polizza RC'],
+  };
+  const PASSI = [[3,7],[2,4],[5,6],[1,5],[4,9],[6,8],[2,3],[7,10],[3,5],[1,3],[4,6],[2,6]];
+
+  function modello40() {
+    const dipendenti = [];
+    let id = 1, k = 0;
+    // 12 al lavoro (3 per dipartimento), 2 in attesa, 1 errore, 6 pianificati, 19 liberi.
+    const statiPerDip = ['lavoro','lavoro','lavoro','attesa','pianificato','pianificato','libero','libero','libero','libero'];
+    dipartimenti.forEach((d, di) => {
+      for (let i = 0; i < 10; i++) {
+        const stato = (di === 0 && i === 9) ? 'errore' : (di === 2 && i === 9) ? 'attesa' : statiPerDip[i];
+        const nome = (di * 10 + i) % 7 === 3 ? NOMI[(di * 10 + i) % NOMI.length] : undefined;   // un nome ogni sette: gli altri sono senza
+        const att = { titolo: TITOLI[d.id][i], cliente: CLIENTI[(di * 3 + i) % CLIENTI.length], costo: 0 };
+        if (stato === 'lavoro') { att.da = ['08:30','09:40','10:20','09:05','09:52','10:35'][(di + i) % 6]; att.passo = PASSI[k++ % PASSI.length]; att.costo = 8 + ((di * 7 + i * 13) % 60); att.prossimo = 'Prossimo passo'; }
+        else if (stato === 'attesa') { att.da = '09:06'; att.fine = ['09:48','10:05','10:30'][(di + i) % 3]; att.costo = 5 + ((di + i) % 9); }
+        else if (stato === 'pianificato') { att.quando = ['15:00','17:00','18:00','16:30'][(di + i) % 4]; }
+        else if (stato === 'errore') { att.da = '08:55'; att.errore = 'Chiavi di accesso scadute'; att.costo = 4; }
+        else { att.fine = 'ieri'; }
+        const e = { id: id++, ruolo: RUOLI[d.id][i], dip: d.id, stato, att }; if (nome) e.nome = nome;
+        dipendenti.push(e);
+      }
+    });
+    const attesa = dipendenti.filter(e => e.stato === 'attesa');
+    const approvazioni = attesa.map((e, i) => ({ id: 'ap' + (i + 1), chi: e.id, cosa: e.att.titolo, cliente: e.att.cliente, ora: e.att.fine, tipo: 'documento' }));
+    // Anche due al lavoro hanno un pezzo in attesa (come Nora a 11).
+    const lav = dipendenti.filter(e => e.stato === 'lavoro');
+    approvazioni.unshift({ id: 'apx1', chi: lav[0].id, cosa: 'Consegna parziale 1', cliente: lav[0].att.cliente, ora: '10:12', tipo: 'post' });
+    approvazioni.push({ id: 'apx2', chi: lav[4].id, cosa: 'Consegna parziale 2', cliente: lav[4].att.cliente, ora: '09:31', tipo: 'documento' });
+    const NOTE = ['Consegna secondo il brief.', 'Prima versione completa, pronta per la revisione.', 'Rispetta i vincoli di lunghezza e tono.'];
+    const TIPI = ['post', 'documento', 'lista', 'proposta'];
+    const ALLEGATO = (tipo, i) => tipo === 'post' ? 'Immagine 1200×1200' : tipo === 'lista' ? 'Foglio: ' + (40 + i * 20) + ' righe' : 'Documento: ' + (2 + i) + ' pagine';
+    const richieste = approvazioni.map((a, i) => ({ ...a, stato: 'attesa', costo: 3 + (i % 7), passi: ['Brief', 'Bozza', 'Revisione'], nota: NOTE[i % 3], testo: 'Contenuto della consegna «' + a.cosa + '» per ' + a.cliente + '.', allegato: ALLEGATO(TIPI[i % 4], i), tipo: TIPI[i % 4] }));
+    richieste.forEach((r, i) => { r.giorno = 0; r.min = 9 * 60 + i * 11; });
+    const GG = [0, 0, 1, 1, 2, 3, 3, 6, 7, 9, 12, 20, 26, 34];
+    const ETI = ['', 'ieri', 'mar 2 set', 'lun 1 set', 'dom 31 ago', 'sab 30 ago', '29 ago', '28 ago', '26 ago', '23 ago', '15 ago', '9 ago', '1 ago'];
+    dipendenti.filter(e => e.stato === 'libero').forEach((e, i) => {
+      for (let k = 0; k < 2; k++) {
+        const j = (i * 2 + k) % GG.length, g = GG[j];
+        const st = (i + k) % 5 === 3 ? 'modifiche' : (i + k) % 7 === 5 ? 'rifiutata' : 'approvata';
+        const hh = 8 + ((i * 3 + k * 5) % 10), mm = (i * 17 + k * 23) % 60;
+        const hm = (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm;
+        const eti = g === 0 ? hm : g === 1 ? 'ieri ' + hm : (ETI[Math.min(ETI.length - 1, j)] || 'ago');
+        richieste.push({ id: 'st' + i + k, chi: e.id, cosa: k ? e.att.titolo + ' (v' + (i % 3 + 1) + ')' : e.att.titolo, cliente: CLIENTI[(i + k * 3) % CLIENTI.length], ora: eti, giorno: g, min: hh * 60 + mm, tipo: TIPI[(i + k) % 4], stato: st, decisa: eti, senzaTitolare: (i + k) % 6 === 0, costo: 2 + ((i + k) % 9), passi: ['Brief', 'Bozza', 'Revisione'], nota: NOTE[(i + k) % 3], testo: 'Contenuto della consegna «' + e.att.titolo + '».', allegato: ALLEGATO(TIPI[(i + k) % 4], 1), commento: st === 'modifiche' ? 'Aggiungi le priorità.' : st === 'rifiutata' ? 'Fuori brief, ripartire.' : '' });
+      }
+    });
+    const diario = [];
+    lav.slice(0, 6).forEach((e, i) => diario.push({ ora: e.att.da, chi: e.id, testo: 'ha iniziato «' + e.att.titolo + '»', tipo: 'inizio' }));
+    attesa.slice(0, 3).forEach(e => diario.push({ ora: e.att.fine, chi: e.id, testo: 'ha consegnato «' + e.att.titolo + '» e chiede approvazione', tipo: 'approvazione' }));
+    diario.push({ ora: '08:55', chi: 10, testo: 'deploy fallito: chiavi di accesso scadute', tipo: 'errore' });
+    diario.sort((a, b) => a.ora.localeCompare(b.ora));
+    const agenda = [
+      { ora: '09:06', fine: '09:48', chi: attesa.slice(0, 2).map(e => e.id), durata: '42 min', stato: 'fatto' },
+      { ora: '09:34', fine: '10:12', chi: [lav[0].id, lav[1].id], durata: '38 min', stato: 'fatto' },
+      { ora: 'adesso', chi: lav.map(e => e.id), stato: 'in corso' },
+      { ora: '15:00', chi: dipendenti.filter(e => e.stato === 'pianificato' && e.att.quando === '15:00').map(e => e.id), stato: 'pianificato' },
+      { ora: '17:00', chi: dipendenti.filter(e => e.stato === 'pianificato' && e.att.quando === '17:00').map(e => e.id), stato: 'pianificato' },
+      { ora: '18:00', chi: dipendenti.filter(e => e.stato === 'pianificato' && e.att.quando === '18:00').map(e => e.id), stato: 'pianificato' },
+    ];
+    const obiettivi = [];
+    dipartimenti.forEach((d, di) => {
+      const lst = dipendenti.filter(e => e.dip === d.id);
+      [0, 1, 2].forEach(k => {
+        const e = lst[k * 3], av = [15, 45, 80][(di + k) % 3], tot = 4 + ((di + k) % 5);
+        obiettivi.push({ id: 'o' + d.id + k, dip: d.id, titolo: TITOLI[d.id][k * 3], cliente: e.att.cliente, scadenza: ['15 set', '30 set', '15 ott'][k], avanz: av, consegne: [Math.round(tot * av / 100), tot], chi: lst.slice(k * 3, k * 3 + 3).map(x => x.id), stato: av >= 100 ? 'concluso' : (di + k) % 4 === 1 ? 'ritardo' : av < 20 ? 'nuovo' : 'corso', prossima: 'Prossima consegna · ' + ['8 set', '10 set', '12 set'][k] });
+      });
+    });
+    /* Le routine a quaranta si ricavano con lo **stesso criterio** delle tre scritte a mano a undici: una richiesta
+       decisa senza il titolare e' l'ombra di una routine, e il dipendente che l'ha fatta e' il suo. Il generatore non
+       produce obiettivi che si ripetono ne' pianificati ricorrenti, quindi qui le routine sono tante quante le
+       richieste con un riferimento a una regola: **cinque**. E' meno che a undici in proporzione, ed e' il numero
+       vero — il modello a quaranta prova la densita', non la fedelta' del governo. */
+    /* Solo le approvate: una richiesta **rifiutata** l'ha vista il titolare, quindi non e' uscita da una routine
+       con il «fai pure». Il generatore ne marcava cinque senza guardare lo stato, e due erano rifiutate. */
+    const routine = [];
+    richieste.forEach(r => { if (r.senzaTitolare && r.stato !== 'approvata') delete r.senzaTitolare; });
+    richieste.filter(r => r.senzaTitolare).forEach((r, i) => {
+      const e = dipendenti.find(x => x.id === r.chi); if (!e) return;
+      const ogni = ['giorno', 'settimana', 'mese'][i % 3];
+      routine.push({ id: 'rt' + (i + 1), nome: r.cosa, chi: e.id,
+        innesco: { tipo: 'ora', ogni, ora: ['18:00', '17:00', '09:00'][i % 3], testo: 'Ogni ' + ogni + ' alle ' + ['18:00', '17:00', '09:00'][i % 3] },
+        clausola: 'libera', origine: 'derivata', autore: 'titolare', dal: '1 giu', obiettivo: null, regola: null,
+        decise: [r.id], passi: r.passi.slice(), limiti: { giorno: 5, settimana: 20, mese: 60 }, stato: 'attiva' });
+      r.deciso = { tipo: 'routine', id: 'rt' + (i + 1) };
+      delete r.senzaTitolare;
+    });
+    return { dipendenti, approvazioni, richieste, diario, agenda, obiettivi, routine };
+  }
+
+  function modello(n) {
+    const m = n >= 40 ? modello40() : { dipendenti: base, approvazioni: approvazioni11, richieste: richieste11, diario: diario11, agenda: agenda11, obiettivi: obiettivi11, routine: routine11 };
+    let byId = Object.fromEntries(m.dipendenti.map(e => [e.id, e]));
+    const conta = s => m.dipendenti.filter(e => e.stato === s).length;
+    const costoOggi = m.dipendenti.reduce((t, e) => t + (e.att.costo || 0), 0);
+    const dipDi = e => dipartimenti.find(d => d.id === e.dip);
+    /* Etichetta principale e riga sotto: senza nome il ruolo e il dipartimento,
+       con il nome la forma piena (nome, poi «ruolo · dipartimento»). */
+    const etichetta = e => e.nome || e.ruolo;
+    const sotto = (e, breve) => { const d = dipDi(e); const nd = d ? (breve ? d.breve : d.nome) : ''; return e.nome ? e.ruolo + (nd ? ' · ' + nd : '') : nd; };
+    const semeDi = e => e.seme || e.ruolo;
+    /* La tinta dell'avatar (versione 10, 2026-09-05): una delle otto del sistema, scelta dal titolare nell'editor o assegnata
+       da DGT alla creazione come la meno usata in azienda; per i dipendenti del modello, a rotazione sull'id. */
+    const tintaDi = e => e.tinta || TINTE_ID[(e.id - 1 + TINTE_ID.length * 1000) % TINTE_ID.length];
+    const tintaLibera = () => { const uso = Object.fromEntries(TINTE_ID.map(t => [t, 0])); m.dipendenti.forEach(e => { uso[tintaDi(e)]++; }); return TINTE_ID.reduce((a, t) => uso[t] < uso[a] ? t : a, TINTE_ID[0]); };
+    const iniziali = e => etichetta(e).slice(0, 2).toUpperCase();
+    /* ---- I costi dell'azienda (versione 13, 2026-09-06): un solo aggregatore per la pagina Costi e per la sezione «Spesa del
+       mese» del Dipartimento, così le due leggono gli stessi numeri. Tre periodi: `oggi` = le esecuzioni di oggi (e.att.costo:
+       lo stesso numero di «spesi oggi» nella home); `mese` = i 30 giorni del dossier (metriche.ora.spesa, confrontati con i 30
+       precedenti; budget.speso è lo stesso numero); `anno` = dalla creazione del dipendente (giugno): i 30 giorni, i 30 precedenti
+       e le versioni del prompt più vecchie (task × costo per esito). Le consegne: oggi le richieste approvate oggi; nei 30 giorni
+       le consegne accettate del dossier (approvate al primo colpo più quelle corrette); dalla creazione anche le versioni vecchie
+       (task meno le respinte). Per cliente, la spesa e le consegne di ogni dipendente si ripartiscono fra i suoi clienti in
+       proporzione alle richieste del periodo (oggi: il cliente dell'esecuzione in corso): così per dipartimento, per dipendente
+       e per cliente si somma allo stesso totale. Per modello: oggi i passi delle esecuzioni (fatti, in corso, in errore), nei 30
+       giorni l'uso del dossier; niente da inizio anno. Per strumento: solo oggi, dalle esecuzioni, sommato per nome. ---- */
+    const oggiConta = e => (e.att.costo || 0) > 0;
+    const versioniVecchie = d => d.prompt.versioni.filter(v => !v.proposta).slice(2);
+    const blocchiDi = e => { const d = out.dossierDi(e); return { ora: d.metriche.ora.spesa, prima: d.metriche.prima.spesa, prima2: versioniVecchie(d).reduce((t, v) => t + (v.numeri ? Math.round(v.numeri.task * v.numeri.costo) : 0), 0) }; };
+    const spesaDi = (e, periodo) => { if (periodo === 'oggi') return e.att.costo || 0; const b = blocchiDi(e); return periodo === 'anno' ? b.ora + b.prima + b.prima2 : b.ora; };
+    const inPeriodo = (r, periodo) => periodo === 'oggi' ? r.giorno === 0 : periodo === 'mese' ? r.giorno <= 31 : true;
+    /* Quante consegne ha fatto un dipendente nel periodo (un numero, non un elenco): serve solo all'aggregatore dei
+       costi. Si chiamava `consegneDi` e dalla versione 19 si chiama `contaConsegne`, perche' `consegneDi(dip)` adesso
+       e' l'elenco delle consegne del dipartimento e due cose diverse non possono avere lo stesso nome. */
+    const contaConsegne = (e, periodo, approvate) => { if (periodo === 'oggi') return approvate.filter(r => r.chi === e.id).length; const d = out.dossierDi(e), o = d.metriche.ora, p = d.metriche.prima; const mese = o.approvate + o.modifiche; return periodo === 'mese' ? mese : mese + p.approvate + p.modifiche + versioniVecchie(d).reduce((t, v) => t + (v.numeri ? Math.round(v.numeri.task * (1 - v.numeri.respinte / 100)) : 0), 0); };
+    const ordDal = s => { const [g, me] = String(s || '').split(' '); return ({ gen: 1, feb: 2, mar: 3, apr: 4, mag: 5, giu: 6, lug: 7, ago: 8, set: 9, ott: 10, nov: 11, dic: 12 }[me] || 0) * 100 + (+g || 0); };
+    /* arrotonda il campo `k` a interi che sommano a `tot`: i resti vanno ai decimali più grandi */
+    const interi = (lista, k, tot) => { const base = lista.map(x => Math.floor(x[k])); let resto = Math.round(tot) - base.reduce((a, b) => a + b, 0); lista.map((x, i) => [x[k] - base[i], i]).sort((a, b) => b[0] - a[0]).forEach(([, i]) => { if (resto > 0) { base[i]++; resto--; } }); lista.forEach((x, i) => { x[k] = base[i]; }); };
+    const dec = v => Math.round(v * 10) / 10;
+    const M_ID = Object.keys(MODELLI);
+    const usoVuoto = () => Object.fromEntries(M_ID.map(k => [k, { n: 0, costo: 0 }]));
+    const listaModelli = u => M_ID.map(k => ({ id: k, nome: MODELLI[k].nome, icona: MODELLI[k].icona, listino: MODELLI[k].costo, n: u[k].n, costo: dec(u[k].costo) }));
+    function costi(periodo, dip) {
+      periodo = periodo || 'mese';
+      const lst = dip ? m.dipendenti.filter(e => e.dip === dip) : m.dipendenti;
+      const ids = new Set(lst.map(e => e.id));
+      const richieste = m.richieste.filter(r => ids.has(r.chi) && inPeriodo(r, periodo));
+      const approvate = richieste.filter(r => r.stato === 'approvata');
+      const modelliDi = e => { const u = usoVuoto(); if (periodo === 'oggi') { if (oggiConta(e)) out.esecuzioneDi(e).passi.forEach(p => { if (p.stato !== 'da fare' && u[p.modello]) { u[p.modello].n++; u[p.modello].costo += p.costo; } }); } else if (periodo === 'mese') { const uso = out.dossierDi(e).modello.uso; M_ID.forEach(k => { if (uso[k]) { u[k].n += uso[k].esecuzioni; u[k].costo += uso[k].costo; } }); } return u; };
+      const somma = (a, b) => { M_ID.forEach(k => { a[k].n += b[k].n; a[k].costo += b[k].costo; }); return a; };
+      const sommaDi = (lista, f) => lista.reduce((t, x) => t + f(x), 0);
+      const perDipendente = lst.map(e => { const d = out.dossierDi(e), b = blocchiDi(e); return { e, d, spesa: spesaDi(e, periodo), prima: periodo === 'mese' ? b.prima : null, blocchi: b, esito: d.metriche.ora.costo, budget: d.budget, oggi: e.att.costo || 0, consegne: contaConsegne(e, periodo, approvate), modelli: modelliDi(e) }; }).sort((a, b) => (b.spesa - a.spesa) || (a.e.id - b.e.id));
+      const tot = sommaDi(perDipendente, x => x.spesa), totConsegne = sommaDi(perDipendente, x => x.consegne);
+      const perDipartimento = dipartimenti.filter(d => !dip || d.id === dip).map(d => { const mie = perDipendente.filter(x => x.e.dip === d.id); return { d, n: mie.length, lav: mie.filter(x => x.e.stato === 'lavoro').length, spesa: sommaDi(mie, x => x.spesa), prima: periodo === 'mese' ? sommaDi(mie, x => x.prima) : null, blocchi: { ora: sommaDi(mie, x => x.blocchi.ora), prima: sommaDi(mie, x => x.blocchi.prima), prima2: sommaDi(mie, x => x.blocchi.prima2) }, budgetMese: sommaDi(mie, x => x.budget.mese), budgetSpeso: sommaDi(mie, x => x.budget.speso), budgetGiorno: sommaDi(mie, x => x.budget.giorno), oggi: sommaDi(mie, x => x.oggi), consegne: sommaDi(mie, x => x.consegne), modelli: listaModelli(mie.reduce((u, x) => somma(u, x.modelli), usoVuoto())), dal: mie.map(x => x.d.dal).sort((a, b) => ordDal(a) - ordDal(b))[0] || '' }; });
+      /* per cliente: spesa e consegne del dipendente ripartite fra i clienti delle sue richieste del periodo; oggi il cliente dell'esecuzione */
+      const clienti = {};
+      const cliente = c => (clienti[c] = clienti[c] || { cliente: c, spesa: 0, consegne: 0, oggi: 0, chi: [] });
+      perDipendente.forEach(x => {
+        const e = x.e, pesi = {};
+        if (periodo === 'oggi') { if (e.att.cliente) pesi[e.att.cliente] = 1; }
+        else { richieste.filter(r => r.chi === e.id).forEach(r => { pesi[r.cliente] = (pesi[r.cliente] || 0) + r.costo; }); if (oggiConta(e) && e.att.cliente) pesi[e.att.cliente] = (pesi[e.att.cliente] || 0) + e.att.costo; }
+        let peso = Object.values(pesi).reduce((t, v) => t + v, 0);
+        if (!peso) { pesi[e.att.cliente || azienda.nome] = 1; peso = 1; }
+        Object.keys(pesi).forEach(c => { const q = cliente(c); q.spesa += x.spesa * pesi[c] / peso; if (periodo !== 'oggi') q.consegne += x.consegne * pesi[c] / peso; if (x.spesa && !q.chi.includes(e.id)) q.chi.push(e.id); });
+        if (x.oggi && e.att.cliente) cliente(e.att.cliente).oggi += x.oggi;
+      });
+      if (periodo === 'oggi') approvate.forEach(r => { cliente(r.cliente).consegne++; });
+      const perCliente = Object.values(clienti).filter(c => c.spesa >= 0.5 || c.consegne >= 0.5).sort((a, b) => (b.spesa - a.spesa) || a.cliente.localeCompare(b.cliente));
+      interi(perCliente, 'spesa', tot); if (periodo !== 'oggi') interi(perCliente, 'consegne', totConsegne);
+      const perModello = periodo === 'anno' ? null : listaModelli(perDipendente.reduce((u, x) => somma(u, x.modelli), usoVuoto()));
+      /* per strumento: le esecuzioni di oggi, sommate per nome; `usi` dice chi lo ha usato, dal più caro */
+      const strumenti = {};
+      lst.filter(oggiConta).forEach(e => out.esecuzioneDi(e).strumentiUso.forEach(s => { if (!s.chiamate) return; const q = strumenti[s.nome] = strumenti[s.nome] || { nome: s.nome, icona: s.icona, chiamate: 0, costo: 0, usi: [], errore: false }; q.chiamate += s.chiamate; q.costo += s.costo; q.usi.push({ id: e.id, costo: s.costo, chiamate: s.chiamate }); if (s.errore) q.errore = true; }));
+      const perStrumento = Object.values(strumenti).map(s => { s.usi.sort((a, b) => (b.costo - a.costo) || (b.chiamate - a.chiamate)); s.chi = s.usi.map(u => u.id); s.costo = dec(s.costo); return s; }).sort((a, b) => (b.costo - a.costo) || (b.chiamate - a.chiamate));
+      return { periodo, totale: dec(tot), prima: periodo === 'mese' ? sommaDi(perDipendente, x => x.prima) : null,
+        blocchi: { ora: sommaDi(perDipendente, x => x.blocchi.ora), prima: sommaDi(perDipendente, x => x.blocchi.prima), prima2: sommaDi(perDipendente, x => x.blocchi.prima2) },
+        budgetMese: sommaDi(perDipendente, x => x.budget.mese), budgetSpeso: sommaDi(perDipendente, x => x.budget.speso), budgetGiorno: sommaDi(perDipendente, x => x.budget.giorno),
+        oggi: sommaDi(perDipendente, x => x.oggi), consegne: totConsegne, esecuzioni: perModello ? perModello.reduce((t, x) => t + x.n, 0) : 0,
+        chiamate: perStrumento.reduce((t, s) => t + s.chiamate, 0), costoStrumenti: dec(perStrumento.reduce((t, s) => t + s.costo, 0)),
+        dal: perDipartimento.map(x => x.dal).filter(Boolean).sort((a, b) => ordDal(a) - ordDal(b))[0] || '',
+        perDipendente, perDipartimento, perCliente, perModello, perStrumento };
+    }
+    /* ---- Le consegne del dipartimento (versione 19, 2026-09-07) ----
+       «Consegna» è la parola scelta dall'utente per la cosa creata da un'esecuzione: prima ne servivano quattro
+       (`output` nel codice e nel titolo di sezione, «Consegne» nel contatore della stessa intestazione, `allegato`
+       nella richiesta, `consegne` negli obiettivi e nei costi) e nessuna delle quattro si apriva.
+       `consegneDi(dip)` raccoglie gli `output` delle esecuzioni dei dipendenti del dipartimento: **nessun numero
+       nuovo**, gli stessi che la pagina Esecuzione disegna già nella sua sezione «Output». In più due cose che il
+       modello aveva e non collegava: il **passo** che l'ha prodotta (letto da `quando`, «passo 2 · 10:18») con il suo
+       esito, i suoi strumenti e il suo costo, e la **richiesta** al titolare quando la consegna è già uscita.
+       L'id è stabile (`c<idDipendente>-<indice>`) perché una consegna si deve poter aprire. ---- */
+    /* ---- Il perimetro (versione 20, 2026-09-08) ----
+       La sezione diceva «di oggi» e mostrava soltanto le esecuzioni correnti. Le tre pillole del periodo
+       (`oggi` · `settimana` · `mese`, le stesse della Spesa) **non hanno richiesto di inventare dati storici**:
+       le consegne passate ci sono già ed erano le **richieste decise**, che portano `giorno`, `tipo`, `costo`,
+       `testo`, `allegato` e la data della decisione. Contate: 18 → 30 → 31 in tutta l'azienda a undici
+       dipendenti, 40 → 55 → 61 a quaranta.
+       Il filtro parte da `giorno >= 1`, cioè da ieri: le decise di **oggi** sono già nella lista corrente (r3,
+       «Lista di 120 lead verificati», è puntata da una consegna in corso) e contarle due volte le raddoppierebbe
+       nella pillola «oggi». Conseguenza voluta: **con `oggi` la funzione ritorna esattamente quello che ritornava
+       prima della versione 20**, quindi la pagina ferma non cambia di un pixel. */
+    const PER_CONSEGNE = { oggi: 0, settimana: 7, mese: 31 };
+    function consegneDi(dip, periodo) {
+      const lst = dip ? (out.perDip[dip] || []) : m.dipendenti;   /* perDip sta su `out`, lo rifà `ricalcola()` */
+      const out2 = [];
+      lst.forEach(e => {
+        const x = out.esecuzioneDi(e);
+        (x.output || []).forEach((o, i) => {
+          const np = (/passo (\d+)/.exec(o.quando || '') || [])[1];
+          const passo = np ? x.passi.find(p => p.n === +np) : null;
+          out2.push({
+            id: 'c' + e.id + '-' + i,
+            nome: o.nome, tipo: o.tipo, stato: o.stato, quando: o.quando, desc: o.desc,
+            chi: e.id, dip: e.dip, cliente: (e.att || {}).cliente || '',
+            richiesta: o.richiesta || null,
+            passo: passo ? { n: passo.n, nome: passo.nome, stato: passo.stato, esito: passo.esito || '',
+              strumenti: passo.strumenti || [], costo: passo.costo || 0, durata: passo.durata || passo.stima || '' } : null,
+            esecuzione: (e.att || {}).titolo || '',
+            /* le voci di log di quel passo: che cosa e' successo mentre la consegna si faceva. Sono gia' nel modello
+               (`x.log`, campo `passo`) e finora le leggeva solo la sezione «Log» della pagina Esecuzione. */
+            voci: np ? (x.log || []).filter(v => v.passo === +np) : [],
+          });
+        });
+      });
+      /* Le consegne dei giorni scorsi: le richieste già decise, che sono le consegne uscite dal titolare. Non
+         portano il passo strutturato (la richiesta ha solo i nomi dei suoi passi), quindi `passo` resta nullo e la
+         pagina della consegna mostra la sezione «La richiesta al titolare» al posto di «Il passo che l'ha
+         prodotta» — le due sezioni erano già condizionali dalla versione 19. */
+      const gg = PER_CONSEGNE[periodo] || 0;
+      if (gg) {
+        const chiOk = dip ? lst.map(e => e.id) : null;
+        m.richieste.filter(r => r.stato !== 'attesa' && r.giorno >= 1 && r.giorno <= gg
+          && (!chiOk || chiOk.includes(r.chi))).forEach(r => {
+          const e = byId[r.chi];
+          if (!e) return;
+          out2.push({
+            id: 'cr-' + r.id, nome: r.cosa, tipo: r.tipo, stato: r.stato, quando: r.decisa || r.ora,
+            desc: r.testo || '', chi: e.id, dip: e.dip, cliente: r.cliente || '',
+            richiesta: r.id, passo: null, esecuzione: '', voci: [], giorno: r.giorno, passata: true,
+          });
+        });
+      }
+      /* le fatte prima, poi quelle che aspettano il titolare, poi quelle in corso, poi le da fare; l'errore in fondo.
+         Le passate (versione 20) vanno dopo quelle di oggi a parità di stato: `passata` pesa prima del dipendente. */
+      const ord = { fatto: 0, approvata: 0, attesa: 1, bozza: 2, 'da fare': 3, errore: 4, modifiche: 5, rifiutata: 5 };
+      return out2.sort((a, b) => (ord[a.stato] - ord[b.stato]) || ((a.passata ? 1 : 0) - (b.passata ? 1 : 0))
+        || ((a.giorno || 0) - (b.giorno || 0)) || (a.chi - b.chi));
+    }
+    /* Una consegna dal suo id, in tutta l'azienda: la usa la pagina che la apre per intero. Cerca nel perimetro più
+       largo, se no una consegna dei giorni scorsi non si aprirebbe (versione 20). */
+    const consegnaDi = id => consegneDi(null, 'mese').find(c => c.id === id) || null;
+
+    /* ---- I workflow (versione 20, 2026-09-08) ----
+       Scelta del titolare: l'**editor a nodi vero**, come il secondo riferimento, contro il verdetto 5-0 di un
+       consiglio precedente. La parola è **workflow**, sua: «è un termine informatico e non credo abbia una vera
+       traduzione».
+
+       Che cos'è un nodo, e perché non è un dipendente. Il consiglio ha risposto 5 su 5 «un dipendente», e tutti e
+       cinque hanno poi nominato la stessa obiezione contro sé stessi: il passaggio di mano fra due dipendenti non
+       sta nei dati. **Misurato: zero casi, in tutte e due le taglie** — quello che esiste sono quattro riferimenti
+       alla *propria* consegna passata e undici `serie`, tutte dello stesso dipendente. Un canvas di nodi-dipendente
+       chiederebbe di inventare la relazione che lo regge, nella pagina che dovrebbe dimostrare che i numeri sono
+       veri. Quindi **il nodo è un passo**, che nel modello c'è per davvero: 43 passi a undici, 156 a quaranta, con
+       modello, strumenti, costo, durata ed esito.
+
+       L'attesa che il canvas era stato scelto per mostrare c'è lo stesso, e senza inventare niente: **l'ultimo nodo
+       è il titolare**. Non è un dipendente in più — l'ultimo passo di ogni dipartimento è già «Consegna al titolare»
+       (`PASSI_DIP`), e la consegna lì si ferma davvero. Il nodo del titolare porta la **regola** che l'ha fermata,
+       cioè una delle quattro di `m.regole`: il workflow non le sostituisce, le fa vedere.
+
+       Un workflow nasce **da un'esecuzione riuscita** (5 su 5, e qui i numeri ci sono): serve almeno che due passi
+       siano conclusi, se no non è ancora un lavoro andato bene. Costo e durata sono **sommati dai passi**, non
+       stimati.
+
+       La **firma anticipata nasce spenta**, per scelta del titolare: `firma: false`. I tre freni sono dichiarati e
+       misurati — la soglia dal costo vero del workflow, il perimetro dal cliente dell'esecuzione, la scadenza dal
+       numero di esecuzioni. Finché la pillola è spenta ogni uscita passa dalla coda, come oggi. ---- */
+    /* Le accensioni della firma anticipata, una per workflow. Stanno qui e non nel modello scritto, come `m.decidi`
+       per le richieste: sono decisioni prese guardando la pagina, e si perdono ricaricando. Nascono tutte spente. */
+    const firme = {};
+    /* ---- Il ramo (versione 22, scelta dell'utente sulla domanda 2 del consiglio) ----
+       «La prossima volta» non e' un oggetto nuovo: e' **la coda dello stesso workflow**, il suo tempo futuro.
+       Un canvas solo, due stati: «l'ultima volta» e' quello che e' successo (misurato, immutabile) e «la prossima
+       volta» e' quello che succedera' (dichiarato, componibile). Cosi' nessun numero misurato viene toccato da una
+       mano, non nasce una pagina nuova e non nasce una parola nuova — che era la trappola che il consiglio si era
+       gia' tirato addosso due volte (routine, workflow, esecuzione, copia, ramo: cinque nomi per una sequenza di
+       passi).
+       I rami stanno qui accanto a `firme` e per la stessa ragione: sono decisioni prese guardando la pagina, e si
+       perdono ricaricando, come `m.decidi` per le richieste. Il modello scritto non li conosce. */
+    const rami = {};
+    const REGOLA_NODO = (cliente, tipo) => cliente && cliente !== azienda.nome
+      ? 'Uscite verso i clienti' : tipo === 'lista' ? 'Liste di lead' : 'Report interni';
+    function workflowDi(dip) {
+      const lst = dip ? (out.perDip[dip] || []) : m.dipendenti;
+      const wf = [];
+      lst.forEach(e => {
+        const x = out.esecuzioneDi(e);
+        const passi = x.passi || [];
+        const fatti = passi.filter(p => p.stato === 'fatto');
+        /* «riuscita» vuol dire due cose, e servono tutte e due: almeno due passi conclusi, e nessun passo rotto.
+           Senza la seconda, l'esecuzione ferma di Kim («Chiavi di accesso scadute») diventerebbe un modo di lavorare
+           da ripetere — ed è esattamente il contrario. */
+        if (fatti.length < 2 || passi.some(p => p.stato === 'errore')) return;
+        /* La consegna che riguarda il titolare non è la prima della lista: è quella che lo aspetta, se c'è, se no
+           quella che ha già firmato. Prendere `output[0]` faceva dire al nodo del titolare «fatto» leggendo una
+           consegna intermedia che il titolare non ha mai visto. */
+        const outs = x.output || [];
+        const oAtt = outs.find(z => z.stato === 'attesa') || null;
+        const oApp = outs.find(z => z.stato === 'approvata') || null;
+        const o = oAtt || oApp || outs[0] || {};
+        const cliente = (e.att || {}).cliente || '';
+        /* ---- I numeri del workflow sono **avvenuti**, non previsti (versione 24) ----
+           Difetto della versione 20, trovato dal consiglio e verificato contando: il costo del workflow sommava
+           **anche i passi `da fare`**, e il costo di un passo da fare e' una **stima** — lo dice il codice che la
+           genera (`stimaPasso`: «i passi da fare: una stima dal costo medio dei passi fatti»). La pagina stampava
+           quella somma sotto la parola «misurati»: sul primo workflow **33,20 € su 71,20 erano stimati (47 %)**, e
+           **83 minuti su 121**; su tutti e sei, 83,80 € su 168. La spina dorsale dice che ogni euro risale a
+           un'esecuzione: un euro che deve ancora essere speso non ci risale.
+           Adesso costo e minuti sommano **solo quello che e' successo** (fatto, in corso, rotto), e il nodo di un
+           passo da fare non porta numeri — come il ramo, e per la stessa ragione. */
+        const avvenuto = p => p.stato !== 'da fare';
+        const costo = Math.round(10 * passi.filter(avvenuto).reduce((t, p) => t + (p.costo || 0), 0)) / 10;
+        const minuti = passi.filter(avvenuto).reduce((t, p) => t + (parseInt(p.durata || '', 10) || 0), 0);
+        const previsto = Math.round(10 * passi.filter(p => !avvenuto(p)).reduce((t, p) => t + (p.costo || 0), 0)) / 10;
+        const nodi = passi.map(p => ({
+          n: p.n, nome: p.nome, stato: p.stato, chi: e.id,
+          modello: p.modello || 'standard', strumenti: (p.strumenti || []).slice(),
+          costo: avvenuto(p) ? (p.costo || 0) : 0, durata: avvenuto(p) ? (p.durata || '') : '',
+          stima: avvenuto(p) ? '' : (p.stima || ''), esito: p.esito || '',
+        }));
+        /* il nodo del titolare: non è un dipendente in più, è dove la consegna si ferma davvero. Lo stato viene
+           dalla consegna dell'esecuzione, non da un campo nuovo. */
+        nodi.push({
+          n: passi.length + 1, titolare: true, nome: 'Firma del titolare',
+          stato: oAtt ? 'attesa' : oApp ? 'fatto' : 'da fare',
+          regola: REGOLA_NODO(cliente, o.tipo), quando: (oAtt || oApp || {}).quando || '',
+          costo: 0, durata: '', strumenti: [],
+        });
+        wf.push({
+          id: 'w' + e.id, nome: (e.att || {}).titolo || o.nome || 'Lavoro', dip: e.dip, chi: e.id,
+          cliente, nodi, costo, minuti, previsto, passi: passi.length,
+          conclusi: fatti.length, consegna: o.nome || '',
+          /* la delega nasce spenta (scelta del titolare) e i tre freni sono misurati, non inventati */
+          firma: !!firme['w' + e.id],
+          soglia: Math.max(5, Math.ceil(costo / 5) * 5),
+          perimetro: cliente || azienda.nome,
+          scadenza: 10,
+        });
+      });
+      return wf;
+    }
+    const workflowIdDi = id => workflowDi(null).find(w => w.id === id) || null;
+    /* ---- L'agenda dell'azienda (versione 15, 2026-09-06): un solo aggregatore per la pagina Agenda della Console e per la
+       tab Agenda del telefono. `giornata()` costruisce gli eventi di oggi dall'attività corrente di ogni dipendente: le ore,
+       i titoli e i costi sono quelli di `e.att` (nessun numero nuovo), le durate mancanti vengono dai passi dell'esecuzione
+       (`esecuzioneDi`, lo stesso calcolo della pagina Esecuzione). `settimana()` sono i sette giorni da oggi: i pianificati
+       che si ripetono (obiettivi con scadenza «ogni …»), le prossime consegne degli obiettivi e le scadenze che cadono in
+       quel giorno. Le date si leggono da `azienda.data` e `azienda.dataLunga`. ---- */
+    const MESI = ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre'];
+    const GIORNI = ['domenica', 'lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato'];
+    const orario = t => { const k = /(\d\d):(\d\d)/.exec(t || ''); return k ? (+k[1]) * 60 + (+k[2]) : null; };
+    const hhmm = t => String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0');
+    const minutiDi = s => { const k = /(\d+)\s*min/.exec(s || ''); return k ? +k[1] : 0; };
+    /* I gruppi del giorno per la barra «Oggi in azienda» (versione 16), della Console e — dalla versione 17 — del telefono:
+       un solo conto per tutti e due, dal modello vero e non dalla lista parallela `m.agenda`. Le richieste che aspettano il
+       titolare non ci sono: le dice già la linguetta lime «N da approvare» (correzione 16a). */
+    function gruppiOggi() {
+      const per = s => m.dipendenti.filter(e => e.stato === s);
+      const piani = per('pianificato').slice().sort((a, b) => String(a.att.quando || '').localeCompare(String(b.att.quando || '')));
+      const fatte = m.richieste.filter(r => r.giorno === 0 && r.stato === 'approvata').length;
+      return { corso: per('lavoro'), errore: per('errore'), piani, fatte };
+    }
+    function giornata() {
+      const adesso = orario(azienda.ora), ev = [];
+      m.dipendenti.forEach(e => {
+        const a = e.att || {};
+        const base = { chi: e.id, titolo: a.titolo || '', cliente: a.cliente || '', costo: a.costo || 0, dip: e.dip };
+        const metti = x => ev.push(Object.assign({}, base, x));
+        if (e.stato === 'lavoro') { const d = orario(a.da); if (d !== null) metti({ stato: 'corso', da: a.da, a: azienda.ora, min: d, fine: Math.max(d + 10, adesso), passo: a.passo || null }); }
+        else if (e.stato === 'attesa') { const d = orario(a.da), f = orario(a.fine); if (d !== null) metti({ stato: 'attesa', da: a.da, a: a.fine || '', min: d, fine: Math.max(d + 10, f === null ? d + 30 : f) }); }
+        /* l'errore: il blocco va dal primo passo al passo fallito (`e.att.da` è l'ora del guasto, non dell'avvio) */
+        else if (e.stato === 'errore') { const x = out.esecuzioneDi(e), p0 = x.passi.find(p => p.inizio), pu = x.passi.filter(p => p.fine).pop(); const d = orario(p0 ? p0.inizio : a.da), f = orario(pu ? pu.fine : a.da); if (d !== null) metti({ stato: 'errore', da: hhmm(d), a: hhmm(f === null ? d + 20 : f), min: d, fine: Math.max(d + 10, f === null ? d + 20 : f), errore: a.errore || '', guasto: a.da }); }
+        else if (e.stato === 'pianificato') { const d = orario(a.quando); if (d !== null) { const st = out.esecuzioneDi(e).passi.reduce((t, p) => t + minutiDi(p.stima), 0) || 30; metti({ stato: 'pianificato', da: a.quando, a: hhmm(d + st), min: d, fine: d + st, stima: st }); } }
+        else if (a.fine && !/ieri/i.test(a.fine)) { const f = orario(a.fine), d = orario(a.da); if (f !== null) metti({ stato: 'fatto', da: d === null ? hhmm(Math.max(0, f - 30)) : a.da, a: a.fine, min: d === null ? Math.max(0, f - 30) : d, fine: f }); }
+      });
+      return ev.sort((p, q) => (p.min - q.min) || (p.chi - q.chi));
+    }
+    /* La settimana: sette giorni da oggi. Ogni giorno porta i pianificati che si ripetono, le prossime consegne degli
+       obiettivi e le scadenze; oggi porta anche gli eventi della giornata. */
+    /* Il giorno di oggi: il numero e il mese da `azienda.data`, il nome del giorno da `azienda.dataLunga`. Il calendario del
+       modello è quello del prodotto, non quello vero: il nome del giorno si conta da lì (giovedì 4, venerdì 5, …), la data
+       si conta con Date solo per il cambio di mese. */
+    const oggiData = new Date(+((/(\d{4})/.exec(azienda.dataLunga || '') || [])[1]) || 2026, Math.max(0, MESI.findIndex(x => azienda.data.indexOf(x) >= 0)), parseInt(azienda.data, 10) || 1);
+    const oggiGiorno = (() => { const gi = GIORNI.findIndex(x => (azienda.dataLunga || '').indexOf(x) === 0); return gi >= 0 ? gi : oggiData.getDay(); })();
+    const dataBreve = d => d.getDate() + ' ' + MESI[d.getMonth()].slice(0, 3);
+    const leggiData = s => { const k = /(\d{1,2})\s+([a-zà-ù]{3})/i.exec(String(s || '')); if (!k) return null; const mi = MESI.findIndex(x => x.slice(0, 3) === k[2].toLowerCase()); return mi < 0 ? null : mi * 100 + (+k[1]); };
+    const chiaveData = d => d.getMonth() * 100 + d.getDate();
+    function settimana() {
+      const oggiEv = giornata();
+      return Array.from({ length: 7 }, (_, i) => {
+        const d = new Date(oggiData.getTime()); d.setDate(d.getDate() + i);
+        const chiave = chiaveData(d), nome = GIORNI[(oggiGiorno + i) % 7], voci = [];
+        /* i pianificati che si ripetono: gli obiettivi con scadenza «ogni giorno» / «ogni <giorno della settimana>» */
+        m.obiettivi.forEach(o => {
+          const s = String(o.scadenza || '');
+          if (s.indexOf('ogni') !== 0) return;
+          const ogni = s.slice(5).trim();
+          if (i === 0 || !(ogni === 'giorno' || ogni === nome)) return;   // oggi i pianificati stanno già negli eventi del giorno
+          o.chi.forEach(id => { const e = byId[id]; if (e && e.att && e.att.quando) voci.push({ tipo: 'pianificato', ora: e.att.quando, chi: [id], titolo: e.att.titolo, sotto: e.att.cliente || o.titolo, cliente: e.att.cliente || '', obiettivo: o.id }); });
+        });
+        m.obiettivi.forEach(o => {
+          if (leggiData(o.prossima) === chiave) voci.push({ tipo: 'consegna', ora: '', chi: o.chi.slice(0, 3), titolo: String(o.prossima).split('·').slice(0, -1).join('·').trim() || o.titolo, sotto: o.titolo, cliente: o.cliente, obiettivo: o.id });
+          if (leggiData(o.scadenza) === chiave) voci.push({ tipo: 'scadenza', ora: '', chi: o.chi.slice(0, 3), titolo: o.titolo, sotto: 'scadenza · ' + (o.consegne[0] + ' di ' + o.consegne[1] + ' consegne'), cliente: o.cliente, obiettivo: o.id, stato: o.stato, avanz: o.avanz });
+        });
+        voci.sort((a, b) => (a.ora ? 0 : 1) - (b.ora ? 0 : 1) || String(a.ora).localeCompare(String(b.ora)));
+        return { i, oggi: i === 0, nome, breve: nome.slice(0, 3), data: dataBreve(d), eventi: i === 0 ? oggiEv : [], voci };
+      });
+    }
+    /* Le scadenze dei prossimi giorni, dalla più vicina: gli obiettivi con una data (non quelli che si ripetono). */
+    function scadenze() {
+      const oggi = chiaveData(oggiData);
+      return m.obiettivi.map(o => ({ o, quando: leggiData(o.scadenza) })).filter(x => x.quando !== null)
+        .sort((a, b) => (a.quando - b.quando) || a.o.id.localeCompare(b.o.id))
+        .map(x => Object.assign(x, { giorni: Math.round((new Date(oggiData.getFullYear(), Math.floor(x.quando / 100), x.quando % 100) - oggiData) / 86400000) }));
+    }
+    /* ---- I fili della chat (versione 15): una sola copia per dipendente, così i messaggi restano; la Console e il telefono
+       leggono lo stesso filo, e la barra di scrittura dell'Esecuzione ci scrive dentro come quella della chat. ---- */
+    const fili = {};
+    const filoDi = e => { if (!e) return []; if (!fili[e.id]) fili[e.id] = (n < 40 && FILI11[e.id]) ? FILI11[e.id].slice() : filoGenerato(e, out.esecuzioneDi(e)); return fili[e.id]; };
+    const ultimo = e => { const f = filoDi(e); return f.length ? f[f.length - 1] : null; };
+    /* Da leggere: i messaggi del dipendente (e le consegne) dopo l'ultima nota del titolare. */
+    const nonLetti = e => { const f = filoDi(e); let k = f.length; while (k > 0 && f[k - 1].da !== 'io') k--; return f.length - k; };
+    const out = {
+      azienda, dipartimenti, STATI, n: m.dipendenti.length,
+      dipendenti: m.dipendenti, byId, perDip: {}, approvazioni: m.approvazioni, richieste: m.richieste, diario: m.diario, agenda: m.agenda,
+      obiettivi: m.obiettivi,
+      etichetta, sotto, semeDi, tintaDi, tintaLibera, TINTE_ID,
+      /* Mutazioni dell'organico (editor del dipendente): ritornano il dipendente. */
+      aggiungi: dati => { const id = Math.max(0, ...m.dipendenti.map(e => e.id)) + 1; const e = { id, ruolo: dati.ruolo || 'Nuovo dipendente', dip: dati.dip || dipartimenti[0].id, stato: 'libero', att: { titolo: 'Nessuna esecuzione', cliente: '', costo: 0, fine: '' } }; if (dati.nome) e.nome = dati.nome; if (dati.seme && dati.seme !== e.ruolo) e.seme = dati.seme; e.tinta = TINTE_ID.includes(dati.tinta) ? dati.tinta : tintaLibera(); m.dipendenti.push(e); out.ricalcola(); return e; },
+      aggiorna: (id, dati) => { const e = out.byId[id]; if (!e) return null; if ('nome' in dati) { if (dati.nome) e.nome = dati.nome; else delete e.nome; } if (dati.ruolo) e.ruolo = dati.ruolo; if (dati.dip) e.dip = dati.dip; if ('seme' in dati) { if (dati.seme && dati.seme !== e.ruolo) e.seme = dati.seme; else delete e.seme; } if (TINTE_ID.includes(dati.tinta)) e.tinta = dati.tinta; out.ricalcola(); return e; },
+      ricalcola: () => { byId = out.byId = Object.fromEntries(m.dipendenti.map(e => [e.id, e])); out.perDip = Object.fromEntries(dipartimenti.map(d => [d.id, m.dipendenti.filter(e => e.dip === d.id)])); out.n = m.dipendenti.length; out.alLavoro = m.dipendenti.filter(e => e.stato === 'lavoro'); },
+      obiettiviDi: dip => m.obiettivi.filter(o => o.dip === dip),
+      richiesteDi: st => m.richieste.filter(r => r.stato === st),
+      /* La coda del titolare, nell'ordine in cui gliela si mette davanti — **una sola volta, per tutte e due le
+         superfici** (versione 33: la Console e il telefono la ordinavano ognuno per conto suo, con la stessa
+         formula scritta due volte). Prima il **tetto**, poi le uscite dalla piu' vecchia.
+         Perche' il tetto prima: e' l'unica richiesta che non riguarda un cliente ma **tutta l'azienda**, e finche'
+         non e' decisa non riparte nessun passo — le altre richieste restano decidibili, il lavoro no. Fino alla 32
+         cadeva dove la portava la sua ora: seconda di cinque a undici, **settima di otto a quaranta**, cioe' la
+         cosa che sblocca il lavoro di quaranta persone stava in fondo. */
+      codaAttesa: () => out.richiesteDi('attesa').sort((a, b) => (b.tipo === 'tetto' ? 1 : 0) - (a.tipo === 'tetto' ? 1 : 0) || (b.giorno - a.giorno) || (a.min - b.min)),
+      periodoDi: r => r.giorno === 0 ? 'oggi' : r.giorno === 1 ? 'ieri' : r.giorno <= 7 ? 'settimana' : r.giorno <= 31 ? 'mese' : 'prima',
+      clienti: [...new Set(m.richieste.map(r => r.cliente))].sort(),
+      /* filtri = { stato, tipo, chi, cliente, periodo, q }: valore assente o 'tutti' = nessun filtro */
+      richiesteFiltrate: f => m.richieste.filter(r => {
+        if (!f) return true;
+        const per = r.giorno === 0 ? 'oggi' : r.giorno === 1 ? 'ieri' : r.giorno <= 7 ? 'settimana' : r.giorno <= 31 ? 'mese' : 'prima';
+        const okPer = !f.periodo || f.periodo === 'tutti' || f.periodo === per || (f.periodo === 'settimana' && r.giorno <= 7) || (f.periodo === 'mese' && r.giorno <= 31);
+        const okQ = !f.q || (r.cosa + ' ' + r.cliente + ' ' + etichetta(byId[r.chi])).toLowerCase().includes(f.q.toLowerCase());
+        return (!f.stato || f.stato === 'tutti' || r.stato === f.stato) && (!f.tipo || f.tipo === 'tutti' || r.tipo === f.tipo)
+          && (!f.chi || f.chi === 'tutti' || r.chi === +f.chi) && (!f.dip || f.dip === 'tutti' || byId[r.chi].dip === f.dip)
+          && (!f.cliente || f.cliente === 'tutti' || r.cliente === f.cliente) && okPer && okQ;
+      }),
+      /* Le routine (versione 21) e i modi di leggerle. `routineDi(e)` sono quelle di un dipendente, `routineIdDi`
+         quella di un id. `autoreDi(r)` e' chi ha deciso una richiesta al posto del titolare: risolve il riferimento
+         `deciso` a un record vero e ritorna `{ tipo, id, nome }`, oppure `null` se ha deciso il titolare. Se il
+         riferimento non risolve ritorna `{ …, nome: '' }`: la prova lo prende, la pagina non stampa un fantasma. */
+      routine: m.routine || [],
+      routineDi: e => (m.routine || []).filter(x => x.chi === (e && e.id)),
+      routineIdDi: id => (m.routine || []).find(x => x.id === id) || null,
+      autoreDi: r => {
+        if (!r || !r.deciso) return null;
+        const { tipo, id } = r.deciso;
+        const rec = tipo === 'routine' ? out.routineIdDi(id) : out.regole.find(g => g.id === id);
+        return { tipo, id, nome: rec ? rec.nome : '', rec };
+      },
+      /* Quante volte una routine e' davvero girata: non e' un numero inventato, sono le richieste che ha prodotto
+         (`decise`), risolte per essere sicuri che esistano. Attenzione: «prodotto» non e' «deciso» — `r8` l'ha
+         prodotta la routine `rt1` ma l'ha decisa la regola `g2`. La regola permette, la routine agisce.
+         Il rodaggio della decisione 53 ne vuole 3, e nel modello di oggi nessuna delle tre ci arriva. */
+      rodaggioDi: rt => ({ fatte: (rt.decise || []).filter(id => m.richieste.some(r => r.id === id)).length, di: 3 }),
+      /* ---- La precedenza fra la clausola di una routine e una regola d'azienda (versione 22, conferma c) ----
+         Il consiglio della versione 21 l'aveva nominata e nessuno l'aveva scritta: quattro pareri su cinque
+         lasciavano vincere la routine **senza dirlo**. La regola, adesso scritta: **una routine esegue, non
+         decide** — vince la regola d'azienda attiva, e la clausola della routine puo' solo stringere, mai allargare.
+         Se la regola dice «Sempre da approvare», nemmeno il «fai pure» fa uscire la consegna.
+
+         `regolaPer(r)` e' la regola che governa una richiesta, e la sceglie con lo **stesso criterio** che il canvas
+         usa gia' per il nodo del titolare (`REGOLA_NODO`), piu' g4 in testa perche' e' la piu' stretta: una spesa
+         sopra la soglia si approva sempre, qualunque cosa sia. Solo le regole **attive** governano: una regola
+         spenta non e' una regola, e infatti g4 spenta non compariva da nessuna parte.
+         `contrastoDi(r)` e' il caso che la precedenza rende visibile: una richiesta uscita **senza** il titolare
+         mentre la regola che la governa dice «Sempre da approvare». Nel modello a undici non ne esiste nessuno;
+         a quaranta ne escono **due** (due liste e un post verso clienti veri, decisi da una routine). Non si
+         corregge il dato: la riga lo dice e una prova ne fissa il conto. */
+      regolaPer: r => {
+        if (!r) return null;
+        const att = out.regole.filter(g => g.attiva);
+        const g = id => att.find(x => x.id === id) || null;
+        /* La richiesta del tetto non e' un'uscita verso un cliente: e' una decisione sull'azienda, e nessuna
+           regola d'approvazione la governa. Senza questa riga cadrebbe su `g2` («Report interni: automatica») e
+           la pagina Richieste stamperebbe che un rendiconto governa il tetto di spesa. */
+        if (r.tipo === 'tetto') return null;
+        return (r.costo > 50 && g('g4'))
+          || (r.cliente && r.cliente !== azienda.nome && g('g1'))
+          || (r.tipo === 'lista' && g('g3'))
+          || g('g2');
+      },
+      contrastoDi: r => {
+        if (!r || !r.deciso || r.stato !== 'approvata') return null;
+        const g = out.regolaPer(r);
+        return g && g.modo === 'Sempre da approvare' ? g : null;
+      },
+      /* Quante richieste governa ogni regola: il numero che toglie alla card il sapore di decorazione. Su g4 fa
+         **zero** ed e' proprio quello il punto — la consegna piu' cara del modello costa 33,80 €, la soglia sta a
+         50, e la regola non puo' scattare mai. Il conto lo dice invece di lasciarlo credere. */
+      contaRegola: g => m.richieste.filter(r => { const x = out.regolaPer(r); return x && x.id === g.id; }).length,
+      /* I limiti di spesa (versione 32, le sette risposte del titolare del 9 settembre 2026).
+         **Una sola unita', gli euro**, a tutti i livelli. La percentuale non e' piu' un dato: e' un **gesto**
+         dell'editor — si scrive «60 %» e il prodotto lo fissa in euro in quel momento («60 % di 115 → 69 €») e
+         da li' non si muove piu'. Fino alla 31 il soffitto di un dipartimento era una quota del tetto d'azienda,
+         e siccome il tetto era la **somma** dei budget dei dipendenti, il soffitto di Vendite passava da 69 a
+         75 € quando si assumeva in **Amministrazione**: un limite che cambia per fatti altrui non e' un limite.
+         Con la percentuale muore anche `avvisoSopra100`, che non avrebbe potuto scattare mai (la somma delle
+         quote faceva 60 e la soglia stava a 100).
+         **Cinque livelli**: azienda (obbligatorio, ed e' l'unico che **ferma**), dipartimento, dipendente e
+         routine (facoltativi: mandano in coda), piu' la **soglia** del workflow, che esiste dalla versione 25
+         (`w.soglia`, «Sopra la soglia l'uscita torna in coda») e resta dov'e'.
+         **Due orizzonti**, giorno e mese; la **settimana** solo dove la cadenza e' settimanale — rt2, il
+         venerdi'. Il tetto del mese non e' mai sfondato (39 % a undici, 42 % a quaranta): prescrivere tre
+         orizzonti dappertutto sarebbe decorazione.
+         **Tre parole, tre lavori**: *tetto* per quello che ferma, *budget* per i facoltativi, *soglia* per il
+         workflow.
+         `fermaPrimaDelPasso`: il tetto si controlla **prima di ogni passo**, mai a meta'. I passi dei 200 lead
+         costano 0,5 · 6 · 22 · 9,5 · 23 · 4 €: un solo passo puo' costare 23 €, piu' del doppio dell'intero
+         budget giornaliero di Nora (10 €). Il passo che sfonderebbe non parte. */
+      tetti: {
+        fermaPrimaDelPasso: true,
+        /* Il tetto d'azienda, in euro, **posto dal titolare**. Fino alla versione 31 era `sommaBudget()`, cioe'
+           un numero che nessuno aveva scelto: e allora «oltre il tetto» diceva che era stata superata una somma,
+           non che era stata rotta una promessa. Qui c'e' quello che il titolare ha scritto il 1º settembre
+           accettando la **proposta** della prima apertura (`propostaTetto`, la somma dei budget di allora): da
+           quel momento e' suo e non si muove piu' — assumere un dipendente non lo alza. Lo si riscrive dalla
+           pagina Impostazioni, che e' il primo posto del prodotto dove si scrive un numero. */
+        azienda: { giorno: 0, mese: 0, dal: '1 set', da: '',
+          /* L'**eccezione di oggi**: gli euro che il titolare ha aggiunto al tetto **solo per oggi**, e che a
+             mezzanotte scadono. Il tetto di ogni giorno non si tocca — cosi' resta una promessa e non un attrito —
+             e quante volte l'eccezione e' servita e' la misura che dice se il tetto e' tarato male. */
+          oggi: 0 },
+        /* I budget dei dipartimenti, in euro: `{ svi: { giorno, mese, da } }`. Nasce **vuoto** — il dipartimento
+           parte senza soffitto, come ha deciso il titolare — e fino alla 31 la pagina Costi ne stampava uno
+           («su 30 €») che era la somma dei budget dei suoi dipendenti e non l'aveva scelto nessuno: la stessa
+           malattia del tetto d'azienda. */
+        dip: {},
+      },
+      /* Il tetto d'azienda, giorno e mese. La forma del ritorno e' quella di sempre: i suoi sette chiamanti non
+         cambiano, cambia da dove viene il numero. */
+      tettoAzienda: () => ({ giorno: out.tetti.azienda.giorno, mese: out.tetti.azienda.mese }),
+      /* Il tetto che vale **oggi**: quello di ogni giorno piu' l'eccezione di oggi, se il titolare ne ha firmata
+         una. E' questo che il freno guarda; `tettoAzienda()` resta la promessa. */
+      tettoOggi: () => out.tetti.azienda.giorno + (out.tetti.azienda.oggi || 0),
+      /* La **proposta** della prima apertura: la somma dei budget dei dipendenti. Non e' il tetto — e' il numero
+         che Impostazioni offre a chi non ne ha ancora scritto uno, e il solo posto dove `sommaBudget` sopravvive.
+         A undici fa 115 €/giorno e 1 580 €/mese, a quaranta 400 e 5 120; assumendo un dipendente sale, e il
+         tetto no: e' esattamente la differenza fra una proposta e una promessa. */
+      propostaTetto: () => ({ giorno: sommaBudget('giorno'), mese: sommaBudget('mese') }),
+      /* Il budget di un dipartimento in euro (`{ giorno, mese, da }`), o **null** se non ne ha: e' facoltativo, e
+         nessun dipartimento ne nasce con uno. */
+      budgetDip: dip => out.tetti.dip[dip] || null,
+      /* La percentuale come **gesto**, non come dato: `leggiLimite('60 %', 'giorno')` con il tetto a 115 ritorna
+         `{ v: 69, da: '60 % di 115 € al giorno' }`, e da li' e' 69 € e basta. `leggiLimite('69')` ritorna 69 €
+         senza traccia. Ritorna null se il testo non e' un numero (il campo allora non scrive niente). */
+      leggiLimite: (testo, per) => {
+        const t = String(testo == null ? '' : testo).trim().replace(',', '.');
+        if (!t) return null;
+        const pct = /^([0-9]+(?:\.[0-9]+)?)\s*%$/.exec(t);
+        if (pct) {
+          const base = out.tettoAzienda()[per === 'mese' ? 'mese' : 'giorno'];
+          const q = parseFloat(pct[1]);
+          return { v: Math.round(base * q / 100), da: pct[1].replace('.', ',') + ' % di ' + base + ' € al ' + (per === 'mese' ? 'mese' : 'giorno') };
+        }
+        const n = /^([0-9]+(?:\.[0-9]+)?)\s*€?$/.exec(t);
+        return n ? { v: Math.round(parseFloat(n[1])), da: '' } : null;
+      },
+      /* Scrive un limite in euro. `dove`: 'azienda' | 'dip:<id>' | 'dipendente:<id>' | 'routine:<id>';
+         `per`: 'giorno' | 'settimana' | 'mese'. `v` null toglie il budget (facoltativo: solo l'azienda non si
+         puo' togliere). `da` e' la traccia del gesto («60 % di 115 € al giorno»), che la pagina stampa sotto il
+         numero perche' di un numero fissato si veda da dove viene. Ritorna il valore scritto, o null. */
+      poniLimite: (dove, per, v, da) => {
+        const k = per === 'mese' ? 'mese' : per === 'settimana' ? 'settimana' : 'giorno';
+        const [tipo, id] = String(dove || '').split(':');
+        if (tipo === 'azienda') { if (v == null) return null; if (per === 'oggi') out.tetti.azienda.oggi = v; else { out.tetti.azienda[k] = v; out.tetti.azienda.da = da || ''; } out.aggiornaTetto(); return v; }
+        if (tipo === 'dip') {
+          if (!dipartimenti.some(d => d.id === id)) return null;
+          if (v == null) { const b = out.tetti.dip[id]; if (b) { delete b[k]; if (b.giorno == null && b.mese == null) delete out.tetti.dip[id]; } return null; }
+          const b = out.tetti.dip[id] || (out.tetti.dip[id] = {}); b[k] = v; b.da = da || ''; return v;
+        }
+        if (tipo === 'dipendente') {
+          const e = out.byId[+id]; if (!e) return null;
+          const d = out.dossierDi(e); if (!d.budget) d.budget = {};
+          if (v == null) { delete d.budget[k]; delete d.budget.da; return null; }
+          d.budget[k] = v; d.budget.da = da || ''; return v;
+        }
+        if (tipo === 'routine') {
+          const rt = (m.routine || []).find(x => x.id === id); if (!rt) return null;
+          if (!rt.limiti) rt.limiti = {};
+          if (v == null) { delete rt.limiti[k]; return null; }
+          rt.limiti[k] = v; rt.limiti.da = da || ''; return v;
+        }
+        return null;
+      },
+      /* ---- Il freno, cablato davvero (versione 32) ----
+         `fermaPrimaDelPasso` sta nel modello dalla decisione 55 e fino alla versione 31 **non lo leggeva nessuna
+         pagina**: l'unico lettore in tutto il repository era una riga di log dentro una prova. Adesso lo legge il
+         prodotto, ed e' questa la ragione per cui **si apre fermo**: il tetto e' gia' consumato (124 € su 115 a
+         undici, 427 su 400 a quaranta) *prima* di qualunque passo nuovo, quindi il passo che sfonderebbe non parte.
+         **Non nasce nessuno stato nuovo.** Chi e' fermo non cambia `e.stato` — resta `lavoro`, ed e' vero: la sua
+         esecuzione e' aperta — e prende `e.pausa`, che il prodotto ha gia' e che vuol dire esattamente questo. Il
+         chip «In pausa» lo stampa `chipStato` (componenti.js), il punto dell'avatar si spegne da se' (regola 19:
+         niente punto da fermo), la pagina Esecuzione ha gia' la frase e la pillola. `pausaPer` dice **chi** ha
+         fermato: `'titolare'` quando lo fa lui dalla pillola, `'tetto'` quando lo fa il tetto. */
+      fermePerTetto: () => (!out.tetti.fermaPrimaDelPasso || costoOggi <= out.tettoOggi()) ? [] : m.dipendenti.filter(e => e.stato === 'lavoro'),
+      /* Il passo che sfonderebbe: il primo passo da fare dell'esecuzione ferma piu' cara. E' il numero della
+         richiesta al titolare — misurato, non stimato: e' il costo dichiarato di **quel** passo, e risale a un
+         dipendente e a un'esecuzione come vuole la spina dorsale. */
+      passoFermo: () => {
+        const fer = out.fermePerTetto();
+        if (!fer.length) return null;
+        const cand = fer.map(e => { const x = out.esecuzioneDi(e), p = x.passi.find(q => q.stato === 'da fare'); return p ? { e, p, n: x.passi.length } : null; }).filter(Boolean);
+        if (!cand.length) return null;
+        return cand.sort((a, b) => (b.p.costo || 0) - (a.p.costo || 0) || a.e.id - b.e.id)[0];
+      },
+      /* Mette e toglie la pausa **del tetto**, senza toccare quella del titolare: se il tetto rientra (perche' il
+         titolare l'ha alzato o ha firmato l'eccezione di oggi) chi era fermo per il tetto riparte da solo, e chi
+         era in pausa per mano sua resta fermo. Si richiama dopo ogni scrittura di un limite. */
+      applicaTetto: () => {
+        const fermi = new Set(out.fermePerTetto().map(e => e.id));
+        m.dipendenti.forEach(e => {
+          if (fermi.has(e.id)) { if (!e.pausa || e.pausaPer === 'tetto') { e.pausa = true; e.pausaPer = 'tetto'; } }
+          else if (e.pausaPer === 'tetto') { e.pausa = false; delete e.pausaPer; }
+        });
+        return out;
+      },
+      /* ---- La richiesta del tetto (versione 32) ----
+         Il tetto ferma, e il titolare deve poterlo sbloccare: e' **una** richiesta al giorno, non una per
+         esecuzione. Sei richieste a undici e venti a quaranta spenderebbero proprio la risorsa che questo
+         repository chiama scarsa — l'attenzione del titolare — per una decisione che e' un numero solo.
+         La cifra non e' una previsione: e' il **costo dichiarato del passo che sfonderebbe**, il piu' caro fra
+         quelli fermi, e risale a un dipendente e a un'esecuzione come vuole la spina dorsale. La regola 40 dice
+         che quello che e' previsto non si stampa come misurato: per questo la richiesta chiede il passo, non
+         «finire la giornata» (che sarebbe 89 € a undici e **566** a quaranta, cioe' una stima piu' grande del
+         tetto stesso).
+         `chi` e' il dipendente di quel passo, quindi la richiesta si disegna con i componenti di sempre e non
+         apre nessuna superficie nuova: le 29 letture di `m.byId[r.chi]` continuano a funzionare. */
+      richiestaTetto: () => m.richieste.find(r => r.tipo === 'tetto' && r.stato === 'attesa') || null,
+      /* Rimette in fila modello e prodotto dopo ogni scrittura di un limite: chi e' fermo per il tetto, e la
+         richiesta che lo sblocca (che nasce quando il tetto ferma e sparisce quando non ferma piu'). */
+      aggiornaTetto: () => {
+        out.applicaTetto();
+        const pf = out.passoFermo(), viva = out.richiestaTetto();
+        if (!pf) { if (viva) m.richieste.splice(m.richieste.indexOf(viva), 1); return out; }
+        const imp = Math.ceil(pf.p.costo || 0);
+        const dati = {
+          /* Il titolo e' la **stessa forma** che la home e i Costi stampano dello stesso numero (versione 31):
+             «124 € su 115 €». Senza «raggiunto», che il numero dice gia' — e che misurato costava la terza riga:
+             sul telefono il titolo della card ha due righe da 162 px e con quella parola ne chiedeva tre,
+             uscendo nei puntini adesso che questa richiesta e' la prima della coda (versione 33). */
+          chi: pf.e.id, cosa: 'Tetto del giorno: ' + costoOggi + ' € su ' + out.tettoOggi() + ' €',
+          cliente: azienda.nome, ora: azienda.ora, tipo: 'tetto', stato: 'attesa', costo: 0, importo: imp,
+          passi: [], nota: 'Il tetto d\'azienda è l\'unico limite che ferma: sopra di lui non parte nessun passo nuovo.',
+          testo: 'Il passo ' + pf.p.n + ' di ' + pf.n + ' di ' + out.etichetta(pf.e) + ' («' + pf.p.nome + '») costa ' + String(pf.p.costo).replace('.', ',') + ' €, e il tetto del giorno è finito. Alzarlo di ' + imp + ' € solo per oggi fa ripartire le ' + out.fermePerTetto().length + ' esecuzioni ferme; domani il tetto torna a ' + out.tetti.azienda.giorno + ' €.',
+          allegato: 'Passo ' + pf.p.n + ' di ' + pf.n + ' · ' + String(pf.p.costo).replace('.', ',') + ' €',
+          giorno: 0, min: (parseInt(azienda.ora, 10) || 10) * 60,
+        };
+        if (viva) Object.assign(viva, dati); else m.richieste.push(Object.assign({ id: 'tt1' }, dati));
+        return out;
+      },
+      /* Gli orizzonti che un livello regge: giorno e mese dappertutto, e la **settimana solo dove la cadenza e'
+         settimanale**. L'unica routine settimanale e' rt2, che scatta il venerdi'. */
+      orizzontiDi: rt => (rt && rt.innesco && /settiman|luned|marted|mercoled|gioved|venerd|sabato|domenica/i.test(rt.innesco.ogni || '')
+        ? ['giorno', 'settimana', 'mese'] : ['giorno', 'mese']),
+      regole: [
+        { id: 'g1', nome: 'Uscite verso i clienti', desc: 'Post, proposte e documenti per i clienti', modo: 'Sempre da approvare', attiva: true, icona: 'i-mega' },
+        { id: 'g2', nome: 'Report interni', desc: 'Report giornalieri e rendiconti', modo: 'Automatica', attiva: true, icona: 'i-doc' },
+        { id: 'g3', nome: 'Liste di lead', desc: 'Liste e ricerche senza invio', modo: 'Automatica sotto 20 €', attiva: true, icona: 'i-list' },
+        /* Accesa nella versione 22 (conferma d): una regola spenta che resta in pagina e' decorazione. Accenderla
+           non cambia pero' **niente** di quello che il prodotto fa, e il numero lo dice: la richiesta piu' cara del
+           modello costa 10 €, la consegna piu' cara 33,80 €, e sopra i 50 € non c'e' niente ne' a undici ne' a
+           quaranta. La regola adesso governa davvero — governa zero consegne — e la card stampa il suo conto
+           invece di lasciar credere che stia trattenendo qualcosa. La soglia e' dell'utente: se la vuole efficace
+           va abbassata, e allora il conto sulla card lo fara' vedere. */
+        { id: 'g4', nome: 'Spese sopra 50 €', desc: 'Qualsiasi consegna che costa più di 50 €', modo: 'Sempre da approvare', attiva: true, icona: 'i-euro' },
+      ],
+      alLavoro: [],
+      conta, costoOggi, iniziali, dipDi,
+      /* I costi dell'azienda per periodo ('oggi' | 'mese' | 'anno'), tutta l'azienda o un dipartimento (versione 13): vedi sopra. */
+      costi, spesaDi,
+      /* L'agenda dell'azienda (versione 15, 2026-09-06): gli eventi di oggi costruiti dalle attività correnti, i sette giorni
+         da oggi (pianificati che si ripetono, prossime consegne, scadenze) e le scadenze degli obiettivi dalla più vicina. */
+      giornata, settimana, scadenze, oraDi: orario, gruppiOggi,
+      /* Le consegne (versione 19, 2026-09-07): le cose create dalle esecuzioni del dipartimento, con il passo che le ha
+         prodotte e la richiesta al titolare quando sono già uscite. Nessun numero nuovo: sono gli `output` che la pagina
+         Esecuzione disegna già. `consegneDi(null)` sono quelle di tutta l'azienda. */
+      consegneDi, consegnaDi,
+      /* I workflow (versione 20, 2026-09-08): il lavoro dichiarato di un dipartimento, disegnato a nodi. Un nodo è
+         un passo (43 a undici, 156 a quaranta: nel modello ci sono davvero); l'ultimo nodo è il titolare, con la
+         regola di `regole` che ferma lì la consegna. Nasce da un'esecuzione con almeno due passi conclusi; costo e
+         durata sono sommati dai passi. La firma anticipata nasce spenta. */
+      workflowDi, workflowIdDi, firme, rami,
+      /* Il ramo di un workflow: i nodi della **prossima volta**. Nasce come copia dei passi dell'ultima volta —
+         non si inventa una catena, si parte da quella che ha funzionato — con i numeri misurati **tolti**, perche'
+         di un passo che deve ancora succedere non si sa ne' il costo ne' la durata. L'ultimo nodo resta il
+         titolare e non si tocca: e' la spina dorsale, ed e' la cosa che nessuno dei cinque consiglieri aveva
+         detto (l'ha trovata la revisione incrociata: cosi' com'erano proposte, tutte e tre le strade lasciavano
+         cancellare o scavalcare il nodo del titolare). */
+      /* ---- Il ramo come **grafo** (versione 23) ----
+         Fino alla versione 22 il ramo era una **catena**: un array, e l'arco da i a i+1 era implicito. L'utente ha
+         chiesto «la complessita' di n8n»: spostare liberamente ogni card, e collegare e biforcare piu' connettori
+         anche su un singolo task. Una catena non lo regge, quindi il ramo diventa **nodi + archi**.
+         La forma e' quella di n8n semplificata: n8n indicizza `connections[nomeSorgente][tipo][indiceUscita]` —
+         tre livelli, perche' ha 13 tipi di connessione e porte multiple per lato. DGT ne ha **uno** (il lavoro
+         passa), quindi l'arco e' una riga piatta `{ id, da, a }` e l'indice di porta non serve. La differenza non
+         e' pigrizia: e' che l'indice di n8n serve a distinguere `true` da `false` sull'IF, e in DGT quella
+         distinzione — se ci sara' — sta **sull'arco**, non sulla porta (quattro consiglieri su cinque sono
+         arrivati alla stessa terza strada, e la parola la decide l'utente: qui c'e' solo il campo `se`).
+
+         **Le posizioni sono libere** (`x`, `y` sul nodo) e nascono dalla serpentina, cosi' il ramo si apre come
+         stava prima e non si deve ridisegnare niente a mano per cominciare. Il titolare resta l'ultimo: non si
+         toglie, non ha archi in uscita, e nessun arco puo' scavalcarlo — sta nel modello, non nel gesto.
+         Fan-out e fan-in sono **illimitati** come in n8n: e' esattamente quello che l'utente ha chiesto con
+         «piu' connettori anche a un singolo task». */
+      ramoDi: w => {
+        const W_PAD_D = 36;
+        if (!rami[w.id]) {
+          const passi = w.nodi.slice(0, -1), tit = w.nodi[w.nodi.length - 1];
+          const nodi = passi.map((nd, i) => Object.assign({
+            id: 'p' + (i + 1), n: nd.n, nome: nd.nome, chi: nd.chi, modello: nd.modello,
+            strumenti: (nd.strumenti || []).slice(), stato: 'da fare', costo: 0, durata: '', esito: '', nato: false,
+          }, out.ramoPosa(i)));
+          nodi.push(Object.assign({}, tit, { id: 'tit', stato: 'da fare', quando: '' }, out.ramoPosa(passi.length)));
+          /* ---- Il nodo d'innesco, in testa (versione 23, idea dell'utente) ----
+             L'utente ha chiesto: «mettere la richiesta del titolare all'inizio, cosi' viene chiesta ancor prima di
+             far partire il flusso e non lo si limita nella creazione di biforcazioni ampie senza l'obbligo di
+             farle convergere su un nodo finale». L'idea **ha gia' un nome nel prodotto**: e' la `clausola` della
+             routine (`avvio` = chiede prima di partire) e la **firma anticipata** del workflow, decise nella
+             versione 20 e oggi spente. Qui diventano la **forma del canvas**: un nodo in testa, come il trigger
+             che n8n mette all'inizio di ogni flusso.
+             E risolve davvero il timore: **la convergenza non e' obbligatoria.** Il vincolo non e' «tutto finisce
+             sul nodo firma», e' «tutto cio' che **esce** passa dalla firma». Un ramo che resta dentro l'azienda
+             finisce dove vuole. Con la clausola `avvio` il titolare autorizza in testa, e in coda la firma serve
+             solo ai rami che consegnano davvero fuori. */
+          nodi.unshift({ id: 'inn', innesco: true, n: 0, nome: 'Quando parte', chi: w.chi,
+            testo: (w.innesco && w.innesco.testo) || 'Ogni volta che serve', clausola: 'uscita',
+            strumenti: [], stato: 'da fare', costo: 0, durata: '', x: W_PAD_D, y: W_PAD_D });
+          nodi.forEach((nd, i) => { if (!nd.innesco) { const q = out.ramoPosa(i); nd.x = q.x; nd.y = q.y; } });
+          const archi = nodi.slice(0, -1).map((nd, i) => ({ id: 'a' + i, da: nd.id, a: nodi[i + 1].id, tipo: 'poi', se: '' }));
+          rami[w.id] = { nodi, archi, seq: nodi.length };
+        }
+        return rami[w.id];
+      },
+      /* ---- La posa di partenza di un nodo (versione 24: non piu' la serpentina) ----
+         «L'ultima volta» resta una **serpentina**: e' una catena, gli archi si disegnano da un nodo al seguente e
+         la riga dispari che torna indietro tiene i connettori corti senza incroci. Nel **grafo** no: le prese
+         stanno sui fianchi del nodo (a destra si esce, a sinistra si entra), quindi una riga che va da destra a
+         sinistra rende **ogni** suo arco un ritorno — misurato disegnandolo: 9 nodi, 8 collegamenti, di cui 4
+         all'indietro, e il canvas diventa illeggibile. Qui le righe vanno tutte da sinistra a destra, come le
+         righe di un testo, e l'unico ritorno e' quello che va a capo.
+         ---- Il passo di riga: 342 e non piu' 216 (versione 29, decisione del titolare) ----
+         216 era `12x18`: scelto per far cadere i nodi sui punti della griglia, e tarato sul nodo **chiuso** (87
+         px). Ma il gesto piu' frequente del canvas e' **aprire** un nodo, e un nodo aperto e' alto fino a **311
+         px** — piu' della distanza fra due righe. Misurato: cinque nodi su nove coprivano quello sotto, tre per
+         intero, e cinque coppie di etichette di porta si sovrapponevano per 6 px.
+         **342 = 19x18**, quindi resta sulla griglia, ed e' il conto esatto di quello che un nodo aperto occupa:
+         311 di card + 17 fino alle sue porte + 14 di etichetta. Verificato trascinando i nodi col gesto vero:
+         **zero coperture, zero scontri**. Il prezzo, accettato dal titolare: il disegno passa da 669 a 921 px e
+         la mini-mappa diventa permanente (per questo si e' spostata: prima copriva il nodo del titolare).
+         **Qui e non in `W_PY`**: `wpos` (`componenti.js`) esce alla prima riga quando il nodo porta gia' la sua
+         `x`, e nel grafo la porta sempre — `W_PY` governa **solo** la serpentina dell'«ultima volta», dove il
+         difetto non esiste perche' li' le righe sotto quella aperta scendono da sole (`spintaDi`). E il passo non
+         vive piu' in tre posti con tre valori: `RAMO_PASSO` e' l'unico, e lo leggono `ramoPosa` e `ramoAggiungi`.
+         La regola 42 non si oppone: questo e' il **seme**, non la mano. Le posizioni che il titolare ha messo
+         trascinando (`ramoPosiziona`) non le tocca nessuno — «Riordina» resta l'unica eccezione, e la chiede lui. */
+      RAMO_PASSO: { X: 234, Y: 342, PAD: 36, COL: 4 },
+      ramoPosa: i => { const P = out.RAMO_PASSO; return { x: P.PAD + (i % P.COL) * P.X, y: P.PAD + Math.floor(i / P.COL) * P.Y }; },
+      /* La griglia dell'aggancio: **18 px**, cioe' i punti che il canvas gia' disegna (`background-size:18px`).
+         n8n aggancia a 16, ma la sua griglia e' invisibile: qui i nodi cadono sui punti che si vedono. */
+      RAMO_GRIGLIA: 18,
+      /* Sposta un nodo dove lo si e' lasciato: agganciato alla griglia e **tenuto dentro la banda** — la colonna e'
+         larga 1008 px e non scorre di lato, quindi un nodo non puo' uscirne. In basso invece non c'e' limite: il
+         canvas cresce, come cresce ogni altra sezione della pagina. */
+      ramoPosiziona: (w, id, x, y) => {
+        const g = out.RAMO_GRIGLIA, r = out.ramoDi(w), nd = r.nodi.find(n => n.id === id);
+        if (!nd) return;
+        nd.x = Math.max(0, Math.min(1008 - 208 - 8, Math.round(x / g) * g));
+        nd.y = Math.max(0, Math.round(y / g) * g);
+      },
+      /* Un passo nuovo dopo `dopoId`: eredita la posizione un passo piu' in la' e si infila fra il nodo e i suoi
+         successori, cosi' la catena non si spezza. Se `dopoId` e' il titolare il passo nasce **prima** di lui. */
+      ramoAggiungi: (w, dopoId) => {
+        const r = out.ramoDi(w);
+        const dopo = r.nodi.find(n => n.id === dopoId) || r.nodi[0];
+        const prima = dopo.titolare;
+        const rif = prima ? (r.archi.find(a => a.a === dopo.id) || {}).da : dopo.id;
+        const base = r.nodi.find(n => n.id === rif) || dopo;
+        const id = 'p' + (++r.seq);
+        /* ---- Dove nasce il passo nuovo (corretto nella versione 29) ----
+           Era `base.y + 210`: **210 non e' multiplo di 18**, quindi il passo nuovo cadeva fra i punti della
+           griglia — contro la ragione stessa per cui la versione 24 scelse 234 e 216 — ed era **meno del passo di
+           riga**, quindi nasceva **sotto la card aperta che l'aveva appena creato**: il gesto piu' naturale del
+           canvas produceva un nodo invisibile. Adesso scende di un passo intero e, come il «+» sull'arco e il
+           rilascio nel vuoto, cede il posto se e' occupato. */
+        const g = out.RAMO_GRIGLIA;
+        let ny = Math.max(0, base.y + out.RAMO_PASSO.Y);
+        let guardiaA = 0;
+        while (out.ramoOccupato(r, base.x, ny, null, out.RAMO_ALT_APERTO) && guardiaA++ < 40) ny += g * 2;
+        r.nodi.splice(r.nodi.length - 1, 0, { id, n: 0, nome: 'Passo nuovo', chi: w.chi, modello: 'standard', strumenti: [], stato: 'da fare', costo: 0, durata: '', esito: '', nato: true, x: base.x, y: ny });
+        /* i successori del nodo di riferimento passano dal nuovo */
+        r.archi.filter(a => a.da === base.id).forEach(a => { a.da = id; });
+        r.archi.push({ id: 'a' + (++r.seq), da: base.id, a: id, se: '' });
+        out.ramoNumera(r);
+        return id;
+      },
+      /* Collega due nodi. Illimitato in uscita e in entrata (la richiesta dell'utente), ma **mai verso se stessi,
+         mai in doppio, e mai in uscita dal titolare**: dopo la firma non c'e' altro lavoro. */
+      ramoCollega: (w, da, a) => {
+        const r = out.ramoDi(w);
+        if (!da || !a || da === a) return false;
+        const nda = r.nodi.find(n => n.id === da), nab = r.nodi.find(n => n.id === a);
+        if (!nda || !nab || nda.titolare) return false;
+        if (r.archi.some(x => x.da === da && x.a === a)) return false;
+        r.archi.push({ id: 'a' + (++r.seq), da, a, se: '' });
+        out.ramoNumera(r);
+        return true;
+      },
+      ramoScollega: (w, arcoId) => { const r = out.ramoDi(w); const i = r.archi.findIndex(a => a.id === arcoId); if (i >= 0) r.archi.splice(i, 1); out.ramoNumera(r); },
+      /* ---- «Riordina» (versione 24, acceleratore 1 dei quattro chiesti dall'utente) ----
+         n8n lo chiama «Tidy up» e lo fa con **dagre** (rankdir LR, nodesep 96, ranksep 128). Qui la direzione non
+         puo' essere «da sinistra a destra» e non e' un'opinione: la colonna riservata e' larga **1008 px** e non
+         scorre di lato, mentre un flusso da 9 nodi in fila ne vorrebbe 36 + 9·242 = **2 214**. Quindi il riordino
+         e' la **serpentina che il canvas ha gia'** (`ramoPosa`, quattro colonne), applicata all'ordine topologico:
+         prima il livello (`ramoNumera`, la distanza dall'inizio), poi la posizione di adesso — cosi' il riordino
+         **raddrizza** il disegno dell'utente invece di ribaltarlo, e due nodi che stanno sullo stesso livello
+         finiscono vicini. Il titolare resta l'ultimo: e' la spina dorsale, non una coordinata.
+         La ragione per cui e' il **secondo** lavoro e non l'ultimo l'ha misurata la revisione incrociata: il
+         trascinamento libero **senza** un riordino rende il canvas piu' lento, non piu' veloce. */
+      ramoRiordina: w => {
+        const r = out.ramoDi(w);
+        out.ramoNumera(r);
+        const ordine = r.nodi.slice().sort((a, b) => (a.n - b.n) || (a.y - b.y) || (a.x - b.x) || String(a.id).localeCompare(String(b.id)));
+        const tit = ordine.filter(n => n.titolare), altri = ordine.filter(n => !n.titolare);
+        altri.concat(tit).forEach((nd, i) => { const q = out.ramoPosa(i); nd.x = q.x; nd.y = q.y; });
+        return r;
+      },
+      /* Quanti connettori si incrociano: e' il numero con cui si misura se «Riordina» serve davvero, invece di
+         dirlo. Due segmenti (dal fianco destro del nodo che parte al fianco sinistro di quello che arriva) si
+         incrociano se le due coppie di estremi si separano. E' un conto, non una stima. */
+      ramoIncroci: w => {
+        const r = out.ramoDi(w), n = {}; r.nodi.forEach(x => { n[x.id] = x; });
+        const seg = r.archi.map(a => ({ x1: n[a.da].x + 208, y1: n[a.da].y + 43.5, x2: n[a.a].x, y2: n[a.a].y + 43.5 }));
+        const s = (a, b, c) => Math.sign((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x));
+        let k = 0;
+        for (let i = 0; i < seg.length; i++) for (let j = i + 1; j < seg.length; j++) {
+          const p = { x: seg[i].x1, y: seg[i].y1 }, q = { x: seg[i].x2, y: seg[i].y2 };
+          const u = { x: seg[j].x1, y: seg[j].y1 }, v = { x: seg[j].x2, y: seg[j].y2 };
+          if (s(p, q, u) * s(p, q, v) < 0 && s(u, v, p) * s(u, v, q) < 0) k++;
+        }
+        return k;
+      },
+      /* Il «+» sul connettore (acceleratore 3): un passo si infila **in mezzo a un collegamento**. Il primo tratto
+         tiene il suo significato (se era un «se…», la condizione resta prima del passo nuovo) e il secondo nasce
+         `poi`. n8n sposta i nodi a valle **solo se non c'e' spazio**: qui il passo nuovo nasce a meta' strada e, se
+         quel posto e' occupato, scende di una riga finche' non e' libero. */
+      ramoInserisci: (w, arcoId) => {
+        const r = out.ramoDi(w), a = r.archi.find(x => x.id === arcoId);
+        if (!a) return '';
+        const da = r.nodi.find(n => n.id === a.da), ab = r.nodi.find(n => n.id === a.a);
+        if (!da || !ab) return '';
+        const g = out.RAMO_GRIGLIA;
+        let x = Math.round(((da.x + ab.x) / 2) / g) * g, y = Math.round(((da.y + ab.y) / 2) / g) * g;
+        x = Math.max(0, Math.min(1008 - 208 - 8, x)); y = Math.max(0, y);
+        let guardia = 0;
+        while (out.ramoOccupato(r, x, y, null, out.RAMO_ALT_APERTO) && guardia++ < 40) y += g * 2;
+        const id = 'p' + (++r.seq);
+        r.nodi.splice(r.nodi.length - 1, 0, { id, n: 0, nome: 'Passo nuovo', chi: w.chi, modello: 'standard', strumenti: [], stato: 'da fare', costo: 0, durata: '', esito: '', nato: true, x, y });
+        r.archi.push({ id: 'a' + (++r.seq), da: id, a: ab.id, tipo: 'poi', se: '' });
+        a.a = id;
+        out.ramoNumera(r);
+        return id;
+      },
+      /* Il rilascio del connettore **nel vuoto** (acceleratore 2, «la loro idea di UX migliore»): il passo nasce
+         dove si e' lasciato il filo, ed e' **gia' collegato**. Senza questo, creare un passo sono tre gesti. */
+      ramoNuovo: (w, daId, x, y) => {
+        const r = out.ramoDi(w), da = r.nodi.find(n => n.id === daId);
+        if (!da || da.titolare) return '';
+        const g = out.RAMO_GRIGLIA;
+        const id = 'p' + (++r.seq);
+        /* Il rilascio cade dove cade, e puo' cadere **sopra un altro nodo**: misurato disegnando la decisione 71,
+           il passo nuovo copriva due nodi e con loro il proprio tag. Il gesto gemello (il «+» sul connettore) la
+           spinta giu' ce l'aveva gia' dalla versione 24 — qui mancava, e sono le stesse due righe. */
+        let nx = Math.max(0, Math.min(1008 - 208 - 8, Math.round(x / g) * g));
+        let ny = Math.max(0, Math.round(y / g) * g);
+        let guardia = 0;
+        while (out.ramoOccupato(r, nx, ny, null, out.RAMO_ALT_APERTO) && guardia++ < 40) ny += g * 2;
+        r.nodi.splice(r.nodi.length - 1, 0, { id, n: 0, nome: 'Passo nuovo', chi: w.chi, modello: 'standard', strumenti: [], stato: 'da fare', costo: 0, durata: '', esito: '', nato: true, x: nx, y: ny });
+        r.archi.push({ id: 'a' + (++r.seq), da: daId, a: id, tipo: 'poi', se: '' });
+        out.ramoNumera(r);
+        return id;
+      },
+      /* Un posto e' occupato se ci sta sopra un nodo chiuso (208x87, piu' i 18 px della griglia di respiro). */
+      /* ---- Un passo nuovo nasce **gia' aperto**, e il freno lo sapeva (corretto nella versione 29) ----
+         Il freno misurava sempre il nodo **chiuso** (87 + 18 = 105 px di respiro), ma i tre gesti che creano un
+         passo lo lasciano **aperto** — `st.nodo` diventa il suo id. Un passo nuovo aperto e' alto **273 px**
+         (87 di testata + 8 + 131 di campi + 47 della riga delle azioni: modello e un solo strumento, che e' quello
+         che ha appena nato). Misurato: il «+» sull'arco posava un passo a 162,144 che, aperto, ne copriva **due**;
+         il «+» dentro l'innesco ne copriva uno — il nodo del **titolare**. Il conto diceva «libero», la resa
+         copriva. Adesso `alt` dice quanto occupa davvero quello che si sta posando, e il confronto non e' piu'
+         simmetrico: sopra basta il nodo chiuso, sotto serve tutta la card aperta. */
+      RAMO_ALT_APERTO: 273,
+      ramoOccupato: (r, x, y, escludi, alt) => {
+        const h = alt || 87;
+        return r.nodi.some(n => n.id !== escludi && Math.abs(n.x - x) < 208 + 18
+          && y < n.y + 87 + 18 && n.y < y + h + 18);
+      },
+      /* Togliere un passo ricuce la catena: i suoi entranti si attaccano ai suoi uscenti, cosi' non restano monconi. */
+      ramoTogli: (w, id) => {
+        const r = out.ramoDi(w), nd = r.nodi.find(n => n.id === id);
+        if (!nd || nd.titolare) return '';
+        if (r.nodi.length <= 2) return '';   /* un passo deve restare: il solo titolare non e' un lavoro */
+        const entranti = r.archi.filter(a => a.a === id).map(a => a.da);
+        const uscenti = r.archi.filter(a => a.da === id).map(a => a.a);
+        r.archi = r.archi.filter(a => a.da !== id && a.a !== id);
+        entranti.forEach(p => uscenti.forEach(s => { if (p !== s && !r.archi.some(a => a.da === p && a.a === s)) r.archi.push({ id: 'a' + (++r.seq), da: p, a: s, se: '' }); }));
+        r.nodi.splice(r.nodi.indexOf(nd), 1);
+        out.ramoNumera(r);
+        return '';
+      },
+      ramoCampo: (w, id, k, v) => { const nd = out.ramoDi(w).nodi.find(n => n.id === id); if (nd && !nd.titolare) nd[k] = v; },
+      /* ---- I tre significati di un connettore (versione 23, scelta C dell'utente: «tutte e tre come n8n») ----
+         n8n le tiene su tre nodi diversi (IF, Merge, la porta d'errore). In DGT stanno tutti e tre **sul
+         connettore**, che e' la forma su cui quattro consiglieri su cinque erano arrivati da soli: il nodo non
+         cresce di porte, e il fan-out illimitato che l'utente ha chiesto resta gratis.
+           `poi`     il lavoro prosegue di li' (il caso di oggi, e l'unico che i dati contengono);
+           `se`      alternativa: parte solo se la condizione e' vera, e l'etichetta la scrive il titolare;
+           `insieme` parallelo: parte **con** gli altri `insieme` che escono dallo stesso nodo;
+           `errore`  parte solo se il passo si e' fermato.
+         **L'errore non e' una verita' nuova**: e' lo stato `errore` che la pagina Esecuzione mostra gia', a cui
+         qui si da' una strada. Una sola fonte, due letture — la ragione per cui il consiglio lo scartava era
+         proprio il rischio di due verita' sullo stesso fatto, e cosi' non si corre. */
+      RAMO_TIPI: [
+        { id: 'poi', nome: 'poi', desc: 'Il lavoro prosegue di qui' },
+        { id: 'se', nome: 'se…', desc: 'Parte solo se la condizione è vera' },
+        { id: 'insieme', nome: 'insieme', desc: 'Parte insieme agli altri rami «insieme» dello stesso passo' },
+        { id: 'errore', nome: 'se si ferma', desc: 'Parte solo se il passo si è fermato in errore' },
+      ],
+      ramoArco: (w, arcoId, k, v) => { const a = out.ramoDi(w).archi.find(x => x.id === arcoId); if (a) a[k] = v; },
+      /* La clausola dell'innesco: `avvio` la chiede prima di partire (l'idea dell'utente), `uscita` prima di
+         consegnare, `libera` e' il «fai pure» della firma anticipata. Chi autorizza in testa non deve far
+         convergere i rami in coda: e' la stessa decisione, vista dall'altro capo del flusso.
+         Dalla decisione 71 i due permessi che firmano in anticipo (`avvio` e `libera`) **dicono i tre freni**,
+         perche' da oggi li hanno davvero (`ramoFreni`): prima solo «Fai pure» li nominava, e nemmeno lui li
+         applicava. `uscita` non ne ha bisogno: chi esce passa dal titolare, che e' il freno. */
+      RAMO_CLAUSOLE: [
+        { id: 'avvio', nome: 'Chiedi prima di partire', desc: 'Il titolare autorizza il flusso prima che cominci: i rami non devono convergere su una firma finale, e quello che esce sta entro i tre freni (soglia, perimetro, scadenza)' },
+        { id: 'uscita', nome: 'Chiedi prima di consegnare', desc: 'Ogni ramo che esce dall\'azienda passa dalla firma in coda' },
+        { id: 'libera', nome: 'Fai pure', desc: 'Firma anticipata: esce da solo entro i tre freni (soglia, perimetro, scadenza)' },
+      ],
+      /* Che cosa esce davvero: i nodi da cui non parte nessun arco. Se la clausola e' `uscita`, quelli che non
+         arrivano al titolare **non escono dall'azienda** — e questo si dice, invece di vietarlo. */
+      ramoTerminali: w => { const r = out.ramoDi(w); return r.nodi.filter(n => !n.innesco && !r.archi.some(a => a.da === n.id)); },
+      /* ---- I tre freni, in un posto solo (decisione 71, 2026-09-09) ----
+         La revisione incrociata della versione 24 ha trovato quello che nessuno dei cinque consiglieri aveva
+         visto: il permesso in testa al flusso (`clausola`) faceva uscire le consegne **senza nessun freno**,
+         mentre la firma anticipata (`w.firma`) ne dichiara tre. Due strade per la stessa cosa, una con i freni e
+         una senza — e la descrizione di «Fai pure» **prometteva gia'** i tre freni («esce da solo entro i tre
+         freni»), che il codice non applicava: la parola diceva una cosa e la funzione ne faceva un'altra.
+         Decisione dell'utente: **gli stessi tre freni**. Stanno qui una volta sola e li leggono la firma
+         anticipata, la clausola, la Console e il telefono; prima erano scritti a mano in due pagine e non
+         governavano niente. I numeri non sono nuovi: sono i tre campi che `workflowDi` calcola gia'. */
+      ramoFreni: w => [
+        { id: 'soglia', nome: 'Soglia di costo', valore: w.soglia, eur: true,
+          desc: `Questo workflow è costato ${(Math.round(w.costo * 10) / 10).toString().replace('.', ',')} € l'ultima volta. Sopra la soglia l'uscita torna in coda.` },
+        { id: 'perimetro', nome: 'Perimetro', valore: w.perimetro,
+          desc: 'Vale solo per questo cliente. Per un altro cliente la consegna aspetta te.' },
+        { id: 'scadenza', nome: 'Scadenza', valore: w.scadenza + ' esecuzioni',
+          desc: 'Poi torna in coda da sola, e anche prima se cambia il soul prompt del dipendente o il modello di un passo.' },
+      ],
+      /* Chi firma quello che esce, e con quali freni. I regimi sono **tre**, non due: la firma in coda
+         (`uscita`: ogni ramo che esce passa dal titolare), il permesso in testa (`avvio` e `libera`) e la firma
+         anticipata (`w.firma`). I due che firmano in anticipo prendono adesso gli stessi tre freni. */
+      ramoRegime: w => { const r = out.ramoDi(w), inn = r.nodi.find(n => n.innesco);
+        const cl = inn ? inn.clausola : 'uscita';
+        const da = cl !== 'uscita' ? 'clausola' : w.firma ? 'firma' : null;
+        return { clausola: cl, anticipata: !!da, da, freni: da ? out.ramoFreni(w) : [] };
+      },
+      ramoEsce: w => { const r = out.ramoDi(w), inn = r.nodi.find(n => n.innesco); const cl = inn ? inn.clausola : 'uscita';
+        const tit = r.nodi.find(n => n.titolare);
+        const arriva = {}; if (tit) { const coda = [tit.id]; arriva[tit.id] = 1; let g = 0;
+          while (coda.length && g++ < 999) { const id = coda.shift(); r.archi.filter(a => a.a === id).forEach(a => { if (!arriva[a.da]) { arriva[a.da] = 1; coda.push(a.da); } }); } }
+        /* I nodi terminali che non arrivano al titolare: **gli stessi** con ogni permesso. Quello che cambia non
+           e' quali sono, e' chi li firma — e prima il calcolo si fermava sopra, cosi' cambiando il permesso il
+           canvas smetteva di dirlo proprio quando serviva di piu'. */
+        const senzaTitolare = out.ramoTerminali(w).filter(n => !n.titolare && !arriva[n.id]);
+        return cl === 'uscita'
+          ? { tutti: false, clausola: cl, fuori: senzaTitolare, anticipata: [], freni: [] }
+          : { tutti: true, clausola: cl, fuori: [], anticipata: senzaTitolare, freni: out.ramoFreni(w) };
+      },
+      /* Il numero del passo non e' piu' la posizione nell'array: in un grafo e' **la distanza dall'inizio**, cioe'
+         quanti passi al massimo si attraversano per arrivarci. Su una catena da' 1, 2, 3… come prima; su una
+         biforcazione i due rami portano lo stesso numero, ed e' giusto: sono lo stesso momento del lavoro. */
+      ramoNumera: r => {
+        const dentro = {}; r.nodi.forEach(n => { dentro[n.id] = 0; });
+        r.archi.forEach(a => { dentro[a.a] = (dentro[a.a] || 0) + 1; });
+        const liv = {}; const coda = r.nodi.filter(n => !dentro[n.id]).map(n => n.id);
+        coda.forEach(id => { liv[id] = 1; });
+        const g = {}; r.archi.forEach(a => { (g[a.da] = g[a.da] || []).push(a.a); });
+        const resta = Object.assign({}, dentro);
+        let guardia = 0;
+        while (coda.length && guardia++ < 999) {
+          const id = coda.shift();
+          (g[id] || []).forEach(v => { liv[v] = Math.max(liv[v] || 1, (liv[id] || 1) + 1); if (--resta[v] === 0) coda.push(v); });
+        }
+        /* ---- L'innesco non e' un passo (corretto nella versione 30) ----
+           `liv` e' il livello topologico, e l'innesco — che non ha niente in entrata — sta al livello 1. Ma nel
+           prodotto l'innesco **non e' un passo**: la barra lo dice da sempre, «9 nodi · l'innesco, 7 passi e la
+           tua firma», e il conto in cima esclude innesco e titolare. Il risultato era che **premere «Riordina»
+           una volta rinumerava tutto**: «Passo 1» diventava «Passo 2», «Passo 3» diventava «Passo 4», a cascata
+           su tutti e sette — misurato, e poi si fermava. Un gesto che il titolare preme per rimettere in ordine
+           il **disegno** gli cambiava sotto gli occhi il **nome** di ogni passo.
+           Si tiene il livello (serve al grafo: due rami che partono dallo stesso nodo portano lo stesso numero,
+           decisione 65) e si toglie lo scalino dell'innesco. */
+        const inn = r.nodi.find(n => n.innesco);
+        const base = inn ? (liv[inn.id] || 1) : 0;
+        r.nodi.forEach(n => { n.n = Math.max(n.innesco ? 0 : 1, (liv[n.id] || 1) - base); });
+        r.ciclo = Object.keys(resta).some(k => resta[k] > 0);   /* un ciclo si vede: n8n li ammette, qui si dice */
+      },
+      /* Quanti nodi entrano e quanti escono da un nodo: serve alle porte e a dire quando una porta si sdoppia. */
+      ramoGradi: (w, id) => { const r = out.ramoDi(w); return { dentro: r.archi.filter(a => a.a === id).length, fuori: r.archi.filter(a => a.da === id).length }; },
+      /* I fili della chat (versione 15): un filo per dipendente, una sola copia (i messaggi restano), condivisa fra Console e
+         telefono; `scrivi` è la nota del titolare, dalla chat o dalla barra di scrittura dell'Esecuzione. */
+      filoDi, ultimoDi: ultimo, nonLetti,
+      scrivi: (id, testo, extra) => { const e = byId[id]; if (!e || !String(testo || '').trim()) return null; const msg = Object.assign({ da: 'io', ora: azienda.ora, testo: String(testo).trim() }, extra || {}); filoDi(e).push(msg); return msg; },
+      /* I fili nell'ordine della chat: prima quelli con messaggi da leggere, poi per ultimo messaggio (i più recenti prima). */
+      fili: () => m.dipendenti.map(e => ({ e, ultimo: ultimo(e), nuovi: nonLetti(e) })).sort((a, b) => ((b.nuovi > 0) - (a.nuovi > 0)) || String((b.ultimo || {}).ora || '').localeCompare(String((a.ultimo || {}).ora || '')) || (a.e.id - b.e.id)),
+      MODELLI,
+      /* Il dossier del dipendente (versione 6): scritto a mano per Nora e il Social media manager a 11, generato per gli altri; una sola copia per dipendente, così le decisioni restano. */
+      /* Versione 33: le regole generali del dossier sono **le stesse** di `m.regole`, non una copia. Fino alla 32 i
+         tre dossier scrivevano «Spese sopra 50 €: attiva: false» (era vero prima della versione 22, che ha acceso
+         g4) e la pagina Dipendente stampava «Spenta» sotto la stessa regola che Richieste stampava «Attiva» —
+         stessa regola, due pagine, due stati opposti. Adesso una riga d'origine «Regola generale» prende
+         `attiva` dalla regola d'azienda che porta il suo nome: le eccezioni restano del dossier. */
+      dossierDi: e => { if (!e) return null; if (!dossier[e.id]) dossier[e.id] = allineaPermessi((n < 40 && DOSSIER11[e.id]) ? DOSSIER11[e.id] : dossierGenerato(e)); return dossier[e.id]; },
+      /* L'esecuzione corrente del dipendente (versione 8): scritta a mano a 11 per sei dipendenti, generata per gli altri; una sola copia per dipendente, così le azioni restano. */
+      esecuzioneDi: e => { if (!e) return null; if (!esecuzioni[e.id]) esecuzioni[e.id] = (n < 40 && ESEC11[e.id]) ? ESEC11[e.id] : esecuzioneGenerata(e); return esecuzioni[e.id]; },
+      /* La revisione di una richiesta di tipo `revisione`. */
+      revisioneDi: r => { const e = byId[r.chi]; const d = e && out.dossierDi(e); return d ? d.revisioni.find(x => x.id === r.revisione) : null; },
+      /* Decisione del titolare su una revisione: prova (20 esecuzioni), applicata, modifiche, rifiutata. Applicare = la nuova versione del prompt o il nuovo modello diventano correnti. */
+      decidiRevisione: (r, esito, motivo) => {
+        const rv = out.revisioneDi(r); if (!rv) return;
+        const d = out.dossierDi(byId[r.chi]);
+        rv.stato = esito; rv.decisa = azienda.titolare.iniziali + ' · oggi ' + azienda.ora; if (motivo) rv.motivo = motivo;
+        if (esito === 'prova') { rv.fatte = 0; rv.effetto = 'In prova: 0 di ' + rv.prova.esecuzioni + ' esecuzioni'; }
+        else if (esito === 'applicata') { if (rv.tipo === 'prompt') { d.prompt.corrente = rv.a; const v = d.prompt.versioni.find(x => x.v === rv.a); if (v) { v.proposta = false; v.data = 'oggi ' + azienda.ora; v.chi = azienda.titolare.iniziali; } } else d.modello.assegnato = rv.a; rv.effetto = 'Applicata oggi: effetto misurato fra 30 giorni'; }
+        else if (esito === 'modifiche') rv.effetto = 'Modifiche chieste dal titolare';
+        else rv.effetto = motivo ? '«' + motivo + '»' : 'Rifiutata dal titolare';
+        rv.verso = '';
+      },
+      /* Decisione del titolare su una richiesta (versione 11, 2026-09-05: qui, non più dentro `monta` in direzione-a.js, così la
+         Console e il telefono condividono lo stato). stato: approvata | modifiche | rifiutata; `commento` è il motivo (obbligatorio
+         per il rifiuto dal telefono e per le revisioni); per una revisione `esitoRevisione` è prova | applicata | modifiche |
+         rifiutata (predefinito: applicata se approvata, altrimenti lo stato). Ritorna la richiesta, o null se non esiste. */
+      decidi: (id, stato, commento, esitoRevisione, importo) => {
+        const r = m.richieste.find(x => x.id === id); if (!r) return null;
+        const [hh, mm] = azienda.ora.split(':').map(Number);
+        r.stato = stato; r.decisa = azienda.ora; r.giorno = 0; r.min = hh * 60 + mm; if (commento) r.commento = commento;
+        if (importo != null) r.importo = importo;
+        if (r.tipo === 'revisione') out.decidiRevisione(r, esitoRevisione || (stato === 'approvata' ? 'applicata' : stato), commento);
+        /* La firma che porta una **cifra** (versione 32): approvando la richiesta del tetto il titolare non cambia
+           la sua promessa — alza il tetto **solo per oggi**, e l'eccezione resta scritta con l'ora e con l'importo.
+           E' l'unico posto del prodotto dove una decisione muove un numero invece di far uscire una consegna, ed e'
+           la ragione per cui `decidi` ha imparato il quinto parametro. */
+        if (r.tipo === 'tetto') {
+          if (stato === 'approvata') out.tetti.azienda.oggi = (out.tetti.azienda.oggi || 0) + (r.importo || 0);
+          out.aggiornaTetto();
+        }
+        return r;
+      },
+    };
+    /* Le regole generali di un dossier seguono `out.regole` (versione 33, vedi `dossierDi`). */
+    function allineaPermessi(d) { (d.permessi || []).forEach(p => { if (p.eccezione) return; const g = out.regole.find(x => x.nome === p.nome); if (g) p.attiva = g.attiva; }); return d; }
+    function sommaBudget(per) { return m.dipendenti.reduce((t, e) => t + ((out.dossierDi(e).budget || {})[per] || 0), 0); }
+    const dossier = {}, esecuzioni = {};
+    out.ricalcola();
+    /* Il tetto d'azienda che il titolare ha posto il 1º settembre: la **proposta** della prima apertura, accettata.
+       Si scrive qui e non nel letterale perche' i dossier nascono dopo `out`. Da questo momento e' un numero suo:
+       assumere un dipendente muove `propostaTetto()` e **non** muove il tetto — che e' tutta la differenza fra la
+       versione 31 e questa. */
+    { const p0 = out.propostaTetto(); out.tetti.azienda.giorno = p0.giorno; out.tetti.azienda.mese = p0.mese; }
+    /* E qui il prodotto **si apre fermo**, che e' voluto: il tetto e' gia' consumato prima di qualunque passo
+       nuovo, quindi il freno mette in pausa le esecuzioni aperte e nasce la richiesta che le sblocca. */
+    out.aggiornaTetto();
+    return out;
+  }
+
+  function nDaUrl() {
+    const n = parseInt(new URLSearchParams(location.search).get('n') || '11', 10);
+    return n >= 40 ? 40 : 11;
+  }
+
+  return { modello, nDaUrl, dipartimenti, STATI, MODELLI };
+})();

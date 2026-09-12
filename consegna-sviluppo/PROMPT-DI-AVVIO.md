@@ -1,8 +1,8 @@
 # Prompt di avvio per il repository del prodotto
 
-Da incollare così com'è nella prima sessione con qualunque agente di codice, dopo aver copiato la cartella
-`consegna/` nel repository nuovo con `esporta.sh`. Non presuppone nessuno strumento e nessun file di
-configurazione dell'agente: tutto quello che serve sta nella cartella.
+Da incollare così com'è nella prima sessione con qualunque agente di codice, dopo aver copiato la cartella nel
+repository nuovo (`cp -r consegna-sviluppo /percorso/nuovo/consegna`). Non presuppone nessuno strumento e nessun
+file di configurazione dell'agente: tutto quello che serve sta nella cartella.
 
 ```
 Stai iniziando lo sviluppo di DGT, un sistema operativo aziendale per agenti AI: il titolare crea un'azienda

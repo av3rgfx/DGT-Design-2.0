@@ -41,14 +41,30 @@ pagine statiche, e la lingua del codice.
 `PROMPT-DI-AVVIO.md` è il testo da incollare all'agente di codice, qualunque sia, nella prima sessione del
 repository nuovo.
 
+9. `MANIFESTO.txt` dice da quale commit vengono le copie.
+
 ## Come si porta
 
+**I file sono già tutti qui.** Questa cartella è autosufficiente: si copia com'è nel repository del prodotto, e non
+serve leggere né copiare nient'altro di questo repository.
+
 ```bash
-./consegna-sviluppo/esporta.sh /percorso/del/repository-nuovo/consegna
+cp -r consegna-sviluppo /percorso/del/repository-nuovo/consegna
 ```
 
-Lo script copia in quella cartella i documenti, i file del sistema di design, le fixture, le due immagini di
-riferimento e una selezione di catture, e stampa il manifesto con i pesi. Non tocca niente in questo repository.
+Che cosa contiene, 15 MB in tutto:
+
+| | |
+|---|---|
+| otto documenti in Markdown | quello che c'è da sapere, nell'ordine di lettura qui sotto |
+| `sistema-di-design/` | i token, i componenti, lo sprite delle icone, gli avatar con il loro motore, lo strumento del font, e `modello-sintetico.js`, il modello di design in sola lettura |
+| `dati-esempio/` | il modello serializzato a undici e a quaranta dipendenti |
+| `riferimento/` | le due immagini che il design copia, con la nota su che cosa se ne copia |
+| `catture/` | trenta schermate, la Console a 1440 px e il telefono, a undici e a quaranta |
+| `MANIFESTO.txt` | l'elenco dei file con i pesi e il commit da cui vengono |
+
+`aggiorna-copie.sh` serve solo a chi continua il **design**: rinfresca le copie quando una sorgente cambia in
+questo repository. Per usare la consegna non va lanciato.
 
 ## Le due verità visive
 
