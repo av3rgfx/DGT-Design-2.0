@@ -1,8 +1,8 @@
 # Inventario: che cosa si porta e che cosa resta
 
-File per file, con il peso, se va nel repository del prodotto e in che forma. Lo script `esporta.sh` fa
-esattamente quello che dice questa tabella. Il repository di design pesa 317 MB, di cui 275 MB di storia git
-(trentatré versioni di catture rifatte): **non si clona nel prodotto**, si porta questa cartella.
+File per file, con il peso, se va nel repository del prodotto e in che forma. **I file elencati come "si porta"
+sono già copiati in questa cartella**: si prende com'è, 15 MB. Il repository di design pesa 317 MB, di cui 275 MB
+di storia git (trentatré versioni di catture rifatte): **non si clona nel prodotto**.
 
 ## Si porta
 
@@ -20,7 +20,7 @@ esattamente quello che dice questa tabella. Il repository di design pesa 317 MB,
 | `consegna-sviluppo/dati-esempio/azienda-11.json`, `azienda-40.json` | 464 KB, 1,4 MB | lo stesso modello serializzato, senza funzioni: azienda, dipartimenti, dipendenti, dossier, esecuzioni, richieste con l'ordine della coda, regole, tetti, routine, workflow per dipartimento, obiettivi, costi per periodo, agenda, fili della chat, diario | `dati-esempio/`. Fixture per le prove e per popolare un ambiente di sviluppo; **il prodotto deve reggere tutte e due le taglie** |
 | `design-system/reference/*.jpg` + `README.md` | 556 KB | i due riferimenti visivi che il design copia «così com'è» | `riferimento/`. **Sono opere di terzi** (un case study Behance e un'interfaccia pubblica): servono a confrontare, non entrano nel prodotto e non si redistribuiscono. Il `README.md` dice che cosa se ne copia e che cosa no |
 | 30 catture scelte fra le 84 di `schermate/direzioni/screenshot/` | circa 9 MB | la Console a 1440 px e il telefono a 390 px, a undici e a quaranta: home, Richieste, Dipartimento, Dipendente, Esecuzione, Costi, Agenda, Chat, Workflow, Routine, Impostazioni, Consegna, tendine, barra del giorno | `catture/`. La verità visiva da confrontare, insieme ai due artefatti pubblicati |
-| i documenti di questa cartella | | | la radice di `consegna/` |
+| i documenti di questa cartella | 220 KB | gli otto estratti | la radice della cartella |
 
 ## Resta qui
 
