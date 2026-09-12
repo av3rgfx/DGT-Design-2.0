@@ -38,8 +38,12 @@ pagine statiche, e la lingua del codice.
 6. `DECISIONI-APERTE.md` — quello che il titolare non ha ancora deciso, e i candidati che aspettano dati;
 7. `INVENTARIO.md` — file per file, che cosa si porta nel repository nuovo e che cosa no.
 
-`PROMPT-DI-AVVIO.md` è il testo da incollare all'agente di codice, qualunque sia, nella prima sessione del
-repository nuovo.
+Due prompt, da incollare all'agente di codice qualunque sia, nella prima sessione del repository nuovo:
+
+- `PROMPT-ANALISI-DESIGN.md` — **il primo**: fa leggere questa consegna e chiede un'analisi del design (errori,
+  incongruenze, miglioramenti possibili) prima che una sola riga di codice esista. Si ferma lì;
+- `PROMPT-DI-AVVIO.md` — quello che apre la costruzione: stesse letture, e come primo lavoro la proposta di
+  architettura, che si ferma prima di costruirla.
 
 9. `MANIFESTO.txt` dice da quale commit vengono le copie.
 
