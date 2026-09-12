@@ -1,11 +1,12 @@
-Copie rinfrescate il 2026-09-12 dal repository di design, commit 73b913d.
+Copie rinfrescate il 2026-09-12 dal repository di design, commit a288652.
 
       7079  ./DECISIONI-APERTE.md
      54723  ./INVARIANTI-DA-VERIFICARE.md
-      6815  ./INVENTARIO.md
+      6843  ./INVENTARIO.md
      51805  ./MODELLO-DI-DOMINIO.md
-      3105  ./PROMPT-DI-AVVIO.md
-      4389  ./README.md
+      7339  ./PROMPT-ANALISI-DESIGN.md
+      3129  ./PROMPT-DI-AVVIO.md
+      5597  ./README.md
      47257  ./REGOLE-DI-PRODOTTO.md
      47368  ./SISTEMA-DI-DESIGN.md
       2606  ./aggiorna-copie.sh
